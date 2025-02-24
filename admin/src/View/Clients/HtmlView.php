@@ -66,6 +66,12 @@ class HtmlView extends BaseHtmlView
         $this->filterForm = $model->getFilterForm();
         $this->activeFilters = $model->getActiveFilters();
 
+        // Ensure transitions is always an array
+        $this->transitions = $this->state->get('transitions', []);
+        if (!is_array($this->transitions)) {
+            $this->transitions = [];
+        }
+
         if (!\count($this->items) && $this->isEmptyState = $this->get('IsEmptyState')) {
             $this->setLayout('emptystate');
         }
@@ -100,8 +106,6 @@ class HtmlView extends BaseHtmlView
 
             $childBar = $dropdown->getChildToolbar();
 
-            $childBar->publish('clients.publish')->listCheck(true);
-            $childBar->unpublish('clients.unpublish')->listCheck(true);
             $childBar->archive('clients.archive')->listCheck(true);
 
             if ($canDo->get('core.admin')) {
