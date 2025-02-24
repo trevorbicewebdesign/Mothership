@@ -26,7 +26,7 @@ class ClientsModel extends ListModel
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = [
-                'id', 'a.id',
+                'cid', 'a.cid',
                 'name', 'a.name',
                 'contact', 'a.contact',
                 'state', 'a.state',
@@ -72,7 +72,7 @@ class ClientsModel extends ListModel
             $this->getState(
                 'list.select',
                 [
-                    $db->quoteName('a.id'),
+                    $db->quoteName('a.cid'),
                     $db->quoteName('a.name'),
                     $db->quoteName('a.contact_fname'),
                     $db->quoteName('a.contact_lname'),
@@ -106,7 +106,7 @@ class ClientsModel extends ListModel
 
         $query->group(
             [
-                $db->quoteName('a.id'),
+                $db->quoteName('a.cid'),
                 $db->quoteName('a.name'),
                 $db->quoteName('a.checked_out'),
                 $db->quoteName('a.checked_out_time'),
@@ -115,9 +115,9 @@ class ClientsModel extends ListModel
 
         // Filter by search in title
         if ($search = trim($this->getState('filter.search', ''))) {
-            if (stripos($search, 'id:') === 0) {
+            if (stripos($search, 'cid:') === 0) {
                 $search = (int) substr($search, 3);
-                $query->where($db->quoteName('a.id') . ' = :search')
+                $query->where($db->quoteName('a.cid') . ' = :search')
                     ->bind(':search', $search, ParameterType::INTEGER);
             } else {
                 $search = '%' . str_replace(' ', '%', $search) . '%';
@@ -147,6 +147,7 @@ class ClientsModel extends ListModel
 
     public function getItems()
     {
+        
         // Get a storage key.
         $store = $this->getStoreId('getItems');
 
@@ -164,8 +165,8 @@ class ClientsModel extends ListModel
         }
 
         // Get the clients in the list.
-        $db        = $this->getDatabase();
-        $clientIds = array_column($items, 'id');
+        $db = $this->getDatabase();
+        $clientIds = array_column($items, 'cid');
 
         $query = $db->getQuery(true)
             ->select(
@@ -174,7 +175,7 @@ class ClientsModel extends ListModel
                     'COUNT(' . $db->quoteName('cid') . ') AS ' . $db->quoteName('count_published'),
                 ]
             )
-            ->from($db->quoteName('#__mothership'))
+            ->from($db->quoteName('#__mothership_clients'))
             ->where($db->quoteName('state') . ' = :state')
             ->whereIn($db->quoteName('cid'), $clientIds)
             ->group($db->quoteName('cid'))
