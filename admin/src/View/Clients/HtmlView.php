@@ -12,12 +12,15 @@ namespace TrevorBice\Component\Mothership\Administrator\View\Clients;
 
 use Joomla\CMS\Form\Form;
 use Joomla\CMS\Helper\ContentHelper;
+use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use Joomla\CMS\Pagination\Pagination;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use TrevorBice\Component\Mothership\Administrator\Model\ClientsModel;
+use Joomla\CMS\Factory;
+use Joomla\CMS\User\User;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -37,8 +40,24 @@ class HtmlView extends BaseHtmlView
 
     private $isEmptyState = false;
 
+    protected $user;
+
     public function display($tpl = null): void
     {
+        $app = Factory::getApplication();
+        $user = $app->getIdentity();
+
+        // Ensure $user is always a valid object
+        if (!$user instanceof User) {
+            $user = new User();
+        }
+
+        $this->user = $user; // Store the user object for the template
+        
+        HTMLHelper::_('bootstrap.tooltip');
+		HTMLHelper::_('behavior.multiselect');
+		HTMLHelper::_('formbehavior.chosen', 'select');
+
         /** @var ClientsModel $model */
         $model = $this->getModel();
         $this->items = $model->getItems();
