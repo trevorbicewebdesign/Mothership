@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="component" method="upgrade" version="4.0">
+    <name>com_mothership</name>
+    <author>Trevor Bice</author>
+    <creationDate>2023-10-01</creationDate>
+    <copyright>(C) 2006 Open Source Matters, Inc.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>trevorbicewebdesign@gmail.com</authorEmail>
+    <authorUrl>https://webdesign.trevorbice.com</authorUrl>
+    <version>2.0.0</version>
+    <description>COM_MOTHERSHIP_XML_DESCRIPTION</description>
+    <namespace path="src">TrevorBice\Component\Mothership</namespace>
+    <install>
+        <sql>
+            <file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
+        </sql>
+    </install>
+    <uninstall>
+        <sql>
+            <file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file>
+        </sql>
+    </uninstall>
+    <files folder="site">
+        <folder>src</folder>
+    </files>
+    <languages folder="site">
+        <language tag="en-GB">language/en-GB/com_mothership.ini</language>
+    </languages>
+    <media destination="com_mothership" folder="media">
+        <folder>js</folder>
+    </media>
+    <administration>
+        <menu>com_mothership</menu>
+        <submenu>
+            <menu link="option=com_mothership" view="mothership">com_mothership</menu>
+            <menu link="option=com_mothership&amp;view=clients" view="clients">com_mothership_clients</menu>
+			<menu link="option=com_mothership&amp;view=accounts" view="accounts">com_mothership_accounts</menu>
+			<menu link="option=com_mothership&amp;view=projects" view="projects">com_mothership_projects</menu>
+			<menu link="option=com_mothership&amp;view=invoices" view="invoices">com_mothership_invoices</menu>
+			<menu link="option=com_mothership&amp;view=quotes" view="quotes">com_mothership_quotes</menu>
+			<menu link="option=com_mothership&amp;view=payments" view="payments">com_mothership_payments</menu>
+			<menu link="option=com_mothership&amp;view=expenses" view="expenses">com_mothership_expenses</menu>
+			<menu link="option=com_mothership&amp;view=tickets" view="tickets">com_mothership_tickets</menu>
+			<menu link="option=com_mothership&amp;view=templates" view="templates">com_mothership_templates</menu>
+			<menu link="option=com_mothership&amp;view=subscriptions" view="subscriptions">com_mothership_subscriptions</menu>
+        </submenu>
+
+        <files>
+            <filename>access.xml</filename>
+            <filename>mothership.xml</filename>
+            <filename>config.xml</filename>
+            <folder>forms</folder>
+            <folder>helpers</folder>
+            <folder>services</folder>
+            <folder>sql</folder>
+            <folder>src</folder>
+            <folder>tmpl</folder>
+        </files>
+
+        <languages>
+            <language tag="en-GB">language/en-GB/com_mothership.ini</language>
+            <language tag="en-GB">language/en-GB/com_mothership.sys.ini</language>
+        </languages>
+    </administration>
+</extension>
