@@ -26,7 +26,7 @@ class ClientsModel extends ListModel
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = [
-                'cid', 'a.cid',
+                'cid', 'a.id',
                 'name', 'a.name',
                 'contact', 'a.contact',
                 'state', 'a.state',
@@ -72,7 +72,7 @@ class ClientsModel extends ListModel
             $this->getState(
                 'list.select',
                 [
-                    $db->quoteName('a.cid'),
+                    $db->quoteName('a.id'),
                     $db->quoteName('a.name'),
                     $db->quoteName('a.contact_fname'),
                     $db->quoteName('a.contact_lname'),
@@ -106,7 +106,7 @@ class ClientsModel extends ListModel
 
         $query->group(
             [
-                $db->quoteName('a.cid'),
+                $db->quoteName('a.id'),
                 $db->quoteName('a.name'),
                 $db->quoteName('a.checked_out'),
                 $db->quoteName('a.checked_out_time'),
@@ -117,7 +117,7 @@ class ClientsModel extends ListModel
         if ($search = trim($this->getState('filter.search', ''))) {
             if (stripos($search, 'cid:') === 0) {
                 $search = (int) substr($search, 3);
-                $query->where($db->quoteName('a.cid') . ' = :search')
+                $query->where($db->quoteName('a.id') . ' = :search')
                     ->bind(':search', $search, ParameterType::INTEGER);
             } else {
                 $search = '%' . str_replace(' ', '%', $search) . '%';
@@ -166,19 +166,19 @@ class ClientsModel extends ListModel
 
         // Get the clients in the list.
         $db = $this->getDatabase();
-        $clientIds = array_column($items, 'cid');
+        $clientIds = array_column($items, 'id');
 
         $query = $db->getQuery(true)
             ->select(
                 [
-                    $db->quoteName('cid'),
-                    'COUNT(' . $db->quoteName('cid') . ') AS ' . $db->quoteName('count_published'),
+                    $db->quoteName('id'),
+                    'COUNT(' . $db->quoteName('id') . ') AS ' . $db->quoteName('count_published'),
                 ]
             )
             ->from($db->quoteName('#__mothership_clients'))
             ->where($db->quoteName('state') . ' = :state')
-            ->whereIn($db->quoteName('cid'), $clientIds)
-            ->group($db->quoteName('cid'))
+            ->whereIn($db->quoteName('id'), $clientIds)
+            ->group($db->quoteName('id'))
             ->bind(':state', $state, ParameterType::INTEGER);
 
         $db->setQuery($query);
