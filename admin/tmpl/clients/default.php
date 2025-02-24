@@ -1,8 +1,6 @@
 <?php
 defined('_JEXEC') or die;
 
-defined('_JEXEC') or die;
-
 use Joomla\CMS\Button\FeaturedButton;
 use Joomla\CMS\Button\PublishedButton;
 use Joomla\CMS\Button\TransitionButton;
@@ -25,9 +23,9 @@ $wa = $this->getDocument()->getWebAssetManager();
 $wa->useScript('table.columns')
     ->useScript('multiselect');
 
-$app       = Factory::getApplication();
-$user      = $this->getCurrentUser();
-$userId    = $user->id;
+$app = Factory::getApplication();
+$user = $this->getCurrentUser();
+$userId = $user->id;
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
 $saveOrder = $listOrder == 'a.ordering';
@@ -43,34 +41,34 @@ if (strpos($listOrder, 'publish_up') !== false) {
 }
 
 if ($saveOrder && !empty($this->items)) {
-    $saveOrderingUrl = 'index.php?option=com_blacksun&task=articles.saveOrderAjax&tmpl=component&' . Session::getFormToken() . '=1';
+    $saveOrderingUrl = 'index.php?option=com_mothership&task=articles.saveOrderAjax&tmpl=component&' . Session::getFormToken() . '=1';
     HTMLHelper::_('draggablelist.draggable');
 }
 
-$workflow_enabled  = ComponentHelper::getParams('com_blacksun')->get('workflow_enabled');
+$workflow_enabled  = ComponentHelper::getParams('com_mothership')->get('workflow_enabled');
 $workflow_state    = false;
 $workflow_featured = false;
 
 if ($workflow_enabled) :
     $wa->getRegistry()->addExtensionRegistryFile('com_workflow');
     $wa->useScript('com_workflow.admin-items-workflow-buttons')
-    ->useScript('com_blacksun.articles-status');
+    ->useScript('com_mothership.articles-status');
 
-    $workflow_state    = Factory::getApplication()->bootComponent('com_blacksun')->isFunctionalityUsed('core.state', 'com_blacksun.article');
-    $workflow_featured = Factory::getApplication()->bootComponent('com_blacksun')->isFunctionalityUsed('core.featured', 'com_blacksun.article');
+    $workflow_state    = Factory::getApplication()->bootComponent('com_mothership')->isFunctionalityUsed('core.state', 'com_mothership.article');
+    $workflow_featured = Factory::getApplication()->bootComponent('com_mothership')->isFunctionalityUsed('core.featured', 'com_mothership.article');
 endif;
 
 $assoc = Associations::isEnabled();
 
 ?>
 
-<form action="<?php echo Route::_('index.php?option=com_blacksun&view=articles'); ?>" method="post" name="adminForm" id="adminForm">
+<form action="<?php echo Route::_('index.php?option=com_mothership&view=articles'); ?>" method="post" name="adminForm" id="adminForm">
     <div class="row">
         <div class="col-md-12">
             <div id="j-main-container" class="j-main-container">
                 <?php
                 // Search tools bar
-                echo LayoutHelper::render('joomla.searchtools.default', ['view' => $this]);
+                // echo LayoutHelper::render('joomla.searchtools.default', ['view' => $this, 'user' => $user]);
                 ?>
                 <?php if (empty($this->items)) : ?>
                     <div class="alert alert-info">
@@ -148,15 +146,15 @@ $assoc = Associations::isEnabled();
                               endif; ?>>
                         <?php foreach ($this->items as $i => $item) :
                             $item->max_ordering = 0;
-                            $canEdit              = $user->authorise('core.edit', 'com_blacksun.article.' . $item->id);
+                            $canEdit              = $user->authorise('core.edit', 'com_mothership.article.' . $item->id);
                             $canCheckin           = $user->authorise('core.manage', 'com_checkin') || $item->checked_out == $userId || is_null($item->checked_out);
-                            $canEditOwn           = $user->authorise('core.edit.own', 'com_blacksun.article.' . $item->id) && $item->created_by == $userId;
-                            $canChange            = $user->authorise('core.edit.state', 'com_blacksun.article.' . $item->id) && $canCheckin;
-                            $canExecuteTransition = $user->authorise('core.execute.transition', 'com_blacksun.article.' . $item->id);
-                            $canEditCat           = $user->authorise('core.edit', 'com_blacksun.category.' . $item->catid);
-                            $canEditOwnCat        = $user->authorise('core.edit.own', 'com_blacksun.category.' . $item->catid) && $item->category_uid == $userId;
-                            $canEditParCat        = $user->authorise('core.edit', 'com_blacksun.category.' . $item->parent_category_id);
-                            $canEditOwnParCat     = $user->authorise('core.edit.own', 'com_blacksun.category.' . $item->parent_category_id) && $item->parent_category_uid == $userId;
+                            $canEditOwn           = $user->authorise('core.edit.own', 'com_mothership.article.' . $item->id) && $item->created_by == $userId;
+                            $canChange            = $user->authorise('core.edit.state', 'com_mothership.article.' . $item->id) && $canCheckin;
+                            $canExecuteTransition = $user->authorise('core.execute.transition', 'com_mothership.article.' . $item->id);
+                            $canEditCat           = $user->authorise('core.edit', 'com_mothership.category.' . $item->catid);
+                            $canEditOwnCat        = $user->authorise('core.edit.own', 'com_mothership.category.' . $item->catid) && $item->category_uid == $userId;
+                            $canEditParCat        = $user->authorise('core.edit', 'com_mothership.category.' . $item->parent_category_id);
+                            $canEditOwnParCat     = $user->authorise('core.edit.own', 'com_mothership.category.' . $item->parent_category_id) && $item->parent_category_uid == $userId;
 
                             // Transition button options
                             $options = [
@@ -204,6 +202,7 @@ $assoc = Associations::isEnabled();
                                 <?php if ($workflow_enabled) : ?>
                                 <td class="article-stage text-center">
                                     <?php
+                                    
                                     echo (new TransitionButton($options))
                                     ->render(0, $i);
                                     ?>
@@ -242,7 +241,7 @@ $assoc = Associations::isEnabled();
                                             <?php echo HTMLHelper::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'articles.', $canCheckin); ?>
                                         <?php endif; ?>
                                         <?php if ($canEdit || $canEditOwn) : ?>
-                                            <a href="<?php echo Route::_('index.php?option=com_blacksun&task=article.edit&id=' . $item->id); ?>" title="<?php echo Text::_('JACTION_EDIT'); ?> <?php echo $this->escape($item->title); ?>">
+                                            <a href="<?php echo Route::_('index.php?option=com_mothership&task=article.edit&id=' . $item->id); ?>" title="<?php echo Text::_('JACTION_EDIT'); ?> <?php echo $this->escape($item->title); ?>">
                                                 <?php echo $this->escape($item->title); ?></a>
                                         <?php else : ?>
                                             <span title="<?php echo Text::sprintf('JFIELD_ALIAS_LABEL', $this->escape($item->alias)); ?>"><?php echo $this->escape($item->title); ?></span>
@@ -256,8 +255,8 @@ $assoc = Associations::isEnabled();
                                         </div>
                                         <div class="small">
                                             <?php
-                                            $ParentCatUrl = Route::_('index.php?option=com_categories&task=category.edit&id=' . $item->parent_category_id . '&extension=com_blacksun');
-                                            $CurrentCatUrl = Route::_('index.php?option=com_categories&task=category.edit&id=' . $item->catid . '&extension=com_blacksun');
+                                            $ParentCatUrl = Route::_('index.php?option=com_categories&task=category.edit&id=' . $item->parent_category_id . '&extension=com_mothership');
+                                            $CurrentCatUrl = Route::_('index.php?option=com_categories&task=category.edit&id=' . $item->catid . '&extension=com_mothership');
                                             $EditCatTxt = Text::_('COM_CONTENT_EDIT_CATEGORY');
                                             echo Text::_('JCATEGORY') . ': ';
                                             if ($item->category_level != '1') :
@@ -375,9 +374,9 @@ $assoc = Associations::isEnabled();
                     <?php // Load the batch processing form. ?>
                     <?php
                     if (
-                        $user->authorise('core.create', 'com_blacksun')
-                        && $user->authorise('core.edit', 'com_blacksun')
-                        && $user->authorise('core.edit.state', 'com_blacksun')
+                        $user->authorise('core.create', 'com_mothership')
+                        && $user->authorise('core.edit', 'com_mothership')
+                        && $user->authorise('core.edit.state', 'com_mothership')
                     ) : ?>
                         <template id="joomla-dialog-batch"><?php echo $this->loadTemplate('batch_body'); ?></template>
                     <?php endif; ?>
