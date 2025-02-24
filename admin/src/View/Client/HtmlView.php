@@ -78,9 +78,9 @@ class HtmlView extends BaseHtmlView
     public function display($tpl = null): void
     {
         /** @var ClientModel $model */
-        $model       = $this->getModel();
-        $this->form  = $model->getForm();
-        $this->item  = $model->getItem();
+        $model = $this->getModel();
+        $this->form = $model->getForm();
+        $this->item = $model->getItem();
         $this->state = $model->getState();
         $this->canDo = ContentHelper::getActions('com_banners');
 
@@ -107,11 +107,11 @@ class HtmlView extends BaseHtmlView
     {
         Factory::getApplication()->getInput()->set('hidemainmenu', true);
 
-        $user       = $this->getCurrentUser();
-        $isNew      = ($this->item->id == 0);
+        $user = $this->getCurrentUser();
+        $isNew = ($this->item->id == 0);
         $checkedOut = !(\is_null($this->item->checked_out) || $this->item->checked_out == $user->id);
-        $canDo      = $this->canDo;
-        $toolbar    = $this->getDocument()->getToolbar();
+        $canDo = $this->canDo;
+        $toolbar = $this->getDocument()->getToolbar();
 
         ToolbarHelper::title(
             $isNew ? Text::_('COM_BANNERS_MANAGER_CLIENT_NEW') : Text::_('COM_BANNERS_MANAGER_CLIENT_EDIT'),
