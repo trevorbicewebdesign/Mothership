@@ -32,7 +32,6 @@
     <administration>
         <menu>com_mothership</menu>
         <submenu>
-            <menu link="option=com_mothership" view="mothership">com_mothership</menu>
             <menu link="option=com_mothership&amp;view=clients" view="clients">com_mothership_clients</menu>
 			<menu link="option=com_mothership&amp;view=accounts" view="accounts">com_mothership_accounts</menu>
 			<menu link="option=com_mothership&amp;view=projects" view="projects">com_mothership_projects</menu>
