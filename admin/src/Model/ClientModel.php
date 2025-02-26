@@ -135,4 +135,27 @@ class ClientModel extends AdminModel
     {
         $table->name = htmlspecialchars_decode($table->name, ENT_QUOTES);
     }
+
+    public function save($data)
+    {
+        $table = $this->getTable();
+        
+        if (!$table->bind($data)) {
+            $this->setError($table->getError());
+            return false;
+        }
+
+        if (!$table->check()) {
+            $this->setError($table->getError());
+            return false;
+        }
+
+        if (!$table->store()) {
+            $this->setError($table->getError());
+            return false;
+        }
+
+        return true;
+    }
+
 }
