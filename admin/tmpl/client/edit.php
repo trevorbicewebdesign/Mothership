@@ -10,29 +10,35 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Layout\LayoutHelper;
+use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\Layout\LayoutHelper;
 use Joomla\CMS\Router\Route;
+use Joomla\CMS\Session\Session;
 
-/** @var \Joomla\Component\Banners\Administrator\View\Banner\HtmlView $this */
+/** @var \TrevorBice\Component\Mothership\Administrator\View\Client\HtmlView $this */
 
-/** @var Joomla\CMS\WebAsset\WebAssetManager $wa */
 $wa = $this->getDocument()->getWebAssetManager();
-$wa->useScript('keepalive')
-    ->useScript('form.validate')
-    ->useScript('com_mothership.admin-banner-edit');
+$wa->useScript('table.columns')
+    ->useScript('multiselect');
+
+$user = $this->getCurrentUser();
+$userId = $user->id;
+$listOrder = $this->escape($this->state->get('list.ordering'));
+$listDirn  = $this->escape($this->state->get('list.direction'));
+
 
 ?>
 
-<form action="<?php echo Route::_('index.php?option=com_mothership&layout=edit&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" id="banner-form" aria-label="<?php echo Text::_('COM_BANNERS_BANNER_' . ((int) $this->item->id === 0 ? 'NEW' : 'EDIT'), true); ?>" class="form-validate">
+<form action="<?php echo Route::_('index.php?option=com_mothership&layout=edit&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" id="client-form" aria-label="<?php echo Text::_('COM_MOTHERSHIP_CLIENT_' . ((int) $this->item->id === 0 ? 'NEW' : 'EDIT'), true); ?>" class="form-validate">
 
     <?php echo LayoutHelper::render('joomla.edit.title_alias', $this); ?>
 
     <div class="main-card">
         <?php echo HTMLHelper::_('uitab.startTabSet', 'myTab', ['active' => 'details', 'recall' => true, 'breakpoint' => 768]); ?>
 
-        <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'details', Text::_('COM_BANNERS_BANNER_DETAILS')); ?>
+        <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'details', Text::_('COM_MOTHERSHIP_CLIENT_DETAILS')); ?>
         <div class="row">
             <div class="col-lg-9">
                 <?php echo $this->form->renderField('type'); ?>
@@ -53,9 +59,9 @@ $wa->useScript('keepalive')
         </div>
         <?php echo HTMLHelper::_('uitab.endTab'); ?>
 
-        <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'otherparams', Text::_('COM_BANNERS_GROUP_LABEL_BANNER_DETAILS')); ?>
+        <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'otherparams', Text::_(' COM_MOTHERSHIP_GROUP_LABEL_BANNER_DETAILS')); ?>
             <fieldset id="fieldset-otherparams" class="options-form">
-                <legend><?php echo Text::_('COM_BANNERS_GROUP_LABEL_BANNER_DETAILS'); ?></legend>
+                <legend><?php echo Text::_(' COM_MOTHERSHIP_GROUP_LABEL_BANNER_DETAILS'); ?></legend>
                 <div>
                     <?php echo $this->form->renderFieldset('otherparams'); ?>
                 </div>
