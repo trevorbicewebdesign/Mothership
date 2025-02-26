@@ -156,6 +156,6 @@ class HtmlView extends BaseHtmlView
         }
 
         $toolbar->divider();
-        $toolbar->help('Banners:_New_or_Edit_Client');
+        $toolbar->help('Mothership:_New_or_Edit_Client');
     }
 }
