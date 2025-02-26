@@ -1,5 +1,5 @@
 # Mothership
- Mothership is a Joomla! component for Small Business Web Developers.
+Mothership is an open-source Joomla extension tailored specifically for small web development agencies or sole proprietorships. Designed for the dynamic needs of web development businesses, it streamlines invoicing, quoting, help tickets, timelogging, expenses, taxes, and logging—all within a single, cohesive platform. Built from the ground up for Joomla 5x with modern PHP practices and Composer support, Mothership’s modular architecture and intuitive interface empower agencies to manage projects and operations more efficiently. Join us on our journey to redefine business management in the web development landscape.
 
 ## Clients
 The Clients module is the core of Mothership's client management system. It enables web development agencies to maintain detailed records of their clients, ensuring seamless invoicing, project tracking, and communication.
