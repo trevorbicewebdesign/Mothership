@@ -14,8 +14,5 @@ Each client record is associated with a Joomla user (owner) and includes standar
 #### Financial Information:
 Keep track of important billing details like tax IDs and default hourly rates for streamlined invoicing and project costing.
 
-#### Status Management:
-Easily mark clients as active or inactive, helping you manage clients without permanently deleting historical data.
-
 #### Custom Notes:
 A flexible "notes" field allows you to record any additional details or specific instructions related to the client.
