@@ -2,12 +2,9 @@
 <form addfieldprefix="TrevorBice\Component\Mothership\Administrator\Field">
 	<fieldset name="details">
 		<field name="id" type="number" label="JGLOBAL_FIELD_ID_LABEL" default="0" readonly="true" class="readonly" />
-
-		<field name="name" type="text" label="COM_MOTHERSHIP_FIELD_NAME_LABEL" required="true" />
-
-		<field name="contact" type="text" label="COM_MOTHERSHIP_FIELD_CONTACT_LABEL" required="true" />
-
-		<field name="email" type="email" label="COM_MOTHERSHIP_FIELD_EMAIL_LABEL" validate="email" />
+		<field name="name" type="text" label="COM_MOTHERSHIP_FORM_CLIENT_NAME_LABEL" required="true" />
+		<field name="contact" type="text" label="Contact" required="true" />
+		<field name="email" type="email" label="Email" validate="email" />
 
 		<field name="state" type="list" label="JSTATUS" class="form-select-color-state" default="1" validate="options">
 			<option value="1">JPUBLISHED</option>
