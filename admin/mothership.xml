@@ -2,7 +2,7 @@
 <extension type="component" method="upgrade" version="4.0">
     <name>com_mothership</name>
     <author>Trevor Bice</author>
-    <creationDate>2023-10-01</creationDate>
+    <creationDate>2025-01-01</creationDate>
     <copyright>(C) 2006 Open Source Matters, Inc.</copyright>
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <authorEmail>trevorbicewebdesign@gmail.com</authorEmail>
