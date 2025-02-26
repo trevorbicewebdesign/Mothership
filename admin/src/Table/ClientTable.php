@@ -84,7 +84,7 @@ class ClientTable extends Table implements VersionableTableInterface
 
         // Check for valid name
         if (trim($this->name) === '') {
-            $this->setError(Text::_('COM_MOTHERSHIP_WARNING_PROVIDE_VALID_NAME'));
+            $this->setError(Text::_('COM_MOTHERSHIP_CLIENT_WARNING_PROVIDE_VALID_NAME'));
 
             return false;
         }
