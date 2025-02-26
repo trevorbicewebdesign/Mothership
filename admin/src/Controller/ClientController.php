@@ -2,19 +2,49 @@
 
 namespace TrevorBice\Component\Mothership\Administrator\Controller;
 
+use Joomla\CMS\MVC\Controller\FormController;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+
 \defined('_JEXEC') or die;
 
-use Joomla\CMS\MVC\Controller\BaseController;
 
 /**
  * Client Controller for com_mothership
  */
-class ClientController extends BaseController
+class ClientController extends FormController
 {
     protected $default_view = 'client';
 
     public function display($cachable = false, $urlparams = [])
     {
         return parent::display();
+    }
+
+    public function save($key = null, $urlVar = null)
+    {
+        // Get the Joomla application
+        $app = Factory::getApplication();
+        $input = $app->input;
+        
+        // Get the submitted form data
+        $data = $input->get('jform', [], 'array');
+
+        // Get the model
+        $model = $this->getModel('Client');
+
+        if (!$model->save($data)) {
+            // Error occurred, redirect back to form
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_CLIENT_SAVE_FAILED'), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=client&layout=edit', false));
+            return false;
+        }
+
+        // Success message
+        $app->enqueueMessage(Text::_('COM_MOTHERSHIP_CLIENT_SAVED_SUCCESSFULLY'), 'message');
+
+        // Redirect to the clients list
+        $this->setRedirect(Route::_('index.php?option=com_mothership&view=clients', false));
+        return true;
     }
 }
