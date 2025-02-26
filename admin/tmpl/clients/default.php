@@ -1,11 +1,9 @@
 <?php
 defined('_JEXEC') or die;
 
-use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
-use Joomla\CMS\Session\Session;
 
 /** @var \Joomla\Component\Mothership\Administrator\View\Articles\HtmlView $this */
 
@@ -13,15 +11,11 @@ $wa = $this->getDocument()->getWebAssetManager();
 $wa->useScript('table.columns')
     ->useScript('multiselect');
 
-$user = $this->getCurrentUser();
-$userId = $user->id;
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn = $this->escape($this->state->get('list.direction'));
 
 ?>
-
-<form action="<?php echo Route::_('index.php?option=com_mothership&view=articles'); ?>" method="post" name="adminForm"
-    id="adminForm">
+<form action="<?php echo Route::_('index.php?option=com_mothership&view=clients'); ?>" method="post" name="adminForm" id="adminForm">
     <div class="row">
         <div class="col-md-12">
             <div id="j-main-container" class="j-main-container">
@@ -32,7 +26,7 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                         <?php echo Text::_('JGLOBAL_NO_MATCHING_RESULTS'); ?>
                     </div>
                 <?php else: ?>
-                    <table class="table itemList" id="articleList">
+                    <table class="table itemList" id="clientList">
                         <thead>
                             <tr>
                                 <th width="1%" class="text-center">
@@ -42,7 +36,7 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                     <?php echo HTMLHelper::_('searchtools.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'Name', 'a.name', $listDirn, $listOrder); ?>
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_CLIENT_HEADING_NAME', 'a.name', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'Total Paid', 'a.total_paid', $listDirn, $listOrder); ?>
