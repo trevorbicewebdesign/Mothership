@@ -11,10 +11,14 @@ use Joomla\CMS\MVC\Controller\BaseController;
  */
 class DisplayController extends BaseController
 {
-    protected $default_view = 'mothership';
+    protected $default_view = 'clients'; // Change this if 'mothership' is incorrect
 
     public function display($cachable = false, $urlparams = [])
     {
+        $input = $this->app->input;
+        $view  = $input->getCmd('view', $this->default_view);
+        $input->set('view', $view);
+
         return parent::display();
     }
 }
