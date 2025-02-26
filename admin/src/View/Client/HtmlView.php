@@ -82,12 +82,15 @@ class HtmlView extends BaseHtmlView
         $this->form = $model->getForm();
         $this->item = $model->getItem();
         $this->state = $model->getState();
-        $this->canDo = ContentHelper::getActions('com_banners');
+        $this->canDo = ContentHelper::getActions('com_mothership');
 
         // Check for errors.
         if (\count($errors = $this->get('Errors'))) {
             throw new GenericDataException(implode("\n", $errors), 500);
         }
+
+        // ✅ Use WebAssetManager to load the script
+        $this->getDocument()->getWebAssetManager()->useScript('com_mothership.client-edit');
 
         $this->addToolbar();
 
@@ -114,8 +117,8 @@ class HtmlView extends BaseHtmlView
         $toolbar = $this->getDocument()->getToolbar();
 
         ToolbarHelper::title(
-            $isNew ? Text::_('COM_BANNERS_MANAGER_CLIENT_NEW') : Text::_('COM_BANNERS_MANAGER_CLIENT_EDIT'),
-            'bookmark banners-clients'
+            $isNew ? Text::_('COM_MOTHERSHIP_MANAGER_CLIENT_NEW') : Text::_('COM_MOTHERSHIP_MANAGER_CLIENT_EDIT'),
+            'bookmark mothership-clients'
         );
 
         // If not checked out, can save the item.
