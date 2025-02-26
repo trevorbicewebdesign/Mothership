@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<help key="Mothership:_Options"/>
+	<inlinehelp button="show"/>
+	<fieldset name="company-information" label="COM_MOTHERSHIP_OPTIONS_COMPANY_INFORMATION" description="">
+		<field name="company_name" type="text" default="" readonly="" class="input-xxlarge input-large-text" label="COM_MOTHERSHIP_OPTIONS_COMPANY_NAME" description="COM_MOTHERSHIP_CLIENT_NAME_DESC"/>
+		<field name="company_email" type="text" default="" readonly="" class="" label="COM_MOTHERSHIP_OPTIONS_COMPANY_EMAIL" description=""/>
+		<field name="company_address_1" type="text" default="" readonly="" class="" label="COM_MOTHERSHIP_OPTIONS_COMPANY_ADDRESS_1" description=""/>
+		<field name="company_address_2" type="text" default="" readonly="" class="" label="COM_MOTHERSHIP_OPTIONS_COMPANY_ADDRESS_2" description=""/>
+		<field name="company_city" type="text" default="" readonly="" class="" label="COM_MOTHERSHIP_OPTIONS_COMPANY_CITY" description=""/>
+		<field name="company_state" type="text" default="" readonly="" class="" label="COM_MOTHERSHIP_OPTIONS_COMPANY_STATE" description=""/>
+		<field name="company_zip" type="text" default="" readonly="" class="" label="COM_MOTHERSHIP_OPTIONS_COMPANY_ZIP" description=""/>
+		<field name="company_phone" type="text" default="" readonly="" class="" label="COM_MOTHERSHIP_OPTIONS_COMPANY_PHONE" description=""/>
+	</fieldset>
+
+	<fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC">
+		<field name="rules" type="rules" label="JCONFIG_PERMISSIONS_LABEL" filter="rules" validate="rules" component="com_mothership" section="component">
+		</field>
+	</fieldset>
+</config>
