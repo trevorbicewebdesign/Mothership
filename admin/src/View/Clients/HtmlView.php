@@ -106,8 +106,6 @@ class HtmlView extends BaseHtmlView
 
             $childBar = $dropdown->getChildToolbar();
 
-            $childBar->archive('clients.archive')->listCheck(true);
-
             if ($canDo->get('core.admin')) {
                 $childBar->checkin('clients.checkin')->listCheck(true);
             }
