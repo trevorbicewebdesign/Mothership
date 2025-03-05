@@ -10,6 +10,7 @@
 namespace TrevorBice\Component\Mothership\Administrator\Model;
 
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\Database\ParameterType;
 
@@ -25,6 +26,7 @@ class AccountsModel extends ListModel
             $config['filter_fields'] = [
                 'cid', 'a.id',
                 'name', 'a.name',
+                'client_name', 'c.name',
                 'checked_out', 'a.checked_out',
                 'checked_out_time', 'a.checked_out_time',
             ];
@@ -33,12 +35,18 @@ class AccountsModel extends ListModel
         parent::__construct($config);
     }
 
-    protected function populateState($ordering = 'a.name', $direction = 'asc')
+    protected function populateState($ordering = 'a.id', $direction = 'asc')
     {
-        // Load the parameters.
-        $this->setState('params', ComponentHelper::getParams('com_mothership'));
+        $app = Factory::getApplication();
 
-        // Let the parent method set up list state (ordering, direction, etc.).
+        // Ensure context is set
+        if (empty($this->context)) {
+            $this->context = $this->option . '.' . $this->getName();
+        }
+
+        $clientName = $app->getUserStateFromRequest("{$this->context}.filter.client_name", 'filter_client_name', '', 'string');
+        $this->setState('filter.client_name', $clientName);
+
         parent::populateState($ordering, $direction);
     }
 
@@ -64,21 +72,23 @@ class AccountsModel extends ListModel
         // Select the required fields from the table.
         $query->select(
             $this->getState(
-                'list.select',
-                [
-                    $db->quoteName('a.id'),
-                    $db->quoteName('a.name'),
-                    $db->quoteName('a.primary_domain'),
-                    $db->quoteName('a.rate'),
-                    $db->quoteName('a.client_id'),
-                    $db->quoteName('a.created'),
-                    $db->quoteName('a.checked_out_time'),
-                    $db->quoteName('a.checked_out'),
-                ]
+            'list.select',
+            [
+            $db->quoteName('a.id'),
+            $db->quoteName('a.name'),
+            $db->quoteName('a.primary_domain'),
+            $db->quoteName('a.rate'),
+            $db->quoteName('a.client_id'),
+            $db->quoteName('a.created'),
+            $db->quoteName('a.checked_out_time'),
+            $db->quoteName('a.checked_out'),
+            $db->quoteName('c.name', 'client_name') // Adding client_name from the client table with alias
+            ]
             )
         );
 
-        $query->from($db->quoteName('#__mothership_accounts', 'a'));
+        $query->from($db->quoteName('#__mothership_accounts', 'a'))
+              ->join('LEFT', $db->quoteName('#__mothership_clients', 'c') . ' ON ' . $db->quoteName('a.client_id') . ' = ' . $db->quoteName('c.id')); // Joining the client table
 
         // No filter by province as there is no 'state' column.
 
