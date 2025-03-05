@@ -5,8 +5,9 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Layout\LayoutHelper;
 
-/** @var \Joomla\Component\Mothership\Administrator\View\Articles\HtmlView $this */
+/** @var \Joomla\Component\Mothership\Administrator\View\Clients\HtmlView $this */
 
 $wa = $this->getDocument()->getWebAssetManager();
 $wa->useScript('table.columns')
@@ -20,6 +21,10 @@ $listDirn = $this->escape($this->state->get('list.direction'));
     <div class="row">
         <div class="col-md-12">
             <div id="j-main-container" class="j-main-container">
+                <?php
+                // Search tools bar
+                echo LayoutHelper::render('joomla.searchtools.default', ['view' => $this]);
+                ?>
                 <?php if (empty($this->items)): ?>
                     <div class="alert alert-info">
                         <span class="icon-info-circle" aria-hidden="true"></span><span
@@ -41,12 +46,12 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                 </th>
                                 <th scope="col" class="w-10">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_CLIENT_HEADING_PHONE', 'a.phone', $listDirn, $listOrder); ?>
+                                </th>                                
+                                <th scope="col" class="w-10">
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_CLIENT_HEADING_DEFAULT_RATE', 'a.default_rate', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_CLIENT_HEADING_CREATED', 'a.created', $listDirn, $listOrder); ?>
-                                </th>
-                                <th scope="col" class="w-10">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_CLIENT_HEADING_DEFAULT_RATE', 'a.default_rate', $listDirn, $listOrder); ?>
                                 </th>
                             </tr>
                         </thead>
@@ -81,10 +86,10 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                         <?php echo htmlspecialchars($item->phone, ENT_QUOTES, 'UTF-8'); ?>
                                     </td>
                                     <td>
-                                        <?php echo HTMLHelper::_('date', $item->created, Text::_('DATE_FORMAT_LC4')); ?>
+                                        $<?php echo number_format($item->default_rate, 2); ?>
                                     </td>
                                     <td>
-                                        $<?php echo number_format($item->default_rate, 2); ?>
+                                        <?php echo HTMLHelper::_('date', $item->created, Text::_('DATE_FORMAT_LC4')); ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
