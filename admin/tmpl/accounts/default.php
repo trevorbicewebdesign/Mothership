@@ -2,6 +2,7 @@
 defined('_JEXEC') or die;
 
 use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Layout\LayoutHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Factory;
@@ -20,6 +21,10 @@ $listDirn = $this->escape($this->state->get('list.direction'));
     <div class="row">
         <div class="col-md-12">
             <div id="j-main-container" class="j-main-container">
+                <?php
+                // Search tools bar
+                echo LayoutHelper::render('joomla.searchtools.default', ['view' => $this]);
+                ?>
                 <?php if (empty($this->items)): ?>
                     <div class="alert alert-info">
                         <span class="icon-info-circle" aria-hidden="true"></span><span
@@ -40,16 +45,10 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_ACCOUNT_HEADING_NAME', 'a.name', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_ACCOUNT_HEADING_CLIENT', 'a.client_id', $listDirn, $listOrder); ?>
-                                </th>
-                                <th scope="col" class="w-10">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_ACCOUNT_HEADING_PRIMARY_DOMAIN', 'a.primary_domain', $listDirn, $listOrder); ?>
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_ACCOUNT_HEADING_CLIENT', 'c.name', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_ACCOUNT_HEADING_CREATED', 'a.created', $listDirn, $listOrder); ?>
-                                </th>
-                                <th scope="col" class="w-10">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_ACCOUNT_HEADING_RATE', 'a.rate', $listDirn, $listOrder); ?>
                                 </th>
                             </tr>
                         </thead>
@@ -80,16 +79,10 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                         <?php endif; ?>
                                     </td>
                                     <td>
-                                        <?php echo htmlspecialchars($item->client_id, ENT_QUOTES, 'UTF-8'); ?>
-                                    </td>
-                                    <td>
-                                        <?php echo htmlspecialchars($item->primary_domain, ENT_QUOTES, 'UTF-8'); ?>
+                                        <a href="<?php echo Route::_("index.php?option=com_mothership&task=client.edit&id={$item->client_id}&return=" . base64_encode(Route::_('index.php?option=com_mothership&view=accounts'))) ?>" ><?php echo htmlspecialchars($item->client_name, ENT_QUOTES, 'UTF-8'); ?></a>
                                     </td>
                                     <td>
                                         <?php echo HTMLHelper::_('date', $item->created, Text::_('DATE_FORMAT_LC4')); ?>
-                                    </td>
-                                    <td>
-                                        $<?php echo number_format($item->rate, 2); ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
