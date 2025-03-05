@@ -21,6 +21,7 @@ use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use Joomla\CMS\Toolbar\Toolbar;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use TrevorBice\Component\Mothership\Administrator\Model\AccountModel;
+use TrevorBice\Component\Mothership\Administrator\Helper\MothershipHelper;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -83,6 +84,7 @@ class HtmlView extends BaseHtmlView
         $this->form = $model->getForm();
         $this->item = $model->getItem();
         $this->state = $model->getState();
+        $this->helper = new MothershipHelper;
         $this->canDo = ContentHelper::getActions('com_mothership');
 
         // Check for errors.
