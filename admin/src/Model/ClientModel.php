@@ -143,28 +143,39 @@ class ClientModel extends AdminModel
         $table = $this->getTable();
 
         Log::add('Data received for saving: ' . json_encode($data), Log::DEBUG, 'com_mothership');
-    
+
+        // Ensure phone number is in the format (555) 555-5555
+        if (!empty($data['phone'])) {
+            $data['phone'] = preg_replace('/[^0-9]/', '', $data['phone']);
+            if (strlen($data['phone']) == 10) {
+                $data['phone'] = sprintf('(%s) %s-%s', substr($data['phone'], 0, 3), substr($data['phone'], 3, 3), substr($data['phone'], 6));
+            } else {
+                $this->setError('Invalid phone number format');
+                return false;
+            }
+        }
+
         if (!$table->bind($data)) {
             $error = $table->getError();
             Log::add('Bind failed: ' . $error, Log::ERROR, 'com_mothership');
             $this->setError($error);
             return false;
         }
-    
+
         if (!$table->check()) {
             $error = $table->getError();
             Log::add('Check failed: ' . $error, Log::ERROR, 'com_mothership');
             $this->setError($error);
             return false;
         }
-    
+
         if (!$table->store()) {
             $error = $table->getError();
             Log::add('Store failed: ' . $error, Log::ERROR, 'com_mothership');
             $this->setError($error);
             return false;
         }
-    
+
         return true;
     }
     
