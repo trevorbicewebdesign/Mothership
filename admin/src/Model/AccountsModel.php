@@ -10,6 +10,7 @@
 namespace TrevorBice\Component\Mothership\Administrator\Model;
 
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\Database\ParameterType;
 
@@ -17,7 +18,7 @@ use Joomla\Database\ParameterType;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
-class ClientsModel extends ListModel
+class AccountsModel extends ListModel
 {
     public function __construct($config = [])
     {
@@ -25,24 +26,27 @@ class ClientsModel extends ListModel
             $config['filter_fields'] = [
                 'cid', 'a.id',
                 'name', 'a.name',
-                'phone', 'a.phone',
-                'created', 'a.created',
-                'rate', 'a.rate',
+                'client_name', 'c.name',
                 'checked_out', 'a.checked_out',
                 'checked_out_time', 'a.checked_out_time',
-
             ];
         }
 
         parent::__construct($config);
     }
 
-    protected function populateState($ordering = 'a.name', $direction = 'asc')
+    protected function populateState($ordering = 'a.id', $direction = 'asc')
     {
-        // Load the parameters.
-        $this->setState('params', ComponentHelper::getParams('com_mothership'));
+        $app = Factory::getApplication();
 
-        // Let the parent method set up list state (ordering, direction, etc.).
+        // Ensure context is set
+        if (empty($this->context)) {
+            $this->context = $this->option . '.' . $this->getName();
+        }
+
+        $clientName = $app->getUserStateFromRequest("{$this->context}.filter.client_name", 'filter_client_name', '', 'string');
+        $this->setState('filter.client_name', $clientName);
+
         parent::populateState($ordering, $direction);
     }
 
@@ -68,35 +72,27 @@ class ClientsModel extends ListModel
         // Select the required fields from the table.
         $query->select(
             $this->getState(
-                'list.select',
-                [
-                    $db->quoteName('a.id'),
-                    $db->quoteName('a.name'),
-                    $db->quoteName('a.email'),
-                    $db->quoteName('a.phone'),
-                    $db->quoteName('a.address_1'),
-                    $db->quoteName('a.address_2'),
-                    $db->quoteName('a.city'),
-                    $db->quoteName('a.state'),
-                    $db->quoteName('a.zip'),
-                    $db->quoteName('a.default_rate'),
-                    $db->quoteName('a.owner_user_id'),
-                    $db->quoteName('a.tax_id'),
-                    $db->quoteName('a.created'),
-                    $db->quoteName('a.checked_out'),
-                ]
+            'list.select',
+            [
+            $db->quoteName('a.id'),
+            $db->quoteName('a.name'),
+            $db->quoteName('a.primary_domain'),
+            $db->quoteName('a.rate'),
+            $db->quoteName('a.client_id'),
+            $db->quoteName('a.created'),
+            $db->quoteName('a.checked_out_time'),
+            $db->quoteName('a.checked_out'),
+            $db->quoteName('c.name', 'client_name') // Adding client_name from the client table with alias
+            ]
             )
         );
 
-        $query->from($db->quoteName('#__mothership_clients', 'a'));
+        $query->from($db->quoteName('#__mothership_accounts', 'a'))
+              ->join('LEFT', $db->quoteName('#__mothership_clients', 'c') . ' ON ' . $db->quoteName('a.client_id') . ' = ' . $db->quoteName('c.id')); // Joining the client table
 
-        // Filter by province (instead of published state).
-        if ($province = trim($this->getState('filter.province', ''))) {
-            $query->where($db->quoteName('a.state') . ' = :province')
-                  ->bind(':province', $province);
-        }
+        // No filter by province as there is no 'state' column.
 
-        // Filter by search in client name (or by client id if prefixed with "cid:").
+        // Filter by search in account name (or by account id if prefixed with "cid:").
         if ($search = trim($this->getState('filter.search', ''))) {
             if (stripos($search, 'cid:') === 0) {
                 $search = (int) substr($search, 4);
@@ -107,16 +103,6 @@ class ClientsModel extends ListModel
                 $query->where($db->quoteName('a.name') . ' LIKE :search')
                       ->bind(':search', $search);
             }
-        }
-
-        // Filter by purchase type.
-        if ($purchaseType = (int) $this->getState('filter.purchase_type')) {
-            if ($defaultPurchase === $purchaseType) {
-                $query->where('(' . $db->quoteName('a.purchase_type') . ' = :type OR ' . $db->quoteName('a.purchase_type') . ' = -1)');
-            } else {
-                $query->where($db->quoteName('a.purchase_type') . ' = :type');
-            }
-            $query->bind(':type', $purchaseType, ParameterType::INTEGER);
         }
 
         // Add the ordering clause.
@@ -145,7 +131,7 @@ class ClientsModel extends ListModel
             return [];
         }
 
-        // Since "published" doesn't apply for clients,
+        // Since "published" doesn't apply for Accounts,
         // we simply return the items without additional counting logic.
 
         $this->cache[$store] = $items;
@@ -172,7 +158,7 @@ class ClientsModel extends ListModel
     
         // Build the query using an IN clause for multiple IDs
         $query = $db->getQuery(true)
-            ->update($db->quoteName('#__mothership_clients'))
+            ->update($db->quoteName('#__mothership_accounts'))
             ->set($db->quoteName('checked_out') . ' = 0')
             ->set($db->quoteName('checked_out_time') . ' = ' . $db->quote('0000-00-00 00:00:00'))
             ->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
@@ -208,7 +194,7 @@ class ClientsModel extends ListModel
 
         // Build the query using an IN clause for multiple IDs
         $query = $db->getQuery(true)
-            ->delete($db->quoteName('#__mothership_clients'))
+            ->delete($db->quoteName('#__mothership_accounts'))
             ->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
 
         $db->setQuery($query);

@@ -8,7 +8,7 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Joomla\Component\Mothership\Administrator\Helper;
+namespace TrevorBice\Component\Mothership\Administrator\Helper;
 
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
@@ -30,146 +30,56 @@ use Joomla\Database\ParameterType;
 class MothershipHelper extends ContentHelper
 {
     /**
-     * Update / reset the mothership
+     * Retrieves a list of client options for a select dropdown.
      *
-     * @return  boolean
+     * This method queries the database for a list of clients, sorts them by name,
+     * and returns an array of options suitable for use in a select dropdown.
      *
-     * @since   1.6
+     * @return array An array of select options, each option being an associative array
+     *               with 'value' and 'text' keys.
      */
-    public static function updateReset()
+    public static function getClientListOptions()
     {
-        $db = Factory::getDbo();
-        $nowDate = Factory::getDate()->toSql();
-        $app = Factory::getApplication();
-        $user = $app->getIdentity();
+        $db = Factory::getContainer()->get(\Joomla\Database\DatabaseInterface::class);
 
         $query = $db->getQuery(true)
-            ->select('*')
-            ->from($db->quoteName('#__mothership'))
-            ->where(
-                [
-                    $db->quoteName('reset') . ' <= :date',
-                    $db->quoteName('reset') . ' IS NOT NULL',
-                ]
-            )
-            ->bind(':date', $nowDate)
-            ->extendWhere(
-                'AND',
-                [
-                    $db->quoteName('checked_out') . ' IS NULL',
-                    $db->quoteName('checked_out') . ' = :userId',
-                ],
-                'OR'
-            )
-            ->bind(':userId', $user->id, ParameterType::INTEGER);
+            ->select($db->quoteName(['id', 'name']))
+            ->from($db->quoteName('#__mothership_clients'))
+            ->order($db->quoteName('name') . ' ASC');
 
         $db->setQuery($query);
+        $clients = $db->loadObjectList();
 
-        try {
-            $rows = $db->loadObjectList();
-        } catch (\RuntimeException $e) {
-            $app->enqueueMessage($e->getMessage(), 'error');
-
-            return false;
-        }
-
-        foreach ($rows as $row) {
-            $purchaseType = $row->purchase_type;
-
-            if ($purchaseType < 0 && $row->cid) {
-                /** @var \Joomla\Component\Mothership\Administrator\Table\ClientTable $client */
-                $client = Table::getInstance('ClientTable', '\\Joomla\\Component\\Mothership\\Administrator\\Table\\');
-                $client->load($row->cid);
-                $purchaseType = $client->purchase_type;
-            }
-
-            if ($purchaseType < 0) {
-                $params = ComponentHelper::getParams('com_mothership');
-                $purchaseType = $params->get('purchase_type');
-            }
-
-            switch ($purchaseType) {
-                case 1:
-                    $reset = null;
-                    break;
-                case 2:
-                    $date = Factory::getDate('+1 year ' . date('Y-m-d'));
-                    $reset = $date->toSql();
-                    break;
-                case 3:
-                    $date = Factory::getDate('+1 month ' . date('Y-m-d'));
-                    $reset = $date->toSql();
-                    break;
-                case 4:
-                    $date = Factory::getDate('+7 day ' . date('Y-m-d'));
-                    $reset = $date->toSql();
-                    break;
-                case 5:
-                    $date = Factory::getDate('+1 day ' . date('Y-m-d'));
-                    $reset = $date->toSql();
-                    break;
-            }
-
-            // Update the row ordering field.
-            $query = $db->getQuery(true)
-                ->update($db->quoteName('#__mothership'))
-                ->set(
-                    [
-                        $db->quoteName('reset') . ' = :reset',
-                        $db->quoteName('impmade') . ' = 0',
-                        $db->quoteName('clicks') . ' = 0',
-                    ]
-                )
-                ->where($db->quoteName('id') . ' = :id')
-                ->bind(':reset', $reset, $reset === null ? ParameterType::NULL : ParameterType::STRING)
-                ->bind(':id', $row->id, ParameterType::INTEGER);
-
-            $db->setQuery($query);
-
-            try {
-                $db->execute();
-            } catch (\RuntimeException $e) {
-                $app->enqueueMessage($e->getMessage(), 'error');
-
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Get client list in text/value format for a select field
-     *
-     * @return  array
-     */
-    public static function getClientOptions()
-    {
         $options = [];
 
-        $db = Factory::getDbo();
-        $query = $db->getQuery(true)
-            ->select(
-                [
-                    $db->quoteName('id', 'value'),
-                    $db->quoteName('name', 'text'),
-                ]
-            )
-            ->from($db->quoteName('#__banner_clients', 'a'))
-            ->where($db->quoteName('a.state') . ' = 1')
-            ->order($db->quoteName('a.name'));
+        // Add placeholder option
+        $options[] = HTMLHelper::_('select.option', '', Text::_('COM_MOTHERSHIP_SELECT_CLIENT'));
 
-        // Get the options.
-        $db->setQuery($query);
-
-        try {
-            $options = $db->loadObjectList();
-        } catch (\RuntimeException $e) {
-            Factory::getApplication()->enqueueMessage($e->getMessage(), 'error');
+        // Build options array
+        if ($clients) {
+            foreach ($clients as $client) {
+                $options[] = HTMLHelper::_('select.option', $client->id, $client->name);
+            }
         }
 
-        array_unshift($options, HTMLHelper::_('select.option', '0', Text::_('COM_MOTHERSHIP_NO_CLIENT')));
-
         return $options;
+    }
+
+    public function getClient($client_id)
+    {
+        $db = Factory::getContainer()->get(\Joomla\Database\DatabaseInterface::class);
+
+        $query = $db->getQuery(true)
+            ->select($db->quoteName([
+                'id', 
+                'name'
+            ]))
+            ->from($db->quoteName('#__mothership_clients'))
+            ->where($db->quoteName('id') . ' = ' . $db->quote($client_id));
+
+        $db->setQuery($query);
+        $client = $db->loadObject();
+
+        return $client;
     }
 }

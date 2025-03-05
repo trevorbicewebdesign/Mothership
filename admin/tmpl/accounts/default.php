@@ -2,12 +2,12 @@
 defined('_JEXEC') or die;
 
 use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Layout\LayoutHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Factory;
-use Joomla\CMS\Layout\LayoutHelper;
 
-/** @var \Joomla\Component\Mothership\Administrator\View\Clients\HtmlView $this */
+/** @var \Joomla\Component\Mothership\Administrator\View\Accounts\HtmlView $this */
 
 $wa = $this->getDocument()->getWebAssetManager();
 $wa->useScript('table.columns')
@@ -17,7 +17,7 @@ $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn = $this->escape($this->state->get('list.direction'));
 
 ?>
-<form action="<?php echo Route::_('index.php?option=com_mothership&view=clients'); ?>" method="post" name="adminForm" id="adminForm">
+<form action="<?php echo Route::_('index.php?option=com_mothership&view=accounts'); ?>" method="post" name="adminForm" id="adminForm">
     <div class="row">
         <div class="col-md-12">
             <div id="j-main-container" class="j-main-container">
@@ -32,7 +32,7 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                         <?php echo Text::_('JGLOBAL_NO_MATCHING_RESULTS'); ?>
                     </div>
                 <?php else: ?>
-                    <table class="table itemList" id="clientList">
+                    <table class="table itemList" id="accountList">
                         <thead>
                             <tr>
                                 <th width="1%" class="text-center">
@@ -42,24 +42,21 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                     <?php echo HTMLHelper::_('searchtools.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_CLIENT_HEADING_NAME', 'a.name', $listDirn, $listOrder); ?>
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_ACCOUNT_HEADING_NAME', 'a.name', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_CLIENT_HEADING_PHONE', 'a.phone', $listDirn, $listOrder); ?>
-                                </th>                                
-                                <th scope="col" class="w-10">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_CLIENT_HEADING_DEFAULT_RATE', 'a.default_rate', $listDirn, $listOrder); ?>
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_ACCOUNT_HEADING_CLIENT', 'c.name', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_CLIENT_HEADING_CREATED', 'a.created', $listDirn, $listOrder); ?>
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_ACCOUNT_HEADING_CREATED', 'a.created', $listDirn, $listOrder); ?>
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php foreach ($this->items as $i => $item): 
                                 $user = Factory::getApplication()->getIdentity();
-                                $canEdit = $user->authorise('core.edit', "com_mothership.client.{$item->id}");
-                                $canEditOwn = $user->authorise('core.edit.own', "com_mothership.client.{$item->id}");
+                                $canEdit = $user->authorise('core.edit', "com_mothership.account.{$item->id}");
+                                $canEditOwn = $user->authorise('core.edit.own', "com_mothership.account.{$item->id}");
                                 $canCheckin = $user->authorise('core.manage', 'com_mothership');
                                 ?>
                                 <tr class="row<?php echo $i % 2; ?>">
@@ -75,18 +72,14 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                         <?php endif; ?>
 
                                         <?php if ($canEdit || $canEditOwn) : ?>
-                                            <a href="<?php echo Route::_('index.php?option=com_mothership&task=client.edit&id=' . $item->id); ?>" title="<?php echo Text::_('JACTION_EDIT'); ?> <?php echo $this->escape($item->name); ?>">
-                                                <?php echo $this->escape($item->name); ?></a>
+                                            <a href="<?= Route::_("index.php?option=com_mothership&task=account.edit&id={$item->id}") ?>" title="<?= Text::_('JACTION_EDIT') ?> <?= $this->escape($item->name) ?>">
+                                                <?= $this->escape($item->name) ?></a>
                                         <?php else : ?>
                                             <span title="<?php echo Text::sprintf('JFIELD_ALIAS_LABEL', $this->escape($item->alias)); ?>"><?php echo $this->escape($item->name); ?></span>
                                         <?php endif; ?>
-      
                                     </td>
                                     <td>
-                                        <?php echo htmlspecialchars($item->phone, ENT_QUOTES, 'UTF-8'); ?>
-                                    </td>
-                                    <td>
-                                        $<?php echo number_format($item->default_rate, 2); ?>
+                                        <a href="<?php echo Route::_("index.php?option=com_mothership&task=client.edit&id={$item->client_id}&return=" . base64_encode(Route::_('index.php?option=com_mothership&view=accounts'))) ?>" ><?php echo htmlspecialchars($item->client_name, ENT_QUOTES, 'UTF-8'); ?></a>
                                     </td>
                                     <td>
                                         <?php echo HTMLHelper::_('date', $item->created, Text::_('DATE_FORMAT_LC4')); ?>
