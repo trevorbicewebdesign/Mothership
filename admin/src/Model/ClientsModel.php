@@ -25,11 +25,12 @@ class ClientsModel extends ListModel
             $config['filter_fields'] = [
                 'cid', 'a.id',
                 'name', 'a.name',
-                'contact', 'a.contact',
-                'province', 'a.state', // Here, 'state' holds the province value.
+                'phone', 'a.phone',
+                'created', 'a.created',
+                'rate', 'a.rate',
                 'checked_out', 'a.checked_out',
                 'checked_out_time', 'a.checked_out_time',
-                'purchase_type', 'a.purchase_type',
+
             ];
         }
 
@@ -81,6 +82,7 @@ class ClientsModel extends ListModel
                     $db->quoteName('a.default_rate'),
                     $db->quoteName('a.owner_user_id'),
                     $db->quoteName('a.tax_id'),
+                    $db->quoteName('a.created'),
                     $db->quoteName('a.checked_out'),
                 ]
             )
