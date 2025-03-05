@@ -16,3 +16,13 @@ Keep track of important billing details like tax IDs and default hourly rates fo
 
 #### Custom Notes:
 A flexible "notes" field allows you to record any additional details or specific instructions related to the client.
+
+## Accounts
+The Accounts module in Mothership serves as the financial backbone for managing client billing and project funds. Designed to help agencies organize and track multiple income sources, Accounts represent distinct financial entities tied to clients, such as retainers, prepaid hours, or specific project budgets.
+
+### Key Features
+Account Management:
+Easily create and manage multiple accounts for each client, allowing you to separate different funding sources, projects, or service agreements.
+
+### Client Association:
+Every account is directly linked to a client, ensuring accurate and organized billing, reporting, and project tracking.
