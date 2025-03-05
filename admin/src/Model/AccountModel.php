@@ -150,6 +150,11 @@ class AccountModel extends AdminModel
             $this->setError($error);
             return false;
         }
+
+        // Set created date if empty
+        if (empty($table->created)) {
+            $table->created = Factory::getDate()->toSql();
+        }
     
         if (!$table->check()) {
             $error = $table->getError();
