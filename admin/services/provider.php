@@ -52,5 +52,18 @@ return new class implements ServiceProviderInterface {
             'com_mothership.client-edit',
             'administrator/components/com_mothership/assets/css/client-edit.css'
         );
+
+        $wa->registerScript(
+            'com_mothership.account-edit',
+            'administrator/components/com_mothership/assets/js/account-edit.js',
+            [],
+            ['defer' => true]
+        );
+
+        // ✅ Optional: Register CSS file if needed
+        $wa->registerStyle(
+            'com_mothership.account-edit',
+            'administrator/components/com_mothership/assets/css/account-edit.css'
+        );
     }
 };
