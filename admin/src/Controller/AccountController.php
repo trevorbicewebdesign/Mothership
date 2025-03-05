@@ -38,7 +38,16 @@ class AccountController extends FormController
             // Error occurred, redirect back to form with error messages
             $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ACCOUNT_SAVE_FAILED'), 'error');
             $app->enqueueMessage($model->getError(), 'error');
-            $this->setRedirect(Route::_('index.php?option=com_mothership&view=account&layout=edit', false));
+
+            // Determine which task was requested to redirect back to the appropriate edit page
+            $task = $input->getCmd('task');
+            if ($task === 'apply') {
+            $redirectUrl = Route::_('index.php?option=com_mothership&view=account&layout=edit&id=' . $data['id'], false);
+            } else {
+            $redirectUrl = Route::_('index.php?option=com_mothership&view=account&layout=edit', false);
+            }
+
+            $this->setRedirect($redirectUrl);
             return false;
         }
 
