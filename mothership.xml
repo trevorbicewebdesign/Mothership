@@ -62,4 +62,11 @@
             <language tag="en-GB">language/en-GB/com_mothership.sys.ini</language>
         </languages>
     </administration>
+    <install>
+        <plugins>
+            <plugin group="mothership-payment" folder="payment" element="manual" method="manual">
+                <filename plugin="mothership-paypal">mothership-paypal.xml</filename>
+            </plugin>
+        </plugins>
+    </install>
 </extension>
