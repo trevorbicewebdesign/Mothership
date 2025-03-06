@@ -24,6 +24,31 @@ class InvoiceController extends FormController
         return parent::display();
     }
 
+    public function previewPdf()
+    {
+        $app = Factory::getApplication();
+        $id = $app->getInput()->getInt('id');
+
+        if (!$id) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVALID_INVOICE_ID'), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoices', false));
+            return;
+        }
+
+        $model = $this->getModel('Invoice');
+        $invoice = $model->getItem($id);
+
+        if (!$invoice) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVOICE_NOT_FOUND'), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoices', false));
+            return;
+        }
+
+        // Output the same HTML template without PDF generation
+        require JPATH_ADMINISTRATOR . '/components/com_mothership/tmpl/invoice/pdf.php';
+        $app->close();
+    }
+
     public function downloadPdf()
     {
         $app = Factory::getApplication();
