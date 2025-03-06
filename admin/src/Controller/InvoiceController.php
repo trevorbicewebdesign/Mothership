@@ -24,6 +24,48 @@ class InvoiceController extends FormController
         return parent::display();
     }
 
+    public function processPayment($invoice)
+    {
+        // Load payment plugins
+        PluginHelper::importPlugin('payment');
+
+        $dispatcher = \Joomla\CMS\Factory::getApplication();
+        $results = $dispatcher->trigger('onMothershipPaymentRequest', [$invoice]);
+
+        foreach ($results as $result) {
+            if (!empty($result['status']) && $result['status'] === 'success') {
+                return $result; // Payment succeeded
+            }
+        }
+
+        return ['status' => 'failed', 'message' => 'Payment failed or no handler found.'];
+    }
+
+    public function pay()
+    {
+        $app = Factory::getApplication();
+        $id = $app->input->getInt('id');
+
+        $model = $this->getModel('Invoice');
+        $invoice = $model->getItem($id);
+
+        if (!$invoice) {
+            $app->enqueueMessage('Invoice not found.', 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoices', false));
+            return;
+        }
+
+        $result = $model->processPayment($invoice);
+
+        if ($result['status'] === 'success') {
+            $app->enqueueMessage('Payment successful!');
+        } else {
+            $app->enqueueMessage('Payment failed: ' . ($result['message'] ?? 'Unknown error'), 'error');
+        }
+
+        $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoices', false));
+    }
+
     public function previewPdf()
     {
         $app = Factory::getApplication();
