@@ -1,0 +1,22 @@
+<extension type="plugin" group="mothership-payment" method="mothership-paypal" version="5.0">
+    <name>COM_MOTHERSHIP_PAYPAL_PLUGIN</name>
+    <files>
+        <filename plugin="mothership-paypal">mothership-paypal.php</filename>
+    </files>
+    <languages>
+        <language tag="en-GB">en-GB.plg_payment_mothership_paypal.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="client_id" type="text" label="Client ID" description="Enter your PayPal Client ID" required="true" />
+                <field name="client_secret" type="password" label="Client Secret" description="Enter your PayPal Client Secret" required="true" />
+                <field name="sandbox" type="radio" label="Sandbox Mode" description="Enable sandbox mode for testing" default="1">
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                </field>
+                <field name="currency" type="text" label="Currency" description="Enter the currency code (e.g., USD)" default="USD" />
+            </fieldset>
+        </fields>
+    </config>
+</extension>
