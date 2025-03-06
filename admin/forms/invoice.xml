@@ -10,15 +10,15 @@
 		<field name="due" type="calendar" readonly="false" class="validate-date" label="COM_MOTHERSHIP_FIELD_INVOICE_DUE_LABEL" description="COM_MOTHERSHIP_FIELD_INVOICE_DUE_DESC" default="" format="%Y-%m-%d" filter="user_utc" />
 		<field name="created" type="calendar" readonly="false" class="validate-date" label="COM_MOTHERSHIP_FIELD_INVOICE_CREATED_LABEL" description="COM_MOTHERSHIP_FIELD_INVOICE_CREATED_DESC" default="" format="%Y-%m-%d" filter="user_utc" />
 	
-		<field name="items" type="subform"
+		<field name="items" type="invoiceitems"
 			formsource="/administrator/components/com_mothership/forms/invoice_items.xml"
 			label="COM_MOTHERSHIP_INVOICE_ITEMS"
 			description="COM_MOTHERSHIP_INVOICE_ITEMS_DESC"
 			multiple="true"
-			layout="joomla.form.field.subform.repeatable"
 			buttons="add"
 			sortable="true"
 		/>
+
 	</fieldset>
 
 </form>
