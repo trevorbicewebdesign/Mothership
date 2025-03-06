@@ -1,0 +1,10 @@
+#invoice-items-table td .form-control {
+    display: block;
+    min-width: 20px;
+    width: 100%;
+}
+
+#invoice-items-table td {
+    padding-left: 2px;
+    padding-right: 2px;
+}
