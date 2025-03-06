@@ -6,6 +6,8 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\MVC\Controller\FormController;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Mpdf\Mpdf;
+
 
 \defined('_JEXEC') or die;
 
@@ -20,6 +22,38 @@ class InvoiceController extends FormController
     public function display($cachable = false, $urlparams = [])
     {
         return parent::display();
+    }
+
+    public function downloadPdf()
+    {
+        $app = Factory::getApplication();
+        $input = $app->getInput();
+        $id = $input->getInt('id');
+
+        if (!$id) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVALID_INVOICE_ID'), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoices', false));
+            return;
+        }
+
+        $model = $this->getModel('Invoice');
+        $invoice = $model->getItem($id);
+
+        if (!$invoice) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVOICE_NOT_FOUND'), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoices', false));
+            return;
+        }
+
+        ob_start();
+        require JPATH_COMPONENT_ADMINISTRATOR . '/tmpl/invoice/pdf.php';
+        $html = ob_get_clean();
+
+        $pdf = new Mpdf();
+        $pdf->WriteHTML($html);
+        $pdf->Output('Invoice-' . $invoice->number . '.pdf', 'I');
+
+        $app->close();
     }
 
     public function save($key = null, $urlVar = null)

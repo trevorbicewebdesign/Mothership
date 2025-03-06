@@ -90,7 +90,9 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                         <a href="<?php echo Route::_("index.php?option=com_mothership&task=invoice.edit&id={$item->id}"); ?>"><?php echo (int) $item->number; ?></a>
                                     </td>
                                     <td>
-                                        <a href="<?php echo Route::_("index.php?option=com_mothership&task=invoice.pdfDownload&id={$item->id}"); ?>"><i class="fa-solid fa-file-pdf" aria-hidden="true"></i></a>
+                                        <a href="<?php echo Route::_('index.php?option=com_mothership&task=invoice.downloadPdf&id=' . (int) $item->id); ?>" target="_blank">
+                                            <i class="fa-solid fa-file-pdf" aria-hidden="true" title="<?php echo Text::_('COM_MOTHERSHIP_DOWNLOAD_PDF'); ?>"></i>
+                                        </a>
                                     </td>
                                     <td>
                                         <a href="<?php echo Route::_("index.php?option=com_mothership&task=client.edit&id={$item->client_id}&return=" . base64_encode(Route::_('index.php?option=com_mothership&view=invoices'))) ?>" ><?php echo htmlspecialchars($item->client_name, ENT_QUOTES, 'UTF-8'); ?></a>

@@ -15,6 +15,8 @@ use Joomla\DI\ServiceProviderInterface;
 require_once JPATH_ADMINISTRATOR . '/components/com_mothership/src/Field/ClientList.php';
 require_once JPATH_ADMINISTRATOR . '/components/com_mothership/src/Field/AccountList.php';
 
+require_once JPATH_ADMINISTRATOR . '/components/com_mothership/vendor/autoload.php';
+
 /**
  * Joomla 5 Service Provider for com_mothership
  */
