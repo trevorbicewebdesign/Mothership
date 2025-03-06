@@ -47,14 +47,12 @@ class InvoiceTable extends Table implements VersionableTableInterface
     {
         $this->typeAlias = 'com_mothership.invoice';
 
-        $this->setColumnAlias('published', 'state');
-
         parent::__construct('#__mothership_invoices', 'id', $db, $dispatcher);
     }
 
     /**
      * Get the type alias for the history table
-     *
+     *  
      * @return  string  The alias as described above
      *
      * @since   4.0.0
