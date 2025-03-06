@@ -42,9 +42,9 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                     <fieldset class="adminform">
                     <?php echo $this->form->renderField('client_id'); ?>
                     <?php echo $this->form->renderField('account_id'); ?>
-                    <?php echo $this->form->renderField('total'); ?>
                     <?php echo $this->form->renderField('number'); ?>
                     <?php echo $this->form->renderField('rate'); ?>
+                    <?php echo $this->form->renderField('total'); ?>
                     
                                       
                     </fieldset>

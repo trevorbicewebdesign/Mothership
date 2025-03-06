@@ -6,6 +6,7 @@
 		<field name="account_id" type="accountlist" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_ACCOUNT_ID_LABEL" description="COM_MOTHERSHIP_FIELD_ACCOUNT_NAME_DESC" />
 		<field name="number" type="text" default="" readonly="" class="input-xxlarge input-large-text" label="COM_MOTHERSHIP_FIELD_INVOICE_NUMBER_LABEL" description="COM_MOTHERSHIP_FIELD_INVOICE_NUMBER_DESC" />
 		<field name="total" type="text" default="" readonly="" class="input-xxlarge input-large-text" label="COM_MOTHERSHIP_FIELD_INVOICE_TOTAL_LABEL" description="COM_MOTHERSHIP_FIELD_INVOICE_TOTAL_DESC" />
+		<field name="rate" type="text" default="" readonly="" class="input-xxlarge input-large-text" label="COM_MOTHERSHIP_FIELD_INVOICE_RATE_LABEL" description="COM_MOTHERSHIP_FIELD_INVOICE_RATE_DESC" />
 		<field name="status" type="invoicestatus" default="1" readonly="" class="" label="COM_MOTHERSHIP_FIELD_INVOICE_STATUS_LABEL" description="COM_MOTHERSHIP_FIELD_INVOICE_STATUS_DESC" />
 		<field name="due" type="calendar" readonly="false" class="validate-date" label="COM_MOTHERSHIP_FIELD_INVOICE_DUE_LABEL" description="COM_MOTHERSHIP_FIELD_INVOICE_DUE_DESC" default="" format="%Y-%m-%d" filter="user_utc" />
 		<field name="created" type="calendar" readonly="false" class="validate-date" label="COM_MOTHERSHIP_FIELD_INVOICE_CREATED_LABEL" description="COM_MOTHERSHIP_FIELD_INVOICE_CREATED_DESC" default="" format="%Y-%m-%d" filter="user_utc" />
