@@ -87,7 +87,7 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                         <?php echo (int) $item->id; ?>
                                     </td>
                                     <td>
-                                    <?php echo (int) $item->number; ?>
+                                        <a href="<?php echo Route::_("index.php?option=com_mothership&task=invoice.edit&id={$item->id}"); ?>"><?php echo (int) $item->number; ?></a>
                                     </td>
                                     <td>
                                         <a href="<?php echo Route::_("index.php?option=com_mothership&task=invoice.pdfDownload&id={$item->id}"); ?>"><i class="fa-solid fa-file-pdf" aria-hidden="true"></i></a>

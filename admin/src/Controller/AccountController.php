@@ -6,6 +6,7 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\MVC\Controller\FormController;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use TrevorBice\Component\Mothership\Administrator\Helper\MothershipHelper;
 
 \defined('_JEXEC') or die;
 
@@ -68,5 +69,36 @@ class AccountController extends FormController
 
         $this->setRedirect($redirectUrl);
         return true;
+    }
+
+    public function cancel($key = null)
+    {
+        $defaultRedirect = Route::_('index.php?option=com_mothership&view=accounts', false);
+        $redirect = MothershipHelper::getReturnRedirect($defaultRedirect);
+
+        $this->setRedirect($redirect);
+
+        return true;
+    }
+
+    public function delete()
+    {
+        $app = Factory::getApplication();
+        $input = $app->input;
+        $model = $this->getModel('Account');
+        $cid = $input->get('cid', [], 'array');
+
+        if (empty($cid)) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_NO_ACCOUNT_SELECTED'), 'warning');
+        } else {
+            if (!$model->delete($cid)) {
+                $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ACCOUNT_DELETE_FAILED'), 'error');
+                $app->enqueueMessage($model->getError(), 'error');
+            } else {
+                $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ACCOUNT_DELETED_SUCCESSFULLY'), 'message');
+            }
+        }
+
+        $this->setRedirect(MothershipHelper::getReturnRedirect(Route::_('index.php?option=com_mothership&view=accounts', false)));
     }
 }

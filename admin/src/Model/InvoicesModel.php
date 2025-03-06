@@ -27,6 +27,8 @@ class InvoicesModel extends ListModel
                 'cid', 'i.id',
                 'client_name', 'c.name',
                 'account_name', 'a.name',
+                'number', 'i.number',
+                'created', 'i.created',
                 'account_id', 'i.account_id',
                 'total', 'i.total',
                 'client_id', 'i.client_id',
@@ -68,9 +70,6 @@ class InvoicesModel extends ListModel
         // Get a new query object.
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
-
-        // Get the default purchase type from the component parameters.
-        $defaultPurchase = (int) ComponentHelper::getParams('com_mothership')->get('purchase_type', 3);
 
         // Select the required fields from the table.
         $query->select(

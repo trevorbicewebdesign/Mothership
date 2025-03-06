@@ -65,6 +65,38 @@ class MothershipHelper extends ContentHelper
         return $options;
     }
 
+    public static function getAccountListOptions($client_id=NULL)
+    {
+        $db = Factory::getContainer()->get(\Joomla\Database\DatabaseInterface::class);
+
+        $query = $db->getQuery(true)
+            ->select($db->quoteName(['id', 'name']))
+            ->from($db->quoteName('#__mothership_accounts'));
+
+        if ($client_id !== null) {
+            $query->where($db->quoteName('client_id') . ' = ' . $db->quote($client_id));
+        }
+
+        $query->order($db->quoteName('name') . ' ASC');
+
+        $db->setQuery($query);
+        $accounts = $db->loadObjectList();
+
+        $options = [];
+
+        // Add placeholder option
+        $options[] = HTMLHelper::_('select.option', '', Text::_('COM_MOTHERSHIP_SELECT_ACCOUNT'));
+
+        // Build options array
+        if ($accounts) {
+            foreach ($accounts as $account) {
+                $options[] = HTMLHelper::_('select.option', $account->id, $account->name);
+            }
+        }
+
+        return $options;
+    }
+
     public function getClient($client_id)
     {
         $db = Factory::getContainer()->get(\Joomla\Database\DatabaseInterface::class);
@@ -112,5 +144,33 @@ class MothershipHelper extends ContentHelper
         }
 
         return $status;
+    }
+
+    /**
+     * Get the return URL from the request or form.
+     */
+    public static function getReturnRedirect($default = null)
+    {
+        $input = Factory::getApplication()->input;
+
+        // Check URL param
+        $return = $input->getBase64('return');
+
+        // Check form data if not found in URL
+        if (!$return) {
+            $data = $input->get('jform', [], 'array');
+            if (!empty($data['return'])) {
+                $return = base64_decode($data['return'], true);
+                if ($return !== false) {
+                    $return = urldecode($return);
+                }
+            }
+        }
+
+        if ($return && filter_var($return, FILTER_VALIDATE_URL)) {
+            return $return;
+        }
+
+        return $default;
     }
 }

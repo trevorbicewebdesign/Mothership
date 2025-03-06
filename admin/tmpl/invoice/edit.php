@@ -41,13 +41,17 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                 <div>
                     <fieldset class="adminform">
                     <?php echo $this->form->renderField('client_id'); ?>
-                    <?php echo $this->form->renderField('name'); ?>
-                    <?php echo $this->form->renderField('rate'); ?>                    
+                    <?php echo $this->form->renderField('account_id'); ?>
+                    <?php echo $this->form->renderField('total'); ?>
+                    
+                                      
                     </fieldset>
                 </div>
             </div>
-            <div class="col-lg-3">                
+            <div class="col-lg-3">
+                <?php echo $this->form->renderField('status'); ?>
                 <?php echo $this->form->renderField('created'); ?>
+                <?php echo $this->form->renderField('due'); ?>
             </div>
         </div>
 

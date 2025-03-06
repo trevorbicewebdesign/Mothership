@@ -6,6 +6,7 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\MVC\Controller\FormController;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use TrevorBice\Component\Mothership\Administrator\Helper\MothershipHelper;
 
 \defined('_JEXEC') or die;
 
@@ -15,35 +16,6 @@ use Joomla\CMS\Language\Text;
 class ClientController extends FormController
 {
     protected $default_view = 'client';
-
-    /**
-     * Centralized method to handle return URLs.
-     */
-    protected function getReturnRedirect($default = null)
-    {
-        $input = Factory::getApplication()->input;
-
-        // First check the URL (common for cancel actions)
-        $return = $input->getBase64('return');
-
-        // If not in the URL, check form data
-        if (!$return) {
-            $data = $input->get('jform', [], 'array');
-            if (!empty($data['return'])) {
-                $return = base64_decode($data['return'], true);
-                if ($return === false) {
-                    return $default;
-                }
-                $return = urldecode($return);
-            }
-        }
-
-        if ($return && filter_var($return, FILTER_VALIDATE_URL)) {
-            return $return;
-        }
-
-        return $default;
-    }
 
 
     public function display($cachable = false, $urlparams = [])
@@ -75,14 +47,14 @@ class ClientController extends FormController
             $defaultRedirect = Route::_('index.php?option=com_mothership&view=clients', false);
         }
 
-        $this->setRedirect($this->getReturnRedirect($defaultRedirect));
+        $this->setRedirect(MothershipHelper::getReturnRedirect($defaultRedirect));
         return true;
     }
 
     public function cancel($key = null)
     {
-        $defaultRedirect = Route::_('index.php?option=com_mothership&view=accounts', false);
-        $redirect = $this->getReturnRedirect($defaultRedirect);
+        $defaultRedirect = Route::_('index.php?option=com_mothership&view=clients', false);
+        $redirect = MothershipHelper::getReturnRedirect($defaultRedirect);
 
         $this->setRedirect($redirect);
 
@@ -107,6 +79,6 @@ class ClientController extends FormController
             }
         }
 
-        $this->setRedirect($this->getReturnRedirect(Route::_('index.php?option=com_mothership&view=clients', false)));
+        $this->setRedirect(MothershipHelper::getReturnRedirect(Route::_('index.php?option=com_mothership&view=clients', false)));
     }
 }

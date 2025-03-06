@@ -13,6 +13,7 @@ use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 
 require_once JPATH_ADMINISTRATOR . '/components/com_mothership/src/Field/ClientList.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_mothership/src/Field/AccountList.php';
 
 /**
  * Joomla 5 Service Provider for com_mothership
@@ -62,6 +63,18 @@ return new class implements ServiceProviderInterface {
         $wa->registerStyle(
             'com_mothership.account-edit',
             'administrator/components/com_mothership/assets/css/account-edit.css'
+        );
+
+        $wa->registerScript(
+            'com_mothership.invoice-edit',
+            'administrator/components/com_mothership/assets/js/invoice-edit.js',
+            [],
+            ['defer' => true]
+        );
+
+        $wa->registerStyle(
+            'com_mothership.invoice-edit',
+            'administrator/components/com_mothership/assets/css/invoice-edit.css'
         );
     }
 };
