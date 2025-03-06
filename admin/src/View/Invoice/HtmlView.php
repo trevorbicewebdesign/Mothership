@@ -93,12 +93,30 @@ class HtmlView extends BaseHtmlView
         }
 
         // ✅ Use WebAssetManager to load the script
-        $this->getDocument()->getWebAssetManager()->useScript('com_mothership.invoice-edit');
+        $wa = $this->getDocument()->getWebAssetManager();
+        $wa->useScript('com_mothership.invoice-edit');
+        $wa->useStyle('com_mothership.invoice-edit');
+
+        $wa->registerAndUseScript(
+            'sortablejs',
+            'https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js',
+            [],
+            ['defer' => true]
+        );
+    
+        $wa->registerAndUseScript(
+            'com_mothership.invoice_items',
+            'media/com_mothership/js/invoice-items.js',
+            [],
+            ['defer' => true]
+        );
+    
 
         $this->addToolbar();
 
         parent::display($tpl);
     }
+
 
     /**
      * Add the page title and toolbar.
