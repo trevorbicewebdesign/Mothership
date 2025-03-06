@@ -58,6 +58,16 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
         </div>
 
         <?php echo HTMLHelper::_('uitab.endTab'); ?>
+        <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'items', Text::_('COM_MOTHERSHIP_FORM_INVOICE_ITEMS_TAB')); ?>
+        <div class="row">
+            <div class="col-lg-12">
+                <div>
+                    <fieldset class="adminform">
+                    <?php echo $this->form->getInput('items'); ?>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
         <?php echo HTMLHelper::_('uitab.endTabSet'); ?>
     </div>
 
