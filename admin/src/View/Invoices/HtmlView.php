@@ -91,7 +91,7 @@ class HtmlView extends BaseHtmlView
         $canDo = ContentHelper::getActions('com_mothership');
         $toolbar = $this->getDocument()->getToolbar();
 
-        ToolbarHelper::title(Text::_('COM_MOTHERSHIP_MANAGER_ACCOUNTS'), 'bookmark mothership-invoices');
+        ToolbarHelper::title(Text::_('COM_MOTHERSHIP_MANAGER_INVOICES'), 'bookmark mothership-invoices');
 
         if ($canDo->get('core.create')) {
             $toolbar->addNew('invoice.add');

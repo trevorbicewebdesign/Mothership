@@ -24,11 +24,14 @@ class InvoicesModel extends ListModel
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = [
-                'cid', 'a.id',
-                'name', 'a.name',
+                'cid', 'i.id',
                 'client_name', 'c.name',
-                'checked_out', 'a.checked_out',
-                'checked_out_time', 'a.checked_out_time',
+                'account_name', 'a.name',
+                'account_id', 'i.account_id',
+                'total', 'i.total',
+                'client_id', 'i.client_id',
+                'checked_out', 'i.checked_out',
+                'checked_out_time', 'i.checked_out_time',
             ];
         }
 
@@ -74,21 +77,23 @@ class InvoicesModel extends ListModel
             $this->getState(
             'list.select',
             [
-            $db->quoteName('a.id'),
-            $db->quoteName('a.name'),
-            $db->quoteName('a.primary_domain'),
-            $db->quoteName('a.rate'),
-            $db->quoteName('a.client_id'),
-            $db->quoteName('a.created'),
-            $db->quoteName('a.checked_out_time'),
-            $db->quoteName('a.checked_out'),
-            $db->quoteName('c.name', 'client_name') // Adding client_name from the client table with alias
+            $db->quoteName('i.id'),
+            $db->quoteName('i.number'),
+            $db->quoteName('i.client_id'),
+            $db->quoteName('c.name', 'client_name'),
+            $db->quoteName('i.account_id'),
+            $db->quoteName('a.name', 'account_name'),
+            $db->quoteName('i.total'),
+            $db->quoteName('i.created'),
+            $db->quoteName('i.checked_out_time'),
+            $db->quoteName('i.checked_out'),
             ]
             )
         );
 
-        $query->from($db->quoteName('#__mothership_invoices', 'a'))
-              ->join('LEFT', $db->quoteName('#__mothership_clients', 'c') . ' ON ' . $db->quoteName('a.client_id') . ' = ' . $db->quoteName('c.id')); // Joining the client table
+        $query->from($db->quoteName('#__mothership_invoices', 'i'))
+              ->join('LEFT', $db->quoteName('#__mothership_clients', 'c') . ' ON ' . $db->quoteName('i.client_id') . ' = ' . $db->quoteName('c.id'))
+              ->join('LEFT', $db->quoteName('#__mothership_accounts', 'a') . ' ON ' . $db->quoteName('i.account_id') . ' = ' . $db->quoteName('a.id'));
 
         // No filter by province as there is no 'state' column.
 
@@ -96,18 +101,14 @@ class InvoicesModel extends ListModel
         if ($search = trim($this->getState('filter.search', ''))) {
             if (stripos($search, 'cid:') === 0) {
                 $search = (int) substr($search, 4);
-                $query->where($db->quoteName('a.id') . ' = :search')
+                $query->where($db->quoteName('i.id') . ' = :search')
                       ->bind(':search', $search, ParameterType::INTEGER);
-            } else {
-                $search = '%' . str_replace(' ', '%', $search) . '%';
-                $query->where($db->quoteName('a.name') . ' LIKE :search')
-                      ->bind(':search', $search);
             }
         }
 
         // Add the ordering clause.
         $query->order(
-            $db->quoteName($db->escape($this->getState('list.ordering', 'a.name'))) . ' ' . $db->escape($this->getState('list.direction', 'ASC'))
+            $db->quoteName($db->escape($this->getState('list.ordering', 'i.id'))) . ' ' . $db->escape($this->getState('list.direction', 'ASC'))
         );
 
         return $query;

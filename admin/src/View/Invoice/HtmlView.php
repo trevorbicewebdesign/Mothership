@@ -8,7 +8,7 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace TrevorBice\Component\Mothership\Administrator\View\Account;
+namespace TrevorBice\Component\Mothership\Administrator\View\Invoice;
 
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
@@ -20,7 +20,7 @@ use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use Joomla\CMS\Toolbar\Toolbar;
 use Joomla\CMS\Toolbar\ToolbarHelper;
-use TrevorBice\Component\Mothership\Administrator\Model\AccountModel;
+use TrevorBice\Component\Mothership\Administrator\Model\InvoiceModel;
 use TrevorBice\Component\Mothership\Administrator\Helper\MothershipHelper;
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -28,7 +28,7 @@ use TrevorBice\Component\Mothership\Administrator\Helper\MothershipHelper;
 // phpcs:enable PSR1.Files.SideEffects
 
 /**
- * View to edit an account.
+ * View to edit an invoice.
  *
  * @since  1.5
  */
@@ -79,7 +79,7 @@ class HtmlView extends BaseHtmlView
      */
     public function display($tpl = null): void
     {
-        /** @var AccountModel $model */
+        /** @var InvoiceModel $model */
         $model = $this->getModel();
         $this->form = $model->getForm();
         $this->item = $model->getItem();
@@ -93,7 +93,7 @@ class HtmlView extends BaseHtmlView
         }
 
         // ✅ Use WebAssetManager to load the script
-        $this->getDocument()->getWebAssetManager()->useScript('com_mothership.account-edit');
+        $this->getDocument()->getWebAssetManager()->useScript('com_mothership.invoice-edit');
 
         $this->addToolbar();
 
@@ -120,13 +120,13 @@ class HtmlView extends BaseHtmlView
         $toolbar = $this->getDocument()->getToolbar();
 
         ToolbarHelper::title(
-            $isNew ? Text::_('COM_MOTHERSHIP_MANAGER_ACCOUNT_NEW') : Text::_('COM_MOTHERSHIP_MANAGER_ACCOUNT_EDIT'),
-            'bookmark mothership-accounts'
+            $isNew ? Text::_('COM_MOTHERSHIP_MANAGER_INVOICE_NEW') : Text::_('COM_MOTHERSHIP_MANAGER_INVOICE_EDIT'),
+            'bookmark mothership-invoices'
         );
 
         // If not checked out, can save the item.
         if (!$checkedOut && ($canDo->get('core.edit') || $canDo->get('core.create'))) {
-            $toolbar->apply('account.apply');
+            $toolbar->apply('invoice.apply');
         }
 
         $saveGroup = $toolbar->dropdownButton('save-group');
@@ -134,27 +134,27 @@ class HtmlView extends BaseHtmlView
             function (Toolbar $childBar) use ($checkedOut, $canDo, $isNew) {
                 // If not checked out, can save the item.
                 if (!$checkedOut && ($canDo->get('core.edit') || $canDo->get('core.create'))) {
-                    $childBar->save('account.save');
+                    $childBar->save('invoice.save');
                 }
 
                 if (!$checkedOut && $canDo->get('core.create')) {
-                    $childBar->save2new('account.save2new');
+                    $childBar->save2new('invoice.save2new');
                 }
 
                 // If an existing item, can save to a copy.
                 if (!$isNew && $canDo->get('core.create')) {
-                    $childBar->save2copy('account.save2copy');
+                    $childBar->save2copy('invoice.save2copy');
                 }
             }
         );
 
         if (empty($this->item->id)) {
-            $toolbar->cancel('account.cancel', 'JTOOLBAR_CANCEL');
+            $toolbar->cancel('invoice.cancel', 'JTOOLBAR_CANCEL');
         } else {
-            $toolbar->cancel('account.cancel');
+            $toolbar->cancel('invoice.cancel');
 
             if (ComponentHelper::isEnabled('com_contenthistory') && $this->state->params->get('save_history', 0) && $canDo->get('core.edit')) {
-                $toolbar->versions('com_mothership.account', $this->item->id);
+                $toolbar->versions('com_mothership.invoice', $this->item->id);
             }
         }
     }

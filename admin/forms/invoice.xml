@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form addfieldprefix="TrevorBice\Component\Mothership\Administrator\Field">
+	<fieldset name="details">
+		<field name="id" type="text" default="0" readonly="true" class="readonly" label="JGLOBAL_FIELD_ID_LABEL" description="JGLOBAL_FIELD_ID_DESC" />
+		<field name="client_id" type="clientlist" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_CLIENT_ID_LABEL" description="COM_MOTHERSHIP_FIELD_CLIENT_NAME_DESC" />
+		<field name="account_id" type="accountlist" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_ACCOUNT_ID_LABEL" description="COM_MOTHERSHIP_FIELD_ACCOUNT_NAME_DESC" />
+	</fieldset>
+</form>

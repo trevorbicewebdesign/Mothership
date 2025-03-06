@@ -6,8 +6,9 @@ use Joomla\CMS\Layout\LayoutHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Factory;
+use TrevorBice\Component\Mothership\Administrator\Helper\MothershipHelper;
 
-/** @var \Joomla\Component\Mothership\Administrator\View\Invoices\HtmlView $this */
+/** @var \TrevorBice\Component\Mothership\Administrator\View\Invoices\HtmlView $this */
 
 $wa = $this->getDocument()->getWebAssetManager();
 $wa->useScript('table.columns')
@@ -42,10 +43,29 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                     <?php echo HTMLHelper::_('searchtools.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_INVOICE_HEADING_NAME', 'a.name', $listDirn, $listOrder); ?>
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_INVOICE_HEADING_NUMBER', 'i.number', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_INVOICE_HEADING_PDF', 'c.name', $listDirn, $listOrder); ?>
+                                </th>
+        
+                                <th scope="col" class="w-10">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_INVOICE_HEADING_CLIENT', 'c.name', $listDirn, $listOrder); ?>
+                                </th>
+                                <th scope="col" class="w-10">
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_INVOICE_HEADING_ACCOUNT', 'a.name', $listDirn, $listOrder); ?>
+                                </th>
+                                
+                                <th scope="col" class="w-10">
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_INVOICE_HEADING_TOTAL', 'i.total', $listDirn, $listOrder); ?>
+                                </th>
+                                
+                                <th scope="col" class="w-10">
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_INVOICE_HEADING_STATUS', 'i.status', $listDirn, $listOrder); ?>
+                                </th>
+
+                                <th scope="col" class="w-10">
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_INVOICE_HEADING_DUE', 'i.due', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_INVOICE_HEADING_CREATED', 'a.created', $listDirn, $listOrder); ?>
@@ -67,19 +87,25 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                         <?php echo (int) $item->id; ?>
                                     </td>
                                     <td>
-                                        <?php if ($item->checked_out) : ?>
-                                            <?php echo HTMLHelper::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'articles.', $canCheckin); ?>
-                                        <?php endif; ?>
-
-                                        <?php if ($canEdit || $canEditOwn) : ?>
-                                            <a href="<?= Route::_("index.php?option=com_mothership&task=invoice.edit&id={$item->id}") ?>" title="<?= Text::_('JACTION_EDIT') ?> <?= $this->escape($item->name) ?>">
-                                                <?= $this->escape($item->name) ?></a>
-                                        <?php else : ?>
-                                            <span title="<?php echo Text::sprintf('JFIELD_ALIAS_LABEL', $this->escape($item->alias)); ?>"><?php echo $this->escape($item->name); ?></span>
-                                        <?php endif; ?>
+                                    <?php echo (int) $item->number; ?>
+                                    </td>
+                                    <td>
+                                        <a href="<?php echo Route::_("index.php?option=com_mothership&task=invoice.pdfDownload&id={$item->id}"); ?>"><i class="fa-solid fa-file-pdf" aria-hidden="true"></i></a>
                                     </td>
                                     <td>
                                         <a href="<?php echo Route::_("index.php?option=com_mothership&task=client.edit&id={$item->client_id}&return=" . base64_encode(Route::_('index.php?option=com_mothership&view=invoices'))) ?>" ><?php echo htmlspecialchars($item->client_name, ENT_QUOTES, 'UTF-8'); ?></a>
+                                    </td>
+                                    <td>
+                                        <a href="<?php echo Route::_("index.php?option=com_mothership&task=account.edit&id={$item->account_id}&return=" . base64_encode(Route::_('index.php?option=com_mothership&view=invoices'))) ?>" ><?php echo htmlspecialchars($item->account_name, ENT_QUOTES, 'UTF-8'); ?></a>
+                                    </td>
+                                    <td>
+                                        $<?php echo number_format($item->total, 2, '.', ','); ?>
+                                    </td>
+                                    <td>
+                                        <?php echo MothershipHelper::getInvoiceStatus($item->status); ?>
+                                    </td>
+                                    <td>
+                                        <?php echo !empty($item->due) ? $item->due : 'N/A'; ?>
                                     </td>
                                     <td>
                                         <?php echo HTMLHelper::_('date', $item->created, Text::_('DATE_FORMAT_LC4')); ?>
