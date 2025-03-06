@@ -62,7 +62,10 @@ AUTO_INCREMENT=1
 CREATE TABLE `#__mothership_invoice_items` (
   `id` INT(10) NOT NULL AUTO_INCREMENT,
   `invoice_id` INT(10) NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
   `description` VARCHAR(255) NOT NULL,
+  `hours` INT(11) NOT NULL DEFAULT 0,
+  `minutes` INT(11) NOT NULL DEFAULT 0,
   `quantity` FLOAT NOT NULL DEFAULT 1,
   `rate` FLOAT NOT NULL DEFAULT 0,
   `subtotal` FLOAT NOT NULL DEFAULT 0,

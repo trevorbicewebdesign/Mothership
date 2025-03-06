@@ -1,13 +1,5 @@
 <?php
 
-/**
- * @package     Joomla.Administrator
- * @subpackage  com_mothership
- *
- * @copyright   (C) 2008 Open Source Matters, Inc. <https://www.joomla.org>
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
- */
-
 namespace TrevorBice\Component\Mothership\Administrator\Model;
 
 use Joomla\CMS\Factory;
@@ -15,37 +7,16 @@ use Joomla\CMS\MVC\Model\AdminModel;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\Versioning\VersionableModelTrait;
 use Joomla\CMS\Log\Log;
+use Joomla\Registry\Registry;
 
-// phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
-// phpcs:enable PSR1.Files.SideEffects
 
-/**
- * Invoice model.
- *
- * @since  1.6
- */
 class InvoiceModel extends AdminModel
 {
     use VersionableModelTrait;
 
-    /**
-     * The type alias for this content type.
-     *
-     * @var    string
-     * @since  3.2
-     */
     public $typeAlias = 'com_mothership.invoice';
 
-    /**
-     * Method to test whether a record can be deleted.
-     *
-     * @param   object  $record  A record object.
-     *
-     * @return  boolean  True if allowed to delete the record. Defaults to the permission set in the component.
-     *
-     * @since   1.6
-     */
     protected function canDelete($record)
     {
         if (empty($record->id) || $record->state != -2) {
@@ -59,60 +30,23 @@ class InvoiceModel extends AdminModel
         return parent::canDelete($record);
     }
 
-    /**
-     * Checks if the current user has permission to check in the record.
-     *
-     * @param mixed $record The record to check in.
-     * @return bool True if the user has the 'core.manage' permission for 'com_mothership', false otherwise.
-     */
     protected function canCheckin($record)
     {
         return $this->getCurrentUser()->authorise('core.manage', 'com_mothership');
     }
 
-    /**
-     * Checks if the current user has permission to edit the given record.
-     *
-     * @param mixed $record The record to check edit permissions for.
-     * @return bool True if the user has edit permissions, false otherwise.
-     */
     protected function canEdit($record)
     {
         return $this->getCurrentUser()->authorise('core.edit', 'com_mothership');
     }
 
-    /**
-     * Method to get the record form.
-     *
-     * @param   array    $data      Data for the form.
-     * @param   boolean  $loadData  True if the form is to load its own data (default case), false if not.
-     *
-     * @return  \Joomla\CMS\Form\Form|boolean  A Form object on success, false on failure
-     *
-     * @since   1.6
-     */
     public function getForm($data = [], $loadData = true)
     {
-        // Get the form.
-        $form = $this->loadForm('com_mothership.invoice', 'invoice', ['control' => 'jform', 'load_data' => $loadData]);
-
-        if (empty($form)) {
-            return false;
-        }
-
-        return $form;
+        return $this->loadForm('com_mothership.invoice', 'invoice', ['control' => 'jform', 'load_data' => $loadData]);
     }
 
-    /**
-     * Method to get the data that should be injected in the form.
-     *
-     * @return  mixed  The data for the form.
-     *
-     * @since   1.6
-     */
     protected function loadFormData()
     {
-        // Check the session for previously entered form data.
         $data = Factory::getApplication()->getUserState('com_mothership.edit.invoice.data', []);
 
         if (empty($data)) {
@@ -124,15 +58,24 @@ class InvoiceModel extends AdminModel
         return $data;
     }
 
-    /**
-     * Prepare and sanitise the table prior to saving.
-     *
-     * @param   Table  $table  A Table object.
-     *
-     * @return  void
-     *
-     * @since   1.6
-     */
+    public function getItem($pk = null)
+    {
+        $item = parent::getItem($pk);
+
+        if ($item && $item->id) {
+            $db = $this->getDbo();
+            $query = $db->getQuery(true)
+                ->select('*')
+                ->from($db->quoteName('#__mothership_invoice_items'))
+                ->where($db->quoteName('invoice_id') . ' = ' . (int) $item->id);
+
+            $db->setQuery($query);
+            $item->items = $db->loadAssocList();
+        }
+
+        return $item;
+    }
+
     protected function prepareTable($table)
     {
         $table->name = htmlspecialchars_decode($table->name, ENT_QUOTES);
@@ -141,37 +84,81 @@ class InvoiceModel extends AdminModel
     public function save($data)
     {
         $table = $this->getTable();
+        $db = $this->getDbo();
 
         Log::add('Data received for saving: ' . json_encode($data), Log::DEBUG, 'com_mothership');
-    
+
         if (!$table->bind($data)) {
-            $error = $table->getError();
-            Log::add('Bind failed: ' . $error, Log::ERROR, 'com_mothership');
-            $this->setError($error);
+            $this->setError($table->getError());
             return false;
         }
 
-        // Set created date if empty
         if (empty($table->created)) {
             $table->created = Factory::getDate()->toSql();
         }
-    
-        if (!$table->check()) {
-            $error = $table->getError();
-            Log::add('Check failed: ' . $error, Log::ERROR, 'com_mothership');
-            $this->setError($error);
+
+        if (!$table->check() || !$table->store()) {
+            $this->setError($table->getError());
             return false;
         }
-    
-        if (!$table->store()) {
-            $error = $table->getError();
-            Log::add('Store failed: ' . $error, Log::ERROR, 'com_mothership');
-            $this->setError($error);
-            return false;
+
+        $invoiceId = $table->id;
+
+        // Versioning support: Store serialized items (optional)
+        if (!empty($data['items'])) {
+            $registry = new Registry();
+            $registry->loadArray($data['items']);
+            $table->items_json = (string) $registry;
+            $table->store();
         }
-    
+
+        // Delete existing items
+        $db->setQuery(
+            $db->getQuery(true)
+                ->delete($db->quoteName('#__mothership_invoice_items'))
+                ->where($db->quoteName('invoice_id') . ' = ' . (int) $invoiceId)
+        )->execute();
+
+        // Insert new items
+        if (!empty($data['items'])) {
+            foreach ($data['items'] as $item) {
+                $columns = ['invoice_id', 'name', 'description', 'hours', 'minutes', 'quantity', 'rate', 'subtotal'];
+                $values = [
+                    $db->quote($invoiceId),
+                    $db->quote($item['name']),
+                    $db->quote($item['description']),
+                    (float) $item['hours'],
+                    (float) $item['minutes'],
+                    (float) $item['quantity'],
+                    (float) $item['rate'],
+                    (float) $item['subtotal']
+                ];
+
+                $query = $db->getQuery(true)
+                    ->insert($db->quoteName('#__mothership_invoice_items'))
+                    ->columns($db->quoteName($columns))
+                    ->values(implode(',', $values));
+
+                $db->setQuery($query)->execute();
+            }
+        }
+
         return true;
     }
-    
 
+    public function delete(&$pks)
+    {
+        $result = parent::delete($pks);
+
+        if ($result) {
+            $db = $this->getDbo();
+            $query = $db->getQuery(true)
+                ->delete($db->quoteName('#__mothership_invoice_items'))
+                ->where($db->quoteName('invoice_id') . ' IN (' . implode(',', array_map('intval', $pks)) . ')');
+
+            $db->setQuery($query)->execute();
+        }
+
+        return $result;
+    }
 }
