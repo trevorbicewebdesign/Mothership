@@ -56,6 +56,7 @@ $invoice = $displayData['invoice'];
     <table>
         <thead>
             <tr>
+                <th>Name</th>
                 <th>Description</th>
                 <th>Hours</th>
                 <th>Minutes</th>
@@ -68,6 +69,7 @@ $invoice = $displayData['invoice'];
             <?php if (!empty($invoice->items)) : ?>
                 <?php foreach ($invoice->items as $item) : ?>
                     <tr>
+                    <td><?php echo $item['name'] ?? ''; ?></td>
                         <td><?php echo htmlspecialchars($item['description'] ?? ''); ?></td>
                         <td><?php echo (float)($item['hours'] ?? 0); ?></td>
                         <td><?php echo (float)($item['minutes'] ?? 0); ?></td>
