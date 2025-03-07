@@ -8,7 +8,8 @@ use Exception;
 
 class HtmlView extends BaseHtmlView
 {
-    protected $item;
+    public $item;
+    public $paymentOptions = [];
 
     public function display($tpl = null)
     {
