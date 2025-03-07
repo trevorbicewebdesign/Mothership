@@ -12,7 +12,7 @@ $invoice = $displayData['invoice'];
     <meta charset="UTF-8">
     <title>Invoice #<?php echo $invoice->number; ?></title>
     <style>
-        body {
+        body.invoice {
             font-family: Arial, sans-serif;
             font-size: 12pt;
             margin: 20px;
@@ -44,7 +44,7 @@ $invoice = $displayData['invoice'];
         }
     </style>
 </head>
-<body>
+<body class="invoice">
     <h1>Invoice #<?php echo $invoice->number; ?></h1>
     
     <p><strong>Client:</strong> <?php echo htmlspecialchars($invoice->client_name ?? ''); ?></p>

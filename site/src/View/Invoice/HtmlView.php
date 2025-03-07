@@ -2,6 +2,9 @@
 namespace TrevorBice\Component\Mothership\Site\View\Invoice;
 
 use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Exception;
 
 class HtmlView extends BaseHtmlView
 {
@@ -9,6 +12,11 @@ class HtmlView extends BaseHtmlView
 
     public function display($tpl = null)
     {
+        $user = Factory::getUser();
+        if (!$user->authorise('mothership.view_invoices', 'com_mothership')) {
+            echo Text::_('JERROR_ALERTNOAUTHOR');
+            return;
+        }
         $this->item = $this->getModel()->getItem();
 
         if (!$this->item) {
