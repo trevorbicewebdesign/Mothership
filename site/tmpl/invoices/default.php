@@ -23,7 +23,7 @@ use Joomla\CMS\Language\Text;
                 <td><?php echo $invoice->status; ?></td>
                 <td><?php echo $invoice->due; ?></td>
                 <td>
-                    <a href="<?php echo Route::_('index.php?option=com_mothership&task=invoice.downloadPdf&id=' . $invoice->id); ?>">PDF</a>
+                    <a href="<?php echo Route::_('index.php?option=com_mothership&task=invoice.downloadPdf&id=' . $invoice->id); ?>" target="_blank">PDF</a>
                 </td>
             </tr>
         <?php endforeach; ?>
