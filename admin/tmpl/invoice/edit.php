@@ -41,7 +41,9 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                 <div>
                     <fieldset class="adminform">
                     <?php echo $this->form->renderField('client_id'); ?>
-                    <?php echo $this->form->renderField('account_id'); ?>
+                    <div class="account_id_wrapper" style="display:none">
+                        <?php echo $this->form->renderField('account_id'); ?>
+                    </div>
                     <?php echo $this->form->renderField('number'); ?>
                     <?php echo $this->form->renderField('rate'); ?>
                     <?php echo $this->form->renderField('total'); ?>
@@ -74,3 +76,38 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
     <input type="hidden" name="task" value="" />
     <?php echo JHtml::_('form.token'); ?>
 </form>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const clientField = document.querySelector('#jform_client_id');
+    const accountWrapper = document.querySelector('.account_id_wrapper');
+    const accountField = document.querySelector('#jform_account_id');
+
+    function toggleAccountField() {
+        if (clientField.value && clientField.value !== '0') {
+            accountWrapper.style.display = 'block';
+            loadAccounts(clientField.value);
+        } else {
+            accountWrapper.style.display = 'none';
+            accountField.innerHTML = '<option value="">Select Account</option>';
+        }
+    }
+
+    function loadAccounts(clientId) {
+        fetch('index.php?option=com_mothership&task=invoice.getAccountsForClient&format=json&client_id=' + clientId)
+            .then(response => response.json())
+            .then(data => {
+                accountField.innerHTML = '<option value="">Select Account</option>';
+                data.forEach(account => {
+                    accountField.innerHTML += `<option value="${account.id}">${account.name}</option>`;
+                });
+            })
+            .catch(error => {
+                console.error('Error loading accounts:', error);
+            });
+    }
+
+    toggleAccountField();
+    clientField.addEventListener('change', toggleAccountField);
+});
+
+</script>
