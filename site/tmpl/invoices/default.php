@@ -15,6 +15,7 @@ $status_levels = [
 <table class="table">
     <thead>
         <tr>
+            <th>PDF</th>
             <th>#</th>
             <th>Account</th>
             <th>Amount</th>
@@ -31,13 +32,29 @@ $status_levels = [
         <?php endif; ?>
         <?php foreach ($this->invoices as $invoice) : ?>
             <tr>
+                <td>    
+                    <a href="<?php echo Route::_('index.php?option=com_mothership&task=invoice.downloadPdf&id=' . $invoice->id); ?>" target="_blank">PDF</a>
+                </td>
                 <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=invoice&id=' . $invoice->id); ?>"><?php echo $invoice->number; ?></a></td>
                 <td><?php echo $invoice->account_name; ?></td>
                 <td>$<?php echo number_format($invoice->total, 2); ?></td>
                 <td><?php echo $status_levels[$invoice->status]; ?></td>
-                <td><?php echo $invoice->due; ?></td>
-                <td>    
-                    <a href="<?php echo Route::_('index.php?option=com_mothership&task=invoice.downloadPdf&id=' . $invoice->id); ?>" target="_blank">PDF</a>
+                <td>
+                    <?php
+                    $dueDate = new DateTime($invoice->due_date);
+                    $currentDate = new DateTime();
+                    $interval = $currentDate->diff($dueDate);
+                    echo 'Due in ' . $interval->days . ' days';
+                    ?>
+                </td>
+                
+                <td>
+                    <ul>
+                        <li><a href="<?php echo Route::_('index.php?option=com_mothership&task=invoice.edit&id=' . $invoice->id); ?>">View</a></li>
+                        <li><a href="<?php echo Route::_("index.php?option=com_mothership&task=invoice.pay&id={$invoice->id}"); ?>">Pay</a></li>
+                    </ul>
+                    
+                    
                 </td>
             </tr>
         <?php endforeach; ?>
