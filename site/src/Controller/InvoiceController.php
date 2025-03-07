@@ -39,15 +39,23 @@ class InvoiceController extends BaseController
             return;
         }
 
-        ob_start();
+        // Generate the HTML
         $layout = new FileLayout('pdf', JPATH_ROOT . '/components/com_mothership/layouts');
-        echo $layout->render(['invoice' => $invoice]);
-        $html = ob_get_clean();
+        $html = $layout->render(['invoice' => $invoice]);
 
+        // Turn off Joomla's output
+        ob_end_clean();
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: inline; filename="Invoice-' . $invoice->number . '.pdf"');
+        header('Cache-Control: private, max-age=0, must-revalidate');
+        header('Pragma: public');
+
+        // Generate and output the PDF
         $pdf = new Mpdf();
         $pdf->WriteHTML($html);
-        $pdf->Output('Invoice-' . $invoice->number . '.pdf', 'I');
+        $pdf->Output(null, 'I');
 
-      
+        $app->close();
     }
+
 }
