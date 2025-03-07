@@ -88,6 +88,16 @@ class InvoiceModel extends AdminModel
 
         Log::add('Data received for saving: ' . json_encode($data), Log::DEBUG, 'com_mothership');
 
+        $isNew = empty($data['id']);
+        $previousStatus = null;
+
+        if (!$isNew) {
+            $existingTable = $this->getTable();
+            $existingTable->load($data['id']);
+            $previousStatus = (int) $existingTable->status;
+            $newStatus = (int) $data['status'];
+        }
+
         if (!$table->bind($data)) {
             $this->setError($table->getError());
             return false;
@@ -103,12 +113,19 @@ class InvoiceModel extends AdminModel
         }
 
         $invoiceId = $table->id;
+        // 🔔 Trigger when status is set to Opened (1), unless previous was Late (2)
+        if ( !$isNew && ($newStatus == 2 && $previousStatus !== 2)) {
+            $this->onInvoiceOpened($table, $previousStatus);
+            // Fill in the due date
+            $table->due_date = Factory::getDate()->modify('+30 days')->toSql();
+            $table->store();
+        }
 
-        // Versioning support: Store serialized items (optional)
+        // Store items JSON (optional versioning support)
         if (!empty($data['items'])) {
             $registry = new Registry();
             $registry->loadArray($data['items']);
-            $table->items_json = (string) $registry;
+            $table->items_json = (string)$registry;
             $table->store();
         }
 
@@ -116,7 +133,7 @@ class InvoiceModel extends AdminModel
         $db->setQuery(
             $db->getQuery(true)
                 ->delete($db->quoteName('#__mothership_invoice_items'))
-                ->where($db->quoteName('invoice_id') . ' = ' . (int) $invoiceId)
+                ->where($db->quoteName('invoice_id') . ' = ' . (int)$invoiceId)
         )->execute();
 
         // Insert new items
@@ -124,14 +141,14 @@ class InvoiceModel extends AdminModel
             foreach ($data['items'] as $item) {
                 $columns = ['invoice_id', 'name', 'description', 'hours', 'minutes', 'quantity', 'rate', 'subtotal'];
                 $values = [
-                    $db->quote($invoiceId),
+                    (int)$invoiceId,
                     $db->quote($item['name']),
                     $db->quote($item['description']),
-                    (float) $item['hours'],
-                    (float) $item['minutes'],
-                    (float) $item['quantity'],
-                    (float) $item['rate'],
-                    (float) $item['subtotal']
+                    (float)$item['hours'],
+                    (float)$item['minutes'],
+                    (float)$item['quantity'],
+                    (float)$item['rate'],
+                    (float)$item['subtotal']
                 ];
 
                 $query = $db->getQuery(true)
@@ -144,6 +161,11 @@ class InvoiceModel extends AdminModel
         }
 
         return true;
+    }
+
+    protected function onInvoiceOpened($invoice, $previousStatus)
+    {
+        
     }
 
     public function delete(&$pks)

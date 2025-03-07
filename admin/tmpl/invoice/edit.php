@@ -53,7 +53,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
             <div class="col-lg-3">
                 <?php echo $this->form->renderField('status'); ?>
                 <?php echo $this->form->renderField('created'); ?>
-                <?php echo $this->form->renderField('due'); ?>
+                <?php echo $this->form->renderField('due_date'); ?>
             </div>
         </div>
         <div class="row">
