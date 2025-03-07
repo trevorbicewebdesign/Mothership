@@ -19,8 +19,8 @@ class InvoicesModel extends ListModel
             ->select('i.*, a.name AS account_name')
             ->from('#__mothership_invoices AS i')
             ->join('LEFT', '#__mothership_accounts AS a ON i.client_id = a.client_id')
-            ->where('i.status != -1')
-            ->where('i.client_id = ' . (int) $clientId);
+            ->where("i.status != '1'")
+            ->where("i.client_id = '{$clientId}'");
         $db->setQuery($query);
 
         return $db->loadObjectList();

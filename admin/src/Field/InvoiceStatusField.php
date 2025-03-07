@@ -16,11 +16,11 @@ class InvoicestatusField extends ListField
     {
         $options = [];
 
-        $statuses = ['draft', 'opened', 'late', 'paid'];
-        foreach ($statuses as $status) {
+        $statuses = ['draft'=>1, 'opened'=>2, 'late'=>3, 'paid'=>4];
+        foreach ($statuses as $key=>$status) {
             $options[] = (object) [
             'value' => $status,
-            'text'  => Text::_('COM_MOTHERSHIP_INVOICE_STATUS_' . strtoupper($status))
+            'text'  => Text::_('COM_MOTHERSHIP_INVOICE_STATUS_' . strtoupper($key))
             ];
         }
         return array_merge(parent::getOptions(), $options);
