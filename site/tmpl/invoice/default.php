@@ -10,5 +10,5 @@ if (!$invoice) {
     return;
 }
 
-$layout = new FileLayout('pdf', JPATH_ADMINISTRATOR . '/components/com_mothership/tmpl/invoice');
+$layout = new FileLayout('pdf', JPATH_ROOT . '/components/com_mothership/layouts');
 echo $layout->render(['invoice' => $invoice]);

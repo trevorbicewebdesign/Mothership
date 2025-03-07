@@ -7,6 +7,7 @@ use Joomla\CMS\MVC\Controller\FormController;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Mpdf\Mpdf;
+use Joomla\CMS\Layout\FileLayout;
 
 
 \defined('_JEXEC') or die;
@@ -86,8 +87,9 @@ class InvoiceController extends FormController
             return;
         }
 
-        // Output the same HTML template without PDF generation
-        require JPATH_ADMINISTRATOR . '/components/com_mothership/tmpl/invoice/pdf.php';
+        $layout = new FileLayout('pdf', JPATH_ROOT . '/components/com_mothership/layouts');
+        echo $layout->render(['invoice' => $invoice]);
+
         $app->close();
     }
 
@@ -113,7 +115,8 @@ class InvoiceController extends FormController
         }
 
         ob_start();
-        require JPATH_COMPONENT_ADMINISTRATOR . '/tmpl/invoice/pdf.php';
+        $layout = new FileLayout('pdf', JPATH_ROOT . '/components/com_mothership/layouts');
+        echo $layout->render(['invoice' => $invoice]);
         $html = ob_get_clean();
 
         $pdf = new Mpdf();
