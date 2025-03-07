@@ -25,6 +25,26 @@ class InvoiceController extends FormController
         return parent::display();
     }
 
+    public function getAccountsForClient()
+    {
+        $app = \Joomla\CMS\Factory::getApplication();
+        $input = $app->input;
+        $clientId = $input->getInt('client_id');
+
+        $db = Factory::getDbo();
+        $query = $db->getQuery(true)
+            ->select('id, name')
+            ->from('#__mothership_accounts')
+            ->where('client_id = ' . (int) $clientId)
+            ->order('name ASC');
+        $db->setQuery($query);
+
+        $accounts = $db->loadAssocList();
+
+        echo new \Joomla\CMS\Response\JsonResponse($accounts);
+        $app->close();
+    }
+
     public function processPayment($invoice)
     {
         // Load payment plugins

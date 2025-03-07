@@ -92,14 +92,18 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // {"success":true,"message":null,"messages":null,"data":[{"id":271,"name":"All-D"}]}
+
     function loadAccounts(clientId) {
         fetch('index.php?option=com_mothership&task=invoice.getAccountsForClient&format=json&client_id=' + clientId)
             .then(response => response.json())
-            .then(data => {
+            .then(responseData => {
                 accountField.innerHTML = '<option value="">Select Account</option>';
-                data.forEach(account => {
-                    accountField.innerHTML += `<option value="${account.id}">${account.name}</option>`;
-                });
+                if (responseData.data) {
+                    responseData.data.forEach(account => {
+                        accountField.innerHTML += `<option value="${account.id}">${account.name}</option>`;
+                    });
+                }
             })
             .catch(error => {
                 console.error('Error loading accounts:', error);
