@@ -1,8 +1,9 @@
 <?php
 defined('_JEXEC') or die;
 
+/** @var array $displayData */
+$invoice = $displayData['invoice'];
 
-/** @var object $invoice */
 ?>
 
 <!DOCTYPE html>
@@ -44,9 +45,8 @@ defined('_JEXEC') or die;
     </style>
 </head>
 <body>
-
     <h1>Invoice #<?php echo $invoice->number; ?></h1>
-
+    
     <p><strong>Client:</strong> <?php echo htmlspecialchars($invoice->client_name ?? ''); ?></p>
     <p><strong>Date:</strong> <?php echo htmlspecialchars($invoice->created ?? ''); ?></p>
     <p><strong>Due Date:</strong> <?php echo htmlspecialchars($invoice->due ?? ''); ?></p>

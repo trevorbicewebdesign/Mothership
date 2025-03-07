@@ -18,7 +18,7 @@ use Joomla\CMS\Language\Text;
     <tbody>
         <?php foreach ($this->invoices as $invoice) : ?>
             <tr>
-                <td><?php echo $invoice->number; ?></td>
+                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=invoice&id=' . $invoice->id); ?>"><?php echo $invoice->number; ?></a></td>
                 <td>$<?php echo number_format($invoice->total, 2); ?></td>
                 <td><?php echo $invoice->status; ?></td>
                 <td><?php echo $invoice->due; ?></td>
