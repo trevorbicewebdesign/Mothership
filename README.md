@@ -1,28 +1,16 @@
 # Mothership
-Mothership is an open-source Joomla extension tailored specifically for small web development agencies or sole proprietorships. Designed for the dynamic needs of web development businesses, it streamlines invoicing, quoting, help tickets, timelogging, expenses, taxes, and logging—all within a single, cohesive platform. Built from the ground up for Joomla 5x with modern PHP practices and Composer support, Mothership’s modular architecture and intuitive interface empower agencies to manage projects and operations more efficiently. Join us on our journey to redefine business management in the web development landscape.
+Mothership is a friendly, open-source Joomla extension built for solo developers and small businesses. It started as a personal project designed to simplify everyday challenges like invoicing, support tickets, time tracking, expenses, taxes, and logs. Over time, it evolved into a tool that handles all these essential functions in one place—making life easier not just for me, but for anyone juggling the many hats of a web development operation.
 
-## Clients
-The Clients module is the core of Mothership's client management system. It enables web development agencies to maintain detailed records of their clients, ensuring seamless invoicing, project tracking, and communication.
+At its core, Mothership organizes your business around five main objects:
 
-#### Key Features
-Client Profiles:
-Store and manage essential client information, including business name, contact details, and address.
+- **Clients**
+- **Accounts**
+- **Projects**
+- **Invoices**
+- **Payments**
 
-#### Joomla Integration:
-Each client record is associated with a Joomla user (owner) and includes standard Joomla fields for record management, such as created_by, checked_out, and checked_out_time.
+The model is flexible enough to accommodate real-world complexities. For example, a single client might manage multiple accounts—whether these represent different parts of the business, subdomains, or entirely separate brands. Each account can then have its own projects. While projects currently focus on websites, the architecture is designed to eventually support other types of work, like graphic design or any other service you might offer.
 
-#### Financial Information:
-Keep track of important billing details like tax IDs and default hourly rates for streamlined invoicing and project costing.
+One of the standout features in the initial release is the projects module. Often, a big part of launching a new website involves researching the domain—finding out details like hosting information, email configurations, and even identifying the underlying CMS or technologies in use. Mothership’s scanning feature does exactly that, gathering vital domain data and making it easy to have informed discussions with your clients. And because these tools are available from the front end, your clients can also use them to better understand their projects.
 
-#### Custom Notes:
-A flexible "notes" field allows you to record any additional details or specific instructions related to the client.
-
-## Accounts
-The Accounts module in Mothership serves as the financial backbone for managing client billing and project funds. Designed to help agencies organize and track multiple income sources, Accounts represent distinct financial entities tied to clients, such as retainers, prepaid hours, or specific project budgets.
-
-### Key Features
-Account Management:
-Easily create and manage multiple accounts for each client, allowing you to separate different funding sources, projects, or service agreements.
-
-### Client Association:
-Every account is directly linked to a client, ensuring accurate and organized billing, reporting, and project tracking.
+In short, Mothership is built to streamline your workflow and let you focus on what really matters—delivering great work and growing your business.
