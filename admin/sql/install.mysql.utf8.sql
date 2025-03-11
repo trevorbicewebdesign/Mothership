@@ -30,6 +30,36 @@ CREATE TABLE IF NOT EXISTS `#__mothership_accounts` (
   PRIMARY KEY (`id`) USING BTREE
 ) COLLATE='utf8_general_ci' ENGINE=MyISAM ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1;
 
+CREATE TABLE IF NOT EXISTS `#__mothership_projects` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `client_id` INT,
+    `account_id` INT,
+    `type` INT NOT NULL DEFAULT 1, -- 1 = website, other integers for different project types
+    `name` VARCHAR(255) NOT NULL,
+    `description` TEXT,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS `#__mothership_domains` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `project_id` INT NOT NULL,
+    `domain_name` VARCHAR(255) NOT NULL,
+    `is_primary` TINYINT(1) DEFAULT 0,
+    `redirect_url` VARCHAR(255) DEFAULT NULL, -- Stores where the domain redirects
+    `registrar` VARCHAR(255) DEFAULT NULL,
+    `registration_date` DATE DEFAULT NULL,
+    `expiration_date` DATE DEFAULT NULL,
+    `ip_address` VARCHAR(45) DEFAULT NULL,
+    `cms_detection` VARCHAR(255) DEFAULT NULL,
+    `hosting_provider` VARCHAR(255) DEFAULT NULL,
+    `last_scanned_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `status` INT DEFAULT 1,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (project_id) REFERENCES #__mothership_projects(id)
+);
+
 CREATE TABLE IF NOT EXISTS `#__mothership_invoices` (
   `id` INT(10) NOT NULL AUTO_INCREMENT,
   `number` VARCHAR(50) NULL DEFAULT NULL,
