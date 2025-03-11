@@ -63,6 +63,22 @@ CREATE TABLE IF NOT EXISTS `#__mothership_invoice_items` (
   INDEX (`invoice_id`)
 ) COLLATE='utf8_general_ci' ENGINE=MyISAM ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1;
 
+CREATE TABLE IF NOT EXISTS `#__mothership_payments` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `invoice_id` INT NOT NULL,
+    `client_id` INT NOT NULL,
+    `account_id` INT DEFAULT NULL,
+    `amount` DECIMAL(10,2) NOT NULL,
+    `payment_method` VARCHAR(50) NOT NULL, 
+    `transaction_id` VARCHAR(255) DEFAULT NULL,
+    `status` INT NOT NULL DEFAULT 0,
+    `created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `processed_date` DATETIME DEFAULT NULL,
+    `notes` TEXT DEFAULT NULL,
+    FOREIGN KEY (`invoice_id`) REFERENCES `#__mothership_invoices` (`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE IF NOT EXISTS `#__mothership_users` (
   `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` INT(11) NOT NULL,
