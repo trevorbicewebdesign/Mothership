@@ -64,8 +64,8 @@
     </administration>
     <install>
         <plugins>
-            <plugin group="mothership-payment" folder="payment" element="manual" method="manual">
-                <filename plugin="mothership-paypal">mothership-paypal.xml</filename>
+            <plugin group="mothership-payment" folder="mothership-payment" element="manual" method="manual">
+                <filename plugin="paypal">paypal.xml</filename>
             </plugin>
         </plugins>
     </install>

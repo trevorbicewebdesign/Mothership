@@ -51,7 +51,7 @@ $status_levels = [
                 <td>
                     <ul>
                         <li><a href="<?php echo Route::_('index.php?option=com_mothership&task=invoice.edit&id=' . $invoice->id); ?>">View</a></li>
-                        <li><a href="<?php echo Route::_("index.php?option=com_mothership&task=invoice.pay&id={$invoice->id}"); ?>">Pay</a></li>
+                        <li><a href="<?php echo Route::_("index.php?option=com_mothership&task=invoice.payment&id={$invoice->id}"); ?>">Pay</a></li>
                     </ul>
                     
                     

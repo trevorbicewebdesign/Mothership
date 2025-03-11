@@ -8,9 +8,13 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\FileLayout;
+use Joomla\CMS\Plugin\PluginHelper;
 use Mpdf\Mpdf;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\Event;
+
+// Load all enabled payment plugins
+PluginHelper::importPlugin('mothership-payment');
 
 class InvoiceController extends BaseController
 {
@@ -60,7 +64,7 @@ class InvoiceController extends BaseController
         $app->close();
     }
 
-    public function pay()
+    public function payment()
     {
         $app = Factory::getApplication();
         $input = $app->getInput();
@@ -90,10 +94,10 @@ class InvoiceController extends BaseController
             $pluginName = $params->get('display_name') ?: ucfirst(str_replace('mothership-', '', $plugin->element));
 
             $paymentOptions[] = [
-                'element'     => $plugin->element,
+                'element'     => $plugin->name,
                 'name'        => $pluginName,
-                'fee_percent' => (float) $params->get('fee_percent', 0),
-                'fee_fixed'   => (float) $params->get('fee_fixed', 0),
+                'fee_percent' => (float) $params->get('fee_percent', '3.9'),
+                'fee_fixed'   => (float) $params->get('fee_fixed', '0.30'),
             ];
         }
 
@@ -106,5 +110,57 @@ class InvoiceController extends BaseController
         $view->display();
     }
 
+    public function processPayment()
+    {
+        $app = Factory::getApplication();
+        $input = $app->getInput();
+        $id = $input->getInt('id');
+        $paymentMethod = $input->getCmd('payment_method');
+
+        if (!$id || !$paymentMethod) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVALID_PAYMENT_REQUEST'), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&task=invoice.payment&id=' . $id, false));
+            return;
+        }
+
+        $model = $this->getModel('Invoice');
+        $invoice = $model->getItem($id);
+
+        if (!$invoice) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVOICE_NOT_FOUND'), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoices', false));
+            return;
+        }
+
+        // Set the payment method
+        $invoice->payment_method = $paymentMethod;
+
+        $paymentData = [
+            'payment_method' => $paymentMethod,
+        ];
+
+        // Import the payment plugins BEFORE dispatching the event
+        \Joomla\CMS\Plugin\PluginHelper::importPlugin('mothership-payment');
+
+        $dispatcher = Factory::getApplication()->getDispatcher();
+        $event = new Event('onMothershipPaymentRequest', ['invoice' => $invoice, 'paymentData' => $paymentData]);
+        
+        $results = $dispatcher->dispatch('onMothershipPaymentRequest', $event);
+        
+        if (!empty($results)) {
+    
+            $arguments = $event->getArguments();
+            foreach ($arguments['result'] as $result) {
+                if ($result['status'] === 'redirect') {
+                    $app->enqueueMessage($result['message'], 'info');
+                    $this->setRedirect($result['url']);
+                    return;
+                }
+            }
+        }
+
+        $app->enqueueMessage(Text::_('COM_MOTHERSHIP_NO_PAYMENT_HANDLER'), 'danger');
+        $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoices', false));
+    }
 
 }
