@@ -4,7 +4,7 @@ namespace TrevorBice\Component\Mothership\Site\Model;
 use Joomla\CMS\MVC\Model\ListModel;
 use TrevorBice\Component\Mothership\Site\Helper\MothershipHelper;
 
-class PaymentsModel extends ListModel
+class InvoicesModel extends ListModel
 {
     public function getItems()
     {
