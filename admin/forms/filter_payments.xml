@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form>
+	<fields name="filter">
+		<field name="search" type="text" inputmode="search" label="COM_MOTHERSHIP_PAYMENTS_FILTER_SEARCH_LABEL" description="COM_MOTHERSHIP_PAYMENTS_FILTER_SEARCH_DESC" hint="JSEARCH_FILTER" />
+	</fields>
+	<fields name="list">
+		<field name="fullordering" type="list" label="JGLOBAL_SORT_BY" statuses="*,0,1,2,-2" class="js-select-submit-on-change" default="a.name ASC" validate="options">
+			<option value="">JGLOBAL_SORT_BY</option>
+			<option value="a.id ASC">JGRID_HEADING_ID_ASC</option>
+			<option value="a.id DESC">JGRID_HEADING_ID_DESC</option>
+			<option value="a.name ASC">COM_MOTHERSHIP_HEADING_PAYMENT_NAME_ASC</option>
+			<option value="a.name DESC">COM_MOTHERSHIP_HEADING_PAYMENT_NAME_DESC</option>
+			<option value="c.name ASC">COM_MOTHERSHIP_HEADING_PAYMENT_CLIENT_NAME_ASC</option>
+			<option value="c.name DESC">COM_MOTHERSHIP_HEADING_PAYMENT_CLIENT_NAME_DESC</option>
+			<option value="a.created ASC">COM_MOTHERSHIP_HEADING_PAYMENT_CREATED_ASC</option>
+			<option value="a.created DESC">COM_MOTHERSHIP_HEADING_PAYMENT_CREATED_DESC</option>
+		</field>
+
+		<field name="limit" type="limitbox" label="JGLOBAL_LIST_LIMIT" default="25" class="js-select-submit-on-change" />
+	</fields>
+</form>
