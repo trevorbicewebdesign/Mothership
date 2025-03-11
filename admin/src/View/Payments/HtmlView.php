@@ -8,7 +8,7 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace TrevorBice\Component\Mothership\Administrator\View\Accounts;
+namespace TrevorBice\Component\Mothership\Administrator\View\Payments;
 
 use Joomla\CMS\Form\Form;
 use Joomla\CMS\Helper\ContentHelper;
@@ -18,7 +18,7 @@ use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use Joomla\CMS\Pagination\Pagination;
 use Joomla\CMS\Toolbar\ToolbarHelper;
-use TrevorBice\Component\Mothership\Administrator\Model\AccountsModel;
+use TrevorBice\Component\Mothership\Administrator\Model\PaymentsModel;
 use Joomla\CMS\Factory;
 use Joomla\CMS\User\User;
 
@@ -58,7 +58,7 @@ class HtmlView extends BaseHtmlView
 		HTMLHelper::_('behavior.multiselect');
 		HTMLHelper::_('formbehavior.chosen', 'select');
 
-        /** @var AccountsModel $model */
+        /** @var PaymentsModel $model */
         $model = $this->getModel();
         $this->items = $model->getItems();
         $this->pagination = $model->getPagination();
@@ -91,10 +91,10 @@ class HtmlView extends BaseHtmlView
         $canDo = ContentHelper::getActions('com_mothership');
         $toolbar = $this->getDocument()->getToolbar();
 
-        ToolbarHelper::title(Text::_('COM_MOTHERSHIP_MANAGER_ACCOUNTS'), 'bookmark mothership-accounts');
+        ToolbarHelper::title(Text::_('COM_MOTHERSHIP_MANAGER_PAYMENTS'), 'bookmark mothership-payments');
 
         if ($canDo->get('core.create')) {
-            $toolbar->addNew('account.add');
+            $toolbar->addNew('payment.add');
         }
 
         if (!$this->isEmptyState && ($canDo->get('core.edit.state') || $canDo->get('core.admin'))) {
@@ -107,16 +107,16 @@ class HtmlView extends BaseHtmlView
             $childBar = $dropdown->getChildToolbar();
 
             if ($canDo->get('core.admin')) {
-                $childBar->checkin('accounts.checkin')->listCheck(true);
+                $childBar->checkin('payments.checkin')->listCheck(true);
             }
 
-            $childBar->delete('accounts.delete')->listCheck(true);
+            $childBar->delete('payments.delete')->listCheck(true);
         }
 
         if ($canDo->get('core.admin') || $canDo->get('core.options')) {
             $toolbar->preferences('com_mothership');
         }
 
-        $toolbar->help('Mothership:_Account');
+        $toolbar->help('Mothership:_Payment');
     }
 }

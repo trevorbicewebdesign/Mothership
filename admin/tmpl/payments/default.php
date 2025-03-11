@@ -42,13 +42,13 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                     <?php echo HTMLHelper::_('searchtools.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_ACCOUNT_HEADING_NAME', 'a.name', $listDirn, $listOrder); ?>
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_PAYMENT_HEADING_NAME', 'a.name', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_ACCOUNT_HEADING_CLIENT', 'c.name', $listDirn, $listOrder); ?>
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_PAYMENT_HEADING_CLIENT', 'c.name', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_ACCOUNT_HEADING_CREATED', 'a.created', $listDirn, $listOrder); ?>
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_PAYMENT_HEADING_CREATED', 'a.created', $listDirn, $listOrder); ?>
                                 </th>
                             </tr>
                         </thead>
