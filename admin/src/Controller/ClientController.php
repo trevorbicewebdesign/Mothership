@@ -65,6 +65,7 @@ class ClientController extends FormController
 
         return true;
     }
+    
     public function delete()
     {
         $app = Factory::getApplication();

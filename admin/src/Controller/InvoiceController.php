@@ -166,9 +166,9 @@ class InvoiceController extends FormController
             // Determine which task was requested to redirect back to the appropriate edit page
             $task = $input->getCmd('task');
             if ($task === 'apply') {
-            $redirectUrl = Route::_('index.php?option=com_mothership&view=invoice&layout=edit&id=' . $data['id'], false);
+                $redirectUrl = Route::_('index.php?option=com_mothership&view=invoice&layout=edit&id=' . $data['id'], false);
             } else {
-            $redirectUrl = Route::_('index.php?option=com_mothership&view=invoice&layout=edit', false);
+                $redirectUrl = Route::_('index.php?option=com_mothership&view=invoices', false);
             }
 
             $this->setRedirect($redirectUrl);
@@ -181,10 +181,12 @@ class InvoiceController extends FormController
         // Determine which task was requested
         $task = $input->getCmd('task');
 
+        die($task);
+
         // If "Apply" (i.e., invoice.apply) is clicked, remain on the edit page.
         if ($task === 'apply') {
-
-            $redirectUrl = Route::_('index.php?option=com_mothership&view=invoice&layout=edit&id=' . $data['id'], false);
+            $id = !empty($data['id']) ? $data['id'] : $model->getState($model->getName() . '.id');
+            $redirectUrl = Route::_('index.php?option=com_mothership&view=invoice&layout=edit&id=' . $id, false);
         } else {
             // If "Save" (i.e., invoice.save) is clicked, return to the invoices list.
             $redirectUrl = Route::_('index.php?option=com_mothership&view=invoices', false);

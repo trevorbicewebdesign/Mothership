@@ -92,8 +92,6 @@ class InvoicesModel extends ListModel
               ->join('LEFT', $db->quoteName('#__mothership_clients', 'c') . ' ON ' . $db->quoteName('i.client_id') . ' = ' . $db->quoteName('c.id'))
               ->join('LEFT', $db->quoteName('#__mothership_accounts', 'a') . ' ON ' . $db->quoteName('i.account_id') . ' = ' . $db->quoteName('a.id'));
 
-        // No filter by province as there is no 'state' column.
-
         // Filter by search in invoice name (or by invoice id if prefixed with "cid:").
         if ($search = trim($this->getState('filter.search', ''))) {
             if (stripos($search, 'id:') === 0) {
@@ -131,7 +129,6 @@ class InvoicesModel extends ListModel
 
         // Since "published" doesn't apply for Invoices,
         // we simply return the items without additional counting logic.
-
         $this->cache[$store] = $items;
 
         return $this->cache[$store];
