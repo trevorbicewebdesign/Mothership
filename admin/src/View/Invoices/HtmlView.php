@@ -117,6 +117,6 @@ class HtmlView extends BaseHtmlView
             $toolbar->preferences('com_mothership');
         }
 
-        $toolbar->help('Mothership:_Account');
+        $toolbar->help('Mothership:_Invoice');
     }
 }

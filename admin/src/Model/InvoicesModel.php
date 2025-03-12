@@ -24,7 +24,7 @@ class InvoicesModel extends ListModel
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = [
-                'cid', 'i.id',
+                'id', 'i.id',
                 'client_name', 'c.name',
                 'account_name', 'a.name',
                 'number', 'i.number',
@@ -59,8 +59,6 @@ class InvoicesModel extends ListModel
     {
         // Compile the store id.
         $id .= ':' . $this->getState('filter.search');
-        $id .= ':' . $this->getState('filter.province');
-        $id .= ':' . $this->getState('filter.purchase_type');
 
         return parent::getStoreId($id);
     }
@@ -83,7 +81,7 @@ class InvoicesModel extends ListModel
             $db->quoteName('i.account_id'),
             $db->quoteName('a.name', 'account_name'),
             $db->quoteName('i.total'),
-            $db->quoteName('i.created'),
+            //$db->quoteName('i.created'),
             $db->quoteName('i.checked_out_time'),
             $db->quoteName('i.checked_out'),
             ]
@@ -98,7 +96,7 @@ class InvoicesModel extends ListModel
 
         // Filter by search in invoice name (or by invoice id if prefixed with "cid:").
         if ($search = trim($this->getState('filter.search', ''))) {
-            if (stripos($search, 'cid:') === 0) {
+            if (stripos($search, 'id:') === 0) {
                 $search = (int) substr($search, 4);
                 $query->where($db->quoteName('i.id') . ' = :search')
                       ->bind(':search', $search, ParameterType::INTEGER);
