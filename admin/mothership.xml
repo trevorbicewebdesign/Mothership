@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<extension type="component" method="upgrade" version="4.0">
+<extension type="component" method="upgrade" version="5.0">
     <name>com_mothership</name>
     <author>Trevor Bice</author>
     <creationDate>2025-01-01</creationDate>
@@ -20,22 +20,23 @@
             <file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file>
         </sql>
     </uninstall>
-    <files folder="site">
-        <folder>src</folder>
-    </files>
-    <languages folder="site">
-        <language tag="en-GB">language/en-GB/com_mothership.ini</language>
-    </languages>
-    <media destination="com_mothership" folder="media">
-        <folder>js</folder>
-    </media>
+    
+    <config>
+        <menu>
+            <option value="dashboard">Mothership Dashboard</option>
+            <option value="accounts">Mothership Accounts</option>
+            <option value="invoices">Mothership Invoices</option>
+        </menu>
+    </config>
     <administration>
         <menu>com_mothership</menu>
         <submenu>
             <menu link="option=com_mothership&amp;view=clients" view="clients">com_mothership_clients</menu>
+            <menu link="option=com_mothership&amp;view=accounts" view="accounts">com_mothership_accounts</menu>
+            <menu link="option=com_mothership&amp;view=invoices" view="invoices">com_mothership_invoices</menu>
         </submenu>
 
-        <files>
+        <files folder="admin">
             <filename>access.xml</filename>
             <filename>mothership.xml</filename>
             <filename>config.xml</filename>
@@ -47,9 +48,18 @@
             <folder>tmpl</folder>
         </files>
 
-        <languages>
-            <language tag="en-GB">language/en-GB/com_mothership.ini</language>
+        <languages folder="admin">
+			<language tag="en-GB">language/en-GB/com_mothership.ini</language>
             <language tag="en-GB">language/en-GB/com_mothership.sys.ini</language>
-        </languages>
+		</languages>
     </administration>
+    <files folder="site">
+		<folder>src</folder>
+		<folder>tmpl</folder>
+        <folder>layouts</folder>
+	</files>
+    <languages folder="site">
+        <language tag="en-GB">language/en-GB/com_mothership.ini</language>
+    </languages>
+
 </extension>

@@ -23,13 +23,13 @@ class ClientsModel extends ListModel
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = [
-                'cid', 'a.id',
-                'name', 'a.name',
-                'phone', 'a.phone',
-                'created', 'a.created',
-                'rate', 'a.rate',
-                'checked_out', 'a.checked_out',
-                'checked_out_time', 'a.checked_out_time',
+                'id', 'c.id',
+                'name', 'c.name',
+                'phone', 'c.phone',
+                'created', 'c.created',
+                'default_rate', 'c.rate',
+                'checked_out', 'c.checked_out',
+                'checked_out_time', 'c.checked_out_time',
 
             ];
         }
@@ -37,7 +37,7 @@ class ClientsModel extends ListModel
         parent::__construct($config);
     }
 
-    protected function populateState($ordering = 'a.name', $direction = 'asc')
+    protected function populateState($ordering = 'c.name', $direction = 'asc')
     {
         // Load the parameters.
         $this->setState('params', ComponentHelper::getParams('com_mothership'));
@@ -50,9 +50,6 @@ class ClientsModel extends ListModel
     {
         // Compile the store id.
         $id .= ':' . $this->getState('filter.search');
-        $id .= ':' . $this->getState('filter.province');
-        $id .= ':' . $this->getState('filter.purchase_type');
-
         return parent::getStoreId($id);
     }
 
@@ -62,66 +59,48 @@ class ClientsModel extends ListModel
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
 
-        // Get the default purchase type from the component parameters.
-        $defaultPurchase = (int) ComponentHelper::getParams('com_mothership')->get('purchase_type', 3);
-
         // Select the required fields from the table.
         $query->select(
             $this->getState(
                 'list.select',
                 [
-                    $db->quoteName('a.id'),
-                    $db->quoteName('a.name'),
-                    $db->quoteName('a.email'),
-                    $db->quoteName('a.phone'),
-                    $db->quoteName('a.address_1'),
-                    $db->quoteName('a.address_2'),
-                    $db->quoteName('a.city'),
-                    $db->quoteName('a.state'),
-                    $db->quoteName('a.zip'),
-                    $db->quoteName('a.default_rate'),
-                    $db->quoteName('a.owner_user_id'),
-                    $db->quoteName('a.tax_id'),
-                    $db->quoteName('a.created'),
-                    $db->quoteName('a.checked_out'),
+                    $db->quoteName('c.id'),
+                    $db->quoteName('c.name'),
+                    $db->quoteName('c.email'),
+                    $db->quoteName('c.phone'),
+                    $db->quoteName('c.address_1'),
+                    $db->quoteName('c.address_2'),
+                    $db->quoteName('c.city'),
+                    $db->quoteName('c.state'),
+                    $db->quoteName('c.zip'),
+                    $db->quoteName('c.default_rate'),
+                    $db->quoteName('c.owner_user_id'),
+                    $db->quoteName('c.tax_id'),
+                    $db->quoteName('c.created'),
+                    $db->quoteName('c.checked_out'),
                 ]
             )
         );
 
-        $query->from($db->quoteName('#__mothership_clients', 'a'));
+        $query->from($db->quoteName('#__mothership_clients', 'c'));
 
-        // Filter by province (instead of published state).
-        if ($province = trim($this->getState('filter.province', ''))) {
-            $query->where($db->quoteName('a.state') . ' = :province')
-                  ->bind(':province', $province);
-        }
 
         // Filter by search in client name (or by client id if prefixed with "cid:").
         if ($search = trim($this->getState('filter.search', ''))) {
-            if (stripos($search, 'cid:') === 0) {
+            if (stripos($search, 'id:') === 0) {
                 $search = (int) substr($search, 4);
-                $query->where($db->quoteName('a.id') . ' = :search')
+                $query->where($db->quoteName('c.id') . ' = :search')
                       ->bind(':search', $search, ParameterType::INTEGER);
             } else {
                 $search = '%' . str_replace(' ', '%', $search) . '%';
-                $query->where($db->quoteName('a.name') . ' LIKE :search')
+                $query->where($db->quoteName('c.name') . ' LIKE :search')
                       ->bind(':search', $search);
             }
         }
 
-        // Filter by purchase type.
-        if ($purchaseType = (int) $this->getState('filter.purchase_type')) {
-            if ($defaultPurchase === $purchaseType) {
-                $query->where('(' . $db->quoteName('a.purchase_type') . ' = :type OR ' . $db->quoteName('a.purchase_type') . ' = -1)');
-            } else {
-                $query->where($db->quoteName('a.purchase_type') . ' = :type');
-            }
-            $query->bind(':type', $purchaseType, ParameterType::INTEGER);
-        }
-
         // Add the ordering clause.
         $query->order(
-            $db->quoteName($db->escape($this->getState('list.ordering', 'a.name'))) . ' ' . $db->escape($this->getState('list.direction', 'ASC'))
+            $db->quoteName($db->escape($this->getState('list.ordering', 'c.name'))) . ' ' . $db->escape($this->getState('list.direction', 'ASC'))
         );
 
         return $query;
@@ -137,16 +116,11 @@ class ClientsModel extends ListModel
             return $this->cache[$store];
         }
 
-        // Load the list items.
         $items = parent::getItems();
 
-        // If no items or an error occurred, return an empty array.
         if (empty($items)) {
             return [];
         }
-
-        // Since "published" doesn't apply for clients,
-        // we simply return the items without additional counting logic.
 
         $this->cache[$store] = $items;
 
@@ -160,17 +134,14 @@ class ClientsModel extends ListModel
             return false;
         }
         
-        // Convert a single ID into an array
         if (!is_array($ids)) {
             $ids = [$ids];
         }
         
-        // Sanitize IDs to integers
         $ids = array_map('intval', $ids);
         
         $db = $this->getDatabase();
     
-        // Build the query using an IN clause for multiple IDs
         $query = $db->getQuery(true)
             ->update($db->quoteName('#__mothership_clients'))
             ->set($db->quoteName('checked_out') . ' = 0')
@@ -191,22 +162,18 @@ class ClientsModel extends ListModel
 
     public function delete($ids = [])
     {
-        // Ensure we have valid IDs
         if (empty($ids)) {
             return false;
         }
 
-        // Convert a single ID into an array
         if (!is_array($ids)) {
             $ids = [$ids];
         }
 
-        // Sanitize IDs to integers
         $ids = array_map('intval', $ids);
 
         $db = $this->getDatabase();
 
-        // Build the query using an IN clause for multiple IDs
         $query = $db->getQuery(true)
             ->delete($db->quoteName('#__mothership_clients'))
             ->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');

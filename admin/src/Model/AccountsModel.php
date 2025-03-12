@@ -24,7 +24,7 @@ class AccountsModel extends ListModel
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = [
-                'cid', 'a.id',
+                'id', 'a.id',
                 'name', 'a.name',
                 'client_name', 'c.name',
                 'checked_out', 'a.checked_out',
@@ -54,8 +54,6 @@ class AccountsModel extends ListModel
     {
         // Compile the store id.
         $id .= ':' . $this->getState('filter.search');
-        $id .= ':' . $this->getState('filter.province');
-        $id .= ':' . $this->getState('filter.purchase_type');
 
         return parent::getStoreId($id);
     }
@@ -65,9 +63,6 @@ class AccountsModel extends ListModel
         // Get a new query object.
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
-
-        // Get the default purchase type from the component parameters.
-        $defaultPurchase = (int) ComponentHelper::getParams('com_mothership')->get('purchase_type', 3);
 
         // Select the required fields from the table.
         $query->select(
@@ -89,8 +84,6 @@ class AccountsModel extends ListModel
 
         $query->from($db->quoteName('#__mothership_accounts', 'a'))
               ->join('LEFT', $db->quoteName('#__mothership_clients', 'c') . ' ON ' . $db->quoteName('a.client_id') . ' = ' . $db->quoteName('c.id')); // Joining the client table
-
-        // No filter by province as there is no 'state' column.
 
         // Filter by search in account name (or by account id if prefixed with "cid:").
         if ($search = trim($this->getState('filter.search', ''))) {

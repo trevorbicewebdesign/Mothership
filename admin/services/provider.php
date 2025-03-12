@@ -13,6 +13,9 @@ use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 
 require_once JPATH_ADMINISTRATOR . '/components/com_mothership/src/Field/ClientList.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_mothership/src/Field/AccountList.php';
+
+require_once JPATH_ADMINISTRATOR . '/components/com_mothership/vendor/autoload.php';
 
 /**
  * Joomla 5 Service Provider for com_mothership
@@ -35,33 +38,6 @@ return new class implements ServiceProviderInterface {
 
                 return $component;
             }
-        );
-
-        $app = Factory::getApplication();
-        $wa = $app->getDocument()->getWebAssetManager();
-
-        $wa->registerScript(
-            'com_mothership.client-edit',
-            'administrator/components/com_mothership/assets/js/client-edit.js',
-            [],
-            ['defer' => true]
-        );
-
-        $wa->registerStyle(
-            'com_mothership.client-edit',
-            'administrator/components/com_mothership/assets/css/client-edit.css'
-        );
-
-        $wa->registerScript(
-            'com_mothership.account-edit',
-            'administrator/components/com_mothership/assets/js/account-edit.js',
-            [],
-            ['defer' => true]
-        );
-
-        $wa->registerStyle(
-            'com_mothership.account-edit',
-            'administrator/components/com_mothership/assets/css/account-edit.css'
         );
     }
 };

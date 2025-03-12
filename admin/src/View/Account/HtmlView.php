@@ -87,13 +87,15 @@ class HtmlView extends BaseHtmlView
         $this->helper = new MothershipHelper;
         $this->canDo = ContentHelper::getActions('com_mothership');
 
+        // ✅ Use WebAssetManager to load the script
+        $wa = $this->getDocument()->getWebAssetManager();
+        $wa->registerAndUseScript('com_mothership.account-edit', 'media/com_mothership/js/account-edit.js', [], ['defer' => true]);
+        $wa->registerAndUseStyle('com_mothership.account-edit', 'media/com_mothership/css/account-edit.css');
+
         // Check for errors.
         if (\count($errors = $this->get('Errors'))) {
             throw new GenericDataException(implode("\n", $errors), 500);
         }
-
-        // ✅ Use WebAssetManager to load the script
-        $this->getDocument()->getWebAssetManager()->useScript('com_mothership.account-edit');
 
         $this->addToolbar();
 

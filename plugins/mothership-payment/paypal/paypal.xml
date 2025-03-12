@@ -1,0 +1,25 @@
+<extension type="plugin" group="mothership-payment" method="paypal" version="5.0">
+    <name>COM_MOTHERSHIP_PAYPAL_PLUGIN</name>
+    <files>
+        <filename plugin="paypal">paypal.php</filename>
+    </files>
+    <languages>
+        <language tag="en-GB">en-GB.plg_payment_mothership_paypal.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="display_name" type="text" label="COM_MOTHERSHIP_PAYPAL_DISPLAY_NAME" description="The name shown to users." default="PayPal" />
+                <field name="client_id" type="text" label="Client ID" description="Enter your PayPal Client ID" required="true" />
+                <field name="client_secret" type="password" label="Client Secret" description="Enter your PayPal Client Secret" required="true" />
+                <field name="sandbox" type="radio" label="Sandbox Mode" description="Enable sandbox mode for testing" default="1">
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                </field>
+                <field name="currency" type="text" label="Currency" description="Enter the currency code (e.g., USD)" default="USD" />
+                <field name="fee_percent" type="number" label="Fee (%)" default="2.9" />
+                <field name="fee_fixed" type="text" label="Fixed Fee" default="0.30" />
+            </fieldset>
+        </fields>
+    </config>
+</extension>
