@@ -42,25 +42,29 @@ class ClientController extends FormController
         $task = $input->getCmd('task');
 
         if ($task === 'apply') {
-            $defaultRedirect = Route::_('index.php?option=com_mothership&view=client&layout=edit&id=' . $data['id'], false);
+            $id = isset($data['id']) ? $data['id'] : $model->getState($model->getName() . '.id');
+            $defaultRedirect = Route::_('index.php?option=com_mothership&view=client&layout=edit&id=' . $id, false);
         } else {
             $defaultRedirect = Route::_('index.php?option=com_mothership&view=clients', false);
         }
-
-        $this->setRedirect(MothershipHelper::getReturnRedirect($defaultRedirect));
+        $returnRedirect = MothershipHelper::getReturnRedirect($defaultRedirect);
+        $this->setRedirect($returnRedirect);
         return true;
     }
 
     public function cancel($key = null)
     {
-        $defaultRedirect = Route::_('index.php?option=com_mothership&view=clients', false);
-        $redirect = MothershipHelper::getReturnRedirect($defaultRedirect);
+        $model = $this->getModel('Client');
+        $id = $this->input->getInt('id');
+        $model->cancelEdit($id);
 
-        $this->setRedirect($redirect);
+        $defaultRedirect = Route::_('index.php?option=com_mothership&view=clients', false);
+        $returnRedirect = MothershipHelper::getReturnRedirect($defaultRedirect);
+
+        $this->setRedirect($returnRedirect);
 
         return true;
     }
-
     public function delete()
     {
         $app = Factory::getApplication();

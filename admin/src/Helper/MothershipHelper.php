@@ -162,12 +162,12 @@ class MothershipHelper extends ContentHelper
             if (!empty($data['return'])) {
                 $return = base64_decode($data['return'], true);
                 if ($return !== false) {
-                    $return = urldecode($return);
+                    $return = htmlspecialchars_decode($return);
                 }
             }
         }
 
-        if ($return && filter_var($return, FILTER_VALIDATE_URL)) {
+        if (!empty($return)) {
             return $return;
         }
 
