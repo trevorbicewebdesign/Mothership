@@ -12,7 +12,7 @@ $status_levels = [
 ];
 ?>
 <h1>Invoices</h1>
-<table class="table">
+<table class="table" id="invoicetable">
     <thead>
         <tr>
             <th>PDF</th>
@@ -41,10 +41,12 @@ $status_levels = [
                 <td><?php echo $status_levels[$invoice->status]; ?></td>
                 <td>
                     <?php
-                    $dueDate = new DateTime($invoice->due_date);
-                    $currentDate = new DateTime();
+                    $dueDate = new DateTime($invoice->due_date, new DateTimeZone('UTC'));
+                    $dueDate->setTime(23, 59, 59);
+                    
+                    $currentDate = new DateTime('now', new DateTimeZone('UTC'));
                     $interval = $currentDate->diff($dueDate);
-                    echo 'Due in ' . $interval->days . ' days';
+                    echo "Due in {$interval->days} days";
                     ?>
                 </td>
                 
