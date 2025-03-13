@@ -181,8 +181,6 @@ class InvoiceController extends FormController
         // Determine which task was requested
         $task = $input->getCmd('task');
 
-        die($task);
-
         // If "Apply" (i.e., invoice.apply) is clicked, remain on the edit page.
         if ($task === 'apply') {
             $id = !empty($data['id']) ? $data['id'] : $model->getState($model->getName() . '.id');
