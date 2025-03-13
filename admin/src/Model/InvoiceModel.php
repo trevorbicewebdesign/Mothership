@@ -136,26 +136,28 @@ class InvoiceModel extends AdminModel
 
         // Insert new items
         if (!empty($data['items'])) {
+            $i = 0;
             foreach ($data['items'] as $index => $item) {
-            $columns = ['invoice_id', 'name', 'description', 'hours', 'minutes', 'quantity', 'rate', 'subtotal', 'ordering'];
-            $values = [
-                (int)$invoiceId,
-                $db->quote($item['name']),
-                $db->quote($item['description']),
-                (float)$item['hours'],
-                (float)$item['minutes'],
-                (float)$item['quantity'],
-                (float)$item['rate'],
-                (float)$item['subtotal'],
-                (int)$index + 1 // Assuming ordering starts from 1
-            ];
+                $columns = ['invoice_id', 'name', 'description', 'hours', 'minutes', 'quantity', 'rate', 'subtotal', 'ordering'];
+                $values = [
+                    (int)$invoiceId,
+                    $db->quote($item['name']),
+                    $db->quote($item['description']),
+                    (float)$item['hours'],
+                    (float)$item['minutes'],
+                    (float)$item['quantity'],
+                    (float)$item['rate'],
+                    (float)$item['subtotal'],
+                    (int)$i + 1 // Assuming ordering starts from 1
+                ];
 
-            $query = $db->getQuery(true)
-                ->insert($db->quoteName('#__mothership_invoice_items'))
-                ->columns($db->quoteName($columns))
-                ->values(implode(',', $values));
+                $query = $db->getQuery(true)
+                    ->insert($db->quoteName('#__mothership_invoice_items'))
+                    ->columns($db->quoteName($columns))
+                    ->values(implode(',', $values));
 
-            $db->setQuery($query)->execute();
+                $db->setQuery($query)->execute();
+                $i++;
             }
         }
 
