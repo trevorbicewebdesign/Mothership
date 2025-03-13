@@ -143,9 +143,9 @@ class InvoiceModel extends AdminModel
                     (int)$invoiceId,
                     $db->quote($item['name']),
                     $db->quote($item['description']),
-                    (float)$item['hours'],
-                    (float)$item['minutes'],
-                    (float)$item['quantity'],
+                    (int)$item['hours'],
+                    (int)$item['minutes'],
+                    (int)$item['quantity'],
                     (float)$item['rate'],
                     (float)$item['subtotal'],
                     (int)$i + 1 // Assuming ordering starts from 1
