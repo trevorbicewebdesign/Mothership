@@ -54,8 +54,6 @@ class AccountsModel extends ListModel
     {
         // Compile the store id.
         $id .= ':' . $this->getState('filter.search');
-        $id .= ':' . $this->getState('filter.province');
-        $id .= ':' . $this->getState('filter.purchase_type');
 
         return parent::getStoreId($id);
     }
