@@ -63,20 +63,33 @@ CREATE TABLE IF NOT EXISTS `#__mothership_invoice_items` (
   INDEX (`invoice_id`)
 ) COLLATE='utf8_general_ci' ENGINE=MyISAM ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1;
 
+-- Updated mothership_payments table to record raw payment details only.
 CREATE TABLE IF NOT EXISTS `#__mothership_payments` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
-    `invoice_id` INT NOT NULL,
     `client_id` INT NOT NULL,
     `account_id` INT DEFAULT NULL,
     `amount` DECIMAL(10,2) NOT NULL,
+    `payment_date` DATETIME NOT NULL,
+    `fee_amount` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    `fee_passed_on` TINYINT(1) NOT NULL DEFAULT 0,
     `payment_method` VARCHAR(50) NOT NULL, 
     `transaction_id` VARCHAR(255) DEFAULT NULL,
     `status` INT NOT NULL DEFAULT 0,
-    `created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `processed_date` DATETIME DEFAULT NULL,
     `notes` TEXT DEFAULT NULL,
-    FOREIGN KEY (`invoice_id`) REFERENCES `#__mothership_invoices` (`id`) ON DELETE CASCADE,
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- New mapping table that links payments to invoices.
+CREATE TABLE IF NOT EXISTS `#__mothership_invoice_payment` (
+    `payment_id` INT NOT NULL,
+    `invoice_id` INT NOT NULL,
+    `applied_amount` DECIMAL(10,2) NOT NULL,
+    PRIMARY KEY (`payment_id`, `invoice_id`),
+    FOREIGN KEY (`payment_id`) REFERENCES `#__mothership_payments` (`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`invoice_id`) REFERENCES `#__mothership_invoices` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `#__mothership_users` (
