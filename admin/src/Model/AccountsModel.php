@@ -65,25 +65,27 @@ class AccountsModel extends ListModel
         $query = $db->getQuery(true);
 
         // Select the required fields from the table.
+        // Note: The "client" field is now used instead of "client_id" to match the schema.
         $query->select(
             $this->getState(
-            'list.select',
-            [
-            $db->quoteName('a.id'),
-            $db->quoteName('a.name'),
-            $db->quoteName('a.primary_domain'),
-            $db->quoteName('a.rate'),
-            $db->quoteName('a.client_id'),
-            $db->quoteName('a.created'),
-            $db->quoteName('a.checked_out_time'),
-            $db->quoteName('a.checked_out'),
-            $db->quoteName('c.name', 'client_name') // Adding client_name from the client table with alias
-            ]
+                'list.select',
+                [
+                    $db->quoteName('a.id'),
+                    $db->quoteName('a.name'),
+                    $db->quoteName('c.name', 'client_name'),
+                    $db->quoteName('a.rate'),
+                    $db->quoteName('a.client'),  // updated column name
+                    $db->quoteName('a.created'),
+                    $db->quoteName('a.checked_out_time'),
+                    $db->quoteName('a.checked_out'),
+                ]
             )
         );
 
+        // Join the accounts table with the clients table
+        // Updated the join condition to use "a.client" instead of "a.client_id"
         $query->from($db->quoteName('#__mothership_accounts', 'a'))
-              ->join('LEFT', $db->quoteName('#__mothership_clients', 'c') . ' ON ' . $db->quoteName('a.client_id') . ' = ' . $db->quoteName('c.id')); // Joining the client table
+              ->join('LEFT', $db->quoteName('#__mothership_clients', 'c') . ' ON ' . $db->quoteName('a.client') . ' = ' . $db->quoteName('c.id'));
 
         // Filter by search in account name (or by account id if prefixed with "cid:").
         if ($search = trim($this->getState('filter.search', ''))) {
@@ -96,6 +98,11 @@ class AccountsModel extends ListModel
                 $query->where($db->quoteName('a.name') . ' LIKE :search')
                       ->bind(':search', $search);
             }
+        }
+
+        // Add filtering for client name if provided.
+        if ($clientName = $this->getState('filter.client_name')) {
+            $query->where($db->quoteName('c.name') . ' LIKE ' . $db->quote('%' . $clientName . '%'));
         }
 
         // Add the ordering clause.
@@ -126,7 +133,6 @@ class AccountsModel extends ListModel
 
         // Since "published" doesn't apply for Accounts,
         // we simply return the items without additional counting logic.
-
         $this->cache[$store] = $items;
 
         return $this->cache[$store];
@@ -200,5 +206,4 @@ class AccountsModel extends ListModel
             return false;
         }
     }
-
 }
