@@ -94,8 +94,8 @@ class HtmlView extends BaseHtmlView
 
         // ✅ Use WebAssetManager to load the script
         $wa = $this->getDocument()->getWebAssetManager();
-        $wa->registerAndUseScript('com_mothership.invoice-edit', 'media/com_mothership/js/invoice-edit.js', [], ['defer' => true]);
-        $wa->registerAndUseStyle('com_mothership.invoice-edit', 'media/com_mothership/css/invoice-edit.css');
+        $wa->registerAndUseScript('com_mothership.invoice-edit', 'administrator/components/com_mothership/assets/js/invoice-edit.js', [], ['defer' => true]);
+        $wa->registerAndUseStyle('com_mothership.invoice-edit', 'administrator/components/com_mothership/assets/css/invoice-edit.css');
 
         $wa->registerAndUseScript(
             'sortablejs',

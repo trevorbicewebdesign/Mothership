@@ -14,7 +14,7 @@ $items = $field->value ?? [];
             <th width="1%"><?php echo JText::_('COM_MOTHERSHIP_ITEM_HOURS'); ?></th>
             <th width="1%"><?php echo JText::_('COM_MOTHERSHIP_ITEM_MINUTES'); ?></th>
             <th width="1%"><?php echo JText::_('COM_MOTHERSHIP_ITEM_QUANTITY'); ?></th>
-            <th width="1%"><?php echo JText::_('COM_MOTHERSHIP_ITEM_RATE'); ?></th>
+            <th width="6%"><?php echo JText::_('COM_MOTHERSHIP_ITEM_RATE'); ?></th>
             <th width="1%"><?php echo JText::_('COM_MOTHERSHIP_ITEM_SUBTOTAL'); ?></th>
             <th width="1%"><?php echo JText::_('COM_MOTHERSHIP_ITEM_ACTIONS'); ?></th>
         </tr>

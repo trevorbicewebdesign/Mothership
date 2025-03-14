@@ -63,11 +63,12 @@ class InvoiceModel extends AdminModel
         $item = parent::getItem($pk);
 
         if ($item && $item->id) {
-            $db = $this->getDbo();
+            $db = $this->getDatabase();
             $query = $db->getQuery(true)
-                ->select('*')
-                ->from($db->quoteName('#__mothership_invoice_items'))
-                ->where($db->quoteName('invoice_id') . ' = ' . (int) $item->id);
+            ->select('*')
+            ->from($db->quoteName('#__mothership_invoice_items'))
+            ->where($db->quoteName('invoice_id') . ' = ' . (int) $item->id)
+            ->order($db->quoteName('ordering') . ' ASC');
 
             $db->setQuery($query);
             $item->items = $db->loadAssocList();
@@ -98,6 +99,10 @@ class InvoiceModel extends AdminModel
             $newStatus = (int) $data['status'];
         }
 
+        if($data['due_date'] == '') {
+            $data['due_date'] = null;
+        }
+
         if (!$table->bind($data)) {
             $this->setError($table->getError());
             return false;
@@ -117,17 +122,10 @@ class InvoiceModel extends AdminModel
         if ( !$isNew && ($newStatus == 2 && $previousStatus !== 2)) {
             $this->onInvoiceOpened($table, $previousStatus);
             // Fill in the due date
-            $table->due_date = Factory::getDate()->modify('+30 days')->toSql();
+            $table->due_date = Factory::getDate()->modify('+30 days')->format('Y-m-d');
             $table->store();
         }
-
-        // Store items JSON (optional versioning support)
-        if (!empty($data['items'])) {
-            $registry = new Registry();
-            $registry->loadArray($data['items']);
-            $table->items_json = (string)$registry;
-            $table->store();
-        }
+        
 
         // Delete existing items
         $db->setQuery(
@@ -138,17 +136,19 @@ class InvoiceModel extends AdminModel
 
         // Insert new items
         if (!empty($data['items'])) {
-            foreach ($data['items'] as $item) {
-                $columns = ['invoice_id', 'name', 'description', 'hours', 'minutes', 'quantity', 'rate', 'subtotal'];
+            $i = 0;
+            foreach ($data['items'] as $index => $item) {
+                $columns = ['invoice_id', 'name', 'description', 'hours', 'minutes', 'quantity', 'rate', 'subtotal', 'ordering'];
                 $values = [
                     (int)$invoiceId,
                     $db->quote($item['name']),
                     $db->quote($item['description']),
-                    (float)$item['hours'],
-                    (float)$item['minutes'],
+                    (int)$item['hours'],
+                    (int)$item['minutes'],
                     (float)$item['quantity'],
                     (float)$item['rate'],
-                    (float)$item['subtotal']
+                    (float)$item['subtotal'],
+                    (int)$i + 1 // Assuming ordering starts from 1
                 ];
 
                 $query = $db->getQuery(true)
@@ -157,8 +157,12 @@ class InvoiceModel extends AdminModel
                     ->values(implode(',', $values));
 
                 $db->setQuery($query)->execute();
+                $i++;
             }
         }
+
+        // Set the new record ID into the model state
+        $this->setState($this->getName() . '.id', $table->id);
 
         return true;
     }

@@ -49,6 +49,8 @@ class InvoiceController extends BaseController
         $layout = new FileLayout('pdf', JPATH_ROOT . '/components/com_mothership/layouts');
         $html = $layout->render(['invoice' => $invoice]);
 
+        
+       
         // Turn off Joomla's output
         ob_end_clean();
         header('Content-Type: application/pdf');
