@@ -173,4 +173,5 @@ class MothershipHelper extends ContentHelper
 
         return $default;
     }
+    
 }

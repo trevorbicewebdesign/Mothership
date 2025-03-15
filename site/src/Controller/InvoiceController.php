@@ -90,16 +90,27 @@ class InvoiceController extends BaseController
         // Load enabled payment plugins
         $plugins = \Joomla\CMS\Plugin\PluginHelper::getPlugin('mothership-payment');
         $paymentOptions = [];
+        
+        $dispatcher = Factory::getApplication()->getDispatcher();
 
         foreach ($plugins as $plugin) {
             $params = new \Joomla\Registry\Registry($plugin->params);
             $pluginName = $params->get('display_name') ?: ucfirst(str_replace('mothership-', '', $plugin->element));
 
+
+            if($plugin->name == 'mothership-paypal') {
+                $feeAmount = 0.30;
+                $displayFee = '$0.30 + 2.9%';
+            } else {
+                $feeAmount = 0.00;
+                $displayFee = 'Free';
+            }
+            
             $paymentOptions[] = [
                 'element'     => $plugin->name,
                 'name'        => $pluginName,
-                'fee_percent' => (float) $params->get('fee_percent', '3.9'),
-                'fee_fixed'   => (float) $params->get('fee_fixed', '0.30'),
+                'display_fee' => $displayFee,
+                'get_fee'     => $feeAmount,
             ];
         }
 
