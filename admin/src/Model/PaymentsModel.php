@@ -22,19 +22,19 @@ class PaymentsModel extends ListModel
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = [
-                'cid', 'a.id',
-                'payment_date', 'a.payment_date',
-                'amount', 'a.amount',
-                'payment_method', 'a.payment_method',
+                'id', 'p.id',
+                'payment_date', 'p.payment_date',
+                'amount', 'p.amount',
+                'payment_method', 'p.payment_method',
                 'client_name', 'c.name',
-                'checked_out', 'a.checked_out',
-                'checked_out_time', 'a.checked_out_time'
+                'checked_out', 'p.checked_out',
+                'checked_out_time', 'p.checked_out_time'
             ];
         }
         parent::__construct($config);
     }
 
-    protected function populateState($ordering = 'a.payment_date', $direction = 'asc')
+    protected function populateState($ordering = 'p.payment_date', $direction = 'asc')
     {
         $app = Factory::getApplication();
         if (empty($this->context)) {
@@ -61,33 +61,47 @@ class PaymentsModel extends ListModel
 
         // Select the required fields from the payments table.
         $query->select(
-            $this->getState('list.select', $db->quoteName('a.id'))
+            $this->getState(
+            'list.select',
+            [
+            $db->quoteName('p.id'),
+            $db->quoteName('p.client_id'),
+            $db->quoteName('p.account_id'),
+
+            $db->quoteName('c.name', 'client_name'),
+            $db->quoteName('a.name', 'account_name'),
+            $db->quoteName('p.amount'),
+            $db->quoteName('p.payment_method'),
+            $db->quoteName('p.payment_date'),
+            $db->quoteName('p.status'),
+            ]
+            )
         );
 
         // Use unique aliases for each table.
-        $query->from($db->quoteName('#__mothership_payments', 'a'))
+        $query->from($db->quoteName('#__mothership_payments', 'p'))
               ->join('LEFT', $db->quoteName('#__mothership_clients', 'c') 
-                      . ' ON ' . $db->quoteName('a.client_id') . ' = ' . $db->quoteName('c.id'))
-              ->join('LEFT', $db->quoteName('#__mothership_accounts', 'acc') 
-                      . ' ON ' . $db->quoteName('a.account_id') . ' = ' . $db->quoteName('acc.id'));
+                      . ' ON ' . $db->quoteName('p.client_id') . ' = ' . $db->quoteName('c.id'))
+              ->join('LEFT', $db->quoteName('#__mothership_accounts', 'a') 
+                      . ' ON ' . $db->quoteName('p.account_id') . ' = ' . $db->quoteName('a.id'));
 
         // Filter by search term.
         if ($search = trim($this->getState('filter.search', ''))) {
-            if (stripos($search, 'cid:') === 0) {
+            if (stripos($search, 'id:') === 0) {
                 $search = (int) substr($search, 4);
-                $query->where($db->quoteName('a.id') . ' = :search')
+                $query->where($db->quoteName('p.id') . ' = :search')
                       ->bind(':search', $search, ParameterType::INTEGER);
             } else {
                 $search = '%' . str_replace(' ', '%', $search) . '%';
                 // Since payments don't have a 'name', search on payment_method.
-                $query->where($db->quoteName('a.payment_method') . ' LIKE :search')
+                $query->where($db->quoteName('p.payment_method') . ' LIKE :search')
                       ->bind(':search', $search);
             }
         }
 
         // Add the ordering clause.
         $query->order(
-            $db->quoteName($db->escape($this->getState('list.ordering', 'a.payment_date'))) 
+            $db->quoteName($db->escape($this->getState('list.ordering', 'p.payment_date'))) 
             . ' ' . $db->escape($this->getState('list.direction', 'ASC'))
         );
 
