@@ -131,7 +131,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                 </div>
             </div>
         </div>
-
+        
         <?php echo HTMLHelper::_('uitab.endTab'); ?>
         <?php echo HTMLHelper::_('uitab.endTabSet'); ?>
     </div>
