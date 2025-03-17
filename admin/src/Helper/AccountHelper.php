@@ -61,7 +61,7 @@ class AccountHelper extends ContentHelper
         return $options;
     }
     
-    public function getAccount($account_id)
+    public static function getAccount($account_id)
     {
         $db = Factory::getContainer()->get(\Joomla\Database\DatabaseInterface::class);
 
