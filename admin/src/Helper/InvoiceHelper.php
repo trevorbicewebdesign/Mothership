@@ -22,6 +22,31 @@ use Joomla\Database\DatabaseDriver;
 class InvoiceHelper
 {
 
+    public static function getStatus($status_id)
+    {
+      
+        // Transform the status from integer to string
+        switch ($status_id) {
+            case 0:
+                $status = 'Draft';
+                break;
+            case 1:
+                $status = 'Opened';
+                break;
+            case 2:
+                $status = 'Late';
+                break;
+            case 3:
+                $status = 'Paid';
+                break;
+            default:
+                $status = 'Unknown';
+                break;
+        }
+
+        return $status;
+    }
+
     public static function setInvoicePaid($invoiceId)
     {
         self::updateInvoiceStatus($invoiceId, 3);
