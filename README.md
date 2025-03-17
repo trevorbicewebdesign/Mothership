@@ -104,3 +104,30 @@ The **Payments** object represents the payments made by clients. Each payment ha
 - **Refunded**: The payment has been refunded to the client.
 - **Cancelled**: The payment was cancelled before completion.
 - **Disputed**: The payment is under dispute and is being reviewed.
+
+---
+
+## Payments Helper
+The **Payments Helper** provides several methods to manage and update payment records and statuses. Below are the methods available:
+
+- **updatePaymentStatus()**: Updates the status of a payment.
+- **setInvoicePaid()**: Marks an invoice as paid.
+- **updateInvoiceStatus()**: Updates the status of an invoice.
+- **insertPaymentRecord()**: Inserts a new payment record into the system.
+- **getPaymentById()**: Retrieves a payment record by its unique identifier.
+- **deletePayment()**: Deletes a payment record from the system.
+- **validatePaymentData()**: Validates the data for a payment record before it is processed.
+- **calculateTransactionFee()**: Calculates the transaction fee for a payment.
+- **generatePaymentReceipt()**: Generates a receipt for a completed payment.
+- **sendPaymentNotification()**: Sends a notification to the client about the payment status.
+
+## Payment Supported Events
+- **onAfterInitialise**: Runs after mothership initializes
+- **onMothershipPaymentRequest**: Runs whenever a payment request is being made
+
+## Payment Plugins
+There are two payment plugins: Paypal and Zelle. The payment plugin type is 'Mothership Payments'.
+
+### PayPal
+
+### Zelle
