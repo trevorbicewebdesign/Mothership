@@ -30,39 +30,6 @@ use Joomla\Database\ParameterType;
 class MothershipHelper extends ContentHelper
 {
 
-    
-
-    public static function getInvoiceStatus($status_id)
-    {
-        $db = Factory::getContainer()->get(\Joomla\Database\DatabaseInterface::class);
-
-        $query = $db->getQuery(true)
-            ->select($db->quoteName('status'))
-            ->from($db->quoteName('#__mothership_invoices'))
-            ->where($db->quoteName('id') . ' = ' . $db->quote($status_id));
-
-        $db->setQuery($query);
-        $status = $db->loadResult();
-
-        // Transform the status from integer to string
-        switch ($status) {
-            case 0:
-                $status = 'Draft';
-                break;
-            case 1:
-                $status = 'Opened';
-                break;
-            case 2:
-                $status = 'Late';
-                break;
-            default:
-                $status = 'Paid';
-                break;
-        }
-
-        return $status;
-    }
-
     /**
      * Get the return URL from the request or form.
      */
