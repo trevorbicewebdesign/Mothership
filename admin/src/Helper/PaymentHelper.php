@@ -19,6 +19,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseDriver;
 use TrevorBice\Component\Mothership\Administrator\Helper\ClientHelper;
+use TrevorBice\Component\Mothership\Administrator\Helper\AccountHelper;
 
 class PaymentHelper
 {
@@ -102,11 +103,16 @@ class PaymentHelper
         }
 
         // must have valid account ID
-        if( empty($accountId)) {
-            throw new \RuntimeException("Invalid account ID");
+        try{
+            AccountHelper::getAccount($accountId);
         }
+        catch(\Exception $e){
+            // error message should bubble up
+            throw new \RuntimeException($e->getMessage());
+        }
+
         // must have a valid amount
-        if( empty($amount)) {
+        if( empty($amount) || $amount <= 0 ){
             throw new \RuntimeException("Invalid amount");
         }
 
