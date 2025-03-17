@@ -65,7 +65,7 @@ class ClientHelper extends ContentHelper
         return $options;
     }
 
-    public function getClient($client_id)
+    public static function getClient($client_id)
     {
         $db = Factory::getContainer()->get(\Joomla\Database\DatabaseInterface::class);
 
@@ -79,6 +79,10 @@ class ClientHelper extends ContentHelper
 
         $db->setQuery($query);
         $client = $db->loadObject();
+
+        if (!$client) {
+            throw new \RuntimeException("Client ID {$client_id} not found.");
+        }
 
         return $client;
     }
