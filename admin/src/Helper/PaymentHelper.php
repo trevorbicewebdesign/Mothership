@@ -91,6 +91,20 @@ class PaymentHelper
      */
     public static function insertPaymentRecord(int $clientId, int $accountId, float $amount, $paymentDate, float $fee, $feePassedOn, $paymentMethod, $txnId, int $status)
     {
+
+        // must have a valid client ID
+        if( empty($clientId)) {
+            throw new \RuntimeException("Invalid client ID");
+        }
+        // must have valid account ID
+        if( empty($accountId)) {
+            throw new \RuntimeException("Invalid account ID");
+        }
+        // must have a valid amount
+        if( empty($amount)) {
+            throw new \RuntimeException("Invalid amount");
+        }
+
         $db = Factory::getContainer()->get(DatabaseDriver::class);
         $columns = [
             $db->quoteName('client_id'),
