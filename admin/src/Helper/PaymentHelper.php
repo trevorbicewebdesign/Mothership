@@ -18,6 +18,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseDriver;
+use TrevorBice\Component\Mothership\Administrator\Helper\ClientHelper;
 
 class PaymentHelper
 {
@@ -92,10 +93,14 @@ class PaymentHelper
     public static function insertPaymentRecord(int $clientId, int $accountId, float $amount, $paymentDate, float $fee, $feePassedOn, $paymentMethod, $txnId, int $status)
     {
 
-        // must have a valid client ID
-        if( empty($clientId)) {
-            throw new \RuntimeException("Invalid client ID");
+        try{
+            ClientHelper::getClient($clientId);
         }
+        catch(\Exception $e){
+            // error message should bubble up
+            throw new \RuntimeException($e->getMessage());
+        }
+
         // must have valid account ID
         if( empty($accountId)) {
             throw new \RuntimeException("Invalid account ID");
