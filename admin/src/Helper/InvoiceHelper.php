@@ -24,7 +24,6 @@ class InvoiceHelper
 
     public static function getStatus($status_id)
     {
-      
         // Transform the status from integer to string
         switch ($status_id) {
             case 0:
