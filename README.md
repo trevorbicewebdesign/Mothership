@@ -96,3 +96,11 @@ The **Payments** object represents the payments made by clients. Each payment ha
 - **Status**: The status of the payment.
 - **Checked Out Time**: The timestamp when the payment record was last checked out.
 - **Checked Out**: The ID of the user who last checked out the payment record.
+
+### Payment Status Levels
+- **Pending**: The payment has been initiated but not yet completed.
+- **Completed**: The payment has been successfully processed.
+- **Failed**: The payment attempt was unsuccessful.
+- **Refunded**: The payment has been refunded to the client.
+- **Cancelled**: The payment was cancelled before completion.
+- **Disputed**: The payment is under dispute and is being reviewed.
