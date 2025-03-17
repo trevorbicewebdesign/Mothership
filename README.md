@@ -45,10 +45,6 @@ The **Accounts** object represents the different accounts managed by a client. E
 - **Checked Out Time**: The timestamp when the account record was last checked out.
 - **Checked Out**: The ID of the user who last checked out the account record.
 
-## Projects
-
-## Invoices
-
 ## Invoices
 The **Invoices** object represents the invoices generated for clients. Each invoice has the following attributes:
 
