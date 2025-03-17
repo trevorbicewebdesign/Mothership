@@ -131,3 +131,4 @@ There are two payment plugins: Paypal and Zelle. The payment plugin type is 'Mot
 ### PayPal
 
 ### Zelle
+This payment method is essentially a digital version of "Pay by Check". Once the payment has been confirmed, an administrator will need to manually update the status of the payment to confirmed.
