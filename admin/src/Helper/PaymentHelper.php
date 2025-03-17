@@ -20,6 +20,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseDriver;
 use TrevorBice\Component\Mothership\Administrator\Helper\ClientHelper;
 use TrevorBice\Component\Mothership\Administrator\Helper\AccountHelper;
+use TrevorBice\Component\Mothership\Administrator\Helper\InvoiceHelper;
 
 class PaymentHelper
 {
@@ -42,39 +43,6 @@ class PaymentHelper
         }
     }
 
-    public static function setInvoicePaid($invoiceId)
-    {
-        self::updateInvoiceStatus($invoiceId, 3);
-    }
-
-    /**
-     * Updates the invoice status and paid date.
-     *
-     * @param   int     $invoiceId  The invoice ID.
-     * @param   int     $status     The new status (e.g., 3 for paid).
-     * @param   string  $paidDate   The paid date in Y-m-d H:i:s format.
-     *
-     * @return  bool  True on success, false on failure.
-     */
-    public static function updateInvoiceStatus($invoiceId, $status)
-    {
-        $paidDate = date('Y-m-d H:i:s');
-        $db = Factory::getContainer()->get(DatabaseDriver::class);
-        $query = $db->getQuery(true)
-            ->update($db->quoteName('#__mothership_invoices'))
-            ->set($db->quoteName('status') . ' = ' . (int) $status)
-            ->set($db->quoteName('paid_date') . ' = ' . $db->quote($paidDate))
-            ->where($db->quoteName('id') . ' = ' . (int) $invoiceId);
-        $db->setQuery($query);
-
-        try {
-            $db->execute();
-            return true;
-        } catch (\Exception $e) {
-            Log::add("Failed to update invoice ID $invoiceId: " . $e->getMessage(), Log::ERROR, 'payment');
-            return false;
-        }
-    }
 
     /**
      * Inserts a payment record.
@@ -156,132 +124,5 @@ class PaymentHelper
             throw new \RuntimeException("Failed to insert payment record: " . $e->getMessage());
         }
     }
-
-    /**
-     * Allocates a payment to an invoice.
-     *
-     * @param   int     $paymentId  The payment record ID.
-     * @param   int     $invoiceId  The invoice ID.
-     * @param   float   $amount     The amount to apply.
-     *
-     * @return  bool  True on success, false on failure.
-     */
-    public static function allocatePayment($paymentId, $invoiceId, $amount)
-    {
-        $db = Factory::getContainer()->get(DatabaseDriver::class);
-        $columns = [
-            $db->quoteName('payment_id'),
-            $db->quoteName('invoice_id'),
-            $db->quoteName('applied_amount')
-        ];
-        $values = [
-            $db->quote($paymentId),
-            $db->quote($invoiceId),
-            $db->quote($amount)
-        ];
-        $query = $db->getQuery(true)
-            ->insert($db->quoteName('#__mothership_invoice_payment'))
-            ->columns(implode(', ', $columns))
-            ->values(implode(', ', $values));
-        $db->setQuery($query);
-
-        try {
-            $db->execute();
-            return true;
-        } catch (\Exception $e) {
-            Log::add("Failed to insert invoice payment mapping: " . $e->getMessage(), Log::ERROR, 'payment');
-            return false;
-        }
-    }
-
-    /**
-     * Wrapper method that records a payment by performing all the necessary steps.
-     * This method demonstrates how you can tie the individual steps together within a transaction.
-     *
-     * @param   int     $invoiceId       The invoice ID.
-     * @param   float   $amount          The payment amount.
-     * @param   string  $txnId           The transaction ID.
-     * @param   string  $paymentMethod   The payment method.
-     * @param   float   $fee             The fee amount.
-     * @param   int     $feePassedOn     Whether the fee is passed on.
-     * @param   int     $status          The payment status.
-     * @param   string  $paymentDate     (Optional) The payment date.
-     *
-     * @return  int|false  The new payment ID on success, or false on failure.
-     */
-    public static function recordPayment($invoiceId, $amount, $txnId, $paymentMethod, $fee = 0, $feePassedOn = 0, $status = 1, $paymentDate = null)
-    {
-        $db = Factory::getContainer()->get(DatabaseDriver::class);
-        $now = date('Y-m-d H:i:s');
-        $paymentDate = $paymentDate ?: $now;
-
-        // Begin transaction
-        $db->transactionStart();
-
-        // Load invoice to get client and account IDs.
-        $query = $db->getQuery(true)
-            ->select($db->quoteName(['client_id', 'account_id']))
-            ->from($db->quoteName('#__mothership_invoices'))
-            ->where($db->quoteName('id') . ' = ' . (int) $invoiceId);
-        $db->setQuery($query);
-        $invoiceRecord = $db->loadObject();
-
-       
-
-        if (!$invoiceRecord) {
-            Log::add("Invoice ID $invoiceId not found", Log::ERROR, 'payment');
-            $db->transactionRollback();
-            return false;
-        }
-        $clientId = $invoiceRecord->client_id;
-        $accountId = $invoiceRecord->account_id;
-
-        // Update invoice status.
-        if (!self::updateInvoiceStatus($invoiceId, 3)) {
-            $db->transactionRollback();
-            return false;
-        }
-
-        echo $query;
-        print_r($invoiceRecord);
-        echo $clientId;
-        echo $accountId;
-        die();
-
-        // Insert payment record.
-        $paymentId = self::insertPaymentRecord($clientId, $accountId, $amount, $paymentDate, $fee, $feePassedOn, $paymentMethod, $txnId, $status);
-        if (!$paymentId) {
-            $db->transactionRollback();
-            return false;
-        }
-
-        // Allocate payment to invoice.
-        if (!self::allocatePayment($paymentId, $invoiceId, $amount)) {
-            $db->transactionRollback();
-            return false;
-        }
-
-        $db->transactionCommit();
-        Log::add("Payment recorded with ID $paymentId for Invoice $invoiceId", Log::INFO, 'payment');
-        return $paymentId;
-    }
-
-    public static function getInvoice($invoiceId)
-    {
-        $db = Factory::getContainer()->get(DatabaseDriver::class);
-        $query = $db->getQuery(true)
-            ->select('*')
-            ->from($db->quoteName('#__mothership_invoices'))
-            ->where($db->quoteName('id') . ' = ' . (int) $invoiceId);
-        $db->setQuery($query);
-        $invoice = $db->loadObject();
-
-        if (!$invoice) {
-            throw new \RuntimeException("Invoice ID $invoiceId not found");
-        }
-
-        return $invoice;
-    }
-
 
 }
