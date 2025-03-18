@@ -29,16 +29,16 @@ class PaymentHelper
     {
         // Transform the status from integer to string
         switch ($status_id) {
-            case 0:
+            case 1:
                 $status = 'Draft';
                 break;
-            case 1:
+            case 2:
                 $status = 'Opened';
                 break;
-            case 2:
+            case 3:
                 $status = 'Late';
                 break;
-            case 3:
+            case 4:
                 $status = 'Paid';
                 break;
             default:
