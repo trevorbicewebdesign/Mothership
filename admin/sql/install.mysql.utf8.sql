@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS `#__mothership_invoice_payment` (
   `payment_id` INT NOT NULL,
   `invoice_id` INT NOT NULL,
   `applied_amount` DECIMAL(10,2) NOT NULL,
-  PRIMARY KEY (`payment_id`, `invoice_id`),
+  PRIMARY KEY (`id`),
   CONSTRAINT `fk_ip_payment` FOREIGN KEY (`payment_id`) REFERENCES `#__mothership_payments` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_ip_invoice` FOREIGN KEY (`invoice_id`) REFERENCES `#__mothership_invoices` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
