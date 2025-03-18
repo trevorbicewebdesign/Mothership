@@ -101,6 +101,7 @@ CREATE TABLE IF NOT EXISTS `#__mothership_payments` (
 
 -- Invoice Payment Mapping Table
 CREATE TABLE IF NOT EXISTS `#__mothership_invoice_payment` (
+  `id` INT NOT NULL AUTO_INCREMENT,
   `payment_id` INT NOT NULL,
   `invoice_id` INT NOT NULL,
   `applied_amount` DECIMAL(10,2) NOT NULL,
