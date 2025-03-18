@@ -47,7 +47,7 @@ class InvoicePaymentTable extends Table implements VersionableTableInterface
     {
         $this->typeAlias = 'com_mothership.invoice_payment';
 
-        parent::__construct('#__mothership_invoice_payments', 'id', $db, $dispatcher);
+        parent::__construct('#__mothership_invoice_payment', 'id', $db, $dispatcher);
     }
 
     /**
