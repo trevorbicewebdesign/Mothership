@@ -8,25 +8,28 @@ use Joomla\CMS\Router\Route;
 /** @var object $this->item */
 /** @var array $this->paymentOptions */
 
-$invoice = $this->item;
+$invoice = (object) $this->item;
 $total = (float) $invoice->total;
 ?>
 
 <h1>Pay Invoice #<?php echo htmlspecialchars($invoice->number); ?></h1>
 
-<p><strong>Total Due:</strong> $<?php echo number_format($total, 2); ?></p>
-
 <?php if (!empty($this->paymentOptions)) : ?>
-    <form action="<?php echo Route::_('index.php?option=com_mothership&task=invoice.processPayment&id=' . (int) $invoice->id); ?>" method="post">
-        <h2>Select Payment Method:</h2>
+    <form action="<?php echo Route::_('/index.php?option=com_mothership&task=invoice.processPayment&id=' . (int) $invoice->id); ?>" method="post">
+        <div style="text-align:right;width:100%;display:block;"><span style="font-weight:bold">Total Due:</span> $<?php echo number_format($total, 2); ?></div>
+        <hr/>
+        <div style="text-align:right;width:100%;display:block;"><span style="font-weight:bold">Select Payment Method:</span></div>
 
         <?php foreach ($this->paymentOptions as $index => $method) : 
-            $feePercent = (float) $method['fee_percent'];
-            $feeFixed = (float) $method['fee_fixed'];
-            $feeAmount = ($total * ($feePercent / 100)) + $feeFixed;
-            $totalWithFee = $total + $feeAmount;
+            // Retrieve fee configuration from the payment method
+                // Calculate fee amount and the total including fee
+                $feeAmount = $method['fee_amount'];
+                $totalWithFee = $total + $feeAmount;
+                // Use the plugin's function feeDisplay
+                $feeDisplay = $method['display_fee'];
+            
         ?>
-            <div class="payment-method" style="margin-bottom: 1rem; padding: 1rem; border: 1px solid #ddd; border-radius: 4px;">
+            <div class="payment-method" style="text-align:right;">
                 <label for="payment_method_<?php echo $index; ?>">
                     <input
                         type="radio"
@@ -37,29 +40,14 @@ $total = (float) $invoice->total;
                     >
                     <?php echo htmlspecialchars($method['name']); ?>
                 </label>
-                <div style="margin-left: 1.5rem; font-size: 0.9rem; color: #555;">
-                    <?php if ($feePercent || $feeFixed) : ?>
-                        <p>Fee: 
-                            <?php
-                                $parts = [];
-                                if ($feePercent) {
-                                    $parts[] = $feePercent . '%';
-                                }
-                                if ($feeFixed) {
-                                    $parts[] = '$' . number_format($feeFixed, 2);
-                                }
-                                echo implode(' + ', $parts);
-                            ?>
-                        </p>
-                        <p>Total with fees: <strong>$<?php echo number_format($totalWithFee, 2); ?></strong></p>
-                    <?php else : ?>
-                        <p>No additional fees.</p>
-                    <?php endif; ?>
-                </div>
+                <span style="font-size: 0.9rem; color: #555;">
+                    <?php echo $feeDisplay; ?>: $<?php echo $feeAmount; ?>
+                </span>
             </div>
         <?php endforeach; ?>
-
-        <button type="submit" class="btn btn-primary">Pay Now</button>
+        <hr />
+        <div style="text-align:right;width:100%;display:block;"><span style="font-weight:bold">Total: <div id="payTotal"><?php echo $totalWithFee; ?></div></span>
+        <button type="submit" class="btn btn-primary" style="float:right;">Pay Now</button>
         <?php echo HTMLHelper::_('form.token'); ?>
     </form>
 <?php else : ?>
@@ -67,3 +55,20 @@ $total = (float) $invoice->total;
         No payment methods are available at this time.
     </div>
 <?php endif; ?>
+
+<script>
+// Update the #payTotal element with the total amount including the fee
+document.addEventListener('DOMContentLoaded', function() {
+    var paymentMethods = document.querySelectorAll('.payment-method input[name="payment_method"]');
+    var total = <?php echo $total; ?>;
+    var fees = <?php echo json_encode(array_column($this->paymentOptions, 'fee_amount')); ?>;
+
+    paymentMethods.forEach(function(method, index) {
+        method.addEventListener('change', function() {
+            var feeAmount = parseFloat(fees[index]);
+            var totalWithFee = total + feeAmount;
+            document.getElementById('payTotal').textContent = totalWithFee.toFixed(2);
+        });
+    });
+});
+</script>

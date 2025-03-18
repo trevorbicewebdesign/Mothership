@@ -26,8 +26,8 @@ class Dispatcher extends ComponentDispatcher
 
         // Manually trigger the onAfterInitialise event
         $dispatcher = Factory::getApplication()->getDispatcher();
-        $event = new Event('onAfterInitialise');
-        $dispatcher->dispatch('onAfterInitialise', $event);
+        $event = new Event('onAfterInitialiseMothership');
+        $dispatcher->dispatch('onAfterInitialiseMothership', $event);
 
         return parent::dispatch();
 
