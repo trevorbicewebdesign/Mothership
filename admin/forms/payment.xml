@@ -2,10 +2,10 @@
 <form addfieldprefix="TrevorBice\Component\Mothership\Administrator\Field">
 	<fieldset name="details">
 		<field name="id" type="text" default="0" readonly="true" class="readonly" label="JGLOBAL_FIELD_ID_LABEL" description="JGLOBAL_FIELD_ID_DESC" />
-		<field name="client_id" type="clientlist" default="0" required="true" class="input-xxlarge" label="COM_MOTHERSHIP_FIELD_CLIENT_ID_LABEL" description="COM_MOTHERSHIP_FIELD_CLIENT_ID_DESC" />
-		<field name="account_id" type="accountlist" default="0" required="true" class="input-xxlarge" label="COM_MOTHERSHIP_FIELD_ACCOUNT_ID_LABEL" description="COM_MOTHERSHIP_FIELD_ACCOUNT_ID_DESC" />
-		<field name="payment_date" type="calendar" default="now" class="validate-date" label="COM_MOTHERSHIP_FIELD_PAYMENT_DATE_LABEL" description="COM_MOTHERSHIP_FIELD_PAYMENT_DATE_DESC" format="%Y-%m-%d %H:%M:%S" filter="user_utc" />
-		<field name="amount" type="text" default="0.00" required="true" class="input-xxlarge" label="COM_MOTHERSHIP_FIELD_AMOUNT_LABEL" description="COM_MOTHERSHIP_FIELD_AMOUNT_DESC" />
+		<field name="client_id" type="clientlist" default="0" required="true" class="input-xxlarge" label="COM_MOTHERSHIP_FIELD_PAYMENT_CLIENT_ID_LABEL" description="COM_MOTHERSHIP_FIELD_PAYMENT_CLIENT_ID_DESC" />
+		<field name="account_id" type="accountlist" default="0" required="true" class="input-xxlarge" label="COM_MOTHERSHIP_FIELD_PAYMENT_ACCOUNT_ID_LABEL" description="COM_MOTHERSHIP_FIELD_PAYMENT_ACCOUNT_ID_DESC" />
+		<field name="payment_date" type="calendar" default="now" class="validate-date" label="COM_MOTHERSHIP_FIELD_PAYMENT_PAYMENT_DATE_LABEL" description="COM_MOTHERSHIP_FIELD_PAYMENT_PAYMENT_DATE_DESC" format="%Y-%m-%d %H:%M:%S" filter="user_utc" />
+		<field name="amount" type="text" default="0.00" required="true" class="input-xxlarge" label="COM_MOTHERSHIP_FIELD_PAYMENT_AMOUNT_LABEL" description="COM_MOTHERSHIP_FIELD_PAYMENT_AMOUNT_DESC" />
 		<field name="fee_amount" type="text" default="0.00" required="true" class="input-xxlarge" label="COM_MOTHERSHIP_FIELD_FEE_AMOUNT_LABEL" description="COM_MOTHERSHIP_FIELD_FEE_AMOUNT_DESC" />
 		<field name="fee_passed_on" type="radio" default="1" required="true" class="" label="COM_MOTHERSHIP_FIELD_FEE_PASSED_ON_LABEL" description="COM_MOTHERSHIP_FIELD_FEE_PASSED_ON_DESC">
 			<option value="1">JYES</option>
