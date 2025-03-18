@@ -51,6 +51,44 @@ class InvoiceHelper
         self::updateInvoiceStatus($invoiceId, 4);
     }
 
+    public static function getInvoiceAppliedPayments($invoiceID)
+    {
+        $db = Factory::getContainer()->get(DatabaseDriver::class);
+        $query = $db->getQuery(true)
+            ->select('*')
+            ->from($db->quoteName('#__mothership_invoice_payment'))
+            ->where($db->quoteName('invoice_id') . ' = ' . (int) $invoiceID);
+        $db->setQuery($query);
+        try {
+            $invoicePayments = $db->loadObjectList();
+        }
+        catch (\Exception $e) {
+            throw new \RuntimeException("Failed to get invoice payments: " . $e->getMessage());
+        }
+
+        return $invoicePayments;
+    }
+
+    public static function sumInvoiceAppliedPayments($invoiceId)
+    {
+        $db = Factory::getContainer()->get(DatabaseDriver::class);
+        $query = $db->getQuery(true)
+            ->select('SUM(p.applied_amount)')
+            ->from($db->quoteName('#__mothership_invoice_payment', 'p'))
+            ->join('INNER', $db->quoteName('#__mothership_payments', 'mp') . ' ON ' . $db->quoteName('p.payment_id') . ' = ' . $db->quoteName('mp.id'))
+            ->where($db->quoteName('p.invoice_id') . ' = ' . (int) $invoiceId)
+            ->where($db->quoteName('mp.status') . ' = 2');
+        $db->setQuery($query);
+        try {
+            $total = $db->loadResult();
+        }
+        catch (\Exception $e) {
+            throw new \RuntimeException("Failed to sum invoice payments: " . $e->getMessage());
+        }
+
+        return (float) $total;
+    }
+
     public static function updateInvoiceStatus($invoiceId, $status)
     {
         $paidDate = date('Y-m-d H:i:s');
