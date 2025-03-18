@@ -79,7 +79,13 @@ class PaymentsModel extends ListModel
                     $db->quoteName('p.amount'),
                     $db->quoteName('p.payment_method'),
                     $db->quoteName('p.payment_date'),
-                    $db->quoteName('p.status'),
+                    'CASE ' . $db->quoteName('p.status') . 
+                    ' WHEN 1 THEN ' . $db->quote('Pending') . 
+                    ' WHEN 2 THEN ' . $db->quote('Completed') . 
+                    ' WHEN 3 THEN ' . $db->quote('Failed') . 
+                    ' WHEN 4 THEN ' . $db->quote('Cancelled') .
+                    ' WHEN 5 THEN ' . $db->quote('Refunded') .
+                    ' ELSE ' . $db->quote('Unknown') . ' END AS ' . $db->quoteName('status'),
                 ]
             )
         );
