@@ -25,6 +25,29 @@ use TrevorBice\Component\Mothership\Administrator\Helper\InvoiceHelper;
 class PaymentHelper
 {
 
+    public static function getPayment($paymentId)
+    {
+        $db = Factory::getContainer()->get(DatabaseDriver::class);
+        $query = $db->getQuery(true)
+            ->select('*')
+            ->from($db->quoteName('#__mothership_payments'))
+            ->where($db->quoteName('id') . ' = ' . (int) $paymentId);
+        $db->setQuery($query);
+
+        try {
+            $payment = $db->loadObject();
+            
+        } catch (\Exception $e) {
+          
+            throw new \RuntimeException("Failed to get payment record: " . $e->getMessage());
+        }
+        return $payment;
+    }
+
+    public function getInvoicePayment($invoiceId, $paymentId)
+    {
+
+    }
     public static function updateStatus($paymentId, $status_id)
     {
         $db = Factory::getContainer()->get(DatabaseDriver::class);
@@ -167,6 +190,51 @@ class PaymentHelper
         } catch (\Exception $e) {
             Log::add("Failed to insert payment record: " . $e->getMessage(), Log::ERROR, 'payment');
             throw new \RuntimeException("Failed to insert payment record: " . $e->getMessage());
+        }
+    }
+
+    public static function insertInvoicePayment($invoiceId, $paymentId, $applied_amount)
+    {
+        try{
+            $invoice = InvoiceHelper::getInvoice($invoiceId);
+        }
+        catch(\Exception $e){
+            // error message should bubble up
+            throw new \RuntimeException($e->getMessage());
+        }
+
+        // must have valid payment ID
+        try {
+            $payment = self::getPayment($paymentId);
+        }
+        catch(\Exception $e){
+            // error message should bubble up
+            throw new \RuntimeException($e->getMessage());
+        }
+
+        $db = Factory::getContainer()->get(DatabaseDriver::class);
+        $columns = [
+            $db->quoteName('invoice_id'),
+            $db->quoteName('payment_id'),
+            $db->quoteName('applied_amount'),
+        ];
+        $values = [
+            (string) (int) $invoiceId,
+            (string) (int) $paymentId,
+            (string) (float) $applied_amount,
+        ];
+        $query = $db->getQuery(true)
+            ->insert($db->quoteName('#__mothership_invoice_payment'))
+            ->columns(implode(', ', $columns))
+            ->values(implode(', ', $values));
+        $db->setQuery($query);
+
+        try {
+            $db->execute();
+            return $db->insertid();
+        } catch (\Exception $e) {
+            Log::add("Failed to insert invoice payment record: " . $e->getMessage(), Log::ERROR, 'payment');
+            return false;
         }
     }
 
