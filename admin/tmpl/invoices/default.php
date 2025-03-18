@@ -108,7 +108,7 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                         $<?php echo number_format($item->total, 2, '.', ','); ?>
                                     </td>
                                     <td>
-                                        <?php echo InvoiceHelper::getStatus($item->status); ?>
+                                        <?php echo $item->status; ?>
                                     </td>
                                     <td>
                                         <?php echo !empty($item->due) ? $item->due : 'N/A'; ?>
