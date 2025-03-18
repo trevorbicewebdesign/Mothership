@@ -26,16 +26,16 @@ class InvoiceHelper
     {
         // Transform the status from integer to string
         switch ($status_id) {
-            case 0:
+            case 1:
                 $status = 'Draft';
                 break;
-            case 1:
+            case 2:
                 $status = 'Opened';
                 break;
-            case 2:
+            case 3:
                 $status = 'Late';
                 break;
-            case 3:
+            case 4:
                 $status = 'Paid';
                 break;
             default:
@@ -48,7 +48,7 @@ class InvoiceHelper
 
     public static function setInvoicePaid($invoiceId)
     {
-        self::updateInvoiceStatus($invoiceId, 3);
+        self::updateInvoiceStatus($invoiceId, 4);
     }
 
     public static function updateInvoiceStatus($invoiceId, $status)
