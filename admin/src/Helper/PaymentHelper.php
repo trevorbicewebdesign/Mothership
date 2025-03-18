@@ -25,21 +25,42 @@ use TrevorBice\Component\Mothership\Administrator\Helper\InvoiceHelper;
 class PaymentHelper
 {
 
+    public static function updateStatus($paymentId, $status_id)
+    {
+        $db = Factory::getContainer()->get(DatabaseDriver::class);
+        $query = $db->getQuery(true)
+            ->update($db->quoteName('#__mothership_payments'))
+            ->set($db->quoteName('status') . ' = ' . (int) $status_id)
+            ->where($db->quoteName('id') . ' = ' . (int) $paymentId);
+        $db->setQuery($query);
+
+        try {
+            $db->execute();
+            return true;
+        } catch (\Exception $e) {
+            Log::add("Failed to update payment ID $paymentId: " . $e->getMessage(), Log::ERROR, 'payment');
+            return false;
+        }
+    }
+
     public static function getStatus($status_id)
     {
         // Transform the status from integer to string
         switch ($status_id) {
             case 1:
-                $status = 'Draft';
+                $status = 'Pending';
                 break;
             case 2:
-                $status = 'Opened';
+                $status = 'Completed';
                 break;
             case 3:
-                $status = 'Late';
+                $status = 'Failed';
                 break;
             case 4:
-                $status = 'Paid';
+                $status = 'Cancelled';
+                break;
+            case 5:
+                $status = 'Refunded';
                 break;
             default:
                 $status = 'Unknown';
