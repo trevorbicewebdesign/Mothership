@@ -193,7 +193,7 @@ class PaymentHelper
         }
     }
 
-    public static function insertInvoicePayment($invoiceId, $paymentId, $applied_amount)
+    public static function insertInvoicePayments($invoiceId, $paymentId, $applied_amount)
     {
         try{
             $invoice = InvoiceHelper::getInvoice($invoiceId);
