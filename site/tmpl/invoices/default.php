@@ -27,7 +27,7 @@ $status_levels = [
     <tbody>
         <?php if(empty($this->invoices)) : ?>
             <tr>
-                <td colspan="6">No invoices found.</td>
+                <td colspan="7">No invoices found.</td>
             </tr>
         <?php endif; ?>
         <?php foreach ($this->invoices as $invoice) : ?>
