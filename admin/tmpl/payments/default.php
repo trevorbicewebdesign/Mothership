@@ -55,6 +55,9 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                                 <th scope="col" class="w-10">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_PAYMENT_HEADING_CREATED_AT', 'p.created_at', $listDirn, $listOrder); ?>
                                 </th>
+                                <th scope="col" class="w-10">
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_PAYMENT_HEADING_STATUS', 'p.status', $listDirn, $listOrder); ?>
+                                </th>
                                 <th scope="col" class="w-5">
                                     <?php echo Text::_('COM_MOTHERSHIP_PAYMENT_HEADING_ALLOCATIONS'); ?>
                                 </th>
@@ -90,6 +93,9 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                                     </td>
                                     <td>
                                         <?php echo HTMLHelper::_('date', $item->created_at, Text::_('DATE_FORMAT_LC4')); ?>
+                                    </td>
+                                    <td>
+                                        <?php echo $item->status; ?>
                                     </td>
                                     <td>
                                         <a href="<?php echo Route::_("index.php?option=com_mothership&view=invoicepayments&payment_id={$item->id}"); ?>" title="<?php echo Text::_('COM_MOTHERSHIP_PAYMENT_MANAGE_ALLOCATIONS'); ?>">
