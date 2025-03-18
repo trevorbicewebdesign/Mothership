@@ -84,6 +84,11 @@ class InvoicesModel extends ListModel
             //$db->quoteName('i.created'),
             $db->quoteName('i.checked_out_time'),
             $db->quoteName('i.checked_out'),
+            'CASE ' . $db->quoteName('i.status') . 
+                    ' WHEN 1 THEN ' . $db->quote('Draft') . 
+                    ' WHEN 2 THEN ' . $db->quote('Completed') . 
+                    ' WHEN 3 THEN ' . $db->quote('Failed') . 
+                    ' ELSE ' . $db->quote('Unknown') . ' END AS ' . $db->quoteName('status'),
             ]
             )
         );
