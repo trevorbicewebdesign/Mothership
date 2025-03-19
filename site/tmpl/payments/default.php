@@ -15,6 +15,7 @@ use Joomla\CMS\Language\Text;
             <th>Status</th>
             <th>Fee Amount</th>
             <th>Payment Method</th>
+            <th>Invoices</th>
         </tr>
     </thead>
     <tbody>
@@ -31,6 +32,12 @@ use Joomla\CMS\Language\Text;
                 <td><?php echo $payment->status; ?></td>
                 <td>$<?php echo number_format($payment->fee_amount, 2); ?></td>
                 <td><?php echo $payment->payment_method; ?></td>
+                <td>
+                    <ul>
+                        <?php foreach ($payment->invoices as $invoice) : ?>
+                            <li><a href="<?php echo Route::_('index.php?option=com_mothership&view=invoice&id=' . $invoice->id); ?>"><?php echo $invoice->number; ?></a></li>
+                        <?php endforeach; ?>
+                    </ul>
             </tr>
         <?php endforeach; ?>
     </tbody>
