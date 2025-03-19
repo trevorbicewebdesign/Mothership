@@ -105,6 +105,14 @@ The **Payments** object represents the payments made by clients. Each payment ha
 - **Cancelled**: The payment was cancelled before completion.
 - **Disputed**: The payment is under dispute and is being reviewed.
 
+## Invoice Payments
+The **Invoice Payments** object represents payments that are applied to specific invoices.
+
+- **ID**: A unique identifier for the payment.
+- **invoice_id**: The invoice that this payment will be applied to
+- **payment_id**: The payment that is being applied to the invoice
+- **allocated_amount**: The amount of the payment that is applied to this invoice
+
 ---
 
 ## Payments Helper
