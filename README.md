@@ -115,8 +115,16 @@ The **Invoice Payments** object represents payments that are applied to specific
 
 ---
 
+## Clients Helper
+Below are the methods available:
+ - **getClient($clientId)**: Get the client object
+
+## Accounts Helper
+Below are the methods available:
+ - **getAccount($accountId)**: Get the account object
+
 ## Payments Helper
-The **Payments Helper** provides several methods to manage and update payment records and statuses. Below are the methods available:
+Below are the methods available:
 
 - **getPayment($paymentId)**: Retrieves the payment details for the given payment ID.
 - **getInvoicePayment($invoiceId, $paymentId)**: Retrieves the payment details associated with a specific invoice and payment ID.
