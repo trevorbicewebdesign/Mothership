@@ -4,12 +4,6 @@
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Language\Text;
 
-$status_levels = [
-    1 => 'Draft',
-    2 => 'Opened',
-    3 => 'Late',
-    4 => 'Paid'
-];
 ?>
 <h1>Invoices</h1>
 <table class="table" id="invoicetable">
@@ -38,8 +32,9 @@ $status_levels = [
                 <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=invoice&id=' . $invoice->id); ?>"><?php echo $invoice->number; ?></a></td>
                 <td><?php echo $invoice->account_name; ?></td>
                 <td>$<?php echo number_format($invoice->total, 2); ?></td>
-                <td><?php echo $status_levels[$invoice->status]; ?></td>
+                <td><?php echo $invoice->status; ?></td>
                 <td>
+                    <?php if($invoice->status === 'Opened' || $invoice->status === 'Late'): ?>
                     <?php
                     $dueDate = new DateTime($invoice->due_date, new DateTimeZone('UTC'));
                     $dueDate->setTime(23, 59, 59);
@@ -48,12 +43,15 @@ $status_levels = [
                     $interval = $currentDate->diff($dueDate);
                     echo "Due in {$interval->days} days";
                     ?>
+                    <?php endif; ?>
                 </td>
                 
                 <td>
                     <ul>
                         <li><a href="<?php echo Route::_('index.php?option=com_mothership&task=invoice.edit&id=' . $invoice->id); ?>">View</a></li>
+                        <?php if($invoice->status === 'Opened' || $invoice->status === 'Late'): ?>
                         <li><a href="<?php echo Route::_("index.php?option=com_mothership&task=invoice.payment&id={$invoice->id}"); ?>">Pay</a></li>
+                        <?php endif; ?>
                     </ul>
                     
                     
