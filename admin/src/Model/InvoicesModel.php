@@ -72,38 +72,39 @@ class InvoicesModel extends ListModel
         // Select the required fields from the table.
         $query->select(
             $this->getState(
-            'list.select',
-            [
-            $db->quoteName('i.id'),
-            $db->quoteName('i.number'),
-            $db->quoteName('i.client_id'),
-            $db->quoteName('c.name', 'client_name'),
-            $db->quoteName('i.account_id'),
-            $db->quoteName('a.name', 'account_name'),
-            $db->quoteName('i.total'),
-            //$db->quoteName('i.created'),
-            $db->quoteName('i.checked_out_time'),
-            $db->quoteName('i.checked_out'),
-            'CASE ' . $db->quoteName('i.status') . 
-                    ' WHEN 1 THEN ' . $db->quote('Draft') . 
-                    ' WHEN 2 THEN ' . $db->quote('Opened') . 
-                    ' WHEN 3 THEN ' . $db->quote('Late') . 
-                    ' WHEN 4 THEN ' . $db->quote('Paid') .
-                    ' ELSE ' . $db->quote('Unknown') . ' END AS ' . $db->quoteName('status'),
-            ]
+                'list.select',
+                [
+                    $db->quoteName('i.id'),
+                    $db->quoteName('i.number'),
+                    $db->quoteName('i.client_id'),
+                    $db->quoteName('c.name', 'client_name'),
+                    $db->quoteName('i.account_id'),
+                    $db->quoteName('a.name', 'account_name'),
+                    $db->quoteName('i.total'),
+                    //$db->quoteName('i.created'),
+                    $db->quoteName('i.checked_out_time'),
+                    $db->quoteName('i.checked_out'),
+                    'CASE ' . $db->quoteName('i.status') . 
+                            ' WHEN 1 THEN ' . $db->quote('Draft') . 
+                            ' WHEN 2 THEN ' . $db->quote('Opened') . 
+                            ' WHEN 3 THEN ' . $db->quote('Late') . 
+                            ' WHEN 4 THEN ' . $db->quote('Paid') .
+                            ' ELSE ' . $db->quote('Unknown') . ' END AS ' . $db->quoteName('status'),
+                ]
             )
         );
 
         $query->from($db->quoteName('#__mothership_invoices', 'i'))
-              ->join('LEFT', $db->quoteName('#__mothership_clients', 'c') . ' ON ' . $db->quoteName('i.client_id') . ' = ' . $db->quoteName('c.id'))
-              ->join('LEFT', $db->quoteName('#__mothership_accounts', 'a') . ' ON ' . $db->quoteName('i.account_id') . ' = ' . $db->quoteName('a.id'));
+            ->join('LEFT', $db->quoteName('#__mothership_clients', 'c') . ' ON ' . $db->quoteName('i.client_id') . ' = ' . $db->quoteName('c.id'))
+            ->join('LEFT', $db->quoteName('#__mothership_accounts', 'a') . ' ON ' . $db->quoteName('i.account_id') . ' = ' . $db->quoteName('a.id'))
+            ->join('LEFT', $db->quoteName('#__mothership_invoice_payment', 'ip') . ' ON ' . $db->quoteName('ip.invoice_id') . ' = ' . $db->quoteName('i.id'));
 
         // Filter by search in invoice name (or by invoice id if prefixed with "cid:").
         if ($search = trim($this->getState('filter.search', ''))) {
             if (stripos($search, 'id:') === 0) {
                 $search = (int) substr($search, 4);
                 $query->where($db->quoteName('i.id') . ' = :search')
-                      ->bind(':search', $search, ParameterType::INTEGER);
+                    ->bind(':search', $search, ParameterType::INTEGER);
             }
         }
 
@@ -114,6 +115,7 @@ class InvoicesModel extends ListModel
 
         return $query;
     }
+
 
     public function getItems()
     {
