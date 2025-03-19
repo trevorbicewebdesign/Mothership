@@ -26,6 +26,14 @@ class PaymentModel extends BaseDatabaseModel
         $db->setQuery($query);
         $payment = $db->loadObject();
 
+        $query = $db->getQuery(true)
+            ->select('*')
+            ->from('#__mothership_invoice_payment')
+            ->where('id = ' . (int) $payment->client_id);
+        $db->setQuery($query);
+        $invoice_payments = $db->loadObject();
+        $payment->invoice_payments = $invoice_payments;
+
         return $payment;
     }
 
