@@ -123,6 +123,16 @@ Below are the methods available:
 Below are the methods available:
  - **getAccount($accountId)**: Get the account object
 
+## Invoice Helper
+Below are the methods available:
+
+- **getInvoice($invoice_id)**: Retrieves the invoice details for the given invoice ID.
+- **getStatus($status_id)**: Retrieves the status details for the given status ID.
+- **setInvoicePaid($invoiceId)**: Marks the specified invoice as paid.
+- **getInvoiceAppliedPayments($invoiceID)**: Retrieves the payments applied to the specified invoice.
+- **sumInvoiceAppliedPayments($invoiceId)**: Calculates the total amount of payments applied to the specified invoice.
+- **updateInvoiceStatus($invoiceId, $status)**: Updates the status of the specified invoice with the provided status value.
+
 ## Payments Helper
 Below are the methods available:
 
