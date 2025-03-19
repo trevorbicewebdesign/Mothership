@@ -110,19 +110,16 @@ The **Payments** object represents the payments made by clients. Each payment ha
 ## Payments Helper
 The **Payments Helper** provides several methods to manage and update payment records and statuses. Below are the methods available:
 
-- **updatePaymentStatus()**: Updates the status of a payment.
-- **setInvoicePaid()**: Marks an invoice as paid.
-- **updateInvoiceStatus()**: Updates the status of an invoice.
-- **insertPaymentRecord()**: Inserts a new payment record into the system.
-- **getPaymentById()**: Retrieves a payment record by its unique identifier.
-- **deletePayment()**: Deletes a payment record from the system.
-- **validatePaymentData()**: Validates the data for a payment record before it is processed.
-- **calculateTransactionFee()**: Calculates the transaction fee for a payment.
-- **generatePaymentReceipt()**: Generates a receipt for a completed payment.
-- **sendPaymentNotification()**: Sends a notification to the client about the payment status.
+- **getPayment($paymentId)**: Retrieves the payment details for the given payment ID.
+- **getInvoicePayment($invoiceId, $paymentId)**: Retrieves the payment details associated with a specific invoice and payment ID.
+- **updateStatus($paymentId, $status_id)**: Updates the status of a payment based on the provided status ID.
+- **getStatus($status_id)**: Retrieves the status details for the given status ID.
+- **updatePaymentStatus($paymentId, $status)**: Updates the payment status with the provided status value.
+- **insertPaymentRecord(int $clientId, int $accountId, float $amount, $paymentDate, float $fee, $feePassedOn, $paymentMethod, $txnId, int $status)**: Inserts a new payment record with the specified details.
+- **insertInvoicePayments($invoiceId, $paymentId, $applied_amount)**: Inserts a payment record for a specific invoice with the applied amount.
 
 ## Payment Supported Events
-- **onAfterInitialise**: Runs after mothership initializes
+- **onAfterInitialiseMothership**: Runs after mothership initializes
 - **onMothershipPaymentRequest**: Runs whenever a payment request is being made
 
 ## Payment Plugins
