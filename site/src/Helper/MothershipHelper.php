@@ -16,9 +16,10 @@ class MothershipHelper
      */
     public static function getUserClientId($userId = null): ?int
     {
-        $user = Factory::getUser();
+       
 
         if ($userId === null) {
+            $user = Factory::getUser();
             $userId = $user->id;
         }
 

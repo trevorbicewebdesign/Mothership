@@ -47,7 +47,7 @@ class PaymentTable extends Table implements VersionableTableInterface
     {
         $this->typeAlias = 'com_mothership.payment';
 
-        parent::__construct('#__mothership_payment', 'id', $db, $dispatcher);
+        parent::__construct('#__mothership_payments', 'id', $db, $dispatcher);
     }
 
     /**

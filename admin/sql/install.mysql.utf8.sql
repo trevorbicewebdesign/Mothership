@@ -1,53 +1,65 @@
+-- Clients Table
 CREATE TABLE IF NOT EXISTS `#__mothership_clients` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `phone` varchar(30) NOT NULL,
-  `address_1` varchar(255) NOT NULL,
-  `address_2` varchar(255) NOT NULL,
-  `city` varchar(32) NOT NULL,
-  `state` varchar(32) NOT NULL,
-  `zip` varchar(32) NOT NULL,
-  `tax_id` varchar(30) NOT NULL,
-  `default_rate` float DEFAULT NULL,
-  `created` datetime DEFAULT CURRENT_TIMESTAMP,
-  `created_by` int(11) DEFAULT NULL,
-  `checked_out_time` datetime DEFAULT NULL,
-  `checked_out` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
-  UNIQUE INDEX `name` (`name`) USING BTREE
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(255) NOT NULL,
+  `email` VARCHAR(255) NOT NULL,
+  `phone` VARCHAR(30) NOT NULL,
+  `address_1` VARCHAR(255) NOT NULL,
+  `address_2` VARCHAR(255) DEFAULT NULL,
+  `city` VARCHAR(32) NOT NULL,
+  `state` VARCHAR(32) NOT NULL,
+  `zip` VARCHAR(32) NOT NULL,
+  `tax_id` VARCHAR(30) NOT NULL,
+  `default_rate` DECIMAL(10,2) DEFAULT NULL,
+  `owner_user_id` INT(11) DEFAULT NULL,
+  `created` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `created_by` INT(11) DEFAULT NULL,
+  `checked_out_time` DATETIME DEFAULT NULL,
+  `checked_out` INT(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
+-- Accounts Table
 CREATE TABLE IF NOT EXISTS `#__mothership_accounts` (
   `id` INT(10) NOT NULL AUTO_INCREMENT,
-  `client_id` INT(10) NULL DEFAULT NULL,
-  `name` VARCHAR(255) NULL DEFAULT NULL,
-  `rate` FLOAT NULL DEFAULT NULL,
-  `created` TIMESTAMP NULL DEFAULT NULL,
-  `created_by` int(11) DEFAULT NULL,
-  `checked_out_time` DATETIME NULL DEFAULT NULL,
-  `checked_out` INT(11) NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE
-) COLLATE='utf8_general_ci' ENGINE=MyISAM ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1;
+  `client_id` INT(10) NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
+  `rate` DECIMAL(10,2) DEFAULT NULL,
+  `created` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `created_by` INT(11) DEFAULT NULL,
+  `checked_out_time` DATETIME DEFAULT NULL,
+  `checked_out` INT(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_client` (`client_id`),
+  KEY `idx_name` (`name`(100)),
+  CONSTRAINT `fk_client` FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1;
 
+-- Invoices Table
 CREATE TABLE IF NOT EXISTS `#__mothership_invoices` (
   `id` INT(10) NOT NULL AUTO_INCREMENT,
-  `number` VARCHAR(50) NULL DEFAULT NULL,
-  `client_id` INT(10) NULL DEFAULT NULL,
-  `account_id` INT(10) NULL DEFAULT NULL,
-  `rate` FLOAT NULL DEFAULT NULL,
-  `status` INT(11) NULL DEFAULT NULL,
-  `total` FLOAT NULL DEFAULT NULL,
-  `due_date` DATE NULL DEFAULT NULL,
-  `sent_date` DATE NULL DEFAULT NULL,
-  `paid_date` DATE NULL DEFAULT NULL,
-  `created` TIMESTAMP NULL DEFAULT NULL,
-  `created_by` int(11) DEFAULT NULL,
-  `checked_out_time` DATETIME NULL DEFAULT NULL,
-  `checked_out` INT(11) NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE
-) COLLATE='utf8_general_ci' ENGINE=MyISAM ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1;
+  `number` VARCHAR(50) DEFAULT NULL,
+  `client_id` INT(10) DEFAULT NULL,
+  `account_id` INT(10) DEFAULT NULL,
+  `rate` DECIMAL(10,2) DEFAULT NULL,
+  `status` INT(11) DEFAULT NULL,
+  `total` DECIMAL(10,2) DEFAULT NULL,
+  `due_date` DATE DEFAULT NULL,
+  `sent_date` DATE DEFAULT NULL,
+  `paid_date` DATE DEFAULT NULL,
+  `created` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `created_by` INT(11) DEFAULT NULL,
+  `checked_out_time` DATETIME DEFAULT NULL,
+  `checked_out` INT(11) DEFAULT NULL,
+  KEY `fk_client` (`client_id`),
+  KEY `fk_account` (`account_id`),
+  KEY `idx_number` (`number`(50)),
+  CONSTRAINT `fk_invoice_client` FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients`(`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_invoice_account` FOREIGN KEY (`account_id`) REFERENCES `#__mothership_accounts`(`id`) ON DELETE SET NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1;
 
+-- Invoice Items Table
 CREATE TABLE IF NOT EXISTS `#__mothership_invoice_items` (
   `id` INT(10) NOT NULL AUTO_INCREMENT,
   `invoice_id` INT(10) NOT NULL,
@@ -55,30 +67,50 @@ CREATE TABLE IF NOT EXISTS `#__mothership_invoice_items` (
   `description` VARCHAR(255) NOT NULL,
   `hours` INT(11) NOT NULL DEFAULT 0,
   `minutes` INT(11) NOT NULL DEFAULT 0,
-  `quantity` FLOAT NOT NULL DEFAULT 1,
-  `rate` FLOAT NOT NULL DEFAULT 0,
-  `subtotal` FLOAT NOT NULL DEFAULT 0,
+  `quantity` DECIMAL(10,2) NOT NULL DEFAULT 1.00,
+  `rate` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `subtotal` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
   `ordering` INT(11) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`) USING BTREE,
-  INDEX (`invoice_id`)
-) COLLATE='utf8_general_ci' ENGINE=MyISAM ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1;
+  KEY `fk_invoice` (`invoice_id`),
+  KEY `idx_name` (`name`(191)),
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_invoice_item_invoice` FOREIGN KEY (`invoice_id`) REFERENCES `#__mothership_invoices`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1;
 
+-- Payments Table
 CREATE TABLE IF NOT EXISTS `#__mothership_payments` (
-    `id` INT AUTO_INCREMENT PRIMARY KEY,
-    `invoice_id` INT NOT NULL,
-    `client_id` INT NOT NULL,
-    `account_id` INT DEFAULT NULL,
-    `amount` DECIMAL(10,2) NOT NULL,
-    `payment_method` VARCHAR(50) NOT NULL, 
-    `transaction_id` VARCHAR(255) DEFAULT NULL,
-    `status` INT NOT NULL DEFAULT 0,
-    `created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `processed_date` DATETIME DEFAULT NULL,
-    `notes` TEXT DEFAULT NULL,
-    FOREIGN KEY (`invoice_id`) REFERENCES `#__mothership_invoices` (`id`) ON DELETE CASCADE,
-    FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients` (`id`) ON DELETE CASCADE
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `client_id` INT NOT NULL,
+  `account_id` INT DEFAULT NULL,
+  `amount` DECIMAL(10,2) NOT NULL,
+  `payment_date` DATETIME NOT NULL,
+  `fee_amount` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `fee_passed_on` TINYINT(1) NOT NULL DEFAULT 0,
+  `payment_method` VARCHAR(50) NOT NULL, 
+  `transaction_id` VARCHAR(255) DEFAULT NULL,
+  `status` INT NOT NULL DEFAULT 0,
+  `processed_date` DATETIME DEFAULT NULL,
+  `created_by` INT(11) DEFAULT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `fk_payment_client` (`client_id`),
+  KEY `idx_transaction_id` (`transaction_id`(100)),
+  CONSTRAINT `fk_payment_client` FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Invoice Payment Mapping Table
+CREATE TABLE IF NOT EXISTS `#__mothership_invoice_payment` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `payment_id` INT NOT NULL,
+  `invoice_id` INT NOT NULL,
+  `applied_amount` DECIMAL(10,2) NOT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_ip_payment` FOREIGN KEY (`payment_id`) REFERENCES `#__mothership_payments` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_ip_invoice` FOREIGN KEY (`invoice_id`) REFERENCES `#__mothership_invoices` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Users Table
 CREATE TABLE IF NOT EXISTS `#__mothership_users` (
   `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` INT(11) NOT NULL,
@@ -86,5 +118,6 @@ CREATE TABLE IF NOT EXISTS `#__mothership_users` (
   `role` ENUM('owner', 'employee', 'administrator') NOT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_client_id` (`client_id`),
-  KEY `idx_user_id` (`user_id`)
+  KEY `idx_user_id` (`user_id`),
+  CONSTRAINT `fk_user_client` FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

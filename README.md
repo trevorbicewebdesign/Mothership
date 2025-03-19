@@ -16,133 +16,119 @@ One of the standout features in the initial release is the projects module. Ofte
 In short, Mothership is built to streamline your workflow and let you focus on what really matters—delivering great work and growing your business.
 
 ## Clients
+The **Clients** object represents the individuals or organizations you work with. Each client has the following attributes:
 
-```
-CREATE TABLE `jos_mothership_clients` (
-	`id` INT(11) NOT NULL AUTO_INCREMENT,
-	`name` VARCHAR(50) NOT NULL COLLATE 'utf8mb4_unicode_ci',
-	`email` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
-	`phone` VARCHAR(30) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
-	`address_1` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
-	`address_2` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
-	`city` VARCHAR(32) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
-	`state` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
-	`zip` VARCHAR(32) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
-	`tax_id` VARCHAR(30) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
-	`default_rate` FLOAT NULL DEFAULT NULL,
-	`owner_user_id` INT(11) NULL DEFAULT NULL,
-	`created` DATETIME NULL DEFAULT (CURRENT_TIMESTAMP),
-	`created_by` INT(11) NULL DEFAULT NULL,
-	`checked_out_time` DATETIME NULL DEFAULT NULL,
-	`checked_out` INT(11) NULL DEFAULT NULL,
-	PRIMARY KEY (`id`) USING BTREE,
-	UNIQUE INDEX `name` (`name`) USING BTREE
-)
-COLLATE='utf8mb4_unicode_ci'
-ENGINE=MyISAM
-ROW_FORMAT=DYNAMIC
-AUTO_INCREMENT=82
-;
-```
+- **ID**: A unique identifier for the client.
+- **Name**: The name of the client.
+- **Email**: The client's email address.
+- **Phone**: The client's phone number.
+- **Address**: Includes address lines, city, state, and zip code.
+- **Tax ID**: The client's tax identification number.
+- **Default Rate**: The default billing rate for the client.
+- **Owner User ID**: The ID of the user who owns the client record.
+- **Created**: The timestamp when the client record was created.
+- **Created By**: The ID of the user who created the client record.
+- **Checked Out Time**: The timestamp when the client record was last checked out.
+- **Checked Out**: The ID of the user who last checked out the client record.
+
+This structure ensures that all necessary client information is captured and organized efficiently.
 
 ## Accounts
+The **Accounts** object represents the different accounts managed by a client. Each account has the following attributes:
 
-```
-CREATE TABLE `jos_mothership_accounts` (
-	`id` INT(10) NOT NULL AUTO_INCREMENT,
-	`client_id` INT(10) NULL DEFAULT NULL,
-	`name` VARCHAR(255) NULL DEFAULT NULL COLLATE 'latin1_swedish_ci',
-	`primary_domain` VARCHAR(50) NULL DEFAULT NULL COLLATE 'latin1_swedish_ci',
-	`rate` FLOAT NULL DEFAULT NULL,
-	`created` TIMESTAMP NULL DEFAULT (now()),
-	`created_by` INT(11) NULL DEFAULT NULL,
-	`checked_out_time` DATETIME NULL DEFAULT NULL,
-	`checked_out` INT(11) NULL DEFAULT NULL,
-	PRIMARY KEY (`id`) USING BTREE
-)
-COLLATE='utf8_general_ci'
-ENGINE=MyISAM
-ROW_FORMAT=DYNAMIC
-AUTO_INCREMENT=273
-;
-```
-
-## Projects
+- **ID**: A unique identifier for the account.
+- **Client ID**: The ID of the client to whom the account belongs.
+- **Name**: The name of the account.
+- **Rate**: The billing rate for the account.
+- **Created**: The timestamp when the account record was created.
+- **Created By**: The ID of the user who created the account record.
+- **Checked Out Time**: The timestamp when the account record was last checked out.
+- **Checked Out**: The ID of the user who last checked out the account record.
 
 ## Invoices
+The **Invoices** object represents the invoices generated for clients. Each invoice has the following attributes:
 
-```
-CREATE TABLE `jos_mothership_invoices` (
-	`id` INT(10) NOT NULL AUTO_INCREMENT,
-	`number` VARCHAR(50) NOT NULL DEFAULT '0' COLLATE 'utf8_general_ci',
-	`client_id` INT(10) NULL DEFAULT NULL,
-	`account_id` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
-	`rate` FLOAT NULL DEFAULT NULL,
-	`status` INT(11) NULL DEFAULT '1',
-	`total` FLOAT NULL DEFAULT '0',
-	`due_date` DATE NULL DEFAULT NULL,
-	`sent_date` DATE NULL DEFAULT NULL,
-	`paid_date` DATE NULL DEFAULT NULL,
-	`created` TIMESTAMP NULL DEFAULT NULL,
-	`created_by` INT(11) NULL DEFAULT NULL,
-	`checked_out_time` DATETIME NULL DEFAULT NULL,
-	`checked_out` INT(11) NULL DEFAULT NULL,
-	PRIMARY KEY (`id`) USING BTREE
-)
-COLLATE='utf8_general_ci'
-ENGINE=MyISAM
-ROW_FORMAT=DYNAMIC
-AUTO_INCREMENT=2
-;
-```
+- **ID**: A unique identifier for the invoice.
+- **Number**: The invoice number.
+- **Client ID**: The ID of the client to whom the invoice belongs.
+- **Account ID**: The ID of the account associated with the invoice.
+- **Rate**: The billing rate for the invoice.
+- **Status**: The status of the invoice (e.g., paid, unpaid).
+- **Total**: The total amount of the invoice.
+- **Due Date**: The date by which the invoice should be paid.
+- **Sent Date**: The date the invoice was sent to the client.
+- **Paid Date**: The date the invoice was paid.
+- **Created**: The timestamp when the invoice was created.
+- **Created By**: The ID of the user who created the invoice.
+- **Checked Out Time**: The timestamp when the invoice record was last checked out.
+- **Checked Out**: The ID of the user who last checked out the invoice record.
 
-```
-CREATE TABLE `jos_mothership_invoice_items` (
-	`id` INT(10) NOT NULL AUTO_INCREMENT,
-	`invoice_id` INT(10) NOT NULL,
-	`name` VARCHAR(255) NOT NULL DEFAULT '' COLLATE 'utf8_general_ci',
-	`description` VARCHAR(255) NOT NULL COLLATE 'utf8_general_ci',
-	`hours` INT(11) NULL DEFAULT NULL,
-	`minutes` INT(11) NULL DEFAULT NULL,
-	`quantity` FLOAT NOT NULL DEFAULT '1',
-	`rate` FLOAT NOT NULL DEFAULT '0',
-	`subtotal` FLOAT NOT NULL DEFAULT '0',
-	`ordering` INT(11) NOT NULL DEFAULT '0',
-	PRIMARY KEY (`id`) USING BTREE,
-	INDEX `invoice_id` (`invoice_id`) USING BTREE
-)
-COLLATE='utf8_general_ci'
-ENGINE=MyISAM
-ROW_FORMAT=DYNAMIC
-AUTO_INCREMENT=39
-;
-```
+## Invoice Items
+The **Invoice Items** object represents the individual items listed on an invoice. Each invoice item has the following attributes:
+
+- **ID**: A unique identifier for the invoice item.
+- **Invoice ID**: The ID of the invoice to which the item belongs.
+- **Name**: The name of the item.
+- **Description**: A description of the item.
+- **Hours**: The number of hours worked for the item.
+- **Minutes**: The number of minutes worked for the item.
+- **Quantity**: The quantity of the item.
+- **Rate**: The billing rate for the item.
+- **Subtotal**: The subtotal amount for the item.
+- **Ordering**: The order in which the item appears on the invoice.
 
 ## Payments
+The **Payments** object represents the payments made by clients. Each payment has the following attributes:
 
-```
-CREATE TABLE `jos_mothership_payments` (
-	`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-	`userid` INT(11) NULL DEFAULT NULL,
-	`client_id` INT(11) NULL DEFAULT NULL,
-	`account_id` INT(11) NULL DEFAULT NULL,
-	`name` VARCHAR(255) NOT NULL COLLATE 'utf8_general_ci',
-	`payer_email` VARCHAR(255) NOT NULL COLLATE 'latin1_swedish_ci',
-	`invoices` VARCHAR(255) NOT NULL COLLATE 'latin1_swedish_ci',
-	`method` VARCHAR(100) NOT NULL COLLATE 'latin1_swedish_ci',
-	`amount` FLOAT NULL DEFAULT NULL,
-	`transaction_fee` FLOAT UNSIGNED NOT NULL DEFAULT '0',
-	`net_total` FLOAT NOT NULL,
-	`transaction_id` VARCHAR(100) NOT NULL COLLATE 'latin1_swedish_ci',
-	`pdate` DATETIME NULL DEFAULT NULL,
-	`status` CHAR(2) NOT NULL COLLATE 'latin1_swedish_ci',
-	`checked_out_time` DATETIME NOT NULL,
-	`checked_out` INT(11) NOT NULL,
-	PRIMARY KEY (`id`) USING BTREE
-)
-COLLATE='utf8_general_ci'
-ENGINE=MyISAM
-ROW_FORMAT=DYNAMIC
-AUTO_INCREMENT=819
-;
-```
+- **ID**: A unique identifier for the payment.
+- **User ID**: The ID of the user who made the payment.
+- **Client ID**: The ID of the client associated with the payment.
+- **Account ID**: The ID of the account associated with the payment.
+- **Name**: The name of the payment.
+- **Payer Email**: The email address of the payer.
+- **Invoices**: The invoices associated with the payment.
+- **Method**: The method of payment (e.g., credit card, PayPal).
+- **Amount**: The total amount of the payment.
+- **Transaction Fee**: The transaction fee associated with the payment.
+- **Net Total**: The net total amount after deducting the transaction fee.
+- **Transaction ID**: The transaction ID of the payment.
+- **Payment Date**: The date and time when the payment was made.
+- **Status**: The status of the payment.
+- **Checked Out Time**: The timestamp when the payment record was last checked out.
+- **Checked Out**: The ID of the user who last checked out the payment record.
+
+### Payment Status Levels
+- **Pending**: The payment has been initiated but not yet completed.
+- **Completed**: The payment has been successfully processed.
+- **Failed**: The payment attempt was unsuccessful.
+- **Refunded**: The payment has been refunded to the client.
+- **Cancelled**: The payment was cancelled before completion.
+- **Disputed**: The payment is under dispute and is being reviewed.
+
+---
+
+## Payments Helper
+The **Payments Helper** provides several methods to manage and update payment records and statuses. Below are the methods available:
+
+- **updatePaymentStatus()**: Updates the status of a payment.
+- **setInvoicePaid()**: Marks an invoice as paid.
+- **updateInvoiceStatus()**: Updates the status of an invoice.
+- **insertPaymentRecord()**: Inserts a new payment record into the system.
+- **getPaymentById()**: Retrieves a payment record by its unique identifier.
+- **deletePayment()**: Deletes a payment record from the system.
+- **validatePaymentData()**: Validates the data for a payment record before it is processed.
+- **calculateTransactionFee()**: Calculates the transaction fee for a payment.
+- **generatePaymentReceipt()**: Generates a receipt for a completed payment.
+- **sendPaymentNotification()**: Sends a notification to the client about the payment status.
+
+## Payment Supported Events
+- **onAfterInitialise**: Runs after mothership initializes
+- **onMothershipPaymentRequest**: Runs whenever a payment request is being made
+
+## Payment Plugins
+There are two payment plugins: Paypal and Zelle. The payment plugin type is 'Mothership Payments'.
+
+### PayPal
+
+### Zelle
+This payment method is essentially a digital version of "Pay by Check". Once the payment has been confirmed, an administrator will need to manually update the status of the payment to confirmed.

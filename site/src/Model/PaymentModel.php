@@ -26,16 +26,6 @@ class PaymentModel extends BaseDatabaseModel
         $db->setQuery($query);
         $payment = $db->loadObject();
 
-        if ($payment) {
-            // Load related items
-            $query = $db->getQuery(true)
-                ->select('*')
-                ->from('#__mothership_payment_items')
-                ->where('payment_id = ' . (int) $payment->id);
-            $db->setQuery($query);
-            $payment->items = $db->loadAssocList();
-        }
-
         return $payment;
     }
 

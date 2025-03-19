@@ -8,10 +8,10 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
 
-class AccountsController extends BaseController
+class PaymentsController extends BaseController
 {
     /**
-     * Display the list of Accounts.
+     * Display the list of Payments.
      *
      * @param   bool  $cachable   Should the view be cached
      * @param   array $urlparams  An array of safe url parameters and their variable types.
@@ -24,7 +24,7 @@ class AccountsController extends BaseController
     }
 
     /**
-     * Check in selected account items.
+     * Check in selected payment items.
      *
      * @return  void
      */
@@ -39,16 +39,16 @@ class AccountsController extends BaseController
         if (empty($ids)) {
             $app->enqueueMessage(Text::_('JGLOBAL_NO_ITEM_SELECTED'), 'warning');
         } else {
-            $model = $this->getModel('Accounts');
+            $model = $this->getModel('Payments');
             if ($model->checkin($ids)) {
                 // this uses sprint f to insert the number of items checked in into the message
-                $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_ACCOUNT_CHECK_IN_SUCCESS', count($ids)), 'message');
+                $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_PAYMENT_CHECK_IN_SUCCESS', count($ids)), 'message');
             } else {
-                $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ACCOUNT_CHECK_IN_FAILED'), 'error');
+                $app->enqueueMessage(Text::_('COM_MOTHERSHIP_PAYMENT_CHECK_IN_FAILED'), 'error');
             }
         }
 
-        $this->setRedirect(Route::_('index.php?option=com_mothership&view=accounts', false));
+        $this->setRedirect(Route::_('index.php?option=com_mothership&view=payments', false));
     }
 
     public function delete()
@@ -62,15 +62,15 @@ class AccountsController extends BaseController
         if (empty($ids)) {
             $app->enqueueMessage(Text::_('JGLOBAL_NO_ITEM_SELECTED'), 'warning');
         } else {
-            $model = $this->getModel('Accounts');
+            $model = $this->getModel('Payments');
             if ($model->delete($ids)) {
-                $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_ACCOUNT_DELETE_SUCCESS', count($ids)), 'message');
+                $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_PAYMENT_DELETE_SUCCESS', count($ids), count($ids) > 1 ? 's' : ''), 'message');
             } else {
-                $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ACCOUNT_DELETE_FAILED'), 'error');
+                $app->enqueueMessage(Text::_('COM_MOTHERSHIP_PAYMENT_DELETE_FAILED'), 'error');
             }
         }
 
-        $this->setRedirect(Route::_('index.php?option=com_mothership&view=accounts', false));
+        $this->setRedirect(Route::_('index.php?option=com_mothership&view=payments', false));
     }
 
 }

@@ -7,6 +7,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Factory;
 use TrevorBice\Component\Mothership\Administrator\Helper\MothershipHelper;
+use TrevorBice\Component\Mothership\Administrator\Helper\InvoiceHelper;
 
 /** @var \TrevorBice\Component\Mothership\Administrator\View\Invoices\HtmlView $this */
 
@@ -107,7 +108,7 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                         $<?php echo number_format($item->total, 2, '.', ','); ?>
                                     </td>
                                     <td>
-                                        <?php echo MothershipHelper::getInvoiceStatus($item->status); ?>
+                                        <?php echo $item->status; ?>
                                     </td>
                                     <td>
                                         <?php echo !empty($item->due) ? $item->due : 'N/A'; ?>

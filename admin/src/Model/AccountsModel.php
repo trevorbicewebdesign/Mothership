@@ -71,13 +71,12 @@ class AccountsModel extends ListModel
             [
             $db->quoteName('a.id'),
             $db->quoteName('a.name'),
-            $db->quoteName('a.primary_domain'),
             $db->quoteName('a.rate'),
             $db->quoteName('a.client_id'),
             $db->quoteName('a.created'),
             $db->quoteName('a.checked_out_time'),
             $db->quoteName('a.checked_out'),
-            $db->quoteName('c.name', 'client_name') // Adding client_name from the client table with alias
+            $db->quoteName('c.name', 'client_name')
             ]
             )
         );

@@ -29,122 +29,6 @@ use Joomla\Database\ParameterType;
  */
 class MothershipHelper extends ContentHelper
 {
-    /**
-     * Retrieves a list of client options for a select dropdown.
-     *
-     * This method queries the database for a list of clients, sorts them by name,
-     * and returns an array of options suitable for use in a select dropdown.
-     *
-     * @return array An array of select options, each option being an associative array
-     *               with 'value' and 'text' keys.
-     */
-    public static function getClientListOptions()
-    {
-        $db = Factory::getContainer()->get(\Joomla\Database\DatabaseInterface::class);
-
-        $query = $db->getQuery(true)
-            ->select($db->quoteName(['id', 'name']))
-            ->from($db->quoteName('#__mothership_clients'))
-            ->order($db->quoteName('name') . ' ASC');
-
-        $db->setQuery($query);
-        $clients = $db->loadObjectList();
-
-        $options = [];
-
-        // Add placeholder option
-        $options[] = HTMLHelper::_('select.option', '', Text::_('COM_MOTHERSHIP_SELECT_CLIENT'));
-
-        // Build options array
-        if ($clients) {
-            foreach ($clients as $client) {
-                $options[] = HTMLHelper::_('select.option', $client->id, $client->name);
-            }
-        }
-
-        return $options;
-    }
-
-    public static function getAccountListOptions($client_id=NULL)
-    {
-        $db = Factory::getContainer()->get(\Joomla\Database\DatabaseInterface::class);
-
-        $query = $db->getQuery(true)
-            ->select($db->quoteName(['id', 'name']))
-            ->from($db->quoteName('#__mothership_accounts'));
-
-        if ($client_id !== null) {
-            $query->where($db->quoteName('client_id') . ' = ' . $db->quote($client_id));
-        }
-
-        $query->order($db->quoteName('name') . ' ASC');
-
-        $db->setQuery($query);
-        $accounts = $db->loadObjectList();
-
-        $options = [];
-
-        // Add placeholder option
-        $options[] = HTMLHelper::_('select.option', '', Text::_('COM_MOTHERSHIP_SELECT_ACCOUNT'));
-
-        // Build options array
-        if ($accounts) {
-            foreach ($accounts as $account) {
-                $options[] = HTMLHelper::_('select.option', $account->id, $account->name);
-            }
-        }
-
-        return $options;
-    }
-
-    public function getClient($client_id)
-    {
-        $db = Factory::getContainer()->get(\Joomla\Database\DatabaseInterface::class);
-
-        $query = $db->getQuery(true)
-            ->select($db->quoteName([
-                'id', 
-                'name'
-            ]))
-            ->from($db->quoteName('#__mothership_clients'))
-            ->where($db->quoteName('id') . ' = ' . $db->quote($client_id));
-
-        $db->setQuery($query);
-        $client = $db->loadObject();
-
-        return $client;
-    }
-
-    public static function getInvoiceStatus($status_id)
-    {
-        $db = Factory::getContainer()->get(\Joomla\Database\DatabaseInterface::class);
-
-        $query = $db->getQuery(true)
-            ->select($db->quoteName('status'))
-            ->from($db->quoteName('#__mothership_invoices'))
-            ->where($db->quoteName('id') . ' = ' . $db->quote($status_id));
-
-        $db->setQuery($query);
-        $status = $db->loadResult();
-
-        // Transform the status from integer to string
-        switch ($status) {
-            case 0:
-                $status = 'Draft';
-                break;
-            case 1:
-                $status = 'Opened';
-                break;
-            case 2:
-                $status = 'Late';
-                break;
-            default:
-                $status = 'Paid';
-                break;
-        }
-
-        return $status;
-    }
 
     /**
      * Get the return URL from the request or form.
@@ -173,4 +57,5 @@ class MothershipHelper extends ContentHelper
 
         return $default;
     }
+    
 }

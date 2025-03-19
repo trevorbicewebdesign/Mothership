@@ -1,4 +1,4 @@
-<extension type="plugin" group="mothership-payment" method="paypal" version="5.0">
+<extension type="plugin" group="mothership-payment" version="5.0" method="paypal" element="paypal">
     <name>COM_MOTHERSHIP_PAYPAL_PLUGIN</name>
     <files>
         <filename plugin="paypal">paypal.php</filename>
@@ -17,8 +17,10 @@
                     <option value="0">No</option>
                 </field>
                 <field name="currency" type="text" label="Currency" description="Enter the currency code (e.g., USD)" default="USD" />
-                <field name="fee_percent" type="number" label="Fee (%)" default="2.9" />
-                <field name="fee_fixed" type="text" label="Fixed Fee" default="0.30" />
+                <field name="paypal_email" type="text" label="PayPal Email" required="true" />
+                <field name="currency" type="text" label="Currency" default="USD" />
+                <field name="notify_url" type="text" label="Notify URL" />
+                <field name="return_url" type="text" label="Return URL" />
             </fieldset>
         </fields>
     </config>
