@@ -4,7 +4,7 @@
         <filename plugin="paypal">paypal.php</filename>
     </files>
     <languages>
-        <language tag="en-GB">en-GB.plg_payment_mothership_paypal.ini</language>
+        <language tag="en-GB">en-GB.plg_mothership-payment_paypal.ini</language>
     </languages>
     <config>
         <fields name="params">
@@ -18,9 +18,6 @@
                 </field>
                 <field name="currency" type="text" label="Currency" description="Enter the currency code (e.g., USD)" default="USD" />
                 <field name="paypal_email" type="text" label="PayPal Email" required="true" />
-                <field name="currency" type="text" label="Currency" default="USD" />
-                <field name="notify_url" type="text" label="Notify URL" />
-                <field name="return_url" type="text" label="Return URL" />
             </fieldset>
         </fields>
     </config>
