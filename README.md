@@ -31,6 +31,10 @@ The **Clients** object represents the individuals or organizations you work with
 - **Checked Out Time**: The timestamp when the client record was last checked out.
 - **Checked Out**: The ID of the user who last checked out the client record.
 
+## Client Helper
+- **getClientListOptions()**: Retrieves a list of client options for selection.
+- **getClient($client_id)**: Retrieves the details of a specific client based on the provided client ID.
+
 This structure ensures that all necessary client information is captured and organized efficiently.
 
 ## Accounts
@@ -44,6 +48,10 @@ The **Accounts** object represents the different accounts managed by a client. E
 - **Created By**: The ID of the user who created the account record.
 - **Checked Out Time**: The timestamp when the account record was last checked out.
 - **Checked Out**: The ID of the user who last checked out the account record.
+
+## Account Helper
+- **getAccountListOptions($client_id=NULL)**: Retrieves a list of account options for a specific client or all clients if no client ID is provided.
+- **getAccount($account_id)**: Retrieves the details of a specific account based on the provided account ID.
 
 ## Invoices
 The **Invoices** object represents the invoices generated for clients. Each invoice has the following attributes:
@@ -76,6 +84,14 @@ The **Invoice Items** object represents the individual items listed on an invoic
 - **Rate**: The billing rate for the item.
 - **Subtotal**: The subtotal amount for the item.
 - **Ordering**: The order in which the item appears on the invoice.
+
+## Invoice Helper
+- **getStatus($status_id)**:
+- **setInvoicePaid($invoiceId)**:
+- **getInvoiceAppliedPayments($invoiceID)**:
+- **sumInvoiceAppliedPayments($invoiceId)**: 
+- **updateInvoiceStatus($invoiceId, $status)**:
+- **getInvoice($invoice_id)**:
 
 ## Payments
 The **Payments** object represents the payments made by clients. Each payment has the following attributes:
