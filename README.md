@@ -131,6 +131,9 @@ This payment method is essentially a digital version of "Pay by Check". Once the
 
 # Helpers
 
+## Mothership Helper
+- **getReturnRedirect($default = null)**:
+
 ## Client Helper
 - **getClientListOptions()**: Retrieves a list of client options for selection.
 - **getClient($client_id)**: Retrieves the details of a specific client based on the provided client ID.
