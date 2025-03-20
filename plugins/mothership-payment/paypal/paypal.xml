@@ -1,4 +1,4 @@
-<extension type="plugin" group="mothership-payment" version="5.0" method="paypal" element="paypal">
+<extension type="plugin" group="mothership-payment" version="0.0.5" method="paypal" element="paypal">
     <name>COM_MOTHERSHIP_PAYPAL_PLUGIN</name>
     <files>
         <filename plugin="paypal">paypal.php</filename>
