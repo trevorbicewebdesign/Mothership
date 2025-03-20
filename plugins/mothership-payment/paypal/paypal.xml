@@ -9,15 +9,15 @@
     <config>
         <fields name="params">
             <fieldset name="basic">
-                <field name="display_name" type="text" label="COM_MOTHERSHIP_PAYPAL_DISPLAY_NAME" description="The name shown to users." default="PayPal" />
-                <field name="client_id" type="text" label="Client ID" description="Enter your PayPal Client ID" required="true" />
-                <field name="client_secret" type="password" label="Client Secret" description="Enter your PayPal Client Secret" required="true" />
-                <field name="sandbox" type="radio" label="Sandbox Mode" description="Enable sandbox mode for testing" default="1">
-                    <option value="1">Yes</option>
-                    <option value="0">No</option>
+                <field name="display_name" type="text" label="COM_MOTHERSHIP_PAYPAL_DISPLAY_NAME_LABEL" description="COM_MOTHERSHIP_PAYPAL_DISPLAY_NAME_DESC" default="PayPal" />
+                <field name="client_id" type="text" label="COM_MOTHERSHIP_PAYPAL_CLIENT_ID_LABEL" description="COM_MOTHERSHIP_PAYPAL_CLIENT_ID_DESC" required="true" />
+                <field name="client_secret" type="password" label="COM_MOTHERSHIP_PAYPAL_CLIENT_SECRET_LABEL" description="COM_MOTHERSHIP_PAYPAL_CLIENT_SECRET_DESC" required="true" />
+                <field name="sandbox" type="radio" label="COM_MOTHERSHIP_PAYPAL_SANDBOX_LABEL" description="COM_MOTHERSHIP_PAYPAL_SANDBOX_DESC" default="1">
+                    <option value="1">COM_MOTHERSHIP_PAYPAL_OPTION_YES</option>
+                    <option value="0">COM_MOTHERSHIP_PAYPAL_OPTION_NO</option>
                 </field>
-                <field name="currency" type="text" label="Currency" description="Enter the currency code (e.g., USD)" default="USD" />
-                <field name="paypal_email" type="text" label="PayPal Email" required="true" />
+                <field name="currency" type="text" label="COM_MOTHERSHIP_PAYPAL_CURRENCY_LABEL" description="COM_MOTHERSHIP_PAYPAL_CURRENCY_DESC" default="USD" />
+                <field name="paypal_email" type="text" label="COM_MOTHERSHIP_PAYPAL_BUSINESS_EMAIL_LABEL" description="COM_MOTHERSHIP_PAYPAL_BUSINESS_EMAIL_DESC" required="true" />
             </fieldset>
         </fields>
     </config>
