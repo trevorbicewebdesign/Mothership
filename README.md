@@ -15,6 +15,8 @@ One of the standout features in the initial release is the projects module. Ofte
 
 In short, Mothership is built to streamline your workflow and let you focus on what really matters—delivering great work and growing your business.
 
+---
+
 ## Clients
 The **Clients** object represents the individuals or organizations you work with. Each client has the following attributes:
 
@@ -31,12 +33,6 @@ The **Clients** object represents the individuals or organizations you work with
 - **Checked Out Time**: The timestamp when the client record was last checked out.
 - **Checked Out**: The ID of the user who last checked out the client record.
 
-## Client Helper
-- **getClientListOptions()**: Retrieves a list of client options for selection.
-- **getClient($client_id)**: Retrieves the details of a specific client based on the provided client ID.
-
-This structure ensures that all necessary client information is captured and organized efficiently.
-
 ## Accounts
 The **Accounts** object represents the different accounts managed by a client. Each account has the following attributes:
 
@@ -48,10 +44,6 @@ The **Accounts** object represents the different accounts managed by a client. E
 - **Created By**: The ID of the user who created the account record.
 - **Checked Out Time**: The timestamp when the account record was last checked out.
 - **Checked Out**: The ID of the user who last checked out the account record.
-
-## Account Helper
-- **getAccountListOptions($client_id=NULL)**: Retrieves a list of account options for a specific client or all clients if no client ID is provided.
-- **getAccount($account_id)**: Retrieves the details of a specific account based on the provided account ID.
 
 ## Invoices
 The **Invoices** object represents the invoices generated for clients. Each invoice has the following attributes:
@@ -84,14 +76,6 @@ The **Invoice Items** object represents the individual items listed on an invoic
 - **Rate**: The billing rate for the item.
 - **Subtotal**: The subtotal amount for the item.
 - **Ordering**: The order in which the item appears on the invoice.
-
-## Invoice Helper
-- **getStatus($status_id)**:
-- **setInvoicePaid($invoiceId)**:
-- **getInvoiceAppliedPayments($invoiceID)**:
-- **sumInvoiceAppliedPayments($invoiceId)**: 
-- **updateInvoiceStatus($invoiceId, $status)**:
-- **getInvoice($invoice_id)**:
 
 ## Payments
 The **Payments** object represents the payments made by clients. Each payment has the following attributes:
@@ -131,17 +115,6 @@ The **Invoice Payments** object represents payments that are applied to specific
 
 ---
 
-## Payments Helper
-The **Payments Helper** provides several methods to manage and update payment records and statuses. Below are the methods available:
-
-- **getPayment($paymentId)**: Retrieves the payment details for the given payment ID.
-- **getInvoicePayment($invoiceId, $paymentId)**: Retrieves the payment details associated with a specific invoice and payment ID.
-- **updateStatus($paymentId, $status_id)**: Updates the status of a payment based on the provided status ID.
-- **getStatus($status_id)**: Retrieves the status details for the given status ID.
-- **updatePaymentStatus($paymentId, $status)**: Updates the payment status with the provided status value.
-- **insertPaymentRecord(int $clientId, int $accountId, float $amount, $paymentDate, float $fee, $feePassedOn, $paymentMethod, $txnId, int $status)**: Inserts a new payment record with the specified details.
-- **insertInvoicePayments($invoiceId, $paymentId, $applied_amount)**: Inserts a payment record for a specific invoice with the applied amount.
-
 ## Payment Supported Events
 - **onAfterInitialiseMothership**: Runs after mothership initializes
 - **onMothershipPaymentRequest**: Runs whenever a payment request is being made
@@ -153,3 +126,39 @@ There are two payment plugins: Paypal and Zelle. The payment plugin type is 'Mot
 
 ### Zelle
 This payment method is essentially a digital version of "Pay by Check". Once the payment has been confirmed, an administrator will need to manually update the status of the payment to confirmed.
+
+---
+
+# Helpers
+
+## Client Helper
+- **getClientListOptions()**: Retrieves a list of client options for selection.
+- **getClient($client_id)**: Retrieves the details of a specific client based on the provided client ID.
+
+## Account Helper
+- **getAccountListOptions($client_id=NULL)**: Retrieves a list of account options for a specific client or all clients if no client ID is provided.
+- **getAccount($account_id)**: Retrieves the details of a specific account based on the provided account ID.
+
+## Invoice Helper
+- **getStatus($status_id)**: Retrieves the status details for the given status ID.
+- **setInvoicePaid($invoiceId)**: Marks the specified invoice as paid.
+- **getInvoiceAppliedPayments($invoiceID)**: Retrieves all payments applied to the specified invoice.
+- **sumInvoiceAppliedPayments($invoiceId)**: Calculates the total amount of payments applied to the specified invoice.
+- **updateInvoiceStatus($invoiceId, $status)**: Updates the status of the specified invoice.
+- **getInvoice($invoice_id)**: Retrieves the details of the specified invoice.
+
+## Payments Helper
+The **Payments Helper** provides several methods to manage and update payment records and statuses. Below are the methods available:
+
+- **getPayment($paymentId)**: Retrieves the payment details for the given payment ID.
+- **getInvoicePayment($invoiceId, $paymentId)**: Retrieves the payment details associated with a specific invoice and payment ID.
+- **updateStatus($paymentId, $status_id)**: Updates the status of a payment based on the provided status ID.
+- **getStatus($status_id)**: Retrieves the status details for the given status ID.
+- **updatePaymentStatus($paymentId, $status)**: Updates the payment status with the provided status value.
+- **insertPaymentRecord(int $clientId, int $accountId, float $amount, $paymentDate, float $fee, $feePassedOn, $paymentMethod, $txnId, int $status)**: Inserts a new payment record with the specified details.
+- **insertInvoicePayments($invoiceId, $paymentId, $applied_amount)**: Inserts a payment record for a specific invoice with the applied amount.
+
+
+
+
+
