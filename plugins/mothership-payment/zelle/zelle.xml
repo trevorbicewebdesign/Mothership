@@ -5,6 +5,7 @@
     </files>
     <languages>
         <language tag="en-GB">en-GB.plg_mothership-payment_zelle.ini</language>
+        <language tag="en-GB">en-GB.plg_mothership-payment_zelle.sys.ini</language>
     </languages>
     <config>
         <fields name="params">

@@ -5,6 +5,7 @@
     </files>
     <languages>
         <language tag="en-GB">en-GB.plg_mothership-payment_paypal.ini</language>
+        <language tag="en-GB">en-GB.plg_mothership-payment_paypal.sys.ini</language>
     </languages>
     <config>
         <fields name="params">
