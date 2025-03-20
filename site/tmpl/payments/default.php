@@ -6,7 +6,7 @@ use Joomla\CMS\Language\Text;
 
 ?>
 <h1>Payments</h1>
-<table class="table">
+<table class="table paymentsTable">
     <thead>
         <tr>
             <th>#</th>
@@ -15,6 +15,7 @@ use Joomla\CMS\Language\Text;
             <th>Status</th>
             <th>Fee Amount</th>
             <th>Payment Method</th>
+            <th>Transaction Id</th>
         </tr>
     </thead>
     <tbody>
@@ -31,6 +32,7 @@ use Joomla\CMS\Language\Text;
                 <td><?php echo $payment->status; ?></td>
                 <td>$<?php echo number_format($payment->fee_amount, 2); ?></td>
                 <td><?php echo $payment->payment_method; ?></td>
+                <td><?php echo $payment->transaction_id; ?></td>
             </tr>
         <?php endforeach; ?>
     </tbody>
