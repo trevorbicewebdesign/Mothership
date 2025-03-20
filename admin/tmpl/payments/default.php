@@ -53,6 +53,9 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_PAYMENT_HEADING_CLIENT', 'c.name', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_PAYMENT_HEADING_ACCOUNT', 'a.name', $listDirn, $listOrder); ?>
+                                </th>
+                                <th scope="col" class="w-10">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_PAYMENT_HEADING_CREATED_AT', 'p.created_at', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
@@ -89,6 +92,11 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                                     <td>
                                         <a href="<?php echo Route::_("index.php?option=com_mothership&task=client.edit&id={$item->client_id}&return=" . base64_encode(Route::_('index.php?option=com_mothership&view=payments'))); ?>">
                                             <?php echo htmlspecialchars($item->client_name, ENT_QUOTES, 'UTF-8'); ?>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="<?php echo Route::_("index.php?option=com_mothership&task=account.edit&id={$item->account_id}&return=" . base64_encode(Route::_('index.php?option=com_mothership&view=payments'))); ?>">
+                                            <?php echo htmlspecialchars($item->account_name, ENT_QUOTES, 'UTF-8'); ?>
                                         </a>
                                     </td>
                                     <td>
