@@ -1,21 +1,43 @@
+/*
+Invoice Row Calculation and Update Logic:
+
+When a user changes any of these fields in an invoice item row, the following occurs:
+
+- Hours field:
+  - Automatically updates the "Quantity" field based on the combined hours and minutes.
+  - Recalculates the subtotal for the row.
+
+- Minutes field:
+  - Automatically updates the "Quantity" field based on the combined hours and minutes.
+  - Recalculates the subtotal for the row.
+
+- Quantity field:
+  - Automatically updates the "Hours" and "Minutes" fields based on the decimal value entered in the quantity.
+  - Recalculates the subtotal for the row.
+
+- Rate field:
+  - Recalculates the subtotal for the row without changing other fields.
+
+The subtotal is calculated as: subtotal = rate × quantity.
+*/
 jQuery(document).ready(function ($) {
+
+    function formatCurrency(value) {
+        return parseFloat(value).toFixed(2);
+    }
 
     function updateSubtotal(row) {
         const quantityInput = $(row).find('input[name$="[quantity]"]');
-        const hoursInput = $(row).find('input[name$="[hours]"]');
-        const minutesInput = $(row).find('input[name$="[minutes]"]');
         const rateInput = $(row).find('input[name$="[rate]"]');
 
         let quantity = parseFloat(quantityInput.val()) || 0;
-        let hours = parseInt(hoursInput.val()) || 0;
-        let minutes = parseInt(minutesInput.val()) || 0;
         let rate = parseFloat(rateInput.val()) || 0;
 
-        let totalHours = hours + (minutes / 60);
+        // Format Rate
+        rateInput.val(formatCurrency(rate));
 
-        let subtotal = rate * (totalHours || quantity);
-
-        $(row).find('input[name$="[subtotal]"]').val(subtotal.toFixed(2));
+        const subtotal = rate * quantity;
+        $(row).find('input[name$="[subtotal]"]').val(formatCurrency(subtotal));
 
         updateInvoiceTotal();
     }
@@ -27,22 +49,40 @@ jQuery(document).ready(function ($) {
             invoiceTotal += subtotal;
         });
 
-        $('#jform_total').val(invoiceTotal.toFixed(2));
+        $('#jform_total').val(formatCurrency(invoiceTotal));
     }
 
     function hoursMinutesToQuantity(row) {
-        const hours = parseInt($(row).find('input[name$="[hours]"]').val()) || 0;
-        const minutes = parseInt($(row).find('input[name$="[minutes]"]').val()) || 0;
+        const hoursInput = $(row).find('input[name$="[hours]"]');
+        const minutesInput = $(row).find('input[name$="[minutes]"]');
+
+        let hours = parseInt(hoursInput.val()) || 0;
+        let minutes = parseInt(minutesInput.val()) || 0;
+
+        // Ensure hours/minutes are integers
+        hoursInput.val(hours);
+        minutesInput.val(minutes);
+
         const totalHours = hours + (minutes / 60);
-        $(row).find('input[name$="[quantity]"]').val(totalHours.toFixed(2));
+        $(row).find('input[name$="[quantity]"]').val(formatCurrency(totalHours));
     }
 
     function quantityToHoursMinutes(row) {
         const quantity = parseFloat($(row).find('input[name$="[quantity]"]').val()) || 0;
-        const hours = Math.floor(quantity);
-        const minutes = Math.round((quantity - hours) * 60);
+        let hours = Math.floor(quantity);
+        let minutes = Math.round((quantity - hours) * 60);
+
+        // Adjust if minutes hit exactly 60
+        if (minutes >= 60) {
+            hours += 1;
+            minutes -= 60;
+        }
+
         $(row).find('input[name$="[hours]"]').val(hours);
         $(row).find('input[name$="[minutes]"]').val(minutes);
+
+        // Format quantity to two decimals
+        $(row).find('input[name$="[quantity]"]').val(formatCurrency(quantity));
     }
 
     $('#invoice-items-table tbody').on('input', 'input[name$="[hours]"], input[name$="[minutes]"]', function () {
@@ -62,31 +102,13 @@ jQuery(document).ready(function ($) {
         updateSubtotal(row);
     });
 
-    $('#add-invoice-item').click(function () {
-        const tableBody = $('#invoice-items-table tbody');
-        const rowCount = tableBody.find('tr').length;
-        const newRow = tableBody.find('tr:first').clone();
-
-        newRow.find('input').each(function () {
-            const nameAttr = $(this).attr('name');
-            const updatedName = nameAttr.replace(/\[\d+\]/, `[${rowCount}]`);
-            $(this).attr('name', updatedName);
-            if ($(this).attr('readonly')) {
-                $(this).val('0.00');
-            } else if ($(this).attr('type') === 'number') {
-                $(this).val('0');
-            } else {
-                $(this).val('');
-            }
-        });
-
-        tableBody.append(newRow);
-    });
-
+    // Initialize subtotals and formatting on page load
     $('#invoice-items-table tbody tr').each(function () {
+        quantityToHoursMinutes(this);
         updateSubtotal(this);
     });
 });
+
 
 
 
