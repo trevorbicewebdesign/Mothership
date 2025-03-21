@@ -66,6 +66,10 @@ class HtmlView extends BaseHtmlView
         $this->filterForm = $model->getFilterForm();
         $this->activeFilters = $model->getActiveFilters();
 
+        // ✅ Use WebAssetManager to load the script
+        $wa = $this->getDocument()->getWebAssetManager();
+        $wa->registerAndUseStyle('com_mothership.invoices', 'administrator/components/com_mothership/assets/css/invoices.css');
+
         // Ensure transitions is always an array
         $this->transitions = $this->state->get('transitions', []);
         if (!is_array($this->transitions)) {
