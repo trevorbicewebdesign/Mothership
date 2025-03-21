@@ -1,10 +1,15 @@
 jQuery(document).ready(function ($) {
 
     function updateSubtotal(row) {
-        const quantity = parseFloat($(row).find('input[name$="[quantity]"]').val()) || 0;
-        const hours = parseInt($(row).find('input[name$="[hours]"]').val()) || 0;
-        const minutes = parseInt($(row).find('input[name$="[minutes]"]').val()) || 0;
-        const rate = parseFloat($(row).find('input[name$="[rate]"]').val()) || 0;
+        const quantityInput = $(row).find('input[name$="[quantity]"]');
+        const hoursInput = $(row).find('input[name$="[hours]"]');
+        const minutesInput = $(row).find('input[name$="[minutes]"]');
+        const rateInput = $(row).find('input[name$="[rate]"]');
+
+        let quantity = parseFloat(quantityInput.val()) || 0;
+        let hours = parseInt(hoursInput.val()) || 0;
+        let minutes = parseInt(minutesInput.val()) || 0;
+        let rate = parseFloat(rateInput.val()) || 0;
 
         let totalHours = hours + (minutes / 60);
 
@@ -25,13 +30,38 @@ jQuery(document).ready(function ($) {
         $('#jform_total').val(invoiceTotal.toFixed(2));
     }
 
-    // Proper event delegation for dynamically added rows
-    $('#invoice-items-table tbody').on('input', 'input', function () {
+    function hoursMinutesToQuantity(row) {
+        const hours = parseInt($(row).find('input[name$="[hours]"]').val()) || 0;
+        const minutes = parseInt($(row).find('input[name$="[minutes]"]').val()) || 0;
+        const totalHours = hours + (minutes / 60);
+        $(row).find('input[name$="[quantity]"]').val(totalHours.toFixed(2));
+    }
+
+    function quantityToHoursMinutes(row) {
+        const quantity = parseFloat($(row).find('input[name$="[quantity]"]').val()) || 0;
+        const hours = Math.floor(quantity);
+        const minutes = Math.round((quantity - hours) * 60);
+        $(row).find('input[name$="[hours]"]').val(hours);
+        $(row).find('input[name$="[minutes]"]').val(minutes);
+    }
+
+    $('#invoice-items-table tbody').on('input', 'input[name$="[hours]"], input[name$="[minutes]"]', function () {
+        const row = $(this).closest('tr');
+        hoursMinutesToQuantity(row);
+        updateSubtotal(row);
+    });
+
+    $('#invoice-items-table tbody').on('input', 'input[name$="[quantity]"]', function () {
+        const row = $(this).closest('tr');
+        quantityToHoursMinutes(row);
+        updateSubtotal(row);
+    });
+
+    $('#invoice-items-table tbody').on('input', 'input[name$="[rate]"]', function () {
         const row = $(this).closest('tr');
         updateSubtotal(row);
     });
 
-    // Improved add row function
     $('#add-invoice-item').click(function () {
         const tableBody = $('#invoice-items-table tbody');
         const rowCount = tableBody.find('tr').length;
@@ -53,7 +83,6 @@ jQuery(document).ready(function ($) {
         tableBody.append(newRow);
     });
 
-    // Initialize subtotals on load
     $('#invoice-items-table tbody tr').each(function () {
         updateSubtotal(this);
     });
