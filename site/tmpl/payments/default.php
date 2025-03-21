@@ -16,12 +16,13 @@ use Joomla\CMS\Language\Text;
             <th>Fee Amount</th>
             <th>Payment Method</th>
             <th>Transaction Id</th>
+            <th>Invoices</th>
         </tr>
     </thead>
     <tbody>
         <?php if(empty($this->payments)) : ?>
             <tr>
-                <td colspan="6">No payments found.</td>
+                <td colspan="7">No payments found.</td>
             </tr>
         <?php endif; ?>
         <?php foreach ($this->payments as $payment) : ?>
@@ -33,6 +34,7 @@ use Joomla\CMS\Language\Text;
                 <td>$<?php echo number_format($payment->fee_amount, 2); ?></td>
                 <td><?php echo $payment->payment_method; ?></td>
                 <td><?php echo $payment->transaction_id; ?></td>
+                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=invoice&id=' . $payment->invoice_ids); ?>" ><?php echo $payment->invoice_ids; ?></a></td>
             </tr>
         <?php endforeach; ?>
     </tbody>

@@ -15,21 +15,28 @@ class PaymentsModel extends ListModel
         }
 
         $db = $this->getDatabase();
+        // Also need to get #__mothership_invoice_payment table to list the invoices this payment covers.
+        
         $query = $db->getQuery(true)
             ->select('p.*, a.name AS account_name, c.name AS client_name, ' .
-                    'CASE ' . $db->quoteName('p.status') . 
-                    ' WHEN 1 THEN ' . $db->quote('Pending') . 
-                    ' WHEN 2 THEN ' . $db->quote('Completed') . 
-                    ' WHEN 3 THEN ' . $db->quote('Failed') . 
-                    ' WHEN 4 THEN ' . $db->quote('Cancelled') .
-                    ' WHEN 5 THEN ' . $db->quote('Refunded') .
-                    ' ELSE ' . $db->quote('Unknown') . ' END AS ' . $db->quoteName('status'))
+                'CASE ' . $db->quoteName('p.status') . 
+                ' WHEN 1 THEN ' . $db->quote('Pending') . 
+                ' WHEN 2 THEN ' . $db->quote('Completed') . 
+                ' WHEN 3 THEN ' . $db->quote('Failed') . 
+                ' WHEN 4 THEN ' . $db->quote('Cancelled') . 
+                ' WHEN 5 THEN ' . $db->quote('Refunded') . 
+                ' ELSE ' . $db->quote('Unknown') . ' END AS ' . $db->quoteName('status') . ', ' .
+                'GROUP_CONCAT(ip.invoice_id) AS invoice_ids')
             ->from('#__mothership_payments AS p')
             ->join('LEFT', '#__mothership_accounts AS a ON p.account_id = a.id')
             ->join('LEFT', '#__mothership_clients AS c ON p.client_id = c.id')
-            ->where("p.client_id = '{$clientId}'");
+            ->join('LEFT', '#__mothership_invoice_payment AS ip ON p.id = ip.payment_id')
+            ->where("p.client_id = '{$clientId}'")
+            ->group('p.id');
         $db->setQuery($query);
 
-        return $db->loadObjectList();
+        $items = $db->loadObjectList();
+
+        return $items;
     }
 }
