@@ -1,3 +1,66 @@
+jQuery(document).ready(function ($) {
+
+    function updateSubtotal(row) {
+        const quantity = parseFloat($(row).find('input[name$="[quantity]"]').val()) || 0;
+        const hours = parseInt($(row).find('input[name$="[hours]"]').val()) || 0;
+        const minutes = parseInt($(row).find('input[name$="[minutes]"]').val()) || 0;
+        const rate = parseFloat($(row).find('input[name$="[rate]"]').val()) || 0;
+
+        let totalHours = hours + (minutes / 60);
+
+        let subtotal = rate * (totalHours || quantity);
+
+        $(row).find('input[name$="[subtotal]"]').val(subtotal.toFixed(2));
+
+        updateInvoiceTotal();
+    }
+
+    function updateInvoiceTotal() {
+        let invoiceTotal = 0;
+        $('#invoice-items-table tbody tr').each(function () {
+            const subtotal = parseFloat($(this).find('input[name$="[subtotal]"]').val()) || 0;
+            invoiceTotal += subtotal;
+        });
+
+        $('#jform_total').val(invoiceTotal.toFixed(2));
+    }
+
+    // Proper event delegation for dynamically added rows
+    $('#invoice-items-table tbody').on('input', 'input', function () {
+        const row = $(this).closest('tr');
+        updateSubtotal(row);
+    });
+
+    // Improved add row function
+    $('#add-invoice-item').click(function () {
+        const tableBody = $('#invoice-items-table tbody');
+        const rowCount = tableBody.find('tr').length;
+        const newRow = tableBody.find('tr:first').clone();
+
+        newRow.find('input').each(function () {
+            const nameAttr = $(this).attr('name');
+            const updatedName = nameAttr.replace(/\[\d+\]/, `[${rowCount}]`);
+            $(this).attr('name', updatedName);
+            if ($(this).attr('readonly')) {
+                $(this).val('0.00');
+            } else if ($(this).attr('type') === 'number') {
+                $(this).val('0');
+            } else {
+                $(this).val('');
+            }
+        });
+
+        tableBody.append(newRow);
+    });
+
+    // Initialize subtotals on load
+    $('#invoice-items-table tbody tr').each(function () {
+        updateSubtotal(this);
+    });
+});
+
+
+
 /*
 document.addEventListener('DOMContentLoaded', () => {
     const clientField = document.querySelector('#jform_client_id');
