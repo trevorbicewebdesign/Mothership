@@ -1,25 +1,29 @@
-/*
-Invoice Row Calculation and Update Logic:
-
-When a user changes any of these fields in an invoice item row, the following occurs:
-
-- Hours field:
-  - Automatically updates the "Quantity" field based on the combined hours and minutes.
-  - Recalculates the subtotal for the row.
-
-- Minutes field:
-  - Automatically updates the "Quantity" field based on the combined hours and minutes.
-  - Recalculates the subtotal for the row.
-
-- Quantity field:
-  - Automatically updates the "Hours" and "Minutes" fields based on the decimal value entered in the quantity.
-  - Recalculates the subtotal for the row.
-
-- Rate field:
-  - Recalculates the subtotal for the row without changing other fields.
-
-The subtotal is calculated as: subtotal = rate × quantity.
-*/
+/**
+ * This jQuery script manages dynamic invoice item calculations in a Joomla-based admin interface.
+ * It ensures that values such as quantity, rate, subtotal, and total are automatically synchronized
+ * and formatted as the user interacts with invoice line item fields.
+ *
+ * Core Features:
+ * - Converts hours and minutes into decimal "quantity" format (e.g., 1h 30m → 1.50)
+ * - Converts "quantity" back into hours and minutes when edited directly
+ * - Dynamically calculates subtotal for each invoice item (rate × quantity)
+ * - Aggregates subtotals to compute the total invoice value
+ * - Formats currency values to two decimal places, but only on `blur` (after editing is complete)
+ * - Avoids interfering with user input by not formatting values during typing
+ *
+ * Event Bindings:
+ * - `input` on hours/minutes → converts to quantity and updates subtotal
+ * - `input` on quantity → converts to hours/minutes and updates subtotal (but defers formatting)
+ * - `blur` on quantity → formats the value to 2 decimal places
+ * - `blur` on rate → formats the rate and updates subtotal
+ *
+ * Initialization:
+ * - On document ready, all existing invoice item rows are normalized by:
+ *    - Converting quantity to hours/minutes
+ *    - Calculating and formatting subtotals
+ *
+ * Dependencies: jQuery (assumes Joomla admin template includes it)
+ */
 
 jQuery(document).ready(function ($) {
 
