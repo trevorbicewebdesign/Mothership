@@ -28,8 +28,8 @@ $items = $field->value ?? [];
                     <td><input type="text" name="jform[items][<?php echo $index; ?>][description]" value="<?php echo htmlspecialchars($item['description'] ?? ''); ?>" class="form-control"></td>
                     <td><input type="number" step="1" name="jform[items][<?php echo $index; ?>][hours]" value="<?php echo (float)($item['hours'] ?? 0); ?>" class="form-control"></td>
                     <td><input type="number" step="1" name="jform[items][<?php echo $index; ?>][minutes]" value="<?php echo (float)($item['minutes'] ?? 0); ?>" class="form-control"></td>
-                    <td><input type="number" step="0.01" name="jform[items][<?php echo $index; ?>][quantity]" value="<?php echo (float)($item['quantity'] ?? 1); ?>" class="form-control"></td>
-                    <td><input type="number" step="0.01" name="jform[items][<?php echo $index; ?>][rate]" value="<?php echo (float)($item['rate'] ?? 0); ?>" class="form-control"></td>
+                    <td><input type="text" step="0.01" name="jform[items][<?php echo $index; ?>][quantity]" value="<?php echo (float)($item['quantity'] ?? 1); ?>" class="form-control"></td>
+                    <td><input type="text" step="0.01" name="jform[items][<?php echo $index; ?>][rate]" value="<?php echo (float)($item['rate'] ?? 0); ?>" class="form-control"></td>
                     <td><input type="number" step="0.01" name="jform[items][<?php echo $index; ?>][subtotal]" value="<?php echo (float)($item['subtotal'] ?? 0); ?>" class="form-control" readonly></td>
                     <td><button type="button" class="btn btn-danger remove-row">×</button></td>
                 </tr>
@@ -41,8 +41,8 @@ $items = $field->value ?? [];
                 <td><input type="text" name="jform[items][0][description]" value="" class="form-control"></td>
                 <td><input type="number" step="1" name="jform[items][0][hours]" value="0" class="form-control"></td>
                 <td><input type="number" step="1" name="jform[items][0][minutes]" value="0" class="form-control"></td>
-                <td><input type="number" step="0.01" name="jform[items][0][quantity]" value="1" class="form-control"></td>
-                <td><input type="number" step="0.01" name="jform[items][0][rate]" value="0" class="form-control"></td>
+                <td><input type="text" step="0.01" name="jform[items][0][quantity]" value="1" class="form-control"></td>
+                <td><input type="text" step="0.01" name="jform[items][0][rate]" value="0" class="form-control"></td>
                 <td><input type="number" step="0.01" name="jform[items][0][subtotal]" value="0" class="form-control" readonly></td>
                 <td><button type="button" class="btn btn-danger remove-row">×</button></td>
             </tr>
