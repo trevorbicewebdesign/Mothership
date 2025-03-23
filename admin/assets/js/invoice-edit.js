@@ -81,28 +81,34 @@ jQuery(document).ready(function ($) {
 
         $(row).find('input[name$="[hours]"]').val(hours);
         $(row).find('input[name$="[minutes]"]').val(minutes);
-
-        // Format quantity to two decimals
-        $(row).find('input[name$="[quantity]"]').val(formatCurrency(quantity));
     }
 
+    // Convert from hours/minutes to quantity on input
     $('#invoice-items-table tbody').on('input', 'input[name$="[hours]"], input[name$="[minutes]"]', function () {
         const row = $(this).closest('tr');
         hoursMinutesToQuantity(row);
         updateSubtotal(row);
     });
 
+    // Convert from quantity to hours/minutes and update subtotal, but don't reformat mid-input
     $('#invoice-items-table tbody').on('input', 'input[name$="[quantity]"]', function () {
         const row = $(this).closest('tr');
         quantityToHoursMinutes(row);
         updateSubtotal(row);
     });
 
+    // Format quantity only on blur to avoid disrupting typing
+    $('#invoice-items-table tbody').on('blur', 'input[name$="[quantity]"]', function () {
+        const val = parseFloat($(this).val()) || 0;
+        $(this).val(formatCurrency(val));
+    });
+
+    // Format and update subtotal on blur of rate
     $('#invoice-items-table tbody').on('blur', 'input[name$="[rate]"]', function () {
         const row = $(this).closest('tr');
         const val = parseFloat($(this).val()) || 0;
         $(this).val(formatCurrency(val));
-        updateSubtotal(row); // 👈 this was missing
+        updateSubtotal(row);
     });
 
     // Initialize subtotals and formatting on page load
@@ -111,7 +117,6 @@ jQuery(document).ready(function ($) {
         updateSubtotal(this);
     });
 });
-
 
 
 
