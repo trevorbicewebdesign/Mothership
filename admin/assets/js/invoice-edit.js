@@ -99,8 +99,10 @@ jQuery(document).ready(function ($) {
     });
 
     $('#invoice-items-table tbody').on('blur', 'input[name$="[rate]"]', function () {
+        const row = $(this).closest('tr');
         const val = parseFloat($(this).val()) || 0;
         $(this).val(formatCurrency(val));
+        updateSubtotal(row); // 👈 this was missing
     });
 
     // Initialize subtotals and formatting on page load
