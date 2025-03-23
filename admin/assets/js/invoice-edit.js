@@ -35,7 +35,7 @@ jQuery(document).ready(function ($) {
         let rate = parseFloat(rateInput.val()) || 0;
 
         // Format Rate
-        // rateInput.val(formatCurrency(rate));
+        rateInput.val(formatCurrency(rate));
 
         const subtotal = rate * quantity;
         $(row).find('input[name$="[subtotal]"]').val(formatCurrency(subtotal));
@@ -86,13 +86,6 @@ jQuery(document).ready(function ($) {
         $(row).find('input[name$="[quantity]"]').val(formatCurrency(quantity));
     }
 
-    function formatCurrencyInput($input) {
-        let raw = $input.val().replace(/\D/g, ''); // remove non-digits
-        if (raw.length === 0) raw = '0';
-        let numeric = parseFloat(raw) / 100;
-        $input.val(numeric.toFixed(2));
-    }
-
     $('#invoice-items-table tbody').on('input', 'input[name$="[hours]"], input[name$="[minutes]"]', function () {
         const row = $(this).closest('tr');
         hoursMinutesToQuantity(row);
@@ -105,17 +98,9 @@ jQuery(document).ready(function ($) {
         updateSubtotal(row);
     });
 
-    $('#invoice-items-table tbody').on('input', 'input[name$="[rate]"]', function (e) {
-        const $input = $(this);
-        const caret = this.selectionStart;
-    
-        formatCurrencyInput($input);
-    
-        // Optional: Set caret to end (or try to preserve position)
-        this.setSelectionRange($input.val().length, $input.val().length);
-    
-        const row = $input.closest('tr');
-        updateSubtotal(row);
+    $('#invoice-items-table tbody').on('blur', 'input[name$="[rate]"]', function () {
+        const val = parseFloat($(this).val()) || 0;
+        $(this).val(formatCurrency(val));
     });
 
     // Initialize subtotals and formatting on page load
