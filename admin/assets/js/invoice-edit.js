@@ -126,6 +126,7 @@ jQuery(document).ready(function ($) {
 jQuery(document).ready(function ($) {
     const clientSelect = $('#jform_client_id');
     const accountWrapper = $('.account_id_wrapper');
+    const spinner = $('.account-loading-spinner');
 
     function isNewInvoice() {
         return clientSelect.val() === '';
@@ -134,12 +135,20 @@ jQuery(document).ready(function ($) {
     function revealAccountField() {
         if (accountWrapper.is(':visible')) return;
 
+        // Initial setup
         accountWrapper.css({
             display: 'block',
             overflow: 'hidden',
             height: 0,
             opacity: 0
         });
+        spinner.css({
+            display: 'block',
+            opacity: 0
+        });
+
+        // Hide dropdown until "AJAX" completes
+        accountWrapper.css('opacity', 0);
 
         const clone = accountWrapper.clone().css({
             visibility: 'hidden',
@@ -158,20 +167,37 @@ jQuery(document).ready(function ($) {
                 duration: 200,
                 easing: 'swing',
                 complete: function () {
-                    accountWrapper.animate(
-                        { opacity: 1 },
-                        {
-                            duration: 200,
-                            easing: 'swing',
-                            complete: function () {
-                                accountWrapper.css({
-                                    height: '',
-                                    overflow: '',
-                                    opacity: ''
+                    // Fade in spinner
+                    spinner.animate({ opacity: 1 }, {
+                        duration: 200,
+                        easing: 'swing',
+                        complete: function () {
+                            // Simulate AJAX delay
+                            setTimeout(function () {
+                                // Fade out spinner
+                                spinner.animate({ opacity: 0 }, {
+                                    duration: 200,
+                                    easing: 'swing',
+                                    complete: function () {
+                                        spinner.css('display', 'none');
+
+                                        // Fade in account dropdown
+                                        accountWrapper.animate({ opacity: 1 }, {
+                                            duration: 200,
+                                            easing: 'swing',
+                                            complete: function () {
+                                                accountWrapper.css({
+                                                    height: '',
+                                                    overflow: '',
+                                                    opacity: ''
+                                                });
+                                            }
+                                        });
+                                    }
                                 });
-                            }
+                            }, 1000); // Simulated 1s AJAX
                         }
-                    );
+                    });
                 }
             }
         );
@@ -198,6 +224,12 @@ jQuery(document).ready(function ($) {
                         overflow: '',
                         opacity: ''
                     });
+
+                    // Also reset spinner visibility
+                    spinner.css({
+                        display: 'none',
+                        opacity: ''
+                    });
                 }
             }
         );
@@ -206,9 +238,10 @@ jQuery(document).ready(function ($) {
     // On page load
     if (isNewInvoice()) {
         accountWrapper.hide();
+        spinner.hide();
     }
 
-    // On client selection change
+    // On client change
     clientSelect.on('change', function () {
         const selectedVal = $(this).val();
 
