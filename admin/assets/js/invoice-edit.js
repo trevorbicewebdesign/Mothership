@@ -134,7 +134,6 @@ jQuery(document).ready(function ($) {
     function revealAccountField() {
         if (accountWrapper.is(':visible')) return;
 
-        // Set initial state
         accountWrapper.css({
             display: 'block',
             overflow: 'hidden',
@@ -142,33 +141,29 @@ jQuery(document).ready(function ($) {
             opacity: 0
         });
 
-        // Measure natural height by cloning
         const clone = accountWrapper.clone().css({
             visibility: 'hidden',
             height: 'auto',
             display: 'block',
             position: 'absolute',
-            left: -9999 // Offscreen
+            left: -9999
         }).appendTo('body');
 
         const targetHeight = clone.outerHeight();
         clone.remove();
 
-        // Animate height
         accountWrapper.animate(
             { height: targetHeight },
             {
                 duration: 200,
                 easing: 'swing',
                 complete: function () {
-                    // Now fade in the content
                     accountWrapper.animate(
                         { opacity: 1 },
                         {
                             duration: 200,
                             easing: 'swing',
                             complete: function () {
-                                // Clear inline styles after both animations
                                 accountWrapper.css({
                                     height: '',
                                     overflow: '',
@@ -182,14 +177,45 @@ jQuery(document).ready(function ($) {
         );
     }
 
+    function hideAccountField() {
+        const currentHeight = accountWrapper.outerHeight();
+
+        accountWrapper.css({
+            overflow: 'hidden',
+            height: currentHeight,
+            opacity: 1
+        });
+
+        accountWrapper.animate(
+            { height: 0, opacity: 0 },
+            {
+                duration: 200,
+                easing: 'swing',
+                complete: function () {
+                    accountWrapper.css({
+                        display: 'none',
+                        height: '',
+                        overflow: '',
+                        opacity: ''
+                    });
+                }
+            }
+        );
+    }
+
     // On page load
     if (isNewInvoice()) {
         accountWrapper.hide();
     }
 
-    // On client change
+    // On client selection change
     clientSelect.on('change', function () {
-        alert('Client Changed');
-        revealAccountField();
+        const selectedVal = $(this).val();
+
+        if (selectedVal === '') {
+            hideAccountField();
+        } else {
+            revealAccountField();
+        }
     });
 });
