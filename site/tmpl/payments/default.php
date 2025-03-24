@@ -53,8 +53,8 @@ use Joomla\CMS\Language\Text;
       <li><strong>Pending</strong>: Payment is awaiting confirmation.</li>
       <li><strong>Completed</strong>: Payment was successful.</li>
       <li><strong>Failed</strong>: Payment failed to process.</li>
-      <li><strong>Refunded</strong>: Payment was returned to the payer.</li>
       <li><strong>Cancelled</strong>: Payment was cancelled.</li>
+      <li><strong>Refunded</strong>: Payment was returned to the payer.</li>
     </ul>
   </div>
 </div>
