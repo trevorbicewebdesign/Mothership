@@ -8,6 +8,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Mpdf\Mpdf;
 use Joomla\CMS\Layout\FileLayout;
+use TrevorBice\Component\Mothership\Administrator\Helper\AccountHelper;
 
 
 \defined('_JEXEC') or die;
@@ -25,66 +26,13 @@ class InvoiceController extends FormController
         return parent::display();
     }
 
-    public function getAccountsForClient()
+    // Returns a list of accounts for a given client in JSON format
+    public function getAccountsList()
     {
-        $app = \Joomla\CMS\Factory::getApplication();
-        $input = $app->input;
-        $clientId = $input->getInt('client_id');
-
-        $db = Factory::getDbo();
-        $query = $db->getQuery(true)
-            ->select('id, name')
-            ->from('#__mothership_accounts')
-            ->where('client_id = ' . (int) $clientId)
-            ->order('name ASC');
-        $db->setQuery($query);
-
-        $accounts = $db->loadAssocList();
-
-        echo new \Joomla\CMS\Response\JsonResponse($accounts);
-        $app->close();
-    }
-
-    public function processPayment($invoice)
-    {
-        // Load payment plugins
-        PluginHelper::importPlugin('payment');
-
-        $dispatcher = \Joomla\CMS\Factory::getApplication();
-        $results = $dispatcher->trigger('onMothershipPaymentRequest', [$invoice]);
-
-        foreach ($results as $result) {
-            if (!empty($result['status']) && $result['status'] === 'success') {
-                return $result; // Payment succeeded
-            }
-        }
-
-        return ['status' => 'failed', 'message' => 'Payment failed or no handler found.'];
-    }
-
-    public function pay()
-    {
-        $app = Factory::getApplication();
-        $id = $app->input->getInt('id');
-
-        $model = $this->getModel('Invoice');
-        $invoice = $model->getItem($id);
-
-        if (!$invoice) {
-            $app->enqueueMessage('Invoice not found.', 'error');
-            $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoices', false));
-            return;
-        }
-
-        $result = $model->processPayment($invoice);
-
-        if ($result['status'] === 'success') {
-            $app->enqueueMessage('Payment successful!');
-        } else {
-            $app->enqueueMessage('Payment failed: ' . ($result['message'] ?? 'Unknown error'), 'error');
-        }
-
-        $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoices', false));
+        $client_id = Factory::getApplication()->input->getInt('client_id');
+        $accountList = AccountHelper::getAccountListOptions($client_id);
+        echo json_encode($accountList);
+        Factory::getApplication()->close();
     }
 
     public function previewPdf()

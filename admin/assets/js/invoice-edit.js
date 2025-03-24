@@ -123,135 +123,206 @@ jQuery(document).ready(function ($) {
 });
 
 
+/**
+ * Mothership Invoice - Dynamic Account Dropdown Handler
+ *
+ * This script is used in the Joomla 5 admin interface of the Mothership component.
+ * It controls the visibility and population of the "Account" dropdown based on the selected "Client".
+ *
+ * Behavior Overview:
+ * ------------------
+ * - On initial page load:
+ *   - If no client is selected (value is ''), the Account field (.account_id_wrapper) is hidden.
+ *   - The loading spinner (.account-loading-spinner) is also hidden.
+ *
+ * - When a client is selected:
+ *   1. The Account field slides open over 200ms.
+ *   2. A loading spinner fades in over 200ms, centered in the account container.
+ *   3. An AJAX request is sent to:
+ *      /administrator/index.php?option=com_mothership&task=invoice.getAccountsList&client_id={clientId}
+ *   4. While waiting, the Account dropdown is hidden.
+ *   5. On AJAX success:
+ *      - The Account dropdown is cleared and populated with the returned list.
+ *      - Each item is an object with { value, text, disable }.
+ *      - The spinner fades out (200ms), and the dropdown fades in (200ms).
+ *
+ * - If the user selects a blank client:
+ *   - The Account section fades out and slides closed over 200ms.
+ *   - The spinner is reset and hidden.
+ *
+ * Expected JSON response format:
+ * ------------------------------
+ * [
+ *   { "value": "", "text": "Please select an Account", "disable": false },
+ *   { "value": 1,  "text": "Test Account",             "disable": false }
+ * ]
+ *
+ * Security Considerations:
+ * ------------------------
+ * - CSRF protection should be implemented via Joomla.getOptions('csrf.token') and validated in PHP.
+ * - Server-side must validate user permissions and input (client_id).
+ * - The PHP controller should return a proper JsonResponse object.
+ *
+ * DOM Elements:
+ * -------------
+ * - #jform_client_id            : Client dropdown
+ * - .account_id_wrapper         : Wrapper for the Account dropdown (shown/hidden)
+ * - .account-loading-spinner    : Spinner shown during AJAX load
+ * - #jform_account_id           : Account dropdown (populated dynamically)
+ */
 
-/*
-document.addEventListener('DOMContentLoaded', () => {
-    const clientField = document.querySelector('#jform_client_id');
-    const accountContainer = document.querySelector('.account-container');
-    const spinner = document.querySelector('.account-loading-spinner');
-    const accountWrapper = document.querySelector('.account_id_wrapper');
-    const accountField = document.querySelector('#jform_account_id');
-    const MIN_SPINNER_TIME = 500;
-    let previousClientId = clientField.value;
+jQuery(document).ready(function ($) {
+    const clientSelect = $('#jform_client_id');
+    const accountWrapper = $('.account_id_wrapper');
+    const spinner = $('.account-loading-spinner');
+    const accountSelect = $('#jform_account_id');
 
-    function init() {
-        const clientId = clientField.value;
-        const selectedAccountId = accountField.value;
-
-        if (clientId && clientId !== '0') {
-            accountContainer.style.display = 'block';
-            accountContainer.style.height = 'auto';
-            if (selectedAccountId && selectedAccountId !== '0') {
-                accountWrapper.style.display = 'block';
-                accountWrapper.classList.add('show');
-            } else {
-                accountWrapper.style.display = 'none';
-                accountWrapper.classList.remove('show');
-            }
-        } else {
-            accountContainer.style.display = 'none';
-            spinner.style.display = 'none';
-            accountWrapper.style.display = 'none';
-            accountWrapper.classList.remove('show');
-        }
+    function isNewInvoice() {
+        return clientSelect.val() === '';
     }
 
-    function toggleAccountField() {
-        const clientId = clientField.value;
+    function revealAccountField(clientId) {
+        if (accountWrapper.is(':visible')) return;
 
-        if (!clientId || clientId === '0') {
-            hideAccountField();
-            previousClientId = clientId;
-            return;
-        }
+        // Initial state
+        accountWrapper.css({
+            display: 'block',
+            overflow: 'hidden',
+            height: 0,
+            opacity: 0
+        });
+        spinner.css({
+            display: 'block',
+            opacity: 0
+        });
 
-        if (previousClientId !== clientId) {
-            previousClientId = clientId;
-            showSpinner();
+        accountWrapper.css('opacity', 0);
 
-            if (accountContainer.style.display !== 'block') {
-                slideOpen(accountContainer, () => fetchAndShowAccounts(clientId));
-            } else {
-                fadeOut(accountWrapper, () => fetchAndShowAccounts(clientId));
-            }
-        }
-    }
+        const clone = accountWrapper.clone().css({
+            visibility: 'hidden',
+            height: 'auto',
+            display: 'block',
+            position: 'absolute',
+            left: -9999
+        }).appendTo('body');
 
-    function fetchAndShowAccounts(clientId) {
-        const startTime = Date.now();
-        fetch(`index.php?option=com_mothership&task=invoice.getAccountsForClient&format=json&client_id=${clientId}`)
-            .then(res => res.json())
-            .then(data => {
-                accountField.innerHTML = '<option value="">Select Account</option>';
-                if (data.data) {
-                    data.data.forEach(account => {
-                        accountField.innerHTML += `<option value="${account.id}">${account.name}</option>`;
+        const targetHeight = clone.outerHeight();
+        clone.remove();
+
+        accountWrapper.animate(
+            { height: targetHeight },
+            {
+                duration: 200,
+                easing: 'swing',
+                complete: function () {
+                    // Fade in spinner
+                    spinner.animate({ opacity: 1 }, {
+                        duration: 200,
+                        easing: 'swing',
+                        complete: function () {
+                            loadAccountsForClient(clientId);
+                        }
                     });
                 }
-            })
-            .catch(console.error)
-            .finally(() => {
-                const elapsed = Date.now() - startTime;
-                setTimeout(() => {
-                    hideSpinner();
-                    fadeIn(accountWrapper);
-                }, Math.max(0, MIN_SPINNER_TIME - elapsed));
-            });
-    }
-
-    function showSpinner() {
-        fadeOut(accountWrapper);
-        spinner.style.display = 'block';
-        requestAnimationFrame(() => spinner.classList.add('show'));
-    }
-
-    function hideSpinner() {
-        spinner.classList.remove('show');
-        spinner.addEventListener('transitionend', () => spinner.style.display = 'none', { once: true });
+            }
+        );
     }
 
     function hideAccountField() {
-        fadeOut(accountWrapper);
-        slideClose(accountContainer);
-        accountField.innerHTML = '<option value="">Select Account</option>';
-    }
+        const currentHeight = accountWrapper.outerHeight();
 
-    function slideOpen(el, callback) {
-        el.style.display = 'block';
-        el.style.height = '0';
-        requestAnimationFrame(() => {
-            el.style.height = `${el.scrollHeight}px`;
+        accountWrapper.css({
+            overflow: 'hidden',
+            height: currentHeight,
+            opacity: 1
         });
-        el.addEventListener('transitionend', () => {
-            el.style.height = '';
-            if (callback) callback();
-        }, { once: true });
+
+        accountWrapper.animate(
+            { height: 0, opacity: 0 },
+            {
+                duration: 200,
+                easing: 'swing',
+                complete: function () {
+                    accountWrapper.css({
+                        display: 'none',
+                        height: '',
+                        overflow: '',
+                        opacity: ''
+                    });
+
+                    spinner.css({
+                        display: 'none',
+                        opacity: ''
+                    });
+                }
+            }
+        );
     }
 
-    function slideClose(el) {
-        el.style.height = `${el.scrollHeight}px`;
-        requestAnimationFrame(() => el.style.height = '0');
-        el.addEventListener('transitionend', () => {
-            el.style.display = 'none';
-            el.style.height = '';
-        }, { once: true });
+    function loadAccountsForClient(clientId) {
+        const ajaxUrl = '/administrator/index.php?option=com_mothership&task=invoice.getAccountsList&client_id=' + clientId;
+    
+        $.ajax({
+            url: ajaxUrl,
+            method: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                // Clear and populate account dropdown
+                accountSelect.empty();
+    
+                $.each(response, function (index, item) {
+                    const option = $('<option>', {
+                        value: item.value,
+                        text: item.text,
+                        disabled: item.disable === true
+                    });
+                    accountSelect.append(option);
+                });
+    
+                // Fade out spinner, fade in dropdown
+                spinner.animate({ opacity: 0 }, {
+                    duration: 200,
+                    easing: 'swing',
+                    complete: function () {
+                        spinner.css('display', 'none');
+    
+                        accountWrapper.animate({ opacity: 1 }, {
+                            duration: 200,
+                            easing: 'swing',
+                            complete: function () {
+                                accountWrapper.css({
+                                    height: '',
+                                    overflow: '',
+                                    opacity: ''
+                                });
+                            }
+                        });
+                    }
+                });
+            },
+            error: function () {
+                console.error('Failed to fetch accounts for client_id=' + clientId);
+                alert('Error loading accounts. Please try again.');
+    
+                spinner.fadeOut(200);
+            }
+        });
     }
 
-    function fadeIn(el) {
-        el.style.display = 'block';
-        requestAnimationFrame(() => el.classList.add('show'));
+    // On page load
+    if (isNewInvoice()) {
+        accountWrapper.hide();
+        spinner.hide();
     }
 
-    function fadeOut(el, callback) {
-        el.classList.remove('show');
-        el.addEventListener('transitionend', () => {
-            el.style.display = 'none';
-            if (callback) callback();
-        }, { once: true });
-    }
+    // On client change
+    clientSelect.on('change', function () {
+        const selectedVal = $(this).val();
 
-    init();
-    clientField.addEventListener('change', toggleAccountField);
+        if (selectedVal === '') {
+            hideAccountField();
+        } else {
+            revealAccountField(selectedVal);
+        }
+    });
 });
-
-*/
