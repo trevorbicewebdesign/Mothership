@@ -121,3 +121,75 @@ jQuery(document).ready(function ($) {
         updateSubtotal(this);
     });
 });
+
+
+jQuery(document).ready(function ($) {
+    const clientSelect = $('#jform_client_id');
+    const accountWrapper = $('.account_id_wrapper');
+
+    function isNewInvoice() {
+        return clientSelect.val() === '';
+    }
+
+    function revealAccountField() {
+        if (accountWrapper.is(':visible')) return;
+
+        // Set initial state
+        accountWrapper.css({
+            display: 'block',
+            overflow: 'hidden',
+            height: 0,
+            opacity: 0
+        });
+
+        // Measure natural height by cloning
+        const clone = accountWrapper.clone().css({
+            visibility: 'hidden',
+            height: 'auto',
+            display: 'block',
+            position: 'absolute',
+            left: -9999 // Offscreen
+        }).appendTo('body');
+
+        const targetHeight = clone.outerHeight();
+        clone.remove();
+
+        // Animate height
+        accountWrapper.animate(
+            { height: targetHeight },
+            {
+                duration: 200,
+                easing: 'swing',
+                complete: function () {
+                    // Now fade in the content
+                    accountWrapper.animate(
+                        { opacity: 1 },
+                        {
+                            duration: 200,
+                            easing: 'swing',
+                            complete: function () {
+                                // Clear inline styles after both animations
+                                accountWrapper.css({
+                                    height: '',
+                                    overflow: '',
+                                    opacity: ''
+                                });
+                            }
+                        }
+                    );
+                }
+            }
+        );
+    }
+
+    // On page load
+    if (isNewInvoice()) {
+        accountWrapper.hide();
+    }
+
+    // On client change
+    clientSelect.on('change', function () {
+        alert('Client Changed');
+        revealAccountField();
+    });
+});
