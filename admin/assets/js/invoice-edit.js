@@ -127,15 +127,16 @@ jQuery(document).ready(function ($) {
     const clientSelect = $('#jform_client_id');
     const accountWrapper = $('.account_id_wrapper');
     const spinner = $('.account-loading-spinner');
+    const accountSelect = $('#jform_account_id');
 
     function isNewInvoice() {
         return clientSelect.val() === '';
     }
 
-    function revealAccountField() {
+    function revealAccountField(clientId) {
         if (accountWrapper.is(':visible')) return;
 
-        // Initial setup
+        // Initial state
         accountWrapper.css({
             display: 'block',
             overflow: 'hidden',
@@ -147,7 +148,6 @@ jQuery(document).ready(function ($) {
             opacity: 0
         });
 
-        // Hide dropdown until "AJAX" completes
         accountWrapper.css('opacity', 0);
 
         const clone = accountWrapper.clone().css({
@@ -172,30 +172,7 @@ jQuery(document).ready(function ($) {
                         duration: 200,
                         easing: 'swing',
                         complete: function () {
-                            // Simulate AJAX delay
-                            setTimeout(function () {
-                                // Fade out spinner
-                                spinner.animate({ opacity: 0 }, {
-                                    duration: 200,
-                                    easing: 'swing',
-                                    complete: function () {
-                                        spinner.css('display', 'none');
-
-                                        // Fade in account dropdown
-                                        accountWrapper.animate({ opacity: 1 }, {
-                                            duration: 200,
-                                            easing: 'swing',
-                                            complete: function () {
-                                                accountWrapper.css({
-                                                    height: '',
-                                                    overflow: '',
-                                                    opacity: ''
-                                                });
-                                            }
-                                        });
-                                    }
-                                });
-                            }, 1000); // Simulated 1s AJAX
+                            loadAccountsForClient(clientId);
                         }
                     });
                 }
@@ -225,7 +202,6 @@ jQuery(document).ready(function ($) {
                         opacity: ''
                     });
 
-                    // Also reset spinner visibility
                     spinner.css({
                         display: 'none',
                         opacity: ''
@@ -233,6 +209,61 @@ jQuery(document).ready(function ($) {
                 }
             }
         );
+    }
+
+    function loadAccountsForClient(clientId) {
+        const ajaxUrl = '/administrator/index.php?option=com_mothership&task=invoice.getAccountsList&client_id=' + clientId;
+
+        $.ajax({
+            url: ajaxUrl,
+            method: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                // Clear existing options
+                accountSelect.empty();
+
+                // Add default option
+                accountSelect.append($('<option>', {
+                    value: '',
+                    text: 'Please select an Account'
+                }));
+
+                // Populate options
+                $.each(response, function (index, item) {
+                    accountSelect.append($('<option>', {
+                        value: item.id,
+                        text: item.name
+                    }));
+                });
+
+                // Hide spinner, fade in dropdown
+                spinner.animate({ opacity: 0 }, {
+                    duration: 200,
+                    easing: 'swing',
+                    complete: function () {
+                        spinner.css('display', 'none');
+
+                        accountWrapper.animate({ opacity: 1 }, {
+                            duration: 200,
+                            easing: 'swing',
+                            complete: function () {
+                                accountWrapper.css({
+                                    height: '',
+                                    overflow: '',
+                                    opacity: ''
+                                });
+                            }
+                        });
+                    }
+                });
+            },
+            error: function () {
+                console.error('Failed to fetch accounts for client_id=' + clientId);
+                alert('Error loading accounts. Please try again.');
+
+                spinner.fadeOut(200);
+            }
+        });
     }
 
     // On page load
@@ -248,7 +279,7 @@ jQuery(document).ready(function ($) {
         if (selectedVal === '') {
             hideAccountField();
         } else {
-            revealAccountField();
+            revealAccountField(selectedVal);
         }
     });
 });
