@@ -32,68 +32,10 @@ $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn = $this->escape($this->state->get('list.direction'));
 ?>
 <style>
-    .account-container {
-        overflow: hidden;
-        transition: height 500ms cubic-bezier(0.25, 0.8, 0.25, 1);
-        /* Smoother easing */
-    }
-
-    .account-loading-spinner,
-    .account_id_wrapper {
-        opacity: 0;
-        transition: opacity 400ms ease-in-out, transform 400ms ease-in-out;
-        transform: translateY(-10px);
-        /* Slight lift effect */
-    }
-
-    .show {
-        opacity: 1;
-        transform: translateY(0);
-        /* Reset position */
-    }
-
-    .spinner-border {
-        animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-        0% {
-            transform: rotate(0deg);
-        }
-
-        100% {
-            transform: rotate(360deg);
-        }
-    }
-
-    .account-container {
-        overflow: hidden;
-        transition: height 400ms ease;
-        position: relative;
-        /* This anchors the spinner inside */
-    }
-
-    /* Spinner wrapper to overlay */
-    .account-loading-spinner {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        opacity: 0;
-        transition: opacity 300ms ease;
-        pointer-events: none;
-        /* Prevent blocking clicks */
-        z-index: 10;
-        text-align: center;
-        padding: 1rem;
-        width: 100%;
-    }
-
-    /* Account field wrapper */
-    .account_id_wrapper {
-        opacity: 0;
-        transition: opacity 300ms ease;
-    }
+ 
+ .account-loading-spinner {
+    display:none;
+ }
 </style>
 
 
