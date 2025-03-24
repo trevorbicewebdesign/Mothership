@@ -14,6 +14,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\Database\ParameterType;
 
+
 \defined('_JEXEC') or die;
 
 class PaymentsModel extends ListModel
@@ -185,7 +186,7 @@ class PaymentsModel extends ListModel
                 // Get related invoice IDs
                 $query = $db->getQuery(true)
                     ->select($db->quoteName('invoice_id'))
-                    ->from($db->quoteName('#__mothership_invoice_payments'))
+                    ->from($db->quoteName('#__mothership_invoice_payment'))
                     ->where($db->quoteName('payment_id') . ' = :paymentId')
                     ->bind(':paymentId', $paymentId, ParameterType::INTEGER);
                 $db->setQuery($query);
@@ -193,7 +194,7 @@ class PaymentsModel extends ListModel
 
                 // Delete invoice_payment links
                 $query = $db->getQuery(true)
-                    ->delete($db->quoteName('#__mothership_invoice_payments'))
+                    ->delete($db->quoteName('#__mothership_invoice_payment'))
                     ->where($db->quoteName('payment_id') . ' = :paymentId')
                     ->bind(':paymentId', $paymentId, ParameterType::INTEGER);
                 $db->setQuery($query);
@@ -201,7 +202,7 @@ class PaymentsModel extends ListModel
 
                 // Recalculate invoice statuses
                 foreach ($invoiceIds as $invoiceId) {
-                    $this->recalculateInvoiceStatus((int) $invoiceId);
+                    // PaymentHelper::recalculateInvoiceStatus((int) $invoiceId);
                 }
 
                 // Delete the payment itself
@@ -221,64 +222,4 @@ class PaymentsModel extends ListModel
             return false;
         }
     }
-
-    /**
-     * Recalculates the status of an invoice based on the total payments made.
-     *
-     * This method retrieves the total amount paid for a given invoice and compares it to the invoice total.
-     * It then updates the invoice status to one of the following:
-     * - 0: Unpaid
-     * - 1: Partially Paid
-     * - 2: Paid
-     *
-     * @param int $invoiceId The ID of the invoice to recalculate the status for.
-     *
-     * @return void
-     */
-    protected function recalculateInvoiceStatus(int $invoiceId): void
-    {
-        $db = $this->getDatabase();
-
-        // Calculate total payments for this invoice
-        $query = $db->getQuery(true)
-            ->select('SUM(p.amount)')
-            ->from($db->quoteName('#__mothership_invoice_payments', 'ip'))
-            ->join('INNER', $db->quoteName('#__mothership_payments', 'p')
-                . ' ON ' . $db->quoteName('ip.payment_id') . ' = ' . $db->quoteName('p.id'))
-            ->where($db->quoteName('ip.invoice_id') . ' = :invoiceId')
-            ->bind(':invoiceId', $invoiceId, ParameterType::INTEGER);
-
-        $db->setQuery($query);
-        $totalPaid = (float) $db->loadResult();
-
-        // Load invoice total
-        $query = $db->getQuery(true)
-            ->select('total')
-            ->from($db->quoteName('#__mothership_invoices'))
-            ->where($db->quoteName('id') . ' = :invoiceId')
-            ->bind(':invoiceId', $invoiceId, ParameterType::INTEGER);
-
-        $db->setQuery($query);
-        $invoiceTotal = (float) $db->loadResult();
-
-        // Determine new status
-        $status = 0; // e.g. 0 = Unpaid
-        if ($totalPaid >= $invoiceTotal) {
-            $status = 2; // Paid
-        } elseif ($totalPaid > 0) {
-            $status = 1; // Partially Paid
-        }
-
-        // Update invoice status
-        $query = $db->getQuery(true)
-            ->update($db->quoteName('#__mothership_invoices'))
-            ->set($db->quoteName('status') . ' = :status')
-            ->where($db->quoteName('id') . ' = :invoiceId')
-            ->bind(':status', $status, ParameterType::INTEGER)
-            ->bind(':invoiceId', $invoiceId, ParameterType::INTEGER);
-        $db->setQuery($query);
-        $db->execute();
-    }
-
-
 }
