@@ -5,6 +5,11 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\Language\Text;
 
 ?>
+<style>
+    .mt-4 {
+        margin-top: 1.5rem;
+    }
+</style>
 <h1>Payments</h1>
 <table class="table paymentsTable">
     <thead>
@@ -39,3 +44,17 @@ use Joomla\CMS\Language\Text;
         <?php endforeach; ?>
     </tbody>
 </table>
+<div class="card mt-4">
+  <div class="card-header">
+    Payment Status Legend
+  </div>
+  <div class="card-body">
+    <ul class="mb-0">
+      <li><strong>Pending</strong>: Payment is awaiting confirmation.</li>
+      <li><strong>Completed</strong>: Payment was successful.</li>
+      <li><strong>Failed</strong>: Payment failed to process.</li>
+      <li><strong>Cancelled</strong>: Payment was cancelled.</li>
+      <li><strong>Refunded</strong>: Payment was returned to the payer.</li>
+    </ul>
+  </div>
+</div>
