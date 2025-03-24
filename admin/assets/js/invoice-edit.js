@@ -213,36 +213,31 @@ jQuery(document).ready(function ($) {
 
     function loadAccountsForClient(clientId) {
         const ajaxUrl = '/administrator/index.php?option=com_mothership&task=invoice.getAccountsList&client_id=' + clientId;
-
+    
         $.ajax({
             url: ajaxUrl,
             method: 'GET',
             dataType: 'json',
             success: function (response) {
-                // Clear existing options
+                // Clear and populate account dropdown
                 accountSelect.empty();
-
-                // Add default option
-                accountSelect.append($('<option>', {
-                    value: '',
-                    text: 'Please select an Account'
-                }));
-
-                // Populate options
+    
                 $.each(response, function (index, item) {
-                    accountSelect.append($('<option>', {
-                        value: item.id,
-                        text: item.name
-                    }));
+                    const option = $('<option>', {
+                        value: item.value,
+                        text: item.text,
+                        disabled: item.disable === true
+                    });
+                    accountSelect.append(option);
                 });
-
-                // Hide spinner, fade in dropdown
+    
+                // Fade out spinner, fade in dropdown
                 spinner.animate({ opacity: 0 }, {
                     duration: 200,
                     easing: 'swing',
                     complete: function () {
                         spinner.css('display', 'none');
-
+    
                         accountWrapper.animate({ opacity: 1 }, {
                             duration: 200,
                             easing: 'swing',
@@ -260,7 +255,7 @@ jQuery(document).ready(function ($) {
             error: function () {
                 console.error('Failed to fetch accounts for client_id=' + clientId);
                 alert('Error loading accounts. Please try again.');
-
+    
                 spinner.fadeOut(200);
             }
         });
