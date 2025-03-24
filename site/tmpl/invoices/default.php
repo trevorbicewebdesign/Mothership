@@ -5,6 +5,11 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\Language\Text;
 
 ?>
+<style>
+    .mt-4 {
+        margin-top: 1.5rem;
+    }
+</style>
 <h1>Invoices</h1>
 <table class="table" id="invoicetable">
     <thead>
@@ -60,3 +65,16 @@ use Joomla\CMS\Language\Text;
         <?php endforeach; ?>
     </tbody>
 </table>
+<div class="card mt-4">
+  <div class="card-header">
+    Invoice Status Legend
+  </div>
+  <div class="card-body">
+    <ul class="mb-0">
+        <li><strong>Opened</strong>: Invoice is awaiting payment.</li>
+        <li><strong>Late</strong>: Invoice is past due.</li>
+        <li><strong>Paid</strong>: Invoice has been paid.</li>
+        <li><strong>Cancelled</strong>: Invoice has been cancelled.</li>
+    </ul>
+  </div>
+</div>
