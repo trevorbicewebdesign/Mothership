@@ -159,27 +159,126 @@ class PaymentsModel extends ListModel
         }
     }
 
+    /**
+     * Deletes the specified payments and their related invoice payment links.
+     *
+     * @param array|int $ids An array of payment IDs or a single payment ID to delete.
+     * @return bool True on success, false on failure.
+     */
     public function delete($ids = [])
     {
         if (empty($ids)) {
             return false;
         }
+
         if (!is_array($ids)) {
             $ids = [$ids];
         }
+
         $ids = array_map('intval', $ids);
         $db = $this->getDatabase();
-        $query = $db->getQuery(true)
-            ->delete($db->quoteName('#__mothership_payments'))
-            ->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
-        $db->setQuery($query);
+
         try {
-            $db->execute();
+            $db->transactionStart();
+
+            foreach ($ids as $paymentId) {
+                // Get related invoice IDs
+                $query = $db->getQuery(true)
+                    ->select($db->quoteName('invoice_id'))
+                    ->from($db->quoteName('#__mothership_invoice_payments'))
+                    ->where($db->quoteName('payment_id') . ' = :paymentId')
+                    ->bind(':paymentId', $paymentId, ParameterType::INTEGER);
+                $db->setQuery($query);
+                $invoiceIds = $db->loadColumn();
+
+                // Delete invoice_payment links
+                $query = $db->getQuery(true)
+                    ->delete($db->quoteName('#__mothership_invoice_payments'))
+                    ->where($db->quoteName('payment_id') . ' = :paymentId')
+                    ->bind(':paymentId', $paymentId, ParameterType::INTEGER);
+                $db->setQuery($query);
+                $db->execute();
+
+                // Recalculate invoice statuses
+                foreach ($invoiceIds as $invoiceId) {
+                    $this->recalculateInvoiceStatus((int) $invoiceId);
+                }
+
+                // Delete the payment itself
+                $query = $db->getQuery(true)
+                    ->delete($db->quoteName('#__mothership_payments'))
+                    ->where($db->quoteName('id') . ' = :paymentId')
+                    ->bind(':paymentId', $paymentId, ParameterType::INTEGER);
+                $db->setQuery($query);
+                $db->execute();
+            }
+
+            $db->transactionCommit();
             return true;
         } catch (\Exception $e) {
+            $db->transactionRollback();
             $this->setError($e->getMessage());
             return false;
         }
     }
+
+    /**
+     * Recalculates the status of an invoice based on the total payments made.
+     *
+     * This method retrieves the total amount paid for a given invoice and compares it to the invoice total.
+     * It then updates the invoice status to one of the following:
+     * - 0: Unpaid
+     * - 1: Partially Paid
+     * - 2: Paid
+     *
+     * @param int $invoiceId The ID of the invoice to recalculate the status for.
+     *
+     * @return void
+     */
+    protected function recalculateInvoiceStatus(int $invoiceId): void
+    {
+        $db = $this->getDatabase();
+
+        // Calculate total payments for this invoice
+        $query = $db->getQuery(true)
+            ->select('SUM(p.amount)')
+            ->from($db->quoteName('#__mothership_invoice_payments', 'ip'))
+            ->join('INNER', $db->quoteName('#__mothership_payments', 'p')
+                . ' ON ' . $db->quoteName('ip.payment_id') . ' = ' . $db->quoteName('p.id'))
+            ->where($db->quoteName('ip.invoice_id') . ' = :invoiceId')
+            ->bind(':invoiceId', $invoiceId, ParameterType::INTEGER);
+
+        $db->setQuery($query);
+        $totalPaid = (float) $db->loadResult();
+
+        // Load invoice total
+        $query = $db->getQuery(true)
+            ->select('total')
+            ->from($db->quoteName('#__mothership_invoices'))
+            ->where($db->quoteName('id') . ' = :invoiceId')
+            ->bind(':invoiceId', $invoiceId, ParameterType::INTEGER);
+
+        $db->setQuery($query);
+        $invoiceTotal = (float) $db->loadResult();
+
+        // Determine new status
+        $status = 0; // e.g. 0 = Unpaid
+        if ($totalPaid >= $invoiceTotal) {
+            $status = 2; // Paid
+        } elseif ($totalPaid > 0) {
+            $status = 1; // Partially Paid
+        }
+
+        // Update invoice status
+        $query = $db->getQuery(true)
+            ->update($db->quoteName('#__mothership_invoices'))
+            ->set($db->quoteName('status') . ' = :status')
+            ->where($db->quoteName('id') . ' = :invoiceId')
+            ->bind(':status', $status, ParameterType::INTEGER)
+            ->bind(':invoiceId', $invoiceId, ParameterType::INTEGER);
+        $db->setQuery($query);
+        $db->execute();
+    }
+
 
 }
