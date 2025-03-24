@@ -74,7 +74,6 @@ use Joomla\CMS\Language\Text;
         <li><strong>Opened</strong>: Invoice is awaiting payment.</li>
         <li><strong>Late</strong>: Invoice is past due.</li>
         <li><strong>Paid</strong>: Invoice has been paid.</li>
-        <li><strong>Cancelled</strong>: Invoice has been cancelled.</li>
     </ul>
   </div>
 </div>
