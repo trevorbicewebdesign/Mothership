@@ -90,7 +90,7 @@ class InvoiceHelper
     }
 
 
-    public static function setInvoicePaid($invoiceId)
+    public static function setInvoiceClosed($invoiceId)
     {
         self::updateInvoiceStatus($invoiceId, 4);
     }
