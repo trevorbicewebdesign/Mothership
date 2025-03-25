@@ -206,6 +206,9 @@ class PaymentHelper
         // must have valid payment ID
         try {
             $payment = self::getPayment($paymentId);
+            if (!$payment || empty($payment->id)) {
+                throw new \RuntimeException("Payment not found: $paymentId");
+            }
         }
         catch(\Exception $e){
             // error message should bubble up
@@ -219,23 +222,32 @@ class PaymentHelper
             $db->quoteName('applied_amount'),
         ];
         $values = [
-            (string) (int) $invoiceId,
-            (string) (int) $paymentId,
-            (string) (float) $applied_amount,
+            $db->quote((int) $invoiceId),
+            $db->quote((int) $paymentId),
+            $db->quote((float) $applied_amount),
         ];
+        //print_r($values);
         $query = $db->getQuery(true)
             ->insert($db->quoteName('#__mothership_invoice_payment'))
             ->columns(implode(', ', $columns))
             ->values(implode(', ', $values));
+        //echo $query;
         $db->setQuery($query);
 
         try {
             $db->execute();
-            return $db->insertid();
+            $invoice_payment_id = $db->insertid();  
+            
         } catch (\Exception $e) {
             Log::add("Failed to insert invoice payment record: " . $e->getMessage(), Log::ERROR, 'payment');
             return false;
         }
+
+        if($invoice_payment_id == 0){
+            throw new \RuntimeException("Failed to insert invoice payment record");
+        }
+
+        return $invoice_payment_id;
     }
 
 }
