@@ -199,15 +199,15 @@ This payment method is essentially a digital version of "Pay by Check". Once the
 
 ## Invoice Helper
 - **getStatus($status_id)**: Retrieves the status details for the given status ID.
-- **isLate($invoice_id)**: 
-- **getDueString(int $invoice_id)**:
-- **getDueStringFromDate(?string $dueDate)**:
+- **isLate($invoice_id)**: Checks if the specified invoice is past its due date.
+- **getDueString(int $invoice_id)**: Retrieves a formatted string indicating the due date of the specified invoice.
+- **getDueStringFromDate(?string $dueDate)**: Converts a due date into a human-readable string format.
 - **setInvoiceClosed($invoiceId)**: Marks the specified invoice as paid.
 - **getInvoiceAppliedPayments($invoiceID)**: Retrieves all payments applied to the specified invoice.
 - **sumInvoiceAppliedPayments($invoiceId)**: Calculates the total amount of payments applied to the specified invoice.
 - **updateInvoiceStatus($invoiceId, $status)**: Updates the status of the specified invoice.
 - **getInvoice($invoice_id)**: Retrieves the details of the specified invoice.
-- **recalculateInvoiceStatusrecalculateInvoiceStatus(int $invoiceId)**:
+- **recalculateInvoiceStatus(int $invoiceId)**: This method recalculates the status of an invoice based on its current data. If an invoice was set to `Closed` it will be set back to `Opened` due to it no longer being fully paid.
 
 
 ## Payments Helper
