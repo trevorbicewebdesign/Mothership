@@ -144,7 +144,7 @@ This payment method is essentially a digital version of "Pay by Check". Once the
 
 ## Invoice Helper
 - **getStatus($status_id)**: Retrieves the status details for the given status ID.
-- **setInvoicePaid($invoiceId)**: Marks the specified invoice as paid.
+- **setInvoiceClosed($invoiceId)**: Marks the specified invoice as paid.
 - **getInvoiceAppliedPayments($invoiceID)**: Retrieves all payments applied to the specified invoice.
 - **sumInvoiceAppliedPayments($invoiceId)**: Calculates the total amount of payments applied to the specified invoice.
 - **updateInvoiceStatus($invoiceId, $status)**: Updates the status of the specified invoice.
