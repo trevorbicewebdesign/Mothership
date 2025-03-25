@@ -21,68 +21,9 @@ use Joomla\Database\DatabaseDriver;
 use TrevorBice\Component\Mothership\Administrator\Helper\ClientHelper;
 use TrevorBice\Component\Mothership\Administrator\Helper\AccountHelper;
 use TrevorBice\Component\Mothership\Administrator\Helper\InvoiceHelper;
-use Joomla\Database\ParameterType;
 
 class PaymentHelper
 {
-
-     /**
-     * Recalculates the status of an invoice based on the total payments made.
-     *
-     * This method retrieves the total amount paid for a given invoice and compares it to the invoice total.
-     * It then updates the invoice status to one of the following:
-     * - 0: Unpaid
-     * - 1: Partially Paid
-     * - 2: Paid
-     *
-     * @param int $invoiceId The ID of the invoice to recalculate the status for.
-     *
-     * @return void
-     */
-    public static function recalculateInvoiceStatus(int $invoiceId): void
-    {
-        $db = Factory::getContainer()->get(DatabaseDriver::class);
-
-        // Calculate total payments for this invoice
-        $query = $db->getQuery(true)
-            ->select('SUM(p.amount)')
-            ->from($db->quoteName('#__mothership_invoice_payment', 'ip'))
-            ->join('INNER', $db->quoteName('#__mothership_payments', 'p')
-                . ' ON ' . $db->quoteName('ip.payment_id') . ' = ' . $db->quoteName('p.id'))
-            ->where($db->quoteName('ip.invoice_id') . ' = :invoiceId')
-            ->bind(':invoiceId', $invoiceId, ParameterType::INTEGER);
-
-        $db->setQuery($query);
-        $totalPaid = (float) $db->loadResult();
-
-        // Load invoice total
-        $query = $db->getQuery(true)
-            ->select('total')
-            ->from($db->quoteName('#__mothership_invoices'))
-            ->where($db->quoteName('id') . ' = :invoiceId')
-            ->bind(':invoiceId', $invoiceId, ParameterType::INTEGER);
-
-        $db->setQuery($query);
-        $invoiceTotal = (float) $db->loadResult();
-
-        // Determine new status
-        $status = 0; // e.g. 0 = Unpaid
-        if ($totalPaid >= $invoiceTotal) {
-            $status = 2; // Paid
-        } elseif ($totalPaid > 0) {
-            $status = 1; // Partially Paid
-        }
-
-        // Update invoice status
-        $query = $db->getQuery(true)
-            ->update($db->quoteName('#__mothership_invoices'))
-            ->set($db->quoteName('status') . ' = :status')
-            ->where($db->quoteName('id') . ' = :invoiceId')
-            ->bind(':status', $status, ParameterType::INTEGER)
-            ->bind(':invoiceId', $invoiceId, ParameterType::INTEGER);
-        $db->setQuery($query);
-        $db->execute();
-    }
 
     public static function getPayment($paymentId)
     {
