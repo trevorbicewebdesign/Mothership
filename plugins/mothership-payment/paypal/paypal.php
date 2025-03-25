@@ -198,7 +198,7 @@ class PlgMothershipPaymentPaypal extends CMSPlugin
         $invoice_id = $app->input->getInt('invoice', 0);
         $mc_gross = $app->input->getFloat('mc_gross', 0);
         $mc_fee = $app->input->getFloat('mc_fee', 0);
-
+        
         switch ($payment_status) {
             case 'Completed':
                 try {
@@ -212,13 +212,15 @@ class PlgMothershipPaymentPaypal extends CMSPlugin
                 $account_id = $invoice->account_id;
 
                 // Set the invoice to be paid
-                InvoiceHelper::setInvoicePaid($invoice_id);
+                InvoiceHelper::setInvoiceClosed($invoice_id);
 
                 // Use the PaymentHelper to record the payment and invoice mapping
                 $payment_method = "paypal";
                 $status = 2;
+
+                
                 try {
-                    PaymentHelper::insertPaymentRecord(
+                    $payment_id = PaymentHelper::insertPaymentRecord(
                         $client_id,
                         $account_id,
                         $mc_gross,
@@ -229,11 +231,19 @@ class PlgMothershipPaymentPaypal extends CMSPlugin
                         $txn_id,
                         $status
                     );
+
+                    $invoicePaymentId = PaymentHelper::insertInvoicePayments($invoice_id, $payment_id, $mc_gross);
+                    if (!$invoicePaymentId) {
+                        throw new \RuntimeException("insertInvoicePayments() failed");
+                    }
+
                 } catch (\Exception $e) {
                     // log the error
                     echo "Failed to store payment:" . $e->getMessage();
                     exit();
+                
                 }
+
                 exit('IPN Received');
                 break;
             case 'Pending':

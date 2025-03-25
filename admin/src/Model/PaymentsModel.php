@@ -14,6 +14,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\Database\ParameterType;
 
+
 \defined('_JEXEC') or die;
 
 class PaymentsModel extends ListModel
@@ -159,27 +160,66 @@ class PaymentsModel extends ListModel
         }
     }
 
+    /**
+     * Deletes the specified payments and their related invoice payment links.
+     *
+     * @param array|int $ids An array of payment IDs or a single payment ID to delete.
+     * @return bool True on success, false on failure.
+     */
     public function delete($ids = [])
     {
         if (empty($ids)) {
             return false;
         }
+
         if (!is_array($ids)) {
             $ids = [$ids];
         }
+
         $ids = array_map('intval', $ids);
         $db = $this->getDatabase();
-        $query = $db->getQuery(true)
-            ->delete($db->quoteName('#__mothership_payments'))
-            ->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
-        $db->setQuery($query);
+
         try {
-            $db->execute();
+            $db->transactionStart();
+
+            foreach ($ids as $paymentId) {
+                // Get related invoice IDs
+                $query = $db->getQuery(true)
+                    ->select($db->quoteName('invoice_id'))
+                    ->from($db->quoteName('#__mothership_invoice_payment'))
+                    ->where($db->quoteName('payment_id') . ' = :paymentId')
+                    ->bind(':paymentId', $paymentId, ParameterType::INTEGER);
+                $db->setQuery($query);
+                $invoiceIds = $db->loadColumn();
+
+                // Delete invoice_payment links
+                $query = $db->getQuery(true)
+                    ->delete($db->quoteName('#__mothership_invoice_payment'))
+                    ->where($db->quoteName('payment_id') . ' = :paymentId')
+                    ->bind(':paymentId', $paymentId, ParameterType::INTEGER);
+                $db->setQuery($query);
+                $db->execute();
+
+                // Recalculate invoice statuses
+                foreach ($invoiceIds as $invoiceId) {
+                    // PaymentHelper::recalculateInvoiceStatus((int) $invoiceId);
+                }
+
+                // Delete the payment itself
+                $query = $db->getQuery(true)
+                    ->delete($db->quoteName('#__mothership_payments'))
+                    ->where($db->quoteName('id') . ' = :paymentId')
+                    ->bind(':paymentId', $paymentId, ParameterType::INTEGER);
+                $db->setQuery($query);
+                $db->execute();
+            }
+
+            $db->transactionCommit();
             return true;
         } catch (\Exception $e) {
+            $db->transactionRollback();
             $this->setError($e->getMessage());
             return false;
         }
     }
-
 }
