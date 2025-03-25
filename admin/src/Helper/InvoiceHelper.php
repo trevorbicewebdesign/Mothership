@@ -18,6 +18,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseDriver;
+use Joomla\Database\ParameterType;
 
 class InvoiceHelper
 {
@@ -33,10 +34,10 @@ class InvoiceHelper
                 $status = 'Opened';
                 break;
             case 3:
-                $status = 'Late';
+                $status = 'Cancelled';
                 break;
             case 4:
-                $status = 'Paid';
+                $status = 'Closed';
                 break;
             default:
                 $status = 'Unknown';
@@ -45,6 +46,47 @@ class InvoiceHelper
 
         return $status;
     }
+
+    public static function isLate($invoice_id)
+    {
+        $db = Factory::getContainer()->get(DatabaseDriver::class);
+        $query = $db->getQuery(true)
+            ->select('due_date')
+            ->from($db->quoteName('#__mothership_invoices'))
+            ->where($db->quoteName('id') . ' = ' . (int) $invoice_id);
+        $db->setQuery($query);
+        $dueDate = $db->loadResult();
+
+        if (strtotime($dueDate) < strtotime(date('Y-m-d'))) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static function getDueString($invoice_id)
+    {
+        $db = Factory::getContainer()->get(DatabaseDriver::class);
+        $query = $db->getQuery(true)
+            ->select('due_date')
+            ->from($db->quoteName('#__mothership_invoices'))
+            ->where($db->quoteName('id') . ' = ' . (int) $invoice_id);
+        $db->setQuery($query);
+        $dueDate = $db->loadResult();
+
+        // Due in x days 
+        $dueString = '';
+        if (strtotime($dueDate) > strtotime(date('Y-m-d'))) {
+            $dueString = 'Due in ' . (strtotime($dueDate) - strtotime(date('Y-m-d'))) / 86400 . ' days';
+        }
+        else if(strtotime($dueDate) < strtotime(date('Y-m-d'))) {
+            // x days late
+            $dueString = (strtotime(date('Y-m-d')) - strtotime($dueDate)) / 86400 . ' days late';
+        }
+
+        return $dueString;
+    }
+
 
     public static function setInvoicePaid($invoiceId)
     {
@@ -128,6 +170,64 @@ class InvoiceHelper
         }
 
         return $invoice;
+    }
+
+    /**
+     * Recalculates the status of an invoice based on the total payments made.
+     *
+     * This method retrieves the total amount paid for a given invoice and compares it to the invoice total.
+     * It then updates the invoice status to one of the following:
+     * - 0: Unpaid
+     * - 1: Partially Paid
+     * - 2: Paid
+     *
+     * @param int $invoiceId The ID of the invoice to recalculate the status for.
+     *
+     * @return void
+     */
+    public static function recalculateInvoiceStatus(int $invoiceId): void
+    {
+        $db = Factory::getContainer()->get(DatabaseDriver::class);
+
+        // Calculate total payments for this invoice
+        $query = $db->getQuery(true)
+            ->select('SUM(p.amount)')
+            ->from($db->quoteName('#__mothership_invoice_payment', 'ip'))
+            ->join('INNER', $db->quoteName('#__mothership_payments', 'p')
+                . ' ON ' . $db->quoteName('ip.payment_id') . ' = ' . $db->quoteName('p.id'))
+            ->where($db->quoteName('ip.invoice_id') . ' = :invoiceId')
+            ->bind(':invoiceId', $invoiceId, ParameterType::INTEGER);
+
+        $db->setQuery($query);
+        $totalPaid = (float) $db->loadResult();
+
+        // Load invoice total
+        $query = $db->getQuery(true)
+            ->select('total')
+            ->from($db->quoteName('#__mothership_invoices'))
+            ->where($db->quoteName('id') . ' = :invoiceId')
+            ->bind(':invoiceId', $invoiceId, ParameterType::INTEGER);
+
+        $db->setQuery($query);
+        $invoiceTotal = (float) $db->loadResult();
+
+        // Determine new status
+        $status = 2; // e.g. 0 = Opened
+        if ($totalPaid >= $invoiceTotal) {
+            $status = 4; // Paid
+        } elseif ($totalPaid > 0) {
+            $status = 5; // Partially Paid
+        }
+
+        // Update invoice status
+        $query = $db->getQuery(true)
+            ->update($db->quoteName('#__mothership_invoices'))
+            ->set($db->quoteName('status') . ' = :status')
+            ->where($db->quoteName('id') . ' = :invoiceId')
+            ->bind(':status', $status, ParameterType::INTEGER)
+            ->bind(':invoiceId', $invoiceId, ParameterType::INTEGER);
+        $db->setQuery($query);
+        $db->execute();
     }
 
 }
