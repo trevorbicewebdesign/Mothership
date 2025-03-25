@@ -64,7 +64,7 @@ class InvoiceHelper
         return false;
     }
 
-    public static function getDueString($invoice_id)
+    public static function getDueString(int $invoice_id): string
     {
         $db = Factory::getContainer()->get(DatabaseDriver::class);
         $query = $db->getQuery(true)
@@ -72,21 +72,39 @@ class InvoiceHelper
             ->from($db->quoteName('#__mothership_invoices'))
             ->where($db->quoteName('id') . ' = ' . (int) $invoice_id);
         $db->setQuery($query);
+
         $dueDate = $db->loadResult();
+        return self::getDueStringFromDate($dueDate);
+    }
 
-        // Due in x days 
-        $dueString = '';
-        if (strtotime($dueDate) > strtotime(date('Y-m-d'))) {
-            $days = (int) floor((strtotime($dueDate) - strtotime(date('Y-m-d'))) / 86400);
-            $dueString = "Due in {$days} days";
-        }
-        else if(strtotime($dueDate) < strtotime(date('Y-m-d'))) {
-            // x days late
-            $daysLate = (int) ((strtotime(date('Y-m-d')) - strtotime($dueDate)) / 86400);
-            $dueString = "{$daysLate} days late";
+    public static function getDueStringFromDate(?string $dueDate): string
+    {
+        if (!$dueDate) {
+            return 'No due date';
         }
 
-        return $dueString;
+        $timezone = new \DateTimeZone('America/Los_Angeles');
+
+        $now = new \DateTimeImmutable('now', $timezone);
+        $due = (new \DateTimeImmutable($dueDate))->setTimezone($timezone);
+
+        $diffInSeconds = $due->getTimestamp() - $now->getTimestamp();
+        $isFuture = $diffInSeconds >= 0;
+        $absDiff = abs($diffInSeconds);
+
+        if ($absDiff >= (23.5 * 3600)) {
+            // ≥ 23.5 hours → show in days
+            $days = (int) round($absDiff / 86400);
+            $label = "{$days} day" . ($days !== 1 ? 's' : '');
+        } elseif ($absDiff >= (0.5 * 3600)) {
+            // ≥ 30 minutes → show in hours
+            $hours = (int) round($absDiff / 3600);
+            $label = "{$hours} hour" . ($hours !== 1 ? 's' : '');
+        } else {
+            return $isFuture ? 'Due soon' : 'Just now';
+        }
+
+        return $isFuture ? "Due in {$label}" : "{$label} late";
     }
 
 
