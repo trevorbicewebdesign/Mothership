@@ -212,7 +212,7 @@ class PlgMothershipPaymentPaypal extends CMSPlugin
                 $account_id = $invoice->account_id;
 
                 // Set the invoice to be paid
-                InvoiceHelper::setInvoicePaid($invoice_id);
+                InvoiceHelper::setInvoiceClosed($invoice_id);
 
                 // Use the PaymentHelper to record the payment and invoice mapping
                 $payment_method = "paypal";
