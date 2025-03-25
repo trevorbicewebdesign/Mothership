@@ -144,11 +144,16 @@ This payment method is essentially a digital version of "Pay by Check". Once the
 
 ## Invoice Helper
 - **getStatus($status_id)**: Retrieves the status details for the given status ID.
+- **isLate($invoice_id)**: 
+- **getDueString(int $invoice_id)**:
+- **getDueStringFromDate(?string $dueDate)**:
 - **setInvoiceClosed($invoiceId)**: Marks the specified invoice as paid.
 - **getInvoiceAppliedPayments($invoiceID)**: Retrieves all payments applied to the specified invoice.
 - **sumInvoiceAppliedPayments($invoiceId)**: Calculates the total amount of payments applied to the specified invoice.
 - **updateInvoiceStatus($invoiceId, $status)**: Updates the status of the specified invoice.
 - **getInvoice($invoice_id)**: Retrieves the details of the specified invoice.
+- **recalculateInvoiceStatusrecalculateInvoiceStatus(int $invoiceId)**:
+
 
 ## Payments Helper
 The **Payments Helper** provides several methods to manage and update payment records and statuses. Below are the methods available:
