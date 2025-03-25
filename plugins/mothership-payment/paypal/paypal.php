@@ -198,7 +198,7 @@ class PlgMothershipPaymentPaypal extends CMSPlugin
         $invoice_id = $app->input->getInt('invoice', 0);
         $mc_gross = $app->input->getFloat('mc_gross', 0);
         $mc_fee = $app->input->getFloat('mc_fee', 0);
-
+        
         switch ($payment_status) {
             case 'Completed':
                 try {
