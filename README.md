@@ -53,7 +53,7 @@ The **Invoices** object represents the invoices generated for clients. Each invo
 - **Client ID**: The ID of the client to whom the invoice belongs.
 - **Account ID**: The ID of the account associated with the invoice.
 - **Rate**: The billing rate for the invoice.
-- **Status**: The status of the invoice (e.g., paid, unpaid).
+- **Status**: The status of the invoice (e.g., draft, opened, cancelled, closed).
 - **Total**: The total amount of the invoice.
 - **Due Date**: The date by which the invoice should be paid.
 - **Sent Date**: The date the invoice was sent to the client.
@@ -62,6 +62,12 @@ The **Invoices** object represents the invoices generated for clients. Each invo
 - **Created By**: The ID of the user who created the invoice.
 - **Checked Out Time**: The timestamp when the invoice record was last checked out.
 - **Checked Out**: The ID of the user who last checked out the invoice record.
+
+### Invoice Lifecycle Status Levels
+- **Draft**: The invoice is being created and is not yet finalized.
+- **Opened**: The invoice has been finalized and sent to the client and is awaiting payment.
+- **Cancelled**: The invoice has been cancelled and is no longer valid.
+- **Closed**: The invoice has been paid and is considered complete.
 
 ## Invoice Items
 The **Invoice Items** object represents the individual items listed on an invoice. Each invoice item has the following attributes:
