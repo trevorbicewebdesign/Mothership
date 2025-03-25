@@ -128,7 +128,56 @@ The **Invoice Payments** object represents payments that are applied to specific
 ## Payment Plugins
 There are two payment plugins: Paypal and Zelle. The payment plugin type is 'Mothership Payments'.
 
+### Creating a Payment Plugin
+To create a Mothership Payment plugin, follow these steps:
+
+1. **Create the Plugin Directory**: Create a new directory for your plugin under the `plugins/mothership-payment` directory. Name the directory according to your payment method, e.g., `mypaymentmethod`.
+
+2. **Create the Plugin Files**: Inside your plugin directory, create the following files:
+    - `mypaymentmethod.php`: This is the main plugin file.
+    - `mypaymentmethod.xml`: This is the manifest file that describes your plugin.
+
+3. **Define the Plugin Class**: In `mypaymentmethod.php`, define a class that extends `MothershipPaymentsPlugin`. Implement the required methods for processing payments.
+
+    ```php
+    defined('_JEXEC') or die;
+
+    class PlgMothershipPaymentsmypaymentmethod extends MothershipPaymentsPlugin
+    {
+         public function onMothershipPaymentRequest($paymentData)
+         {
+              // Implement your payment processing logic here
+         }
+
+         public function onAfterInitialiseMothership()
+         {
+              // Any initialization code for your plugin
+         }
+    }
+    ```
+
+4. **Create the Manifest File**: In `mypaymentmethod.xml`, define the plugin metadata and files.
+
+    ```xml
+    <extension type="plugin" group="mothershippayments" method="upgrade">
+         <name>PLG_MOTHERSHIPPAYMENTS_mypaymentmethod</name>
+         <author>Your Name</author>
+         <version>1.0.0</version>
+         <description>My custom payment plugin for Mothership</description>
+         <files>
+              <filename plugin="mypaymentmethod">mypaymentmethod.php</filename>
+         </files>
+    </extension>
+    ```
+
+5. **Install and Enable the Plugin**: Install the plugin through the Joomla Extension Manager and enable it from the Plugin Manager.
+
+6. **Configure the Plugin**: Add any necessary configuration options in the plugin settings to allow users to enter their payment gateway credentials.
+
+By following these steps, you can create a custom payment plugin for Mothership that integrates with your preferred payment gateway.
+
 ### PayPal
+This payment method allows clients to pay invoices using PayPal. Once the payment is completed, the status of the payment will be automatically updated to confirmed.
 
 ### Zelle
 This payment method is essentially a digital version of "Pay by Check". Once the payment has been confirmed, an administrator will need to manually update the status of the payment to confirmed.
