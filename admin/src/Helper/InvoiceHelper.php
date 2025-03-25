@@ -77,11 +77,13 @@ class InvoiceHelper
         // Due in x days 
         $dueString = '';
         if (strtotime($dueDate) > strtotime(date('Y-m-d'))) {
-            $dueString = 'Due in ' . (strtotime($dueDate) - strtotime(date('Y-m-d'))) / 86400 . ' days';
+            $days = (int) floor((strtotime($dueDate) - strtotime(date('Y-m-d'))) / 86400);
+            $dueString = "Due in {$days} days";
         }
         else if(strtotime($dueDate) < strtotime(date('Y-m-d'))) {
             // x days late
-            $dueString = (strtotime(date('Y-m-d')) - strtotime($dueDate)) / 86400 . ' days late';
+            $daysLate = (int) ((strtotime(date('Y-m-d')) - strtotime($dueDate)) / 86400);
+            $dueString = "{$daysLate} days late";
         }
 
         return $dueString;
@@ -214,10 +216,8 @@ class InvoiceHelper
         // Determine new status
         $status = 2; // e.g. 0 = Opened
         if ($totalPaid >= $invoiceTotal) {
-            $status = 4; // Paid
-        } elseif ($totalPaid > 0) {
-            $status = 5; // Partially Paid
-        }
+            $status = 4; // Closed
+        } 
 
         // Update invoice status
         $query = $db->getQuery(true)
