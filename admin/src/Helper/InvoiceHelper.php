@@ -47,22 +47,42 @@ class InvoiceHelper
         return $status;
     }
 
-    public static function isLate($invoice_id)
+    public static function isLate(int $invoiceId): bool
     {
         $db = Factory::getContainer()->get(DatabaseDriver::class);
         $query = $db->getQuery(true)
             ->select('due_date')
             ->from($db->quoteName('#__mothership_invoices'))
-            ->where($db->quoteName('id') . ' = ' . (int) $invoice_id);
+            ->where($db->quoteName('id') . ' = :id')
+            ->bind(':id', $invoiceId, ParameterType::INTEGER);
+
         $db->setQuery($query);
         $dueDate = $db->loadResult();
 
-        if (strtotime($dueDate) < strtotime(date('Y-m-d'))) {
+        if (!$dueDate) {
+            return false;
+        }
+
+        $timezone = new \DateTimeZone('America/Los_Angeles');
+
+        $now = new \DateTimeImmutable('now', $timezone);
+        $due = (new \DateTimeImmutable($dueDate))->setTimezone($timezone);
+
+        // If due date is before today, definitely late
+        if ($due->format('Y-m-d') < $now->format('Y-m-d')) {
             return true;
         }
 
+        // If due date is today, allow a 60-second grace window
+        if ($due->format('Y-m-d') === $now->format('Y-m-d')) {
+            return $now->getTimestamp() > ($due->getTimestamp() + 60);
+        }
+
+        // Due in the future
         return false;
     }
+
+
 
     public static function getDueString(int $invoice_id): string
     {
