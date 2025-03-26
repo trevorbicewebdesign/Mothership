@@ -83,6 +83,8 @@ The **Invoice Items** object represents the individual items listed on an invoic
 - **Subtotal**: The subtotal amount for the item.
 - **Ordering**: The order in which the item appears on the invoice.
 
+> **Note:** Only invoices in **Draft** status can be deleted. Attempting to delete an invoice that is **Opened**, **Cancelled**, or **Closed** will be blocked to prevent accidental data loss. When a draft invoice is deleted, all associated `Invoice Payments` records are also removed automatically to maintain data integrity.
+
 ## Payments
 The **Payments** object represents the payments made by clients. Each payment has the following attributes:
 
@@ -118,6 +120,8 @@ The **Invoice Payments** object represents payments that are applied to specific
 - **invoice_id**: The invoice that this payment will be applied to
 - **payment_id**: The payment that is being applied to the invoice
 - **allocated_amount**: The amount of the payment that is applied to this invoice
+
+> **Note:** If a draft invoice is deleted, any `Invoice Payments` records linked to that invoice will also be deleted automatically. This helps keep your data consistent and prevents orphaned records.
 
 ---
 
