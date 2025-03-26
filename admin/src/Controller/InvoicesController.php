@@ -56,18 +56,32 @@ class InvoicesController extends BaseController
         $app   = Factory::getApplication();
         $input = $app->input;
 
-        // Get the list of IDs from the request.
-        $ids = $input->get('cid', [], 'array');
+        $ids = array_map('intval', $input->get('cid', [], 'array'));
 
         if (empty($ids)) {
             $app->enqueueMessage(Text::_('JGLOBAL_NO_ITEM_SELECTED'), 'warning');
-        } else {
-            $model = $this->getModel('Invoices');
-            if ($model->delete($ids)) {
-                $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_INVOICE_DELETE_SUCCESS', count($ids), count($ids) > 1 ? 's' : ''), 'message');
-            } else {
-                $app->enqueueMessage(Text::_('COM_MOTHERSHIP_INVOICE_DELETE_FAILED'), 'error');
-            }
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoices', false));
+            return;
+        }
+
+        $model = $this->getModel('Invoices');
+
+        // Let the model handle filtering and deletion
+        $result = $model->delete($ids);
+
+        if (isset($result['deleted']) && count($result['deleted']) > 0) {
+            $count = count($result['deleted']);
+            $app->enqueueMessage(
+                Text::sprintf('COM_MOTHERSHIP_INVOICE_DELETE_SUCCESS', $count, $count > 1 ? 's' : ''),
+                'message'
+            );
+        }
+
+        if (isset($result['skipped']) && count($result['skipped']) > 0) {
+            $app->enqueueMessage(
+                Text::sprintf('COM_MOTHERSHIP_INVOICE_DELETE_SKIPPED_NON_DRAFT', count($result['skipped']), count($result['skipped']) > 1 ? 's' : ''),
+                'warning'
+            );
         }
 
         $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoices', false));
