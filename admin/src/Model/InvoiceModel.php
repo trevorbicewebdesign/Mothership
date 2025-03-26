@@ -40,6 +40,36 @@ class InvoiceModel extends AdminModel
         return $this->getCurrentUser()->authorise('core.edit', 'com_mothership');
     }
 
+    public function canDeleteInvoice($record): bool
+    {
+        // Assume $record is an object or associative array with at least 'id' and 'status'
+        $id = isset($record->id) ? (int) $record->id : (int) $record['id'];
+        $status = isset($record->status) ? (int) $record->status : (int) $record['status'];
+
+        if ($status !== 1) {
+            // Not a draft invoice
+            return false;
+        }
+
+        // Extra check: invoice shouldn't have any linked payments
+        $db = $this->getDatabase();
+
+        $query = $db->getQuery(true)
+            ->select('COUNT(*)')
+            ->from($db->quoteName('#__mothership_invoice_payment'))
+            ->where($db->quoteName('invoice_id') . ' = ' . $id);
+
+        $invoicePaymentCount = (int) $db->setQuery($query)->loadResult();
+
+        if ($invoicePaymentCount > 0) {
+            // Something went wrong — drafts shouldn't have payments
+            throw new \RuntimeException("Draft invoice ID {$id} has associated payments, which should not be possible.");
+        }
+
+        return true;
+    }
+
+
     public function getForm($data = [], $loadData = true)
     {
         return $this->loadForm('com_mothership.invoice', 'invoice', ['control' => 'jform', 'load_data' => $loadData]);
