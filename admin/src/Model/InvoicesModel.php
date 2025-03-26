@@ -185,28 +185,16 @@ class InvoicesModel extends ListModel
             return false; // Only allow drafts
         }
 
-        $db = $this->getDatabase();
-
-        // Check for payment links
-        $query = $db->getQuery(true)
-            ->select('COUNT(*)')
-            ->from($db->quoteName('#__mothership_invoice_payment'))
-            ->where($db->quoteName('invoice_id') . ' = :invoice_id')
-            ->bind(':invoice_id', $id, ParameterType::INTEGER);
-
-        $paymentLinks = (int) $db->setQuery($query)->loadResult();
-
-        if ($paymentLinks > 0) {
-            throw new \RuntimeException("Draft invoice ID {$id} has payment links.");
-        }
-
         return true;
     }
 
     public function delete($ids = [])
     {
         if (empty($ids)) {
-            return false;
+            return [
+                'deleted' => [],
+                'skipped' => [],
+            ];
         }
 
         if (!is_array($ids)) {
@@ -214,12 +202,12 @@ class InvoicesModel extends ListModel
         }
 
         $ids = array_map('intval', $ids);
-
         $db = $this->getDatabase();
 
         $deletableIds = [];
+        $skippedIds   = [];
+
         foreach ($ids as $id) {
-            // Load the invoice record
             $query = $db->getQuery(true)
                 ->select($db->quoteName(['id', 'status']))
                 ->from($db->quoteName('#__mothership_invoices'))
@@ -230,25 +218,48 @@ class InvoicesModel extends ListModel
 
             if ($record && $this->canDeleteInvoice($record)) {
                 $deletableIds[] = $id;
+            } else {
+                $skippedIds[] = $id;
             }
         }
 
         if (empty($deletableIds)) {
-            return false;
+            return [
+                'deleted' => [],
+                'skipped' => $skippedIds,
+            ];
         }
-
-        $query = $db->getQuery(true)
-            ->delete($db->quoteName('#__mothership_invoices'))
-            ->where($db->quoteName('id') . ' IN (' . implode(',', $deletableIds) . ')');
-
-        $db->setQuery($query);
 
         try {
-            $db->execute();
-            return true;
+            $db->transactionStart();
+
+            // Delete linked invoice_payment rows
+            $query = $db->getQuery(true)
+                ->delete($db->quoteName('#__mothership_invoice_payment'))
+                ->where($db->quoteName('invoice_id') . ' IN (' . implode(',', $deletableIds) . ')');
+            $db->setQuery($query)->execute();
+
+            // Delete invoices
+            $query = $db->getQuery(true)
+                ->delete($db->quoteName('#__mothership_invoices'))
+                ->where($db->quoteName('id') . ' IN (' . implode(',', $deletableIds) . ')');
+            $db->setQuery($query)->execute();
+
+            $db->transactionCommit();
+
+            return [
+                'deleted' => $deletableIds,
+                'skipped' => $skippedIds,
+            ];
         } catch (\Exception $e) {
+            $db->transactionRollback();
             $this->setError($e->getMessage());
-            return false;
+
+            return [
+                'deleted' => [],
+                'skipped' => $ids,
+            ];
         }
     }
+
 }
