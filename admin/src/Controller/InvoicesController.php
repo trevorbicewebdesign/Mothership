@@ -7,6 +7,7 @@ use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
+use TrevorBice\Component\Mothership\Administrator\Helper\InvoiceHelper;
 
 class InvoicesController extends BaseController
 {
@@ -71,20 +72,24 @@ class InvoicesController extends BaseController
 
         foreach ($ids as $id) {
             try {
-                if ($model->canDeleteInvoice($id)) {
+                $record = InvoiceHelper::getInvoice($id);
+                if ($model->canDeleteInvoice($record)) {
                     $deletableIds[] = $id;
                 } else {
                     $skippedIds[] = $id;
                 }
             } catch (\Exception $e) {
                 $skippedIds[] = $id;
-                // Optionally: log the exception or notify user
             }
         }
 
         if (!empty($deletableIds)) {
             if ($model->delete($deletableIds)) {
-                $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_INVOICE_DELETE_SUCCESS', count($deletableIds)), 'message');
+                $count = count($deletableIds);
+                $app->enqueueMessage(
+                    Text::sprintf('COM_MOTHERSHIP_INVOICE_DELETE_SUCCESS', $count, $count > 1 ? 's' : ''),
+                    'message'
+                );
             } else {
                 $app->enqueueMessage(Text::_('COM_MOTHERSHIP_INVOICE_DELETE_FAILED'), 'error');
             }
@@ -96,6 +101,4 @@ class InvoicesController extends BaseController
 
         $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoices', false));
     }
-
-
 }
