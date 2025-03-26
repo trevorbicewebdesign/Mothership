@@ -7,7 +7,6 @@ use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
-use TrevorBice\Component\Mothership\Administrator\Helper\InvoiceHelper;
 
 class InvoicesController extends BaseController
 {
