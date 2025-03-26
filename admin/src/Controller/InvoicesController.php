@@ -57,20 +57,45 @@ class InvoicesController extends BaseController
         $input = $app->input;
 
         // Get the list of IDs from the request.
-        $ids = $input->get('cid', [], 'array');
+        $ids = array_map('intval', $input->get('cid', [], 'array'));
 
         if (empty($ids)) {
             $app->enqueueMessage(Text::_('JGLOBAL_NO_ITEM_SELECTED'), 'warning');
-        } else {
-            $model = $this->getModel('Invoices');
-            if ($model->delete($ids)) {
-                $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_INVOICE_DELETE_SUCCESS', count($ids), count($ids) > 1 ? 's' : ''), 'message');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoices', false));
+            return;
+        }
+
+        $model = $this->getModel('Invoices');
+        $deletableIds = [];
+        $skippedIds = [];
+
+        foreach ($ids as $id) {
+            try {
+                if ($model->canDeleteInvoice($id)) {
+                    $deletableIds[] = $id;
+                } else {
+                    $skippedIds[] = $id;
+                }
+            } catch (\Exception $e) {
+                $skippedIds[] = $id;
+                // Optionally: log the exception or notify user
+            }
+        }
+
+        if (!empty($deletableIds)) {
+            if ($model->delete($deletableIds)) {
+                $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_INVOICE_DELETE_SUCCESS', count($deletableIds)), 'message');
             } else {
                 $app->enqueueMessage(Text::_('COM_MOTHERSHIP_INVOICE_DELETE_FAILED'), 'error');
             }
         }
 
+        if (!empty($skippedIds)) {
+            $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_INVOICE_DELETE_SKIPPED_NON_DRAFT', count($skippedIds)), 'warning');
+        }
+
         $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoices', false));
     }
+
 
 }
