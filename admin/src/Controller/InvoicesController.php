@@ -57,7 +57,6 @@ class InvoicesController extends BaseController
         $app   = Factory::getApplication();
         $input = $app->input;
 
-        // Get the list of IDs from the request.
         $ids = array_map('intval', $input->get('cid', [], 'array'));
 
         if (empty($ids)) {
@@ -67,38 +66,26 @@ class InvoicesController extends BaseController
         }
 
         $model = $this->getModel('Invoices');
-        $deletableIds = [];
-        $skippedIds = [];
 
-        foreach ($ids as $id) {
-            try {
-                $record = InvoiceHelper::getInvoice($id);
-                if ($model->canDeleteInvoice($record)) {
-                    $deletableIds[] = $id;
-                } else {
-                    $skippedIds[] = $id;
-                }
-            } catch (\Exception $e) {
-                $skippedIds[] = $id;
-            }
+        // Let the model handle filtering and deletion
+        $result = $model->delete($ids);
+
+        if (isset($result['deleted']) && count($result['deleted']) > 0) {
+            $count = count($result['deleted']);
+            $app->enqueueMessage(
+                Text::sprintf('COM_MOTHERSHIP_INVOICE_DELETE_SUCCESS', $count, $count > 1 ? 's' : ''),
+                'message'
+            );
         }
 
-        if (!empty($deletableIds)) {
-            if ($model->delete($deletableIds)) {
-                $count = count($deletableIds);
-                $app->enqueueMessage(
-                    Text::sprintf('COM_MOTHERSHIP_INVOICE_DELETE_SUCCESS', $count, $count > 1 ? 's' : ''),
-                    'message'
-                );
-            } else {
-                $app->enqueueMessage(Text::_('COM_MOTHERSHIP_INVOICE_DELETE_FAILED'), 'error');
-            }
-        }
-
-        if (!empty($skippedIds)) {
-            $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_INVOICE_DELETE_SKIPPED_NON_DRAFT', count($skippedIds)), 'warning');
+        if (isset($result['skipped']) && count($result['skipped']) > 0) {
+            $app->enqueueMessage(
+                Text::sprintf('COM_MOTHERSHIP_INVOICE_DELETE_SKIPPED_NON_DRAFT', count($result['skipped']), count($result['skipped']) > 1 ? 's' : ''),
+                'warning'
+            );
         }
 
         $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoices', false));
     }
+
 }
