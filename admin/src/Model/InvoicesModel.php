@@ -87,8 +87,8 @@ class InvoicesModel extends ListModel
             'CASE ' . $db->quoteName('i.status') . 
                     ' WHEN 1 THEN ' . $db->quote('Draft') . 
                     ' WHEN 2 THEN ' . $db->quote('Opened') . 
-                    ' WHEN 3 THEN ' . $db->quote('Late') . 
-                    ' WHEN 4 THEN ' . $db->quote('Paid') .
+                    ' WHEN 3 THEN ' . $db->quote('Cancelled') . 
+                    ' WHEN 4 THEN ' . $db->quote('Closed') .
                     ' ELSE ' . $db->quote('Unknown') . ' END AS ' . $db->quoteName('status'),
             ]
             )
@@ -176,27 +176,70 @@ class InvoicesModel extends ListModel
         }
     }
 
+    public function canDeleteInvoice($record): bool
+    {
+        $id = (int) ($record->id ?? $record['id'] ?? 0);
+        $status = (int) ($record->status ?? $record['status'] ?? null);
+
+        if ($status !== 1) {
+            return false; // Only allow drafts
+        }
+
+        $db = $this->getDatabase();
+
+        // Check for payment links
+        $query = $db->getQuery(true)
+            ->select('COUNT(*)')
+            ->from($db->quoteName('#__mothership_invoice_payment'))
+            ->where($db->quoteName('invoice_id') . ' = :invoice_id')
+            ->bind(':invoice_id', $id, ParameterType::INTEGER);
+
+        $paymentLinks = (int) $db->setQuery($query)->loadResult();
+
+        if ($paymentLinks > 0) {
+            throw new \RuntimeException("Draft invoice ID {$id} has payment links.");
+        }
+
+        return true;
+    }
+
     public function delete($ids = [])
     {
-        // Ensure we have valid IDs
         if (empty($ids)) {
             return false;
         }
 
-        // Convert a single ID into an array
         if (!is_array($ids)) {
             $ids = [$ids];
         }
 
-        // Sanitize IDs to integers
         $ids = array_map('intval', $ids);
 
         $db = $this->getDatabase();
 
-        // Build the query using an IN clause for multiple IDs
+        $deletableIds = [];
+        foreach ($ids as $id) {
+            // Load the invoice record
+            $query = $db->getQuery(true)
+                ->select($db->quoteName(['id', 'status']))
+                ->from($db->quoteName('#__mothership_invoices'))
+                ->where($db->quoteName('id') . ' = :id')
+                ->bind(':id', $id, ParameterType::INTEGER);
+
+            $record = $db->setQuery($query)->loadObject();
+
+            if ($record && $this->canDeleteInvoice($record)) {
+                $deletableIds[] = $id;
+            }
+        }
+
+        if (empty($deletableIds)) {
+            return false;
+        }
+
         $query = $db->getQuery(true)
             ->delete($db->quoteName('#__mothership_invoices'))
-            ->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
+            ->where($db->quoteName('id') . ' IN (' . implode(',', $deletableIds) . ')');
 
         $db->setQuery($query);
 
@@ -208,5 +251,4 @@ class InvoicesModel extends ListModel
             return false;
         }
     }
-
 }
