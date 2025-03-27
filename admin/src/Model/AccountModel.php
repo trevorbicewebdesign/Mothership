@@ -15,6 +15,7 @@ use Joomla\CMS\MVC\Model\AdminModel;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\Versioning\VersionableModelTrait;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Language\Text;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -79,6 +80,28 @@ class AccountModel extends AdminModel
     protected function canEdit($record)
     {
         return $this->getCurrentUser()->authorise('core.edit', 'com_mothership');
+    }
+
+    public function canDeleteAccount(int $clientId): bool
+    {
+        $db = Factory::getDbo();
+
+        $hasInvoices = $db->setQuery(
+            $db->getQuery(true)
+                ->select('COUNT(*)')
+                ->from('#__mothership_invoices')
+                ->where('account_id = ' . $clientId)
+        )->loadResult();
+
+        if ($hasInvoices) {
+            Factory::getApplication()->enqueueMessage(
+                Text::sprintf('COM_MOTHERSHIP_ERROR_ACCOUNT_HAS_DEPENDENCIES', count($hasInvoices)),
+                'error'
+            );
+            return false;
+        }
+
+        return true;
     }
 
     /**
