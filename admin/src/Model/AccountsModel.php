@@ -184,20 +184,32 @@ class AccountsModel extends ListModel
 
         $db = $this->getDatabase();
 
-        // Build the query using an IN clause for multiple IDs
+        // First, unlink any payments from these accounts
+        $query = $db->getQuery(true)
+            ->update($db->quoteName('#__mothership_payments'))
+            ->set($db->quoteName('account_id') . ' = NULL')
+            ->where($db->quoteName('account_id') . ' IN (' . implode(',', $ids) . ')');
+
+        try {
+            $db->setQuery($query)->execute();
+        } catch (\Exception $e) {
+            $this->setError('Failed to unlink payments: ' . $e->getMessage());
+            return false;
+        }
+
+        // Then delete the accounts
         $query = $db->getQuery(true)
             ->delete($db->quoteName('#__mothership_accounts'))
             ->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
 
-        $db->setQuery($query);
-
         try {
-            $db->execute();
+            $db->setQuery($query)->execute();
             return true;
         } catch (\Exception $e) {
-            $this->setError($e->getMessage());
+            $this->setError('Failed to delete accounts: ' . $e->getMessage());
             return false;
         }
     }
+
 
 }

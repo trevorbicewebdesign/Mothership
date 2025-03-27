@@ -68,7 +68,7 @@ class AccountsController extends BaseController
             foreach ($ids as $accountId) {
                 $accountId = (int) $accountId;
 
-                // Check for related invoices
+                // Check for related invoices only
                 $query = $db->getQuery(true)
                     ->select('COUNT(*)')
                     ->from('#__mothership_invoices')
@@ -76,15 +76,7 @@ class AccountsController extends BaseController
                 $db->setQuery($query);
                 $invoiceCount = (int) $db->loadResult();
 
-                // Check for related payments
-                $query->clear()
-                    ->select('COUNT(*)')
-                    ->from('#__mothership_payments')
-                    ->where('account_id = ' . $accountId);
-                $db->setQuery($query);
-                $paymentCount = (int) $db->loadResult();
-
-                if ($invoiceCount > 0 || $paymentCount > 0) {
+                if ($invoiceCount > 0) {
                     $blocked[] = $accountId;
                 } else {
                     $allowed[] = $accountId;
