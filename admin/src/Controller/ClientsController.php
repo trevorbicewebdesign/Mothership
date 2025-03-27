@@ -55,44 +55,55 @@ class ClientsController extends BaseController
     {
         $app   = Factory::getApplication();
         $input = $app->input;
+        $db    = Factory::getDbo();
 
         $ids = $input->get('cid', [], 'array');
 
         if (empty($ids)) {
             $app->enqueueMessage(Text::_('JGLOBAL_NO_ITEM_SELECTED'), 'warning');
         } else {
-            $db = Factory::getDbo();
+            $allowed = [];
             $blocked = [];
 
             foreach ($ids as $clientId) {
+                $clientId = (int) $clientId;
+
                 $query = $db->getQuery(true)
                     ->select('COUNT(*)')
                     ->from($db->quoteName('#__mothership_accounts'))
-                    ->where($db->quoteName('client_id') . ' = ' . (int) $clientId);
+                    ->where($db->quoteName('client_id') . ' = ' . $clientId);
                 $db->setQuery($query);
                 $accountCount = (int) $db->loadResult();
 
                 if ($accountCount > 0) {
                     $blocked[] = $clientId;
+                } else {
+                    $allowed[] = $clientId;
                 }
             }
 
-            // If any clients had accounts, block deletion
-            if (!empty($blocked)) {
-                $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_CLIENT_DELETE_HAS_ACCOUNTS', implode(', ', $blocked)), 'error');
-            } else {
+            if (!empty($allowed)) {
                 $model = $this->getModel('Clients');
 
-                if ($model->delete($ids)) {
-                    $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_CLIENT_DELETE_SUCCESS', count($ids)), 'message');
+                if ($model->delete($allowed)) {
+                    $app->enqueueMessage(
+                        Text::sprintf('COM_MOTHERSHIP_CLIENT_DELETE_SUCCESS', count($allowed), count($allowed) === 1 ? '' : 's'),
+                        'message'
+                    );
                 } else {
                     $app->enqueueMessage(Text::_('COM_MOTHERSHIP_CLIENT_DELETE_FAILED'), 'error');
                 }
+            }
+
+            if (!empty($blocked)) {
+                $app->enqueueMessage(
+                    Text::sprintf('COM_MOTHERSHIP_CLIENT_DELETE_HAS_ACCOUNTS', implode(', ', $blocked)),
+                    'warning'
+                );
             }
         }
 
         $this->setRedirect(Route::_('index.php?option=com_mothership&view=clients', false));
     }
-
 
 }
