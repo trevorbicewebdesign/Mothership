@@ -56,21 +56,43 @@ class ClientsController extends BaseController
         $app   = Factory::getApplication();
         $input = $app->input;
 
-        // Get the list of IDs from the request.
         $ids = $input->get('cid', [], 'array');
 
         if (empty($ids)) {
             $app->enqueueMessage(Text::_('JGLOBAL_NO_ITEM_SELECTED'), 'warning');
         } else {
-            $model = $this->getModel('Clients');
-            if ($model->delete($ids)) {
-                $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_CLIENT_DELETE_SUCCESS', count($ids)), 'message');
+            $db = Factory::getDbo();
+            $blocked = [];
+
+            foreach ($ids as $clientId) {
+                $query = $db->getQuery(true)
+                    ->select('COUNT(*)')
+                    ->from($db->quoteName('#__mothership_accounts'))
+                    ->where($db->quoteName('client_id') . ' = ' . (int) $clientId);
+                $db->setQuery($query);
+                $accountCount = (int) $db->loadResult();
+
+                if ($accountCount > 0) {
+                    $blocked[] = $clientId;
+                }
+            }
+
+            // If any clients had accounts, block deletion
+            if (!empty($blocked)) {
+                $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_CLIENT_DELETE_HAS_ACCOUNTS', implode(', ', $blocked)), 'error');
             } else {
-                $app->enqueueMessage(Text::_('COM_MOTHERSHIP_CLIENT_DELETE_FAILED'), 'error');
+                $model = $this->getModel('Clients');
+
+                if ($model->delete($ids)) {
+                    $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_CLIENT_DELETE_SUCCESS', count($ids)), 'message');
+                } else {
+                    $app->enqueueMessage(Text::_('COM_MOTHERSHIP_CLIENT_DELETE_FAILED'), 'error');
+                }
             }
         }
 
         $this->setRedirect(Route::_('index.php?option=com_mothership&view=clients', false));
     }
+
 
 }
