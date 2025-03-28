@@ -123,7 +123,8 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                         <?php echo $item->status; ?>
                                     </td>
                                     <td>
-                                        <?php echo $item->payment_status; ?>
+                                        Completed<br/>
+                                        <small><a href="#">Payment #21</a></small>
                                     </td>
                                     <td>
                                         <?php echo !empty($item->due) ? $item->due : 'N/A'; ?>

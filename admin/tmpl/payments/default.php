@@ -103,7 +103,8 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                                         <?php echo HTMLHelper::_('date', $item->created_at, Text::_('DATE_FORMAT_LC4')); ?>
                                     </td>
                                     <td>
-                                        <?php echo $item->status; ?>
+                                        <?php echo $item->status; ?><br/>
+                                        <small><a href="#">Invoice #1</a></small>
                                     </td>
                                     <td>
                                         <a href="<?php echo Route::_("index.php?option=com_mothership&view=invoicepayments&payment_id={$item->id}"); ?>" title="<?php echo Text::_('COM_MOTHERSHIP_PAYMENT_MANAGE_ALLOCATIONS'); ?>">

@@ -250,4 +250,22 @@ class PaymentHelper
         return $invoice_payment_id;
     }
 
+    public function getPaymentInvoices($paymentId)
+    {
+        $db = Factory::getContainer()->get(DatabaseDriver::class);
+        $query = $db->getQuery(true)
+            ->select('invoice_id, applied_amount')
+            ->from($db->quoteName('#__mothership_invoice_payment'))
+            ->where($db->quoteName('payment_id') . ' = ' . (int) $paymentId);
+        $db->setQuery($query);
+
+        try {
+            $invoices = $db->loadObjectList();
+        } catch (\Exception $e) {
+            throw new \RuntimeException("Failed to get payment invoices: " . $e->getMessage());
+        }
+
+        return $invoices;
+    }
+
 }

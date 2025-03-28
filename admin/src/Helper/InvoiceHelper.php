@@ -262,4 +262,8 @@ class InvoiceHelper
         $db->execute();
     }
 
+    public function getInvoicePayments($invoiceId)
+    {
+        
+    }
 }
