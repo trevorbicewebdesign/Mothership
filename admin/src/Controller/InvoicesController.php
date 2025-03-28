@@ -55,6 +55,7 @@ class InvoicesController extends BaseController
     {
         $app   = Factory::getApplication();
         $input = $app->input;
+        $db    = Factory::getDbo();
 
         $ids = array_map('intval', $input->get('cid', [], 'array'));
 
@@ -64,27 +65,51 @@ class InvoicesController extends BaseController
             return;
         }
 
-        $model = $this->getModel('Invoices');
+        $allowed = [];
+        $blocked = [];
 
-        // Let the model handle filtering and deletion
-        $result = $model->delete($ids);
+        // Filter invoice IDs: only allow draft invoices to be deleted
+        foreach ($ids as $invoiceId) {
+            $query = $db->getQuery(true)
+                ->select($db->quoteName('status'))
+                ->from($db->quoteName('#__mothership_invoices'))
+                ->where($db->quoteName('id') . ' = ' . $invoiceId);
+            $db->setQuery($query);
+            $status = (int) $db->loadResult();
 
-        if (isset($result['deleted']) && count($result['deleted']) > 0) {
-            $count = count($result['deleted']);
-            $app->enqueueMessage(
-                Text::sprintf('COM_MOTHERSHIP_INVOICE_DELETE_SUCCESS', $count, $count > 1 ? 's' : ''),
-                'message'
-            );
+            if ($status === 1) { // 0 = Draft
+                $allowed[] = $invoiceId;
+            } else {
+                $blocked[] = $invoiceId;
+            }
         }
 
-        if (isset($result['skipped']) && count($result['skipped']) > 0) {
+        if (!empty($allowed)) {
+            $model = $this->getModel('Invoices');
+
+            if ($model->delete($allowed)) {
+                $count = count($allowed);
+                $app->enqueueMessage(
+                    Text::sprintf('COM_MOTHERSHIP_INVOICE_DELETE_SUCCESS', $count, $count === 1 ? '' : 's'),
+                    'message'
+                );
+            } else {
+                $app->enqueueMessage(Text::_('COM_MOTHERSHIP_INVOICE_DELETE_FAILED'), 'error');
+            }
+        }
+
+        if (!empty($blocked)) {
             $app->enqueueMessage(
-                Text::sprintf('COM_MOTHERSHIP_INVOICE_DELETE_SKIPPED_NON_DRAFT', count($result['skipped']), count($result['skipped']) > 1 ? 's' : ''),
+                Text::sprintf(
+                    'COM_MOTHERSHIP_INVOICE_DELETE_SKIPPED_NON_DRAFT',
+                    implode(', ', $blocked)
+                ),
                 'warning'
             );
         }
 
         $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoices', false));
     }
+
 
 }
