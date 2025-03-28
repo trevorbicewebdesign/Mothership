@@ -68,8 +68,8 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                         </thead>
                         <tbody>
                             <?php foreach ($this->items as $i => $item):
-                                $user       = Factory::getApplication()->getIdentity();
-                                $canEdit    = $user->authorise('core.edit', "com_mothership.payment.{$item->id}");
+                                $user = Factory::getApplication()->getIdentity();
+                                $canEdit = $user->authorise('core.edit', "com_mothership.payment.{$item->id}");
                                 $canEditOwn = $user->authorise('core.edit.own', "com_mothership.payment.{$item->id}");
                                 $canCheckin = $user->authorise('core.manage', 'com_mothership');
                             ?>
