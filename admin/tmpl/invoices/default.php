@@ -67,6 +67,10 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                 </th>
 
                                 <th scope="col" class="w-10">
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_INVOICE_HEADING_PAYMENT_STATUS', 'i.payment_status', $listDirn, $listOrder); ?>
+                                </th>
+
+                                <th scope="col" class="w-10">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_INVOICE_HEADING_DUE', 'i.due', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
@@ -117,6 +121,17 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                     </td>
                                     <td>
                                         <?php echo $item->status; ?>
+                                    </td>
+                                    <td>
+                                        <?php echo $item->payment_status; ?><br/>
+                                        <?php $payment_ids = array_filter(explode(",", $item->payment_ids)); ?>
+                                        <?php if (count($payment_ids) > 0): ?>
+                                        <ul style="margin-bottom:0px;">
+                                            <?php foreach ($payment_ids as $paymentId): ?>
+                                                <li style="list-style: none;"><small><a href="index.php?option=com_mothership&view=payment&layout=edit&id=<?php echo $paymentId; ?>&return=<?php echo base64_encode(Route::_('index.php?option=com_mothership&view=invoices')); ?>"><?php echo "Payment #" . str_pad($paymentId, 2, "0", STR_PAD_LEFT); ?></a></small></li>
+                                            <?php endforeach; ?>
+                                        </ul>
+                                        <?php endif; ?>
                                     </td>
                                     <td>
                                         <?php echo !empty($item->due) ? $item->due : 'N/A'; ?>

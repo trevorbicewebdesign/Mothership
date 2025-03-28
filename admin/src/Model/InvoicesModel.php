@@ -65,55 +65,78 @@ class InvoicesModel extends ListModel
 
     protected function getListQuery()
     {
-        // Get a new query object.
-        $db    = $this->getDatabase();
+        $db = $this->getDatabase();
         $query = $db->getQuery(true);
 
-        // Select the required fields from the table.
         $query->select(
             $this->getState(
-            'list.select',
-            [
-            $db->quoteName('i.id'),
-            $db->quoteName('i.number'),
-            $db->quoteName('i.client_id'),
-            $db->quoteName('c.name', 'client_name'),
-            $db->quoteName('i.account_id'),
-            $db->quoteName('a.name', 'account_name'),
-            $db->quoteName('i.total'),
-            //$db->quoteName('i.created'),
-            $db->quoteName('i.checked_out_time'),
-            $db->quoteName('i.checked_out'),
-            'CASE ' . $db->quoteName('i.status') . 
-                    ' WHEN 1 THEN ' . $db->quote('Draft') . 
-                    ' WHEN 2 THEN ' . $db->quote('Opened') . 
-                    ' WHEN 3 THEN ' . $db->quote('Cancelled') . 
-                    ' WHEN 4 THEN ' . $db->quote('Closed') .
-                    ' ELSE ' . $db->quote('Unknown') . ' END AS ' . $db->quoteName('status'),
-            ]
+                'list.select',
+                [
+                    $db->quoteName('i.id'),
+                    $db->quoteName('i.number'),
+                    $db->quoteName('i.client_id'),
+                    $db->quoteName('c.name', 'client_name'),
+                    $db->quoteName('i.account_id'),
+                    $db->quoteName('a.name', 'account_name'),
+                    $db->quoteName('i.total'),
+                    $db->quoteName('i.checked_out_time'),
+                    $db->quoteName('i.checked_out'),
+                    $db->quoteName('pay.payment_ids'),
+                    
+
+                    // Invoice status (Draft, Opened, etc.)
+                    'CASE ' . $db->quoteName('i.status') . 
+                        ' WHEN 1 THEN ' . $db->quote('Draft') . 
+                        ' WHEN 2 THEN ' . $db->quote('Opened') . 
+                        ' WHEN 3 THEN ' . $db->quote('Cancelled') . 
+                        ' WHEN 4 THEN ' . $db->quote('Closed') .
+                        ' ELSE ' . $db->quote('Unknown') . ' END AS ' . $db->quoteName('status'),
+
+                    // 👇 Add total_paid and payment_status
+                    'COALESCE(pay.total_paid, 0) AS total_paid',
+                    'CASE' .
+                        ' WHEN COALESCE(pay.total_paid, 0) <= 0 THEN ' . $db->quote('Unpaid') .
+                        ' WHEN COALESCE(pay.total_paid, 0) < i.total THEN ' . $db->quote('Partially Paid') .
+                        ' ELSE ' . $db->quote('Paid') .
+                    ' END AS payment_status'
+                ]
             )
         );
 
         $query->from($db->quoteName('#__mothership_invoices', 'i'))
-              ->join('LEFT', $db->quoteName('#__mothership_clients', 'c') . ' ON ' . $db->quoteName('i.client_id') . ' = ' . $db->quoteName('c.id'))
-              ->join('LEFT', $db->quoteName('#__mothership_accounts', 'a') . ' ON ' . $db->quoteName('i.account_id') . ' = ' . $db->quoteName('a.id'));
+            ->join('LEFT', $db->quoteName('#__mothership_clients', 'c') . ' ON ' . $db->quoteName('i.client_id') . ' = ' . $db->quoteName('c.id'))
+            ->join('LEFT', $db->quoteName('#__mothership_accounts', 'a') . ' ON ' . $db->quoteName('i.account_id') . ' = ' . $db->quoteName('a.id'))
 
-        // Filter by search in invoice name (or by invoice id if prefixed with "cid:").
+            // 👇 JOIN: Pull total completed payments per invoice
+            ->join(
+                'LEFT',
+                '(SELECT ip.invoice_id,
+                         SUM(ip.applied_amount) AS total_paid,
+                         GROUP_CONCAT(p.id ORDER BY p.payment_date) AS payment_ids
+                  FROM ' . $db->quoteName('#__mothership_invoice_payment', 'ip') . '
+                  JOIN ' . $db->quoteName('#__mothership_payments', 'p') . ' ON ip.payment_id = p.id
+                  WHERE p.status = 2
+                  GROUP BY ip.invoice_id) AS pay
+                ON pay.invoice_id = i.id'
+            );
+
+        // Filter by ID search
         if ($search = trim($this->getState('filter.search', ''))) {
             if (stripos($search, 'id:') === 0) {
                 $search = (int) substr($search, 4);
                 $query->where($db->quoteName('i.id') . ' = :search')
-                      ->bind(':search', $search, ParameterType::INTEGER);
+                    ->bind(':search', $search, ParameterType::INTEGER);
             }
         }
 
-        // Add the ordering clause.
         $query->order(
-            $db->quoteName($db->escape($this->getState('list.ordering', 'i.id'))) . ' ' . $db->escape($this->getState('list.direction', 'ASC'))
+            $db->quoteName($db->escape($this->getState('list.ordering', 'i.id'))) . ' ' .
+            $db->escape($this->getState('list.direction', 'ASC'))
         );
 
         return $query;
     }
+
 
     public function getItems()
     {

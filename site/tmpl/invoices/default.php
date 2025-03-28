@@ -19,6 +19,7 @@ use Joomla\CMS\Language\Text;
             <th>Account</th>
             <th>Amount</th>
             <th>Status</th>
+            <th>Payment Status</th>
             <th>Due Date</th>
             <th>Actions</th>
         </tr>
@@ -26,7 +27,7 @@ use Joomla\CMS\Language\Text;
     <tbody>
         <?php if(empty($this->invoices)) : ?>
             <tr>
-                <td colspan="7">No invoices found.</td>
+                <td colspan="8">No invoices found.</td>
             </tr>
         <?php endif; ?>
         <?php foreach ($this->invoices as $invoice) : ?>
@@ -38,6 +39,17 @@ use Joomla\CMS\Language\Text;
                 <td><?php echo $invoice->account_name; ?></td>
                 <td>$<?php echo number_format($invoice->total, 2); ?></td>
                 <td><?php echo $invoice->status; ?></td>
+                <td>
+                    <?php echo $invoice->payment_status; ?><br/>
+                    <?php $payment_ids = array_filter(explode(",", $invoice->payment_ids)); ?>
+                    <?php if (count($payment_ids) > 0): ?>
+                    <ul style="margin-bottom:0px;">
+                        <?php foreach ($payment_ids as $paymentId): ?>
+                            <li style="list-style: none;"><small><a href="index.php?option=com_mothership&view=payment&id=<?php echo $paymentId; ?>&return=<?php echo base64_encode(Route::_('index.php?option=com_mothership&view=invoices')); ?>"><?php echo "Payment #" . str_pad($paymentId, 2, "0", STR_PAD_LEFT); ?></a></small></li>
+                        <?php endforeach; ?>
+                    </ul>
+                    <?php endif; ?>
+                </td>
                 <td>
                     <?php if($invoice->status === 'Opened' || $invoice->status === 'Late'): ?>
                     <?php

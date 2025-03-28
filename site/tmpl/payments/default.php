@@ -32,7 +32,7 @@ use Joomla\CMS\Language\Text;
         <?php endif; ?>
         <?php foreach ($this->payments as $payment) : ?>
             <tr>
-                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=payment&id=' . $payment->id); ?>"><?php echo $payment->number; ?></a></td>
+                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=payment&id=' . $payment->id); ?>"><?php echo $payment->id; ?></a></td>
                 <td><?php echo $payment->account_name; ?></td>
                 <td>$<?php echo number_format($payment->amount, 2); ?></td>
                 <td><?php echo $payment->status; ?></td>

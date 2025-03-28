@@ -68,8 +68,8 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                         </thead>
                         <tbody>
                             <?php foreach ($this->items as $i => $item):
-                                $user       = Factory::getApplication()->getIdentity();
-                                $canEdit    = $user->authorise('core.edit', "com_mothership.payment.{$item->id}");
+                                $user = Factory::getApplication()->getIdentity();
+                                $canEdit = $user->authorise('core.edit', "com_mothership.payment.{$item->id}");
                                 $canEditOwn = $user->authorise('core.edit.own', "com_mothership.payment.{$item->id}");
                                 $canCheckin = $user->authorise('core.manage', 'com_mothership');
                             ?>
@@ -103,7 +103,15 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                                         <?php echo HTMLHelper::_('date', $item->created_at, Text::_('DATE_FORMAT_LC4')); ?>
                                     </td>
                                     <td>
-                                        <?php echo $item->status; ?>
+                                        <?php echo $item->status; ?><br/>
+                                        <?php $invoice_ids = array_filter(explode(",", $item->invoice_ids)); ?>
+                                        <?php if (count($invoice_ids) > 0): ?>
+                                        <ul style="margin-bottom:0px;">
+                                            <?php foreach ($invoice_ids as $invoiceId): ?>
+                                                <li style="list-style: none;"><small><a href="index.php?option=com_mothership&view=invoice&layout=edit&id=<?php echo $invoiceId; ?>&return=<?php echo base64_encode(Route::_('index.php?option=com_mothership&view=payments')); ?>"><?php echo "Invoice #" . $invoiceId; ?></a></small></li>
+                                            <?php endforeach; ?>
+                                        </ul>
+                                        <?php endif; ?>
                                     </td>
                                     <td>
                                         <a href="<?php echo Route::_("index.php?option=com_mothership&view=invoicepayments&payment_id={$item->id}"); ?>" title="<?php echo Text::_('COM_MOTHERSHIP_PAYMENT_MANAGE_ALLOCATIONS'); ?>">
