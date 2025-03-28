@@ -123,8 +123,15 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                         <?php echo $item->status; ?>
                                     </td>
                                     <td>
-                                        Completed<br/>
-                                        <small><a href="#">Payment #21</a></small>
+                                        <?php echo $item->payment_status; ?><br/>
+                                        <?php $payment_ids = explode(",",$item->payment_ids); ?>
+                                        <?php if (count($payment_ids) > 1): ?>
+                                        <ul style="margin-bottom:0px;">
+                                            <?php foreach ($payment_ids as $paymentId): ?>
+                                                <li style="list-style: none;"><small><a href="index.php?option=com_mothership&view=payment&layout=edit&id=<?php echo $paymentId; ?>&return=<?php echo base64_encode(Route::_('index.php?option=com_mothership&view=invoices')); ?>"><?php echo "Payment #" . str_pad($paymentId, 2, "0", STR_PAD_LEFT); ?></a></small></li>
+                                            <?php endforeach; ?>
+                                        </ul>
+                                        <?php endif; ?>
                                     </td>
                                     <td>
                                         <?php echo !empty($item->due) ? $item->due : 'N/A'; ?>
