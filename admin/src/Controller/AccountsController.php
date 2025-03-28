@@ -55,22 +55,56 @@ class AccountsController extends BaseController
     {
         $app   = Factory::getApplication();
         $input = $app->input;
+        $db    = Factory::getDbo();
 
-        // Get the list of IDs from the request.
         $ids = $input->get('cid', [], 'array');
 
         if (empty($ids)) {
             $app->enqueueMessage(Text::_('JGLOBAL_NO_ITEM_SELECTED'), 'warning');
         } else {
-            $model = $this->getModel('Accounts');
-            if ($model->delete($ids)) {
-                $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_ACCOUNT_DELETE_SUCCESS', count($ids), count($ids) > 1 ? 's' : ''), 'message');
-            } else {
-                $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ACCOUNT_DELETE_FAILED'), 'error');
+            $blocked = [];
+            $allowed = [];
+
+            foreach ($ids as $accountId) {
+                $accountId = (int) $accountId;
+
+                // Check for related invoices only
+                $query = $db->getQuery(true)
+                    ->select('COUNT(*)')
+                    ->from('#__mothership_invoices')
+                    ->where('account_id = ' . $accountId);
+                $db->setQuery($query);
+                $invoiceCount = (int) $db->loadResult();
+
+                if ($invoiceCount > 0) {
+                    $blocked[] = $accountId;
+                } else {
+                    $allowed[] = $accountId;
+                }
+            }
+
+            if (!empty($allowed)) {
+                $model = $this->getModel('Accounts');
+                if ($model->delete($allowed)) {
+                    $app->enqueueMessage(
+                        Text::sprintf('COM_MOTHERSHIP_ACCOUNT_DELETE_SUCCESS', count($allowed), count($allowed) === 1 ? '' : 's'),
+                        'message'
+                    );
+                } else {
+                    $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ACCOUNT_DELETE_FAILED'), 'error');
+                }
+            }
+
+            if (!empty($blocked)) {
+                $app->enqueueMessage(
+                    Text::sprintf('COM_MOTHERSHIP_ACCOUNT_DELETE_HAS_DEPENDENCIES', implode(', ', $blocked)),
+                    'warning'
+                );
             }
         }
 
         $this->setRedirect(Route::_('index.php?option=com_mothership&view=accounts', false));
     }
+
 
 }

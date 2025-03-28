@@ -55,18 +55,51 @@ class ClientsController extends BaseController
     {
         $app   = Factory::getApplication();
         $input = $app->input;
+        $db    = Factory::getDbo();
 
-        // Get the list of IDs from the request.
         $ids = $input->get('cid', [], 'array');
 
         if (empty($ids)) {
             $app->enqueueMessage(Text::_('JGLOBAL_NO_ITEM_SELECTED'), 'warning');
         } else {
-            $model = $this->getModel('Clients');
-            if ($model->delete($ids)) {
-                $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_CLIENT_DELETE_SUCCESS', count($ids)), 'message');
-            } else {
-                $app->enqueueMessage(Text::_('COM_MOTHERSHIP_CLIENT_DELETE_FAILED'), 'error');
+            $allowed = [];
+            $blocked = [];
+
+            foreach ($ids as $clientId) {
+                $clientId = (int) $clientId;
+
+                $query = $db->getQuery(true)
+                    ->select('COUNT(*)')
+                    ->from($db->quoteName('#__mothership_accounts'))
+                    ->where($db->quoteName('client_id') . ' = ' . $clientId);
+                $db->setQuery($query);
+                $accountCount = (int) $db->loadResult();
+
+                if ($accountCount > 0) {
+                    $blocked[] = $clientId;
+                } else {
+                    $allowed[] = $clientId;
+                }
+            }
+
+            if (!empty($allowed)) {
+                $model = $this->getModel('Clients');
+
+                if ($model->delete($allowed)) {
+                    $app->enqueueMessage(
+                        Text::sprintf('COM_MOTHERSHIP_CLIENT_DELETE_SUCCESS', count($allowed), count($allowed) === 1 ? '' : 's'),
+                        'message'
+                    );
+                } else {
+                    $app->enqueueMessage(Text::_('COM_MOTHERSHIP_CLIENT_DELETE_FAILED'), 'error');
+                }
+            }
+
+            if (!empty($blocked)) {
+                $app->enqueueMessage(
+                    Text::sprintf('COM_MOTHERSHIP_CLIENT_DELETE_HAS_ACCOUNTS', implode(', ', $blocked)),
+                    'warning'
+                );
             }
         }
 

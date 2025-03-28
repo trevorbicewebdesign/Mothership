@@ -76,6 +76,28 @@ class HtmlView extends BaseHtmlView
             $this->setLayout('emptystate');
         }
 
+        $wa = Factory::getApplication()->getDocument()->getWebAssetManager();
+        $js = <<<JS
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('[data-confirm]').forEach(function (el) {
+                el.addEventListener('click', function (event) {
+                    const task = el.getAttribute('data-task');
+
+                    // Optional: restrict this behavior to specific tasks
+                    if (task === 'clients.delete') {
+                        const message = el.getAttribute('data-confirm') || 'Are you sure?';
+                        if (!confirm(message)) {
+                            event.preventDefault();
+                            event.stopImmediatePropagation();
+                        }
+                    }
+                });
+            });
+        });
+
+        JS;
+        $wa->addInlineScript($js);
+
         // Check for errors.
         if (\count($errors = $this->get('Errors'))) {
             throw new GenericDataException(implode("\n", $errors), 500);
@@ -103,15 +125,21 @@ class HtmlView extends BaseHtmlView
                 ->icon('icon-ellipsis-h')
                 ->buttonClass('btn btn-action')
                 ->listCheck(true);
-
+        
             $childBar = $dropdown->getChildToolbar();
-
+        
             if ($canDo->get('core.admin')) {
                 $childBar->checkin('clients.checkin')->listCheck(true);
             }
-
-            $childBar->delete('clients.delete')->listCheck(true);
+        
+            $childBar->delete('clients.delete')
+                ->listCheck(true)
+                ->attributes([
+                    'class' => 'mothership-confirm-delete',
+                    'data-confirm' => Text::_('COM_MOTHERSHIP_CONFIRM_DELETE_CLIENTS')
+            ]);
         }
+        
 
         if ($canDo->get('core.admin') || $canDo->get('core.options')) {
             $toolbar->preferences('com_mothership');

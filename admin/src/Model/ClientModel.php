@@ -52,6 +52,10 @@ class ClientModel extends AdminModel
             return false;
         }
 
+        if (!$this->canDeleteClient($record->id)) {
+            return false;
+        }
+
         if (!empty($record->catid)) {
             return $this->getCurrentUser()->authorise('core.delete', 'com_mothership.category.' . (int) $record->catid);
         }
@@ -80,6 +84,29 @@ class ClientModel extends AdminModel
     {
         return $this->getCurrentUser()->authorise('core.edit', 'com_mothership');
     }
+
+    public function canDeleteClient(int $clientId): bool
+    {
+        $db = Factory::getDbo();
+
+        $hasAccounts = $db->setQuery(
+            $db->getQuery(true)
+                ->select('COUNT(*)')
+                ->from('#__mothership_accounts')
+                ->where('client_id = ' . $clientId)
+        )->loadResult();
+
+        if ($hasAccounts ) {
+            Factory::getApplication()->enqueueMessage(
+                Text::sprintf('COM_MOTHERSHIP_ERROR_CLIENT_HAS_DEPENDENCIES', count($hasAccounts)),
+                'error'
+            );
+            return false;
+        }
+
+        return true;
+    }
+
 
     /**
      * Method to get the record form.
