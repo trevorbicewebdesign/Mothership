@@ -67,6 +67,10 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                 </th>
 
                                 <th scope="col" class="w-10">
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_INVOICE_HEADING_PAYMENT_STATUS', 'i.payment_status', $listDirn, $listOrder); ?>
+                                </th>
+
+                                <th scope="col" class="w-10">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_INVOICE_HEADING_DUE', 'i.due', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
@@ -117,6 +121,9 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                     </td>
                                     <td>
                                         <?php echo $item->status; ?>
+                                    </td>
+                                    <td>
+                                        <?php echo $item->payment_status; ?>
                                     </td>
                                     <td>
                                         <?php echo !empty($item->due) ? $item->due : 'N/A'; ?>
