@@ -63,11 +63,9 @@ class PaymentsModel extends ListModel
 
     protected function getListQuery()
     {
-        // Get a new query object.
         $db = $this->getDatabase();
         $query = $db->getQuery(true);
 
-        // Select the required fields from the payments table.
         $query->select(
             $this->getState(
                 'list.select',
@@ -80,23 +78,38 @@ class PaymentsModel extends ListModel
                     $db->quoteName('p.amount'),
                     $db->quoteName('p.payment_method'),
                     $db->quoteName('p.payment_date'),
+                    $db->quoteName('p.payment_method'),
+                    $db->quoteName('inv.invoice_ids'),
+
+                    // Interpreted payment status
                     'CASE ' . $db->quoteName('p.status') . 
-                    ' WHEN 1 THEN ' . $db->quote('Pending') . 
-                    ' WHEN 2 THEN ' . $db->quote('Completed') . 
-                    ' WHEN 3 THEN ' . $db->quote('Failed') . 
-                    ' WHEN 4 THEN ' . $db->quote('Cancelled') .
-                    ' WHEN 5 THEN ' . $db->quote('Refunded') .
-                    ' ELSE ' . $db->quote('Unknown') . ' END AS ' . $db->quoteName('status'),
+                        ' WHEN 1 THEN ' . $db->quote('Pending') . 
+                        ' WHEN 2 THEN ' . $db->quote('Completed') . 
+                        ' WHEN 3 THEN ' . $db->quote('Failed') . 
+                        ' WHEN 4 THEN ' . $db->quote('Cancelled') .
+                        ' WHEN 5 THEN ' . $db->quote('Refunded') .
+                        ' ELSE ' . $db->quote('Unknown') . 
+                    ' END AS ' . $db->quoteName('status'),
+
                 ]
             )
         );
 
-        // Use unique aliases for each table.
         $query->from($db->quoteName('#__mothership_payments', 'p'))
-            ->join('LEFT', $db->quoteName('#__mothership_clients', 'c')
-                . ' ON ' . $db->quoteName('p.client_id') . ' = ' . $db->quoteName('c.id'))
-            ->join('LEFT', $db->quoteName('#__mothership_accounts', 'a')
-                . ' ON ' . $db->quoteName('p.account_id') . ' = ' . $db->quoteName('a.id'));
+            ->join('LEFT', $db->quoteName('#__mothership_clients', 'c') . ' ON ' . $db->quoteName('p.client_id') . ' = ' . $db->quoteName('c.id'))
+            ->join('LEFT', $db->quoteName('#__mothership_accounts', 'a') . ' ON ' . $db->quoteName('p.account_id') . ' = ' . $db->quoteName('a.id'))
+
+            // 👇 JOIN to list invoice_ids and invoice_numbers linked to this payment
+            ->join(
+                'LEFT',
+                '(SELECT ip.payment_id,
+                         GROUP_CONCAT(ip.invoice_id ORDER BY ip.invoice_id) AS invoice_ids,
+                         GROUP_CONCAT(i.number ORDER BY ip.invoice_id) AS invoice_numbers
+                  FROM ' . $db->quoteName('#__mothership_invoice_payment', 'ip') . '
+                  JOIN ' . $db->quoteName('#__mothership_invoices', 'i') . ' ON ip.invoice_id = i.id
+                  GROUP BY ip.payment_id) AS inv
+                 ON inv.payment_id = p.id'
+            );
 
         // Filter by search term.
         if ($search = trim($this->getState('filter.search', ''))) {
@@ -106,20 +119,20 @@ class PaymentsModel extends ListModel
                     ->bind(':search', $search, ParameterType::INTEGER);
             } else {
                 $search = '%' . str_replace(' ', '%', $search) . '%';
-                // Since payments don't have a 'name', search on payment_method.
                 $query->where($db->quoteName('p.payment_method') . ' LIKE :search')
                     ->bind(':search', $search);
             }
         }
 
-        // Add the ordering clause.
+        // Ordering
         $query->order(
-            $db->quoteName($db->escape($this->getState('list.ordering', 'p.payment_date')))
-            . ' ' . $db->escape($this->getState('list.direction', 'ASC'))
+            $db->quoteName($db->escape($this->getState('list.ordering', 'p.payment_date'))) . ' ' .
+            $db->escape($this->getState('list.direction', 'ASC'))
         );
 
         return $query;
     }
+
 
     public function getItems()
     {
