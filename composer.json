@@ -1,6 +1,6 @@
 {
     "name": "trevorbicewebdesign/mothership",
-    "version": "0.0.9",
+    "version": "0.0.10",
     "description": "Mothership is a Joomla extension designed specifically for web development agencies to manage invoicing, quoting, help tickets, timelogging, expenses, taxes, and logging. Version 0.0.5 includes Clients management as the initial feature.",
     "type": "joomla-extension",
     "license": "GPL-2.0-or-later",
