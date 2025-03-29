@@ -33,14 +33,11 @@ jobs:
 
       - name: Wait for Joomla to be ready
         run: |
-          for i in {1..10}; do
-            if curl -s http://localhost:8080 | grep -q "Joomla"; then
-              echo "Joomla is up"
-              break
-            fi
+          until curl -s --head http://localhost:8080 | grep "200 OK"; do
             echo "Waiting for Joomla..."
             sleep 5
           done
+          echo "Joomla is up"
 
       - name: Run Codeception Tests
         run: ./vendor/bin/codecept run acceptance -d -f
