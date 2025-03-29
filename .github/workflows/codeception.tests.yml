@@ -31,6 +31,18 @@ jobs:
         run: |
           touch ./tests/.env
 
+      - name: Install Joomla via CLI
+        run: |
+          docker exec mothership-joomla-1 php cli/joomla.php site:install \
+            --db-user root \
+            --db-pass root \
+            --db-name joomla \
+            --db-host db \
+            --admin-user admin \
+            --admin-pass admin123 \
+            --admin-email admin@example.com \
+            --site-name "Mothership Test Site"
+
       - name: Wait for Joomla to be ready
         run: |
           until curl -s --head http://localhost:8080 | grep "200 OK"; do
