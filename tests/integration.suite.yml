@@ -1,0 +1,21 @@
+# Integration suite configuration
+#
+# Run integration and "WordPress unit" tests.
+
+actor: IntegrationTester
+bootstrap: _bootstrap.php
+modules:
+    enabled:
+        - Tests\Support\Helper\Integration
+        - Asserts  
+        - Helper\DbHelper
+    config:
+        Helper\DbHelper:
+            dsn: '%DSN%'
+            user: '%DBUSER%'
+            password: '%DBPASS%'
+            dump: '%DBDUMP%'
+            createIfNotExists: true
+            # populate: true
+            # cleanup: true
+            reconnect: true

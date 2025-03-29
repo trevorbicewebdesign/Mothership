@@ -1,0 +1,27 @@
+actor: ApiTester
+modules:
+  enabled:
+    - Tests\Support\Helper\Api
+    - REST
+    - Asserts
+    - Helper\DbHelper
+  config:   
+    REST:
+      depends: PhpBrowser
+      url: '%LIVE_SITE%'
+      shortDebugResponse: 300
+    Helper\DbHelper:
+        dsn: '%DSN%'
+        dbname: '%DBNAME%'
+        host: '%DBHOST%'
+        port: '%DBPORT%'
+        user: '%DBUSER%'
+        password: '%DBPASS%'
+        dump: '%DBDUMP%'
+        populate: true
+        populator: '%DBPOPULATOR%'
+        cleanup: true
+        reconnect: true
+        urlReplacement: false
+        waitlock: 5
+        createIfNotExists: true
