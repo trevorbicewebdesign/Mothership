@@ -39,7 +39,7 @@ jobs:
           done
 
       - name: Run Codeception Tests
-        run: composer test
+        run: ./vendor/bin/codecept run acceptance -d -f
 
       - name: Shut down containers
         if: always()
