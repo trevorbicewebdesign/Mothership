@@ -1,44 +1,46 @@
 name: Run Tests
 
 on:
-    push:
-        branches: 
-          - main
-          - test-workflow
-    pull_request:
-    workflow_dispatch:
+  push:
+    branches:
+      - main
+      - feat-testing
+  pull_request:
+  workflow_dispatch:
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: joomla
-        ports:
-          - 3306:3306
-        options: --health-cmd "mysqladmin ping --silent" --health-interval 10s --health-timeout 5s --health-retries 3
-
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up PHP
+      - name: Set up PHP for testing tools
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-          extensions: mysqli, mbstring, json, curl
+          extensions: mbstring, json, curl, zip
 
-      - name: Install Composer dependencies
-        run: composer install --prefer-dist --no-interaction
+      - name: Install Composer dependencies (Codeception only)
+        run: composer update --prefer-dist --no-interaction
 
-      - name: Install Joomla (CLI)
+      - name: Start Docker services (Joomla + MySQL)
+        run: docker-compose up -d --build
+
+      - name: Wait for Joomla to be ready
         run: |
-          mkdir -p public_html
-          cp -r vendor/joomla/joomla-cms/* public_html/
-          php tests/acceptance/install-joomla.php
+          for i in {1..10}; do
+            if curl -s http://localhost:8080 | grep -q "Joomla"; then
+              echo "Joomla is up"
+              break
+            fi
+            echo "Waiting for Joomla..."
+            sleep 5
+          done
 
       - name: Run Codeception Tests
         run: composer test
+
+      - name: Shut down containers
+        if: always()
+        run: docker-compose down -v
