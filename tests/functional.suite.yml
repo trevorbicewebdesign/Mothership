@@ -1,0 +1,21 @@
+actor: FunctionalTester
+modules:
+  enabled:
+    - Tests\Support\Helper\Functional
+    - Asserts
+    - Helper\DbHelper
+    - PhpBrowser
+  config:   
+    PhpBrowser:
+        url: '%LIVE_SITE%'
+    Helper\DbHelper:
+        dsn: '%DSN%'
+        user: '%DBUSER%'
+        password: '%DBPASS%'
+        dump: '%DBDUMP%'
+        populate: true
+        cleanup: true
+        reconnect: true
+        tablePrefix: 'jos_'
+
+
