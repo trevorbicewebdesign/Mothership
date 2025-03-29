@@ -2,4 +2,6 @@
 * text=auto
 
 /tests/ export-ignore
+/vendor/ export-ignore
 /.gitignore export-ignore
+/codeception.yml export-ignore
