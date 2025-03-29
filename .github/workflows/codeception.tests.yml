@@ -27,6 +27,10 @@ jobs:
       - name: Start Docker services (Joomla + MySQL)
         run: docker compose up -d --build
 
+      - name: Create .env file and populate
+        run: |
+          touch .env
+
       - name: Bootstrap Codeception
         run: ./vendor/bin/codecept bootstrap
 
