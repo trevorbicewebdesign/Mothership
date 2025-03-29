@@ -27,16 +27,5 @@ services:
       - ./src:/var/www/html/administrator/components/com_mothership
       - ./src:/var/www/html/components/com_mothership
 
-  test:
-    build:
-      context: .
-      dockerfile: Dockerfile.test
-    depends_on:
-      - joomla
-    volumes:
-      - .:/app
-    working_dir: /app
-    command: vendor/bin/codecept run acceptance
-
 volumes:
   db_data:
