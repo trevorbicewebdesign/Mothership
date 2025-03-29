@@ -2,7 +2,9 @@ name: Run Tests
 
 on:
     push:
-        branches: [ main ]
+        branches: 
+          - main
+          - test-workflow
     pull_request:
     workflow_dispatch:
 
