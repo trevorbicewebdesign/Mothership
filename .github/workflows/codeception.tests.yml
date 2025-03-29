@@ -27,6 +27,9 @@ jobs:
       - name: Start Docker services (Joomla + MySQL)
         run: docker compose up -d --build
 
+      - name: Bootstrap Codeception
+        run: ./vendor/bin/codecept bootstrap
+
       - name: Wait for Joomla to be ready
         run: |
           for i in {1..10}; do
