@@ -7,3 +7,5 @@
 /vendor/ export-ignore
 /.gitignore export-ignore
 /codeception.yml export-ignore
+/docker-compose.yml export-ignore
+
