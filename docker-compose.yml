@@ -24,8 +24,8 @@ services:
       JOOMLA_DB_PASSWORD: root
       JOOMLA_DB_NAME: joomla
     volumes:
-      - ./src:/var/www/html/administrator/components/com_mothership
-      - ./src:/var/www/html/components/com_mothership
+      - ./src/admin:/var/www/html/administrator/components/com_mothership
+      - ./src/site:/var/www/html/components/com_mothership
 
 volumes:
   db_data:
