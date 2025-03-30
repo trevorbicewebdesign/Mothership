@@ -69,6 +69,12 @@ The **Invoices** object represents the invoices generated for clients. Each invo
 - **Cancelled**: The invoice has been cancelled and is no longer valid.
 - **Closed**: The invoice has been paid and is considered complete.
 
+### Invoice Payment Status Levels
+- **Unpaid**: The invoice is being created and is not yet finalized.
+- **Partially Paid**: The invoice has been finalized and sent to the client and is awaiting payment.
+- **Paid**: The invoice has been cancelled and is no longer valid.
+- **Closed**: The invoice has been paid and is considered complete.
+
 ## Invoice Items
 The **Invoice Items** object represents the individual items listed on an invoice. Each invoice item has the following attributes:
 
