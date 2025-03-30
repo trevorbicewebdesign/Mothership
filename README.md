@@ -69,6 +69,11 @@ The **Invoices** object represents the invoices generated for clients. Each invo
 - **Cancelled**: The invoice has been cancelled and is no longer valid.
 - **Closed**: The invoice has been paid and is considered complete.
 
+### Invoice Payment Status Levels
+- **Unpaid**: The invoice has been issued but no payment has been received yet.
+- **Partially Paid**: A portion of the invoice amount has been paid, but the full balance is still outstanding.
+- **Paid**: The invoice has been fully paid and no balance remains.
+
 ## Invoice Items
 The **Invoice Items** object represents the individual items listed on an invoice. Each invoice item has the following attributes:
 
@@ -114,7 +119,7 @@ The **Payments** object represents the payments made by clients. Each payment ha
 - **Disputed**: The payment is under dispute and is being reviewed.
 
 ## Invoice Payments
-The **Invoice Payments** object represents payments that are applied to specific invoices.
+The **Invoice Payments** object represents payments that are applied to specific invoices. Invoice payments have a many to many relationship with payments and invoices. One payment can go to multiple invoices or multiple payments can go to one invoice.
 
 - **ID**: A unique identifier for the payment.
 - **invoice_id**: The invoice that this payment will be applied to
