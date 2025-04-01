@@ -23,7 +23,6 @@ class PaymentsModel extends ListModel
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = [
-                'id',
                 'p.id',
                 'payment_date',
                 'p.payment_date',
