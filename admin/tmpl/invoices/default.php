@@ -128,7 +128,7 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                         <?php if (count($payment_ids) > 0): ?>
                                         <ul style="margin-bottom:0px;">
                                             <?php foreach ($payment_ids as $paymentId): ?>
-                                                <li style="list-style: none;"><small><a href="index.php?option=com_mothership&view=payment&layout=edit&id=<?php echo $paymentId; ?>&return=<?php echo base64_encode(Route::_('index.php?option=com_mothership&view=invoices')); ?>"><?php echo "Payment #" . str_pad($paymentId, 2, "0", STR_PAD_LEFT); ?></a></small></li>
+                                                <li style="list-style: none;"><small><a href="index.php?option=com_mothership&view=payment&layout=edit&id=<?php echo $paymentId; ?>&return=<?php echo base64_encode(Route::_('index.php?option=com_mothership&view=invoices')); ?>"><?php echo "Payment #{$paymentId}"; ?></a></small></li>
                                             <?php endforeach; ?>
                                         </ul>
                                         <?php endif; ?>
