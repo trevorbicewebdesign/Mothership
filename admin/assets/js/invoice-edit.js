@@ -348,8 +348,8 @@ jQuery(document).ready(function ($) {
                 console.log('Success Default rate:', data.default_rate);
                 if (typeof data.default_rate !== 'undefined') {
                     $rateField.val(data.default_rate);
-                    // Also needs to loop through the 
-                    // Loop through the invoice item rates and update them
+                    // Also needs to loop through the invoice item rates
+                    // and update them with the default rate from the client.
                     $('#invoice-items-table tbody tr').each(function () {
                         const rateInput = $(this).find('input[name$="[rate]"]');
                         rateInput.val(data.default_rate);
