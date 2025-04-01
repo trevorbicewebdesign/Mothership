@@ -63,6 +63,7 @@
 		</field>
 		<field name="company_zip" type="text" default="" readonly="" class="" label="COM_MOTHERSHIP_OPTIONS_COMPANY_ZIP_LABEL" description="" required="true" />
 		<field name="company_phone" type="text" default="" readonly="" class="" label="COM_MOTHERSHIP_OPTIONS_COMPANY_PHONE_LABEL" description="" required="true" />
+		<field name="company_default_rate" type="number" default="" class="" label="COM_MOTHERSHIP_OPTIONS_COMPANY_DEFAULT_RATE_LABEL" description="COM_MOTHERSHIP_OPTIONS_COMPANY_DEFAULT_RATE_DESC" required="true" />
 	</fieldset>
 
 	<fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC">
