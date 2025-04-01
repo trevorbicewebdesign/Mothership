@@ -110,6 +110,7 @@ class HtmlView extends BaseHtmlView
                 $childBar->checkin('payments.checkin')->listCheck(true);
             }
 
+            $childBar->edit('payment.edit')->listCheck(true); // Add 'Edit' option
             $childBar->delete('payments.delete')->listCheck(true);
         }
 
