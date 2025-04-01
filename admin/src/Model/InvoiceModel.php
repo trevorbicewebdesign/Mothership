@@ -8,6 +8,7 @@ use Joomla\CMS\Table\Table;
 use Joomla\CMS\Versioning\VersionableModelTrait;
 use Joomla\CMS\Log\Log;
 use Joomla\Registry\Registry;
+use Joomla\CMS\Component\ComponentHelper;
 
 \defined('_JEXEC') or die;
 
@@ -77,16 +78,25 @@ class InvoiceModel extends AdminModel
 
     protected function loadFormData()
     {
-        $data = Factory::getApplication()->getUserState('com_mothership.edit.invoice.data', []);
+        $app = Factory::getApplication();
+        $data = $app->getUserState('com_mothership.edit.invoice.data', []);
 
-        if (empty($data)) {
+        if ((is_object($data) && isset($data->id) && empty($data->id)) || (is_array($data) && empty($data['id']))) {
             $data = $this->getItem();
+
+            if (empty($data->id)) {
+                $params = ComponentHelper::getParams('com_mothership');
+                $defaultRate = $params->get('company_default_rate');
+                if ($defaultRate !== null) {
+                    $data->rate = $defaultRate;
+                }
+            }
         }
 
         $this->preprocessData('com_mothership.invoice', $data);
-
         return $data;
     }
+
 
     public function getItem($pk = null)
     {

@@ -6,6 +6,7 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\MVC\Controller\FormController;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use TrevorBice\Component\Mothership\Administrator\Helper\ClientHelper;
 use TrevorBice\Component\Mothership\Administrator\Helper\MothershipHelper;
 
 \defined('_JEXEC') or die;
@@ -85,5 +86,38 @@ class ClientController extends FormController
         }
 
         $this->setRedirect(MothershipHelper::getReturnRedirect(Route::_('index.php?option=com_mothership&view=clients', false)));
+    }
+
+    public function getDefaultRate()
+    {
+        $app = Factory::getApplication();
+        $id = $app->input->getInt('id');
+        
+        $defaultCompanyRate = MothershipHelper::getMothershipOptions('company_default_rate');
+        
+        try 
+        {
+            $client = ClientHelper::getClient($id);
+            $defaultRate = isset($client->default_rate) && $client->default_rate !== '' ? $client->default_rate : $defaultCompanyRate;
+        } catch (\Exception $e) {
+            echo json_encode([
+                'error' => $e->getMessage(),
+            ]);
+            $app->setHeader('status', '400', true);
+            $app->close();
+        }
+
+        $response = json_encode([
+            'default_rate' => $defaultRate,
+            'company_default_rate' => $defaultCompanyRate,
+        ]);
+        
+        echo $response;
+        
+        // $app->setHeader('status', '200', true);
+    
+        $app->setHeader('Content-Type', 'application/json', true);
+       // $app->setBody($response);
+        $app->close();
     }
 }

@@ -120,58 +120,55 @@ jQuery(document).ready(function ($) {
         quantityToHoursMinutes(this);
         updateSubtotal(this);
     });
-});
 
+    /**
+     * Mothership Invoice - Dynamic Account Dropdown Handler
+     *
+     * This script is used in the Joomla 5 admin interface of the Mothership component.
+     * It controls the visibility and population of the "Account" dropdown based on the selected "Client".
+     *
+     * Behavior Overview:
+     * ------------------
+     * - On initial page load:
+     *   - If no client is selected (value is ''), the Account field (.account_id_wrapper) is hidden.
+     *   - The loading spinner (.account-loading-spinner) is also hidden.
+     *
+     * - When a client is selected:
+     *   1. The Account field slides open over 200ms.
+     *   2. A loading spinner fades in over 200ms, centered in the account container.
+     *   3. An AJAX request is sent to:
+     *      /administrator/index.php?option=com_mothership&task=invoice.getAccountsList&client_id={clientId}
+     *   4. While waiting, the Account dropdown is hidden.
+     *   5. On AJAX success:
+     *      - The Account dropdown is cleared and populated with the returned list.
+     *      - Each item is an object with { value, text, disable }.
+     *      - The spinner fades out (200ms), and the dropdown fades in (200ms).
+     *
+     * - If the user selects a blank client:
+     *   - The Account section fades out and slides closed over 200ms.
+     *   - The spinner is reset and hidden.
+     *
+     * Expected JSON response format:
+     * ------------------------------
+     * [
+     *   { "value": "", "text": "Please select an Account", "disable": false },
+     *   { "value": 1,  "text": "Test Account",             "disable": false }
+     * ]
+     *
+     * Security Considerations:
+     * ------------------------
+     * - CSRF protection should be implemented via Joomla.getOptions('csrf.token') and validated in PHP.
+     * - Server-side must validate user permissions and input (client_id).
+     * - The PHP controller should return a proper JsonResponse object.
+     *
+     * DOM Elements:
+     * -------------
+     * - #jform_client_id            : Client dropdown
+     * - .account_id_wrapper         : Wrapper for the Account dropdown (shown/hidden)
+     * - .account-loading-spinner    : Spinner shown during AJAX load
+     * - #jform_account_id           : Account dropdown (populated dynamically)
+     */
 
-/**
- * Mothership Invoice - Dynamic Account Dropdown Handler
- *
- * This script is used in the Joomla 5 admin interface of the Mothership component.
- * It controls the visibility and population of the "Account" dropdown based on the selected "Client".
- *
- * Behavior Overview:
- * ------------------
- * - On initial page load:
- *   - If no client is selected (value is ''), the Account field (.account_id_wrapper) is hidden.
- *   - The loading spinner (.account-loading-spinner) is also hidden.
- *
- * - When a client is selected:
- *   1. The Account field slides open over 200ms.
- *   2. A loading spinner fades in over 200ms, centered in the account container.
- *   3. An AJAX request is sent to:
- *      /administrator/index.php?option=com_mothership&task=invoice.getAccountsList&client_id={clientId}
- *   4. While waiting, the Account dropdown is hidden.
- *   5. On AJAX success:
- *      - The Account dropdown is cleared and populated with the returned list.
- *      - Each item is an object with { value, text, disable }.
- *      - The spinner fades out (200ms), and the dropdown fades in (200ms).
- *
- * - If the user selects a blank client:
- *   - The Account section fades out and slides closed over 200ms.
- *   - The spinner is reset and hidden.
- *
- * Expected JSON response format:
- * ------------------------------
- * [
- *   { "value": "", "text": "Please select an Account", "disable": false },
- *   { "value": 1,  "text": "Test Account",             "disable": false }
- * ]
- *
- * Security Considerations:
- * ------------------------
- * - CSRF protection should be implemented via Joomla.getOptions('csrf.token') and validated in PHP.
- * - Server-side must validate user permissions and input (client_id).
- * - The PHP controller should return a proper JsonResponse object.
- *
- * DOM Elements:
- * -------------
- * - #jform_client_id            : Client dropdown
- * - .account_id_wrapper         : Wrapper for the Account dropdown (shown/hidden)
- * - .account-loading-spinner    : Spinner shown during AJAX load
- * - #jform_account_id           : Account dropdown (populated dynamically)
- */
-
-jQuery(document).ready(function ($) {
     const clientSelect = $('#jform_client_id');
     const accountWrapper = $('.account_id_wrapper');
     const spinner = $('.account-loading-spinner');
@@ -325,4 +322,46 @@ jQuery(document).ready(function ($) {
             revealAccountField(selectedVal);
         }
     });
+
+    
+    var $clientField = $('#jform_client_id');
+    var $rateField = $('#jform_rate');
+    var userModifiedRate = false;
+
+    // Track user changes to the rate field
+    $rateField.on('input', function () {
+        userModifiedRate = true;
+    });
+
+    // Watch for client changes
+    $clientField.on('change', function () {
+        var clientId = $(this).val();
+
+        if (!clientId || userModifiedRate) {
+            return; // Skip if user already changed rate manually
+        }
+
+        $.ajax({
+            url: 'index.php?option=com_mothership&task=client.getDefaultRate&id=' + clientId + '&format=json',
+            dataType: 'json',
+            success: function (data) {
+                console.log('Success Default rate:', data.default_rate);
+                if (typeof data.default_rate !== 'undefined') {
+                    $rateField.val(data.default_rate);
+                    // Also needs to loop through the invoice item rates
+                    // and update them with the default rate from the client.
+                    $('#invoice-items-table tbody tr').each(function () {
+                        const rateInput = $(this).find('input[name$="[rate]"]');
+                        rateInput.val(data.default_rate);
+                        updateSubtotal(this); // Update subtotal for the row
+                    });
+                }
+            },
+            complete: function () {
+
+            }
+        });
+    });
 });
+
+
