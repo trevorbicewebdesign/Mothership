@@ -57,5 +57,30 @@ class MothershipHelper extends ContentHelper
 
         return $default;
     }
+
+    public static function getMothershipOptions($option_name = null)
+    {
+        $params = ComponentHelper::getParams('com_mothership');
+        $options = [];
+            
+        $options['company_name'] = $params->get('company_name', '');
+        $options['company_email'] = $params->get('company_email', '');
+        $options['company_address_1'] = $params->get('company_address_1', '');
+        $options['company_address_2'] = $params->get('company_address_2', '');
+        $options['company_city'] = $params->get('company_city', '');
+        $options['company_state'] = $params->get('company_state', '');
+        $options['company_zip'] = $params->get('company_zip', '');
+        $options['company_phone'] = $params->get('company_phone', '');
+        $options['company_default_rate'] = $params->get('company_default_rate', '');
+
+        if($option_name == null) {
+            return $options;
+        }
+        if (array_key_exists($option_name, $options)) {
+            return $options[$option_name];
+        }
+
+        return $options;
+    }
     
 }
