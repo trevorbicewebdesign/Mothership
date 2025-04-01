@@ -111,7 +111,7 @@ class HtmlView extends BaseHtmlView
             $childBar = $dropdown->getChildToolbar();
 
             if ($canDo->get('core.admin')) {
-                $childBar->checkin('invoices.checkin')->listCheck(true);
+                $childBar->checkin('invoices.checkIn')->listCheck(true);
             }
 
             $childBar->edit('invoice.edit')->listCheck(true); // Add 'Edit' option

@@ -28,7 +28,7 @@ class InvoicesController extends BaseController
      *
      * @return  void
      */
-    public function checkin()
+    public function checkIn()
     {
         $app   = Factory::getApplication();
         $input = $app->input;
