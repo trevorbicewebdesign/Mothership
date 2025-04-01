@@ -110,6 +110,7 @@ class HtmlView extends BaseHtmlView
                 $childBar->checkin('accounts.checkin')->listCheck(true);
             }
 
+            $childBar->delete('account.edit')->listCheck(true);
             $childBar->delete('accounts.delete')->listCheck(true);
         }
 

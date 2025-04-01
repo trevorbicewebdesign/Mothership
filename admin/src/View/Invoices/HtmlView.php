@@ -114,6 +114,7 @@ class HtmlView extends BaseHtmlView
                 $childBar->checkin('invoices.checkin')->listCheck(true);
             }
 
+            $childBar->edit('invoice.edit')->listCheck(true); // Add 'Edit' option
             $childBar->delete('invoices.delete')->listCheck(true);
         }
 
