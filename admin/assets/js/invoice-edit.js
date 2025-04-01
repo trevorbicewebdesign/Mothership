@@ -326,3 +326,42 @@ jQuery(document).ready(function ($) {
         }
     });
 });
+
+jQuery(document).ready(function ($) {
+    var $clientField = $('#jform_client_id');
+    var $rateField = $('#jform_rate');
+    var userModifiedRate = false;
+
+    // Track user changes to the rate field
+    $rateField.on('input', function () {
+        userModifiedRate = true;
+    });
+
+    // Watch for client changes
+    $clientField.on('change', function () {
+        var clientId = $(this).val();
+
+        if (!clientId || userModifiedRate) {
+            return; // Skip if user already changed rate manually
+        }
+
+        $rateField.prop('disabled', true);
+
+        $.ajax({
+            url: 'index.php?option=com_mothership&task=client.getDefaultRate&id=' + clientId + '&format=json',
+            dataType: 'json',
+            success: function (data) {
+                console.log('Success Default rate:', data.default_rate);
+                if (typeof data.default_rate !== 'undefined') {
+                    $rateField.val(data.default_rate);
+                }
+            },
+            complete: function () {
+                console.log('Completed fetching default rate.');
+                $rateField.prop('disabled', false);
+            }
+        });
+    });
+});
+
+
