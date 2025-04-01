@@ -67,6 +67,9 @@ class ClientHelper extends ContentHelper
 
     public static function getClient($client_id)
     {
+        if (empty($client_id)) {
+            throw new \InvalidArgumentException("Client ID cannot be null or empty.");
+        }
         $db = Factory::getContainer()->get(\Joomla\Database\DatabaseInterface::class);
 
         $query = $db->getQuery(true)
