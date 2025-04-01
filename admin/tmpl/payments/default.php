@@ -78,7 +78,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                                         <?php echo HTMLHelper::_('grid.id', $i, $item->id); ?>
                                     </td>
                                     <td class="d-none d-lg-table-cell">
-                                        <?php echo (int) $item->id; ?>
+                                        <a href="index.php?option=com_mothership&task=payment.edit&id=<?php echo (int) $item->id; ?>"><?php echo (int) $item->id; ?></a>
                                     </td>
                                     <td>
                                         <?php echo HTMLHelper::_('date', $item->payment_date, Text::_('DATE_FORMAT_LC4')); ?>
