@@ -35,29 +35,31 @@ CREATE TABLE IF NOT EXISTS `#__mothership_accounts` (
   CONSTRAINT `fk_client` FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1;
 
--- Invoices Table
-CREATE TABLE IF NOT EXISTS `#__mothership_invoices` (
+-- Domains Table
+CREATE TABLE IF NOT EXISTS `#__mothership_domains` (
   `id` INT(10) NOT NULL AUTO_INCREMENT,
-  `number` VARCHAR(50) DEFAULT NULL,
-  `client_id` INT(10) DEFAULT NULL,
+  `name` VARCHAR(255) NOT NULL,
+  `client_id` INT(10) NOT NULL,
   `account_id` INT(10) DEFAULT NULL,
-  `rate` DECIMAL(10,2) DEFAULT NULL,
-  `status` INT(11) DEFAULT NULL,
-  `total` DECIMAL(10,2) DEFAULT NULL,
-  `due_date` DATE DEFAULT NULL,
-  `sent_date` DATE DEFAULT NULL,
-  `paid_date` DATE DEFAULT NULL,
+  `status` ENUM('active', 'expired', 'transferring') NOT NULL DEFAULT 'active',
+  `registrar` VARCHAR(255) DEFAULT NULL,
+  `dns_provider` VARCHAR(255) DEFAULT NULL,
+  `purchase_date` DATE DEFAULT NULL,
+  `expiration_date` DATE DEFAULT NULL,
+  `auto_renew` TINYINT(1) NOT NULL DEFAULT 0,
+  `notes` TEXT DEFAULT NULL,
   `created` DATETIME DEFAULT CURRENT_TIMESTAMP,
-  `created_by` INT(11) DEFAULT NULL,
-  `checked_out_time` DATETIME DEFAULT NULL,
-  `checked_out` INT(11) DEFAULT NULL,
+  `modified` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
   KEY `fk_client` (`client_id`),
   KEY `fk_account` (`account_id`),
-  KEY `idx_number` (`number`(50)),
-  CONSTRAINT `fk_invoice_client` FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients`(`id`) ON DELETE SET NULL,
-  CONSTRAINT `fk_invoice_account` FOREIGN KEY (`account_id`) REFERENCES `#__mothership_accounts`(`id`) ON DELETE SET NULL,
-  PRIMARY KEY (`id`)
+  KEY `idx_name` (`name`(100))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1;
+
+ALTER TABLE `#__mothership_domains`
+  ADD CONSTRAINT `fk_client` FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients`(`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_account` FOREIGN KEY (`account_id`) REFERENCES `#__mothership_accounts`(`id`) ON DELETE SET NULL;
+
 
 -- Invoice Items Table
 CREATE TABLE IF NOT EXISTS `#__mothership_invoice_items` (

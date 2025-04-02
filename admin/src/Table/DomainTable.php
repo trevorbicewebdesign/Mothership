@@ -21,11 +21,11 @@ use Joomla\Event\DispatcherInterface;
 // phpcs:enable PSR1.Files.SideEffects
 
 /**
- * Account table
+ * Domain table
  *
  * @since  1.6
  */
-class AccountTable extends Table implements VersionableTableInterface
+class DomainTable extends Table implements VersionableTableInterface
 {
     /**
      * Indicates that columns fully support the NULL value in the database
@@ -45,9 +45,9 @@ class AccountTable extends Table implements VersionableTableInterface
      */
     public function __construct(DatabaseDriver $db, ?DispatcherInterface $dispatcher = null)
     {
-        $this->typeAlias = 'com_mothership.account';
+        $this->typeAlias = 'com_mothership.domain';
 
-        parent::__construct('#__mothership_accounts', 'id', $db, $dispatcher);
+        parent::__construct('#__mothership_domains', 'id', $db, $dispatcher);
     }
 
     /**

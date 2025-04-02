@@ -47,8 +47,6 @@ class ClientTable extends Table implements VersionableTableInterface
     {
         $this->typeAlias = 'com_mothership.client';
 
-        $this->setColumnAlias('published', 'state');
-
         parent::__construct('#__mothership_clients', 'id', $db, $dispatcher);
     }
 
