@@ -42,7 +42,7 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                     <?php echo HTMLHelper::_('grid.checkall'); ?>
                                 </th>
                                 <th scope="col" class="w-3 d-none d-lg-table-cell">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'JGRID_HEADING_ID', 'i.id', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_INVOICE_HEADING_NUMBER', 'i.number', $listDirn, $listOrder); ?>
