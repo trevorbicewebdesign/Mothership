@@ -25,6 +25,7 @@ class DomainsModel extends ListModel
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = [
                 'id', 'd.id',
+                'client_id', 'd.client_id',
                 'name', 'd.name',
                 'client_name', 'c.name',
                 'created', 'd.created',
@@ -72,7 +73,7 @@ class DomainsModel extends ListModel
             $db->quoteName('d.name'),
             $db->quoteName('d.client_id'),
             $db->quoteName('d.created'),
-            $db->quoteName('d.name', 'client_name')
+            $db->quoteName('c.name', 'client_name')
             ]
             )
         );
