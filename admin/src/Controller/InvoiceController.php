@@ -9,6 +9,7 @@ use Joomla\CMS\Language\Text;
 use Mpdf\Mpdf;
 use Joomla\CMS\Layout\FileLayout;
 use TrevorBice\Component\Mothership\Administrator\Helper\AccountHelper;
+use TrevorBice\Component\Mothership\Administrator\Helper\MothershipHelper;
 
 
 \defined('_JEXEC') or die;
@@ -139,6 +140,20 @@ class InvoiceController extends FormController
         }
 
         $this->setRedirect($redirectUrl);
+        return true;
+    }
+
+    public function cancel($key = null)
+    {
+        $model = $this->getModel('Invoice');
+        $id = $this->input->getInt('id');
+        $model->cancelEdit($id);
+
+        $defaultRedirect = Route::_('index.php?option=com_mothership&view=invoices', false);
+        $returnRedirect = MothershipHelper::getReturnRedirect($defaultRedirect);
+
+        $this->setRedirect($returnRedirect);
+
         return true;
     }
 }
