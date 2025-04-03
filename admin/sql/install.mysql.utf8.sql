@@ -30,9 +30,9 @@ CREATE TABLE IF NOT EXISTS `#__mothership_accounts` (
   `checked_out_time` DATETIME DEFAULT NULL,
   `checked_out` INT(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `fk_client` (`client_id`),
+  KEY `fk_accounts_client` (`client_id`),
   KEY `idx_name` (`name`(100)),
-  CONSTRAINT `fk_client` FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients`(`id`) ON DELETE CASCADE
+  CONSTRAINT `fk_accounts_client` FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1;
 
 -- Domains Table
@@ -51,15 +51,14 @@ CREATE TABLE IF NOT EXISTS `#__mothership_domains` (
   `created` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `modified` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `fk_client` (`client_id`),
-  KEY `fk_account` (`account_id`),
+  KEY `fk_domains_client` (`client_id`),
+  KEY `fk_domains_account` (`account_id`),
   KEY `idx_name` (`name`(100))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1;
 
 ALTER TABLE `#__mothership_domains`
-  ADD CONSTRAINT `fk_client` FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients`(`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_account` FOREIGN KEY (`account_id`) REFERENCES `#__mothership_accounts`(`id`) ON DELETE SET NULL;
-
+  ADD CONSTRAINT `fk_domains_client` FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients`(`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_domains_account` FOREIGN KEY (`account_id`) REFERENCES `#__mothership_accounts`(`id`) ON DELETE SET NULL;
 
 -- Invoice Items Table
 CREATE TABLE IF NOT EXISTS `#__mothership_invoice_items` (
@@ -73,10 +72,10 @@ CREATE TABLE IF NOT EXISTS `#__mothership_invoice_items` (
   `rate` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
   `subtotal` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
   `ordering` INT(11) NOT NULL DEFAULT 0,
-  KEY `fk_invoice` (`invoice_id`),
+  KEY `fk_invoice_items_invoice` (`invoice_id`),
   KEY `idx_name` (`name`(191)),
   PRIMARY KEY (`id`),
-  CONSTRAINT `fk_invoice_item_invoice` FOREIGN KEY (`invoice_id`) REFERENCES `#__mothership_invoices`(`id`) ON DELETE CASCADE
+  CONSTRAINT `fk_invoice_items_invoice` FOREIGN KEY (`invoice_id`) REFERENCES `#__mothership_invoices`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1;
 
 -- Payments Table
@@ -96,9 +95,9 @@ CREATE TABLE IF NOT EXISTS `#__mothership_payments` (
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `fk_payment_client` (`client_id`),
+  KEY `fk_payments_client` (`client_id`),
   KEY `idx_transaction_id` (`transaction_id`(100)),
-  CONSTRAINT `fk_payment_client` FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients` (`id`) ON DELETE CASCADE
+  CONSTRAINT `fk_payments_client` FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Invoice Payment Mapping Table
@@ -108,8 +107,8 @@ CREATE TABLE IF NOT EXISTS `#__mothership_invoice_payment` (
   `invoice_id` INT NOT NULL,
   `applied_amount` DECIMAL(10,2) NOT NULL,
   PRIMARY KEY (`id`),
-  CONSTRAINT `fk_ip_payment` FOREIGN KEY (`payment_id`) REFERENCES `#__mothership_payments` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_ip_invoice` FOREIGN KEY (`invoice_id`) REFERENCES `#__mothership_invoices` (`id`) ON DELETE CASCADE
+  CONSTRAINT `fk_invoice_payment_payment` FOREIGN KEY (`payment_id`) REFERENCES `#__mothership_payments` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_invoice_payment_invoice` FOREIGN KEY (`invoice_id`) REFERENCES `#__mothership_invoices` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Users Table
@@ -121,5 +120,5 @@ CREATE TABLE IF NOT EXISTS `#__mothership_users` (
   PRIMARY KEY (`id`),
   KEY `idx_client_id` (`client_id`),
   KEY `idx_user_id` (`user_id`),
-  CONSTRAINT `fk_user_client` FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients` (`id`) ON DELETE CASCADE
+  CONSTRAINT `fk_users_client` FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

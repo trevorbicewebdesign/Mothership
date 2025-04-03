@@ -40,8 +40,15 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
             <div class="col-lg-9">
                 <div>
                     <fieldset class="adminform">
-                    <?php echo $this->form->renderField('client_id'); ?>
-                    <?php echo $this->form->renderField('name'); ?>                   
+                        <?php echo $this->form->renderField('client_id'); ?>
+                        <?php echo $this->form->renderField('name'); ?>
+                        <?php echo $this->form->renderField('status'); ?>
+                        <?php echo $this->form->renderField('registrar'); ?>
+                        <?php echo $this->form->renderField('dns_provider'); ?>
+                        <?php echo $this->form->renderField('purchase_date'); ?>
+                        <?php echo $this->form->renderField('expiration_date'); ?>
+                        <?php echo $this->form->renderField('auto_renew'); ?>
+                        <?php echo $this->form->renderField('notes'); ?>
                     </fieldset>
                 </div>
             </div>
