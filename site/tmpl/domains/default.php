@@ -27,7 +27,7 @@ use Joomla\CMS\Language\Text;
     <tbody>
         <?php if(empty($this->domainss)) : ?>
             <tr>
-                <td colspan="7">No domainss found.</td>
+                <td colspan="7">No domains found.</td>
             </tr>
         <?php endif; ?>
         <?php foreach ($this->domainss as $domains) : ?>
@@ -44,17 +44,3 @@ use Joomla\CMS\Language\Text;
         <?php endforeach; ?>
     </tbody>
 </table>
-<div class="card mt-4">
-  <div class="card-header">
-    Domains Status Legend
-  </div>
-  <div class="card-body">
-    <ul class="mb-0">
-      <li><strong>Pending</strong>: Domains is awaiting confirmation.</li>
-      <li><strong>Completed</strong>: Domains was successful.</li>
-      <li><strong>Failed</strong>: Domains failed to process.</li>
-      <li><strong>Cancelled</strong>: Domains was cancelled.</li>
-      <li><strong>Refunded</strong>: Domains was returned to the payer.</li>
-    </ul>
-  </div>
-</div>

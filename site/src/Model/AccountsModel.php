@@ -11,21 +11,17 @@ class AccountsModel extends ListModel
         $clientId = MothershipHelper::getUserClientId();
 
         if (!$clientId) {
-            return 0.0;
+            return [];
         }
 
         $db = $this->getDatabase();
-        // Also need to get #__mothership_invoice_account table to list the invoices this account covers.
-        
         $id = $id ?? (int) $this->getState('account.id');
 
         $query = $db->getQuery(true)
-            ->select('a.*, a.name AS account_name ' )
-                
+            ->select('a.*, a.name AS account_name')
             ->from('#__mothership_accounts AS a')
-            ->where("a.id = '{$id}'");
+            ->where("a.client_id = '{$clientId}'"); // Ensure account belongs to the client
         $db->setQuery($query);
-
         $items = $db->loadObjectList();
 
         return $items;
