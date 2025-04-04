@@ -28,6 +28,9 @@ class DomainsModel extends ListModel
                 'client_id', 'd.client_id',
                 'name', 'd.name',
                 'client_name', 'c.name',
+                'registrar', 'd.registrar',
+                'status', 'd.status',
+                'dns_provider', 'd.dns_provider',
                 'created', 'd.created',
             ];
         }
@@ -72,6 +75,9 @@ class DomainsModel extends ListModel
             $db->quoteName('d.id'),
             $db->quoteName('d.name'),
             $db->quoteName('d.client_id'),
+            $db->quoteName('d.registrar'),
+            $db->quoteName('d.status'),
+            $db->quoteName('d.dns_provider'),
             $db->quoteName('d.created'),
             $db->quoteName('c.name', 'client_name')
             ]

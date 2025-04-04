@@ -16,9 +16,9 @@ class DomainstatusField extends ListField
     public function getOptions()
     {
         $options = [
-            HTMLHelper::_('select.option', 'active', 'Active'),
-            HTMLHelper::_('select.option', 'expired', 'Expired'),
-            HTMLHelper::_('select.option', 'transferring', 'Transferring'),
+            HTMLHelper::_('select.option', '1', 'Active'),
+            HTMLHelper::_('select.option', '2', 'Expired'),
+            HTMLHelper::_('select.option', '3', 'Transferring'),
         ];
 
         array_unshift($options, HTMLHelper::_('select.option', '', Text::_('COM_MOTHERSHIP_SELECT_DOMAIN_STATUS')));

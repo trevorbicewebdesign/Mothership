@@ -48,6 +48,12 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_DOMAIN_HEADING_CLIENT', 'c.name', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_DOMAIN_HEADING_REGISTRAR', 'd.registrar', $listDirn, $listOrder); ?>
+                                </th>
+                                <th scope="col" class="w-10">
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_DOMAIN_HEADING_DNS_PROVIDER', 'd.dns', $listDirn, $listOrder); ?>
+                                </th>
+                                <th scope="col" class="w-10">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_DOMAIN_HEADING_CREATED', 'd.created', $listDirn, $listOrder); ?>
                                 </th>
                             </tr>
@@ -80,6 +86,13 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                     </td>
                                     <td>
                                         <a href="<?php echo Route::_("index.php?option=com_mothership&task=client.edit&id={$item->client_id}&return=" . base64_encode(Route::_('index.php?option=com_mothership&view=domains'))) ?>" ><?php echo htmlspecialchars($item->client_name, ENT_QUOTES, 'UTF-8'); ?></a>
+                                    </td>
+                                    
+                                    <td>
+                                        <?php echo $this->escape($item->registrar); ?>
+                                    </td>
+                                    <td>
+                                        <?php echo $this->escape($item->dns_provider); ?>
                                     </td>
                                     <td>
                                         <?php echo HTMLHelper::_('date', $item->created, Text::_('DATE_FORMAT_LC4')); ?>
