@@ -14,7 +14,6 @@ $account = $this->item;
         <tr>
             <th>PDF</th>
             <th>#</th>
-            <th>Account</th>
             <th>Amount</th>
             <th>Status</th>
             <th>Payment Status</th>
@@ -25,7 +24,7 @@ $account = $this->item;
     <tbody>
         <?php if(empty($account->invoices)) : ?>
             <tr>
-                <td colspan="8">No invoices found.</td>
+                <td colspan="7">No invoices found.</td>
             </tr>
         <?php endif; ?>
         <?php foreach ($account->invoices as $invoice) : ?>
@@ -33,8 +32,7 @@ $account = $this->item;
                 <td>    
                     <a href="<?php echo Route::_('index.php?option=com_mothership&task=invoice.downloadPdf&id=' . $invoice->id); ?>" target="_blank">PDF</a>
                 </td>
-                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=invoice&id=' . $invoice->id); ?>"><?php echo $invoice->number; ?></a></td>
-                <td><?php echo $invoice->account_name; ?></td>
+                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=invoice&id=' . $invoice->id); ?>"><?php echo $invoice->number; ?></a></td>                
                 <td>$<?php echo number_format($invoice->total, 2); ?></td>
                 <td><?php echo $invoice->status; ?></td>
                 <td>
@@ -81,7 +79,6 @@ $account = $this->item;
     <thead>
         <tr>
             <th>#</th>
-            <th>Account</th>
             <th>Amount</th>
             <th>Status</th>
             <th>Fee Amount</th>
@@ -99,7 +96,6 @@ $account = $this->item;
         <?php foreach ($account->payments as $payment) : ?>
             <tr>
                 <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=payment&id=' . $payment->id); ?>"><?php echo $payment->id; ?></a></td>
-                <td><?php echo $payment->account_name; ?></td>
                 <td>$<?php echo number_format($payment->amount, 2); ?></td>
                 <td><?php echo $payment->status; ?></td>
                 <td>$<?php echo number_format($payment->fee_amount, 2); ?></td>
@@ -117,7 +113,6 @@ $account = $this->item;
         <tr>
             <th>#</th>
             <th>Domains</th>
-            <th>Account</th>
             <th>Registrar</th>
             <th>DNS</th>
             <th>Created</th>
@@ -134,7 +129,6 @@ $account = $this->item;
             <tr>
                 <td><?php echo $domains->id; ?></td>
                 <td><?php echo $domains->name; ?></td>
-                <td><?php echo $domains->account_name; ?></td>
                 <td><?php echo $domains->registrar; ?></td>
                 <td><?php echo $domains->dns_provider; ?></td>
                 <td><?php echo $domains->created; ?></td>
