@@ -27,7 +27,7 @@ use Joomla\CMS\Language\Text;
         <?php foreach ($this->accounts as $account) : ?>
             <tr>
                 <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=account&id=' . $account->id); ?>"><?php echo $account->id; ?></a></td>
-                <td><?php echo $account->account_name; ?></td>        
+                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=account&id=' . $account->id); ?>"><?php echo $account->account_name; ?></a></td>        
             </tr>
         <?php endforeach; ?>
     </tbody>
