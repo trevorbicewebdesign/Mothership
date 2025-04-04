@@ -11,35 +11,33 @@ use Joomla\CMS\Language\Text;
     }
 </style>
 <h1>Domains</h1>
-<table class="table domainssTable">
+<table class="table domainsTable " id="domainsTable">
     <thead>
         <tr>
             <th>#</th>
             <th>Domains</th>
-            <th>Amount</th>
+            <th>Account</th>
+            <th>Registrar</th>
+            <th>DNS</th>
+            <th>Created</th>
             <th>Status</th>
-            <th>Fee Amount</th>
-            <th>Domains Method</th>
-            <th>Transaction Id</th>
-            <th>Invoices</th>
         </tr>
     </thead>
     <tbody>
-        <?php if(empty($this->domainss)) : ?>
+        <?php if(empty($this->domains)) : ?>
             <tr>
                 <td colspan="7">No domains found.</td>
             </tr>
         <?php endif; ?>
-        <?php foreach ($this->domainss as $domains) : ?>
+        <?php foreach ($this->domains as $domains) : ?>
             <tr>
-                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=domains&id=' . $domains->id); ?>"><?php echo $domains->id; ?></a></td>
-                <td><?php echo $domains->domains_name; ?></td>
-                <td>$<?php echo number_format($domains->amount, 2); ?></td>
+                <td><?php echo $domains->id; ?></td>
+                <td><?php echo $domains->name; ?></td>
+                <td><?php echo $domains->account_name; ?></td>
+                <td><?php echo $domains->registrar; ?></td>
+                <td><?php echo $domains->dns_provider; ?></td>
+                <td><?php echo $domains->created; ?></td>
                 <td><?php echo $domains->status; ?></td>
-                <td>$<?php echo number_format($domains->fee_amount, 2); ?></td>
-                <td><?php echo $domains->domains_method; ?></td>
-                <td><?php echo $domains->transaction_id; ?></td>
-                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=invoice&id=' . $domains->invoice_ids); ?>" ><?php echo $domains->invoice_ids; ?></a></td>
             </tr>
         <?php endforeach; ?>
     </tbody>

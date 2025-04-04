@@ -11,14 +11,11 @@ use Joomla\CMS\Language\Text;
     }
 </style>
 <h1>Accounts</h1>
-<table class="table accountsTable">
+<table class="table accountsTable" id="accountsTable">
     <thead>
         <tr>
             <th>#</th>
-            <th>Account</th>
-            <th>Amount</th>
-            <th>Status</th>
-    
+            <th>Account</th>    
         </tr>
     </thead>
     <tbody>
@@ -30,10 +27,7 @@ use Joomla\CMS\Language\Text;
         <?php foreach ($this->accounts as $account) : ?>
             <tr>
                 <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=account&id=' . $account->id); ?>"><?php echo $account->id; ?></a></td>
-                <td><?php echo $account->account_name; ?></td>
-                <td>$<?php echo number_format($account->amount, 2); ?></td>
-                <td><?php echo $account->status; ?></td>
-        
+                <td><?php echo $account->account_name; ?></td>        
             </tr>
         <?php endforeach; ?>
     </tbody>

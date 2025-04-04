@@ -2,63 +2,144 @@
 \defined('_JEXEC') or die;
 
 use Joomla\CMS\Router\Route;
+use TrevorBice\Component\Mothership\Site\Helper\InvoiceHelper;
 
 $account = $this->item;
 ?>
-
-<div class="container my-4">
-    <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h4 class="mb-0">Account #<?php echo $account->id; ?></h4>
-            <span class="badge bg-light text-dark"><?php echo htmlspecialchars($account->account_method); ?></span>
-        </div>
-        <div class="card-body">
-            <p>
-                <strong>Amount:</strong>
-                <span class="text-success fw-bold">$<?php echo number_format($account->amount, 2); ?></span>
-            </p>
-
-            <p>
-                <strong>Status:</strong>
-                <?php
-                    $statusColor = match ((int) $account->status) {
-                        1 => 'warning',
-                        2 => 'success',
-                        3 => 'danger',
-                        4 => 'secondary',
-                        5 => 'info',
-                        default => 'dark',
-                    };
-                ?>
-                <span class="badge bg-<?php echo $statusColor; ?>">
-                    <?php echo $account->status_text ?? $account->status; ?>
-                </span>
-            </p>
-
-            <p>
-                <strong>Account Date:</strong>
-                <?php echo htmlspecialchars($account->account_date); ?>
-            </p>
-
-            <?php if (!empty($account->invoice_ids)) : ?>
-                <hr>
-                <p><strong>Invoices Paid With This Account:</strong></p>
-                <ul class="list-group list-group-flush">
+<h1><?php echo $account->name; ?></h1>
+<hr/>
+<h4>Invoices</h4>
+<table class="table" id="invoicestable">
+    <thead>
+        <tr>
+            <th>PDF</th>
+            <th>#</th>
+            <th>Account</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Payment Status</th>
+            <th>Due Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if(empty($account->invoices)) : ?>
+            <tr>
+                <td colspan="8">No invoices found.</td>
+            </tr>
+        <?php endif; ?>
+        <?php foreach ($account->invoices as $invoice) : ?>
+            <tr>
+                <td>    
+                    <a href="<?php echo Route::_('index.php?option=com_mothership&task=invoice.downloadPdf&id=' . $invoice->id); ?>" target="_blank">PDF</a>
+                </td>
+                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=invoice&id=' . $invoice->id); ?>"><?php echo $invoice->number; ?></a></td>
+                <td><?php echo $invoice->account_name; ?></td>
+                <td>$<?php echo number_format($invoice->total, 2); ?></td>
+                <td><?php echo $invoice->status; ?></td>
+                <td>
+                    <?php echo $invoice->payment_status; ?><br/>
+                    <?php $payment_ids = array_filter(explode(",", $invoice->payment_ids)); ?>
+                    <?php if (count($payment_ids) > 0): ?>
+                    <ul style="margin-bottom:0px;">
+                        <?php foreach ($payment_ids as $paymentId): ?>
+                            <li style="list-style: none;"><small><a href="index.php?option=com_mothership&view=payment&id=<?php echo $paymentId; ?>&return=<?php echo base64_encode(Route::_('index.php?option=com_mothership&view=invoices')); ?>"><?php echo "Payment #" . str_pad($paymentId, 2, "0", STR_PAD_LEFT); ?></a></small></li>
+                        <?php endforeach; ?>
+                    </ul>
+                    <?php endif; ?>
+                </td>
+                <td>
+                    <?php if($invoice->status === 'Opened' || $invoice->status === 'Late'): ?>
                     <?php
-                    $ids = explode(',', $account->invoice_ids);
-                    $numbers = explode(',', $account->invoice_numbers);
-                    foreach ($ids as $i => $invoiceId) :
-                        $number = $numbers[$i] ?? $invoiceId;
-                        $url = Route::_('index.php?option=com_mothership&view=invoice&id=' . (int) $invoiceId);
+                    $dueDate = new DateTime($invoice->due_date, new DateTimeZone('UTC'));
+                    $dueDate->setTime(23, 59, 59);
+                    
+                    $currentDate = new DateTime('now', new DateTimeZone('UTC'));
+                    $interval = $currentDate->diff($dueDate);
+                    echo "Due in {$interval->days} days";
                     ?>
-                        <li class="list-group-item">
-                            <a href="<?php echo $url; ?>">
-                                Invoice #<?php echo htmlspecialchars($number); ?>
-                            </a>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
-            <?php endif; ?>
-        </div>
-    </div>
-</div>
+                    <?php endif; ?>
+                </td>
+                
+                <td>
+                    <ul>
+                        <li><a href="<?php echo Route::_('index.php?option=com_mothership&task=invoice.edit&id=' . $invoice->id); ?>">View</a></li>
+                        <?php if($invoice->status === 'Opened' || $invoice->status === 'Late'): ?>
+                        <li><a href="<?php echo Route::_("index.php?option=com_mothership&task=invoice.payment&id={$invoice->id}"); ?>">Pay</a></li>
+                        <?php endif; ?>
+                    </ul>
+                    
+                    
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
+<hr/>
+<h4>Payments</h4>
+<table class="table paymentsTable" id="paymentsTable">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Account</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Fee Amount</th>
+            <th>Payment Method</th>
+            <th>Transaction Id</th>
+            <th>Invoices</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if(empty($account->payments)) : ?>
+            <tr>
+                <td colspan="7">No payments found.</td>
+            </tr>
+        <?php endif; ?>
+        <?php foreach ($account->payments as $payment) : ?>
+            <tr>
+                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=payment&id=' . $payment->id); ?>"><?php echo $payment->id; ?></a></td>
+                <td><?php echo $payment->account_name; ?></td>
+                <td>$<?php echo number_format($payment->amount, 2); ?></td>
+                <td><?php echo $payment->status; ?></td>
+                <td>$<?php echo number_format($payment->fee_amount, 2); ?></td>
+                <td><?php echo $payment->payment_method; ?></td>
+                <td><?php echo $payment->transaction_id; ?></td>
+                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=invoice&id=' . $payment->invoice_ids); ?>" ><?php echo $payment->invoice_ids; ?></a></td>
+            </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
+<hr/>
+<h4>Domains</h4>
+<table class="table domainsTable " id="domainsTable">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Domains</th>
+            <th>Account</th>
+            <th>Registrar</th>
+            <th>DNS</th>
+            <th>Created</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if(empty($account->domains)) : ?>
+            <tr>
+                <td colspan="7">No domains found.</td>
+            </tr>
+        <?php endif; ?>
+        <?php foreach ($account->domains as $domains) : ?>
+            <tr>
+                <td><?php echo $domains->id; ?></td>
+                <td><?php echo $domains->name; ?></td>
+                <td><?php echo $domains->account_name; ?></td>
+                <td><?php echo $domains->registrar; ?></td>
+                <td><?php echo $domains->dns_provider; ?></td>
+                <td><?php echo $domains->created; ?></td>
+                <td><?php echo $domains->status; ?></td>
+            </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
