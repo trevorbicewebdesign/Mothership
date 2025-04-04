@@ -1,5 +1,5 @@
 <?php
-namespace TrevorBice\Component\Mothership\Site\View\Accounts;
+namespace TrevorBice\Component\Mothership\Site\View\Domains;
 
 use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use Joomla\CMS\Factory;

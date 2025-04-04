@@ -1,5 +1,5 @@
 <?php
-namespace TrevorBice\Component\Mothership\Site\View\Payment;
+namespace TrevorBice\Component\Mothership\Site\View\Account;
 
 use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use Joomla\CMS\Factory;

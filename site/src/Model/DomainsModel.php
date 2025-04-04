@@ -11,28 +11,17 @@ class DomainsModel extends ListModel
         $clientId = MothershipHelper::getUserClientId();
 
         if (!$clientId) {
-            return 0.0;
+            return [];
         }
 
         $db = $this->getDatabase();
-        // Also need to get #__mothership_invoice_domain table to list the invoices this domain covers.
-        
+
         $query = $db->getQuery(true)
-            ->select('p.*, a.name AS domain_name, c.name AS client_name, ' .
-                'CASE ' . $db->quoteName('p.status') . 
-                ' WHEN 1 THEN ' . $db->quote('Pending') . 
-                ' WHEN 2 THEN ' . $db->quote('Completed') . 
-                ' WHEN 3 THEN ' . $db->quote('Failed') . 
-                ' WHEN 4 THEN ' . $db->quote('Cancelled') . 
-                ' WHEN 5 THEN ' . $db->quote('Refunded') . 
-                ' ELSE ' . $db->quote('Unknown') . ' END AS ' . $db->quoteName('status') . ', ' .
-                'GROUP_CONCAT(ip.invoice_id) AS invoice_ids')
-            ->from('#__mothership_domains AS p')
-            ->join('LEFT', '#__mothership_domains AS a ON p.domain_id = a.id')
-            ->join('LEFT', '#__mothership_clients AS c ON p.client_id = c.id')
-            ->join('LEFT', '#__mothership_invoice_domain AS ip ON p.id = ip.domain_id')
-            ->where("p.client_id = '{$clientId}'")
-            ->group('p.id');
+            ->select('d.*, c.name AS client_name ')
+            ->from('#__mothership_domains AS d')
+            ->join('LEFT', '#__mothership_clients AS c ON d.client_id = c.id')
+            ->where("d.client_id = '{$clientId}'")
+            ->order('d.name ASC');
         $db->setQuery($query);
 
         $items = $db->loadObjectList();
