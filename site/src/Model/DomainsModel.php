@@ -17,7 +17,7 @@ class DomainsModel extends ListModel
         $db = $this->getDatabase();
 
         $query = $db->getQuery(true)
-            ->select('d.*, c.name AS client_name, a.name AS account_name')
+            ->select('d.*,d.reseller, c.name AS client_name, a.name AS account_name')
             ->from('#__mothership_domains AS d')
             ->join('LEFT', '#__mothership_clients AS c ON d.client_id = c.id')
             ->join('LEFT', '#__mothership_accounts AS a ON d.account_id = a.id')
@@ -25,7 +25,7 @@ class DomainsModel extends ListModel
             ->order('d.name ASC');
         $db->setQuery($query);
         $items = $db->loadObjectList();
-
+        
         return $items;
     }
 }

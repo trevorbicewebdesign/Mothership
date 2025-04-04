@@ -114,15 +114,16 @@ $account = $this->item;
             <th>#</th>
             <th>Domains</th>
             <th>Registrar</th>
+            <th>Reseller</th>
             <th>DNS</th>
-            <th>Created</th>
+            <th>Expiration</th>
             <th>Status</th>
         </tr>
     </thead>
     <tbody>
         <?php if(empty($account->domains)) : ?>
             <tr>
-                <td colspan="7">No domains found.</td>
+                <td colspan="8">No domains found.</td>
             </tr>
         <?php endif; ?>
         <?php foreach ($account->domains as $domains) : ?>
@@ -130,8 +131,9 @@ $account = $this->item;
                 <td><?php echo $domains->id; ?></td>
                 <td><?php echo $domains->name; ?></td>
                 <td><?php echo $domains->registrar; ?></td>
+                <td><?php echo $domains->reseller; ?></td>
                 <td><?php echo $domains->dns_provider; ?></td>
-                <td><?php echo $domains->created; ?></td>
+                <td><?php echo $domains->expiration_date; ?></td>
                 <td><?php echo $domains->status; ?></td>
             </tr>
         <?php endforeach; ?>

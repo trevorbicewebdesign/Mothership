@@ -18,6 +18,7 @@ use Joomla\CMS\Language\Text;
             <th>Domains</th>
             <th>Account</th>
             <th>Registrar</th>
+            <th>Reseller</th>
             <th>DNS</th>
             <th>Created</th>
             <th>Status</th>
@@ -26,7 +27,7 @@ use Joomla\CMS\Language\Text;
     <tbody>
         <?php if(empty($this->domains)) : ?>
             <tr>
-                <td colspan="7">No domains found.</td>
+                <td colspan="8">No domains found.</td>
             </tr>
         <?php endif; ?>
         <?php foreach ($this->domains as $domains) : ?>
@@ -35,6 +36,7 @@ use Joomla\CMS\Language\Text;
                 <td><?php echo $domains->name; ?></td>
                 <td><?php echo $domains->account_name; ?></td>
                 <td><?php echo $domains->registrar; ?></td>
+                <td><?php echo $domains->reseller; ?></td>
                 <td><?php echo $domains->dns_provider; ?></td>
                 <td><?php echo $domains->created; ?></td>
                 <td><?php echo $domains->status; ?></td>
