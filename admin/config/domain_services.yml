@@ -1,0 +1,39 @@
+hosting:
+  siteground:
+    label: "SiteGround"
+    url: "https://siteground.com"
+    notes: "Shared hosting, commonly used by small businesses"
+
+  dreamhost:
+    label: "DreamHost"
+    url: "https://dreamhost.com"
+    notes: "Longstanding provider with good VPS options"
+
+  wpengine:
+    label: "WP Engine"
+    url: "https://wpengine.com"
+    notes: "Managed WordPress hosting"
+
+dns:
+  cloudflare:
+    label: "Cloudflare"
+    url: "https://cloudflare.com"
+    notes: "CDN + DNS combo with a great free tier"
+
+  route53:
+    label: "Amazon Route 53"
+    url: "https://aws.amazon.com/route53/"
+    notes: "Enterprise-level DNS with API control"
+
+registrars:
+  namecheap:
+    label: "Namecheap"
+    url: "https://namecheap.com"
+
+  porkbun:
+    label: "Porkbun"
+    url: "https://porkbun.com"
+
+  godaddy:
+    label: "GoDaddy"
+    url: "https://godaddy.com"
