@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS `#__mothership_domains` (
   `account_id` INT(10) DEFAULT NULL,
   `status` ENUM('active', 'expired', 'transferring') NOT NULL DEFAULT 'active',
   `registrar` VARCHAR(255) DEFAULT NULL,
+  `reseller` VARCHAR(255) DEFAULT NULL,
   `dns_provider` VARCHAR(255) DEFAULT NULL,
   `purchase_date` DATE DEFAULT NULL,
   `expiration_date` DATE DEFAULT NULL,
