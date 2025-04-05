@@ -255,6 +255,11 @@ The **Payments Helper** provides several methods to manage and update payment re
 - **insertPaymentRecord(int $clientId, int $accountId, float $amount, $paymentDate, float $fee, $feePassedOn, $paymentMethod, $txnId, int $status)**: Inserts a new payment record with the specified details.
 - **insertInvoicePayments($invoiceId, $paymentId, $applied_amount)**: Inserts a payment record for a specific invoice with the applied amount.
 
+## Domains Helper
+
+- **getDomain(int $domain_id)**: Retrieves the domain information based on the provided domain ID.
+- **getStatus(int $status_id)**: Retrieves the domain status based on a provided integer status level
+
 
 
 
