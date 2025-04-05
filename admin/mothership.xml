@@ -32,6 +32,7 @@
         <menu>
             <option value="dashboard">Mothership Dashboard</option>
             <option value="accounts">Mothership Accounts</option>
+            <option value="projects">Mothership Projects</option>
             <option value="invoices">Mothership Invoices</option>
             <option value="payments">Mothership Payments</option>
             <option value="clients">Mothership Domains</option>
@@ -42,6 +43,7 @@
         <submenu>
             <menu link="option=com_mothership&amp;view=clients" view="clients">com_mothership_clients</menu>
             <menu link="option=com_mothership&amp;view=accounts" view="accounts">com_mothership_accounts</menu>
+            <menu link="option=com_mothership&amp;view=projects" view="projects">com_mothership_projects</menu>
             <menu link="option=com_mothership&amp;view=invoices" view="invoices">com_mothership_invoices</menu>
             <menu link="option=com_mothership&amp;view=payments" view="payments">com_mothership_payments</menu>
             <menu link="option=com_mothership&amp;view=domains" view="domains">com_mothership_domains</menu>
