@@ -53,6 +53,10 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                 </div>
             </div>
             <div class="col-lg-3">                
+                <?php echo $this->form->renderFIeld("ns1"); ?>
+                <?php echo $this->form->renderFIeld("ns2"); ?>
+                <?php echo $this->form->renderFIeld("ns3"); ?>
+                <?php echo $this->form->renderFIeld("ns4"); ?>
                 <?php echo $this->form->renderField('created'); ?>
             </div>
         </div>
