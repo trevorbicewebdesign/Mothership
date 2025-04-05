@@ -33,6 +33,26 @@ The **Clients** object represents the individuals or organizations you work with
 - **Checked Out Time**: The timestamp when the client record was last checked out.
 - **Checked Out**: The ID of the user who last checked out the client record.
 
+### Clients Table
+```
+`id` INT(11) NOT NULL AUTO_INCREMENT,
+`name` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+`email` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+`phone` VARCHAR(30) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+`address_1` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+`address_2` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+`city` VARCHAR(32) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+`state` VARCHAR(32) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+`zip` VARCHAR(32) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+`tax_id` VARCHAR(30) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+`default_rate` DECIMAL(10,2) NULL DEFAULT NULL,
+`owner_user_id` INT(11) NULL DEFAULT NULL,
+`created` DATETIME NULL DEFAULT (CURRENT_TIMESTAMP),
+`created_by` INT(11) NULL DEFAULT NULL,
+`checked_out_time` DATETIME NULL DEFAULT NULL,
+`checked_out` INT(11) NULL DEFAULT NULL,
+```
+
 ## Accounts
 The **Accounts** object represents the different accounts managed by a client.
 
