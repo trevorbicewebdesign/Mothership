@@ -18,7 +18,7 @@ In short, Mothership is built to streamline your workflow and let you focus on w
 ---
 
 ## Clients
-The **Clients** object represents the individuals or organizations you work with. Each client has the following attributes:
+The **Clients** object represents the individuals or organizations you work with.
 
 - **ID**: A unique identifier for the client.
 - **Name**: The name of the client.
@@ -34,7 +34,7 @@ The **Clients** object represents the individuals or organizations you work with
 - **Checked Out**: The ID of the user who last checked out the client record.
 
 ## Accounts
-The **Accounts** object represents the different accounts managed by a client. Each account has the following attributes:
+The **Accounts** object represents the different accounts managed by a client.
 
 - **ID**: A unique identifier for the account.
 - **Client ID**: The ID of the client to whom the account belongs.
@@ -44,6 +44,31 @@ The **Accounts** object represents the different accounts managed by a client. E
 - **Created By**: The ID of the user who created the account record.
 - **Checked Out Time**: The timestamp when the account record was last checked out.
 - **Checked Out**: The ID of the user who last checked out the account record.
+
+## Domains
+The **Domains** object represents the domains associated with client accounts. 
+
+- **ID**: A unique identifier for the domain.
+- **Name**: The name of the domain (e.g., example.com).
+- **Client Id**: The ID of the client who owns the domain.
+- **Account Id**: The ID of the account associated with the domain.
+- **Status**: The current status of the domain (e.g., active, expired).
+- **Registrar**: The registrar where the domain is registered.
+- **Reseller**: The reseller through whom the domain was purchased, if applicable.
+- **DNS Provider**: The provider managing the domain's DNS settings.
+- **NS1**: The primary nameserver for the domain.
+- **NS2**: The secondary nameserver for the domain.
+- **NS3**: An optional tertiary nameserver for the domain.
+- **NS4**: An optional quaternary nameserver for the domain.
+- **Purchase Date**: The date when the domain was purchased.
+- **Expiration Date**: The date when the domain is set to expire.
+- **Auto Renew**: Indicates whether the domain is set to renew automatically.
+
+### Domain Status Levels
+- **Active**: The domain is currently active and operational.
+- **Inactive**: The domain is not currently in use or has been deactivated.
+- **Pending**: The domain is awaiting activation or completion of a required process.
+- **Suspended**: The domain has been temporarily disabled due to policy violations or other issues.
 
 ## Invoices
 The **Invoices** object represents the invoices generated for clients. Each invoice has the following attributes:
