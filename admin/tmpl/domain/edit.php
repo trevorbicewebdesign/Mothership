@@ -20,7 +20,7 @@ use Joomla\CMS\Session\Session;
 JHtml::_('behavior.formvalidator');
 // JHtml::_('formbehavior.chosen', 'select');
 
-/** @var \TrevorBice\Component\Mothership\Administrator\View\Account\HtmlView $this */
+/** @var \TrevorBice\Component\Mothership\Administrator\View\Domain\HtmlView $this */
 
 $wa = $this->getDocument()->getWebAssetManager();
 $wa->useScript('table.columns')
@@ -32,22 +32,32 @@ $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
 ?>
 
-<form action="<?php echo Route::_('index.php?option=com_mothership&layout=edit&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" id="account-form" aria-label="<?php echo Text::_('COM_MOTHERSHIP_ACCOUNT_' . ((int) $this->item->id === 0 ? 'NEW' : 'EDIT'), true); ?>" class="form-validate">
+<form action="<?php echo Route::_('index.php?option=com_mothership&layout=edit&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" id="domain-form" aria-label="<?php echo Text::_('COM_MOTHERSHIP_DOMAIN_' . ((int) $this->item->id === 0 ? 'NEW' : 'EDIT'), true); ?>" class="form-validate">
     <div class="main-card">
         <?php echo HTMLHelper::_('uitab.startTabSet', 'myTab', ['active' => 'details', 'recall' => true, 'breakpoint' => 768]); ?>
-        <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'details', Text::_('COM_MOTHERSHIP_FORM_ACCOUNT_DETAILS_TAB')); ?>
+        <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'details', Text::_('COM_MOTHERSHIP_FORM_DOMAIN_DETAILS_TAB')); ?>
         <div class="row">
             <div class="col-lg-9">
                 <div>
                     <fieldset class="adminform">
-                    <?php echo $this->form->renderField('client_id'); ?>
-                    <?php echo $this->form->renderField('account_id'); ?>
-                    <?php echo $this->form->renderField('name'); ?>
-                    <?php echo $this->form->renderField('rate'); ?>                    
+                        <?php echo $this->form->renderField('client_id'); ?>
+                        <?php echo $this->form->renderField('account_id'); ?>
+                        <?php echo $this->form->renderField('name'); ?>
+                        <?php echo $this->form->renderField('status'); ?>
+                        <?php echo $this->form->renderField('registrar'); ?>
+                        <?php echo $this->form->renderField('dns_provider'); ?>
+                        <?php echo $this->form->renderField('purchase_date'); ?>
+                        <?php echo $this->form->renderField('expiration_date'); ?>
+                        <?php echo $this->form->renderField('auto_renew'); ?>
+                        <?php echo $this->form->renderField('notes'); ?>
                     </fieldset>
                 </div>
             </div>
             <div class="col-lg-3">                
+                <?php echo $this->form->renderFIeld("ns1"); ?>
+                <?php echo $this->form->renderFIeld("ns2"); ?>
+                <?php echo $this->form->renderFIeld("ns3"); ?>
+                <?php echo $this->form->renderFIeld("ns4"); ?>
                 <?php echo $this->form->renderField('created'); ?>
             </div>
         </div>

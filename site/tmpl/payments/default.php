@@ -11,7 +11,7 @@ use Joomla\CMS\Language\Text;
     }
 </style>
 <h1>Payments</h1>
-<table class="table paymentsTable">
+<table class="table paymentsTable" id="paymentsTable">
     <thead>
         <tr>
             <th>#</th>
