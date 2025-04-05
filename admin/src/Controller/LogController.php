@@ -1,0 +1,121 @@
+<?php
+
+namespace TrevorBice\Component\Mothership\Administrator\Controller;
+
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\MVC\Controller\FormController;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+
+\defined('_JEXEC') or die;
+
+/**
+ * Log Controller for com_mothership
+ */
+class LogController extends FormController
+{
+    protected $default_view = 'log';
+
+
+    public function display($cachable = false, $urlparams = [])
+    {
+        return parent::display();
+    }
+
+    public function save($key = null, $urlVar = null)
+    {
+        $app = Factory::getApplication();
+        $input = $app->input;
+        $data = $input->get('jform', [], 'array');
+        $model = $this->getModel('Log');
+
+        if (!$model->save($data)) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_CLIENT_SAVE_FAILED'), 'error');
+            $app->enqueueMessage($model->getError(), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=log&layout=edit', false));
+            return false;
+        }
+
+        $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_CLIENT_SAVED_SUCCESSFULLY', "<strong>{$data['name']}</strong>"), 'message');
+
+        $task = $input->getCmd('task');
+
+        if ($task === 'apply') {
+            $id = isset($data['id']) ? $data['id'] : $model->getState($model->getName() . '.id');
+            $defaultRedirect = Route::_('index.php?option=com_mothership&view=log&layout=edit&id=' . $id, false);
+        } else {
+            $defaultRedirect = Route::_('index.php?option=com_mothership&view=logs', false);
+        }
+        $returnRedirect = MothershipHelper::getReturnRedirect($defaultRedirect);
+        $this->setRedirect($returnRedirect);
+        return true;
+    }
+
+    public function cancel($key = null)
+    {
+        $model = $this->getModel('Log');
+        $id = $this->input->getInt('id');
+        $model->cancelEdit($id);
+
+        $defaultRedirect = Route::_('index.php?option=com_mothership&view=logs', false);
+        $returnRedirect = MothershipHelper::getReturnRedirect($defaultRedirect);
+
+        $this->setRedirect($returnRedirect);
+
+        return true;
+    }
+    
+    public function delete()
+    {
+        $app = Factory::getApplication();
+        $input = $app->input;
+        $model = $this->getModel('Log');
+        $cid = $input->get('cid', [], 'array');
+
+        if (empty($cid)) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_NO_CLIENT_SELECTED'), 'warning');
+        } else {
+            if (!$model->delete($cid)) {
+                $app->enqueueMessage(Text::_('COM_MOTHERSHIP_CLIENT_DELETE_FAILED'), 'error');
+                $app->enqueueMessage($model->getError(), 'error');
+            } else {
+                $app->enqueueMessage(Text::_('COM_MOTHERSHIP_CLIENT_DELETED_SUCCESSFULLY'), 'message');
+            }
+        }
+
+        $this->setRedirect(MothershipHelper::getReturnRedirect(Route::_('index.php?option=com_mothership&view=logs', false)));
+    }
+
+    public function getDefaultRate()
+    {
+        $app = Factory::getApplication();
+        $id = $app->input->getInt('id');
+        
+        $defaultCompanyRate = MothershipHelper::getMothershipOptions('company_default_rate');
+        
+        try 
+        {
+            $log = LogHelper::getLog($id);
+            $defaultRate = isset($log->default_rate) && $log->default_rate !== '' ? $log->default_rate : $defaultCompanyRate;
+        } catch (\Exception $e) {
+            echo json_encode([
+                'error' => $e->getMessage(),
+            ]);
+            $app->setHeader('status', '400', true);
+            $app->close();
+        }
+
+        $response = json_encode([
+            'default_rate' => $defaultRate,
+            'company_default_rate' => $defaultCompanyRate,
+        ]);
+        
+        echo $response;
+        
+        // $app->setHeader('status', '200', true);
+    
+        $app->setHeader('Content-Type', 'application/json', true);
+       // $app->setBody($response);
+        $app->close();
+    }
+}
