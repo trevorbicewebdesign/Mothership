@@ -141,6 +141,25 @@ CREATE TABLE IF NOT EXISTS `#__mothership_invoice_payment` (
   CONSTRAINT `fk_invoice_payment_invoice` FOREIGN KEY (`invoice_id`) REFERENCES `#__mothership_invoices` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Projects Table
+CREATE TABLE IF NOT EXISTS `#__mothership_projects` (
+  `id` INT(10) NOT NULL AUTO_INCREMENT,
+  `client_id` INT(10) NOT NULL,
+  `account_id` INT(10) DEFAULT NULL,
+  `name` VARCHAR(255) NOT NULL,
+  `description` TEXT DEFAULT NULL,
+  `status` ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
+  `created` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `created_by` INT(11) DEFAULT NULL,
+  `checked_out_time` DATETIME DEFAULT NULL,
+  `checked_out` INT(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_projects_client` (`client_id`),
+  KEY `idx_name` (`name`(100)),
+  CONSTRAINT `fk_projects_client` FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients`(`id`) ON DELETE CASCADE
+  CONSTRAINT `fk_projects_account` FOREIGN KEY (`account_id`) REFERENCES `#__mothership_accounts`(`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1;
+
 -- Users Table
 CREATE TABLE IF NOT EXISTS `#__mothership_users` (
   `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
