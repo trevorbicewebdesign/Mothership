@@ -65,6 +65,31 @@ ALTER TABLE `#__mothership_domains`
   ADD CONSTRAINT `fk_domains_client` FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients`(`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_domains_account` FOREIGN KEY (`account_id`) REFERENCES `#__mothership_accounts`(`id`) ON DELETE SET NULL;
 
+-- Invoices Table
+CREATE TABLE `#__mothership_invoices` (
+  `id` INT(10) NOT NULL AUTO_INCREMENT,
+  `number` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+  `client_id` INT(10) NULL DEFAULT NULL,
+  `account_id` INT(10) NULL DEFAULT NULL,
+  `rate` DECIMAL(10,2) NULL DEFAULT NULL,
+  `status` INT(11) NULL DEFAULT NULL,
+  `total` DECIMAL(10,2) NULL DEFAULT NULL,
+  `due_date` DATE NULL DEFAULT NULL,
+  `sent_date` DATE NULL DEFAULT NULL,
+  `paid_date` DATE NULL DEFAULT NULL,
+  `created` DATETIME NULL DEFAULT (CURRENT_TIMESTAMP),
+  `created_by` INT(11) NULL DEFAULT NULL,
+  `checked_out_time` DATETIME NULL DEFAULT NULL,
+  `checked_out` INT(11) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `fk_client` (`client_id`) USING BTREE,
+  INDEX `fk_account` (`account_id`) USING BTREE,
+  INDEX `idx_number` (`number`) USING BTREE,
+  CONSTRAINT `fk_invoice_account` FOREIGN KEY (`account_id`) REFERENCES `#__mothership_accounts` (`id`) ON UPDATE NO ACTION ON DELETE SET NULL,
+  CONSTRAINT `fk_invoice_client` FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients` (`id`) ON UPDATE NO ACTION ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1;
+
+
 -- Invoice Items Table
 CREATE TABLE IF NOT EXISTS `#__mothership_invoice_items` (
   `id` INT(10) NOT NULL AUTO_INCREMENT,
