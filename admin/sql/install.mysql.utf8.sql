@@ -148,6 +148,7 @@ CREATE TABLE IF NOT EXISTS `#__mothership_projects` (
   `account_id` INT(10) DEFAULT NULL,
   `name` VARCHAR(255) NOT NULL,
   `description` TEXT DEFAULT NULL,
+  'type' VARCHAR(255) DEFAULT NULL,
   `status` ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
   `created` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `created_by` INT(11) DEFAULT NULL,
