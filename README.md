@@ -159,7 +159,6 @@ The **Invoices** object represents the invoices generated for clients. Each invo
 
 ### Invoices Tables
 ```
--- Invoices Table
 CREATE TABLE `#__mothership_invoices` (
   `id` INT(10) NOT NULL AUTO_INCREMENT,
   `number` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
@@ -181,25 +180,6 @@ CREATE TABLE `#__mothership_invoices` (
   INDEX `idx_number` (`number`) USING BTREE,
   CONSTRAINT `fk_invoice_account` FOREIGN KEY (`account_id`) REFERENCES `#__mothership_accounts` (`id`) ON UPDATE NO ACTION ON DELETE SET NULL,
   CONSTRAINT `fk_invoice_client` FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients` (`id`) ON UPDATE NO ACTION ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1;
-
-
--- Invoice Items Table
-CREATE TABLE IF NOT EXISTS `#__mothership_invoice_items` (
-  `id` INT(10) NOT NULL AUTO_INCREMENT,
-  `invoice_id` INT(10) NOT NULL,
-  `name` VARCHAR(255) NOT NULL,
-  `description` VARCHAR(255) NOT NULL,
-  `hours` INT(11) NOT NULL DEFAULT 0,
-  `minutes` INT(11) NOT NULL DEFAULT 0,
-  `quantity` DECIMAL(10,2) NOT NULL DEFAULT 1.00,
-  `rate` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-  `subtotal` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
-  `ordering` INT(11) NOT NULL DEFAULT 0,
-  KEY `fk_invoice_items_invoice` (`invoice_id`),
-  KEY `idx_name` (`name`(191)),
-  PRIMARY KEY (`id`),
-  CONSTRAINT `fk_invoice_items_invoice` FOREIGN KEY (`invoice_id`) REFERENCES `#__mothership_invoices`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1;
 ```
 
@@ -228,6 +208,26 @@ The **Invoice Items** object represents the individual items listed on an invoic
 - **Subtotal**: The subtotal amount for the item.
 - **Ordering**: The order in which the item appears on the invoice.
 
+### Invoice Items Table
+```
+CREATE TABLE IF NOT EXISTS `#__mothership_invoice_items` (
+  `id` INT(10) NOT NULL AUTO_INCREMENT,
+  `invoice_id` INT(10) NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
+  `description` VARCHAR(255) NOT NULL,
+  `hours` INT(11) NOT NULL DEFAULT 0,
+  `minutes` INT(11) NOT NULL DEFAULT 0,
+  `quantity` DECIMAL(10,2) NOT NULL DEFAULT 1.00,
+  `rate` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `subtotal` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `ordering` INT(11) NOT NULL DEFAULT 0,
+  KEY `fk_invoice_items_invoice` (`invoice_id`),
+  KEY `idx_name` (`name`(191)),
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_invoice_items_invoice` FOREIGN KEY (`invoice_id`) REFERENCES `#__mothership_invoices`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1;
+```
+
 > **Note:** Only invoices in **Draft** status can be deleted. Attempting to delete an invoice that is **Opened**, **Cancelled**, or **Closed** will be blocked to prevent accidental data loss. When a draft invoice is deleted, all associated `Invoice Payments` records are also removed automatically to maintain data integrity.
 
 ## Payments
@@ -250,6 +250,30 @@ The **Payments** object represents the payments made by clients. Each payment ha
 - **Checked Out Time**: The timestamp when the payment record was last checked out.
 - **Checked Out**: The ID of the user who last checked out the payment record.
 
+### Payments Table
+```
+CREATE TABLE IF NOT EXISTS `#__mothership_payments` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `client_id` INT NOT NULL,
+  `account_id` INT DEFAULT NULL,
+  `amount` DECIMAL(10,2) NOT NULL,
+  `payment_date` DATETIME NOT NULL,
+  `fee_amount` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `fee_passed_on` TINYINT(1) NOT NULL DEFAULT 0,
+  `payment_method` VARCHAR(50) NOT NULL, 
+  `transaction_id` VARCHAR(255) DEFAULT NULL,
+  `status` INT NOT NULL DEFAULT 0,
+  `processed_date` DATETIME DEFAULT NULL,
+  `created_by` INT(11) DEFAULT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `fk_payments_client` (`client_id`),
+  KEY `idx_transaction_id` (`transaction_id`(100)),
+  CONSTRAINT `fk_payments_client` FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+
 ### Payment Status Levels
 - **Pending**: The payment has been initiated but not yet completed.
 - **Completed**: The payment has been successfully processed.
@@ -265,6 +289,19 @@ The **Invoice Payments** object represents payments that are applied to specific
 - **invoice_id**: The invoice that this payment will be applied to
 - **payment_id**: The payment that is being applied to the invoice
 - **allocated_amount**: The amount of the payment that is applied to this invoice
+
+### Invoice Payments Table
+```
+CREATE TABLE IF NOT EXISTS `#__mothership_invoice_payment` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `payment_id` INT NOT NULL,
+  `invoice_id` INT NOT NULL,
+  `applied_amount` DECIMAL(10,2) NOT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_invoice_payment_payment` FOREIGN KEY (`payment_id`) REFERENCES `#__mothership_payments` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_invoice_payment_invoice` FOREIGN KEY (`invoice_id`) REFERENCES `#__mothership_invoices` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
 
 > **Note:** If a draft invoice is deleted, any `Invoice Payments` records linked to that invoice will also be deleted automatically. This helps keep your data consistent and prevents orphaned records.
 
