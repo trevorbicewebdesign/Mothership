@@ -17,20 +17,47 @@ use Joomla\Database\ParameterType;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
+/*
+CREATE TABLE `jos_mothership_logs` (
+	`id` INT(11) NOT NULL AUTO_INCREMENT,
+	`client_id` INT(11) NULL DEFAULT NULL,
+	`account_id` INT(11) NULL DEFAULT NULL,
+	`object_type` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
+	`object_id` INT(11) NULL DEFAULT NULL,
+	`action` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
+	`field_changed` VARCHAR(100) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
+	`old_value` TEXT NULL DEFAULT NULL COLLATE 'utf8_general_ci',
+	`new_value` TEXT NULL DEFAULT NULL COLLATE 'utf8_general_ci',
+	`user_id` INT(11) NULL DEFAULT NULL,
+	`created` DATETIME NULL DEFAULT (CURRENT_TIMESTAMP),
+	`notes` TEXT NULL DEFAULT NULL COLLATE 'utf8_general_ci',
+	PRIMARY KEY (`id`) USING BTREE
+)
+COLLATE='utf8_general_ci'
+ENGINE=InnoDB
+;
+
+*/
 class LogsModel extends ListModel
 {
     public function __construct($config = [])
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = [
-                'id', 'c.id',
-                'name', 'c.name',
-                'phone', 'c.phone',
-                'created', 'c.created',
-                'default_rate', 'c.rate',
-                'checked_out', 'c.checked_out',
-                'checked_out_time', 'c.checked_out_time',
-
+                'id', 'l.id',
+                'client_id', 'l.client_id',
+                'account_id', 'l.account_id',
+                'object_type', 'l.object_type',
+                'object_id', 'l.object_id',
+                'action', 'l.action',
+                'field_changed', 'l.field_changed',
+                'old_value', 'l.old_value',
+                'new_value', 'l.new_value',
+                'user_id', 'l.user_id',
+                'created', 'l.created',
+                'notes', 'l.notes',
+                'client_name', 'c.name',
+                'account_name', 'a.name',
             ];
         }
 
@@ -64,43 +91,46 @@ class LogsModel extends ListModel
             $this->getState(
                 'list.select',
                 [
-                    $db->quoteName('c.id'),
-                    $db->quoteName('c.name'),
-                    $db->quoteName('c.email'),
-                    $db->quoteName('c.phone'),
-                    $db->quoteName('c.address_1'),
-                    $db->quoteName('c.address_2'),
-                    $db->quoteName('c.city'),
-                    $db->quoteName('c.state'),
-                    $db->quoteName('c.zip'),
-                    $db->quoteName('c.default_rate'),
-                    $db->quoteName('c.owner_user_id'),
-                    $db->quoteName('c.tax_id'),
-                    $db->quoteName('c.created'),
-                    $db->quoteName('c.checked_out'),
+                    $db->quoteName('l.id'),
+                    $db->quoteName('l.client_id'),
+                    $db->quoteName('l.account_id'),
+                    $db->quoteName('l.object_type'),
+                    $db->quoteName('l.object_id'),
+                    $db->quoteName('l.action'),
+                    $db->quoteName('l.meta'),
+                    $db->quoteName('l.description'),
+                    $db->quoteName('l.details'),
+                    $db->quoteName('l.user_id'),
+                    $db->quoteName('l.created'),
+                    $db->quoteName('l.notes'),
+                    $db->quoteName('c.name', 'client_name'),
+                    $db->quoteName('a.name', 'account_name'),
                 ]
             )
         );
 
-        $query->from($db->quoteName('#__mothership_logs', 'c'));
+        $query->from($db->quoteName('#__mothership_logs', 'l'))
+                ->join('LEFT', $db->quoteName('#__mothership_clients', 'c') . ' ON l.client_id = c.id')
+                ->join('LEFT', $db->quoteName('#__mothership_accounts', 'a') . ' ON l.account_id = a.id');  
+
 
 
         // Filter by search in log name (or by log id if prefixed with "cid:").
         if ($search = trim($this->getState('filter.search', ''))) {
             if (stripos($search, 'id:') === 0) {
                 $search = (int) substr($search, 4);
-                $query->where($db->quoteName('c.id') . ' = :search')
+                $query->where($db->quoteName('l.id') . ' = :search')
                       ->bind(':search', $search, ParameterType::INTEGER);
             } else {
                 $search = '%' . str_replace(' ', '%', $search) . '%';
-                $query->where($db->quoteName('c.name') . ' LIKE :search')
+                $query->where($db->quoteName('l.notes') . ' LIKE :search')
                       ->bind(':search', $search);
             }
         }
 
         // Add the ordering clause.
         $query->order(
-            $db->quoteName($db->escape($this->getState('list.ordering', 'c.name'))) . ' ' . $db->escape($this->getState('list.direction', 'ASC'))
+            $db->quoteName($db->escape($this->getState('list.ordering', 'l.created'))) . ' ' . $db->escape($this->getState('list.direction', 'ASC'))
         );
 
         return $query;
@@ -127,38 +157,6 @@ class LogsModel extends ListModel
         return $this->cache[$store];
     }
 
-    public function checkin($ids = null)
-    {
-        // Ensure we have valid IDs
-        if (empty($ids)) {
-            return false;
-        }
-        
-        if (!is_array($ids)) {
-            $ids = [$ids];
-        }
-        
-        $ids = array_map('intval', $ids);
-        
-        $db = $this->getDatabase();
-    
-        $query = $db->getQuery(true)
-            ->update($db->quoteName('#__mothership_logs'))
-            ->set($db->quoteName('checked_out') . ' = 0')
-            ->set($db->quoteName('checked_out_time') . ' = ' . $db->quote('0000-00-00 00:00:00'))
-            ->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
-        
-        $db->setQuery($query);
-    
-        try {
-            $db->execute();
-            return true;
-        }
-        catch (\Exception $e) {
-            $this->setError($e->getMessage());
-            return false;
-        }
-    }
 
     public function delete($ids = [])
     {

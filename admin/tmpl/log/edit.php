@@ -32,30 +32,34 @@ $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
 ?>
 
-<form action="<?php echo Route::_('index.php?option=com_mothership&layout=edit&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" id="log-form" aria-label="<?php echo Text::_('COM_MOTHERSHIP_CLIENT_' . ((int) $this->item->id === 0 ? 'NEW' : 'EDIT'), true); ?>" class="form-validate">
+<form action="<?php echo Route::_('index.php?option=com_mothership&layout=edit&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" id="log-form" aria-label="<?php echo Text::_('COM_MOTHERSHIP_LOG_' . ((int) $this->item->id === 0 ? 'NEW' : 'EDIT'), true); ?>" class="form-validate">
     <div class="main-card">
         <?php echo HTMLHelper::_('uitab.startTabSet', 'myTab', ['active' => 'details', 'recall' => true, 'breakpoint' => 768]); ?>
-        <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'details', Text::_('COM_MOTHERSHIP_FORM_CLIENT_DETAILS_TAB')); ?>
+        <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'details', Text::_('COM_MOTHERSHIP_FORM_LOG_DETAILS_TAB')); ?>
         <div class="row">
-            <div class="col-lg-9">
-                <div>
-                    <fieldset class="adminform">
-                    <?php echo $this->form->renderField('name'); ?>
-                    <?php echo $this->form->renderField('email'); ?>
-                    <?php echo $this->form->renderField('phone'); ?>
-                    <?php echo $this->form->renderField('address_1'); ?>
-                    <?php echo $this->form->renderField('address_2'); ?>
-                    <?php echo $this->form->renderField('city'); ?>
-                    <?php echo $this->form->renderField('state'); ?>
-                    <?php echo $this->form->renderField('zip'); ?>
-                    </fieldset>
+            <div class="col-lg-8">
+            <div>
+                <fieldset class="adminform">
+                <?php echo $this->form->renderField('details'); ?>
+                <?php echo $this->form->renderField('description'); ?>
+                <?php echo $this->form->renderField('old_value'); ?>
+                <?php echo $this->form->renderField('new_value'); ?>
+                
+                </fieldset>
+            </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card card-body">
+                    <?php echo $this->form->renderField('client_id'); ?>
+                    <?php echo $this->form->renderField('account_id'); ?>
+                    <?php echo $this->form->renderField('object_type'); ?>
+                    <?php echo $this->form->renderField('object_id'); ?>
+                    <?php echo $this->form->renderField('action'); ?>
+                    <?php echo $this->form->renderField('field_changed'); ?>
+                    <?php echo $this->form->renderField('user_id'); ?>
+                    <?php echo $this->form->renderField('created'); ?>
+                    <?php echo $this->form->renderField('created_by'); ?>
                 </div>
-            </div>
-            <div class="col-lg-3">                
-                <?php echo $this->form->renderField('default_rate'); ?>
-                <?php echo $this->form->renderField('tax_id'); ?>
-                <?php echo $this->form->renderField('owner_user_id'); ?>
-            </div>
         </div>
 
         <?php echo HTMLHelper::_('uitab.endTab'); ?>
