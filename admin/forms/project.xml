@@ -4,6 +4,7 @@
 		<field name="id" type="text" default="0" readonly="true" class="readonly" label="JGLOBAL_FIELD_ID_LABEL" description="JGLOBAL_FIELD_ID_DESC" />
 		<field name="name" type="text" default="" readonly="" class="input-xxlarge input-large-text" label="COM_MOTHERSHIP_FIELD_ACCOUNT_NAME_LABEL" description="COM_MOTHERSHIP_FIELD_ACCOUNT_NAME_DESC" />
 		<field name="client_id" type="clientlist" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_CLIENT_ID_LABEL" description="COM_MOTHERSHIP_FIELD_CLIENT_NAME_DESC" />
+		<field name="account_id" type="accountlist" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_ACCOUNT_ID_LABEL" description="COM_MOTHERSHIP_FIELD_ACCOUNT_NAME_DESC" />
 		<field name="created" type="calendar" readonly="false" class="validate-date" label="COM_MOTHERSHIP_FIELD_ACCOUNT_CREATED_LABEL" description="COM_MOTHERSHIP_FIELD_ACCOUNT_CREATED_DESC" default="" format="%Y-%m-%d" filter="user_utc" />
 	</fieldset>
 </form>

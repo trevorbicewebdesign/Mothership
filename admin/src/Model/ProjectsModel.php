@@ -74,23 +74,24 @@ class ProjectsModel extends ListModel
             $this->getState(
             'list.select',
             [
-            $db->quoteName('a.id'),
-            $db->quoteName('a.name'),
-            $db->quoteName('a.primary_domain'),
-            $db->quoteName('a.rate'),
-            $db->quoteName('a.client_id'),
-            $db->quoteName('a.created'),
-            $db->quoteName('a.checked_out_time'),
-            $db->quoteName('a.checked_out'),
-            $db->quoteName('c.name', 'client_name') // Adding client_name from the client table with alias
+            $db->quoteName('p.id'),
+            $db->quoteName('p.client_id'),
+            $db->quoteName('p.account_id'),
+            $db->quoteName('p.name'),
+            $db->quoteName('p.description'),
+            $db->quoteName('p.type'),
+            $db->quoteName('p.created'),
+            $db->quoteName('p.checked_out_time'),
+            $db->quoteName('p.checked_out'),
+            $db->quoteName('c.name', 'client_name'),
+            $db->quoteName('a.name', 'account_name'),
             ]
             )
         );
 
-        $query->from($db->quoteName('#__mothership_projects', 'a'))
-              ->join('LEFT', $db->quoteName('#__mothership_clients', 'c') . ' ON ' . $db->quoteName('a.client_id') . ' = ' . $db->quoteName('c.id')); // Joining the client table
-
-        // No filter by province as there is no 'state' column.
+        $query->from($db->quoteName('#__mothership_projects', 'p'))
+              ->join('LEFT', $db->quoteName('#__mothership_clients', 'c') . ' ON ' . $db->quoteName('p.client_id') . ' = ' . $db->quoteName('c.id'))
+              ->join('LEFT', $db->quoteName('#__mothership_accounts', 'a') . ' ON ' . $db->quoteName('p.account_id') . ' = ' . $db->quoteName('a.id'));
 
         // Filter by search in project name (or by project id if prefixed with "cid:").
         if ($search = trim($this->getState('filter.search', ''))) {
