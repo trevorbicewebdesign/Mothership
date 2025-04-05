@@ -42,9 +42,9 @@ class ProjectsController extends BaseController
             $model = $this->getModel('Projects');
             if ($model->checkin($ids)) {
                 // this uses sprint f to insert the number of items checked in into the message
-                $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_ACCOUNT_CHECK_IN_SUCCESS', count($ids)), 'message');
+                $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_PROJECT_CHECK_IN_SUCCESS', count($ids)), 'message');
             } else {
-                $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ACCOUNT_CHECK_IN_FAILED'), 'error');
+                $app->enqueueMessage(Text::_('COM_MOTHERSHIP_PROJECT_CHECK_IN_FAILED'), 'error');
             }
         }
 
@@ -64,9 +64,9 @@ class ProjectsController extends BaseController
         } else {
             $model = $this->getModel('Projects');
             if ($model->delete($ids)) {
-                $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_ACCOUNT_DELETE_SUCCESS', count($ids)), 'message');
+                $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_PROJECT_DELETE_SUCCESS', count($ids)), 'message');
             } else {
-                $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ACCOUNT_DELETE_FAILED'), 'error');
+                $app->enqueueMessage(Text::_('COM_MOTHERSHIP_PROJECT_DELETE_FAILED'), 'error');
             }
         }
 

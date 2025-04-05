@@ -37,7 +37,7 @@ class ProjectController extends FormController
 
         if (!$model->save($data)) {
             // Error occurred, redirect back to form with error messages
-            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ACCOUNT_SAVE_FAILED'), 'error');
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_PROJECT_SAVE_FAILED'), 'error');
             $app->enqueueMessage($model->getError(), 'error');
 
             // Determine which task was requested to redirect back to the appropriate edit page
@@ -53,7 +53,7 @@ class ProjectController extends FormController
         }
 
         // Success message
-        $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_ACCOUNT_SAVED_SUCCESSFULLY', "<strong>{$data['name']}</strong>"), 'message');
+        $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_PROJECT_SAVED_SUCCESSFULLY', "<strong>{$data['name']}</strong>"), 'message');
 
         // Determine which task was requested
         $task = $input->getCmd('task');
@@ -89,13 +89,13 @@ class ProjectController extends FormController
         $cid = $input->get('cid', [], 'array');
 
         if (empty($cid)) {
-            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_NO_ACCOUNT_SELECTED'), 'warning');
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_NO_PROJECT_SELECTED'), 'warning');
         } else {
             if (!$model->delete($cid)) {
-                $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ACCOUNT_DELETE_FAILED'), 'error');
+                $app->enqueueMessage(Text::_('COM_MOTHERSHIP_PROJECT_DELETE_FAILED'), 'error');
                 $app->enqueueMessage($model->getError(), 'error');
             } else {
-                $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ACCOUNT_DELETED_SUCCESSFULLY'), 'message');
+                $app->enqueueMessage(Text::_('COM_MOTHERSHIP_PROJECT_DELETED_SUCCESSFULLY'), 'message');
             }
         }
 

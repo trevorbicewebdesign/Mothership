@@ -21,11 +21,11 @@ use Joomla\CMS\Log\Log;
 // phpcs:enable PSR1.Files.SideEffects
 
 /**
- * Account model.
+ * Project model.
  *
  * @since  1.6
  */
-class AccountModel extends AdminModel
+class ProjectModel extends AdminModel
 {
     use VersionableModelTrait;
 
@@ -35,7 +35,7 @@ class AccountModel extends AdminModel
      * @var    string
      * @since  3.2
      */
-    public $typeAlias = 'com_mothership.account';
+    public $typeAlias = 'com_mothership.project';
 
     /**
      * Method to test whether a record can be deleted.
@@ -94,7 +94,7 @@ class AccountModel extends AdminModel
     public function getForm($data = [], $loadData = true)
     {
         // Get the form.
-        $form = $this->loadForm('com_mothership.account', 'account', ['control' => 'jform', 'load_data' => $loadData]);
+        $form = $this->loadForm('com_mothership.project', 'project', ['control' => 'jform', 'load_data' => $loadData]);
 
         if (empty($form)) {
             return false;
@@ -113,13 +113,13 @@ class AccountModel extends AdminModel
     protected function loadFormData()
     {
         // Check the session for previously entered form data.
-        $data = Factory::getApplication()->getUserState('com_mothership.edit.account.data', []);
+        $data = Factory::getApplication()->getUserState('com_mothership.edit.project.data', []);
 
         if (empty($data)) {
             $data = $this->getItem();
         }
 
-        $this->preprocessData('com_mothership.account', $data);
+        $this->preprocessData('com_mothership.project', $data);
 
         return $data;
     }
