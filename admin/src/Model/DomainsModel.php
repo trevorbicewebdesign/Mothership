@@ -26,8 +26,10 @@ class DomainsModel extends ListModel
             $config['filter_fields'] = [
                 'id', 'd.id',
                 'client_id', 'd.client_id',
+                'account_id', 'a.account_id',
                 'name', 'd.name',
                 'client_name', 'c.name',
+                'account_name', 'a.name',
                 'registrar', 'd.registrar',
                 'reseller', 'd.reseller',
                 'status', 'd.status',
@@ -76,18 +78,21 @@ class DomainsModel extends ListModel
             $db->quoteName('d.id'),
             $db->quoteName('d.name'),
             $db->quoteName('d.client_id'),
+            $db->quoteName('d.account_id'),
             $db->quoteName('d.registrar'),
             $db->quoteName('d.reseller'),
             $db->quoteName('d.status'),
             $db->quoteName('d.dns_provider'),
             $db->quoteName('d.created'),
-            $db->quoteName('c.name', 'client_name')
+            $db->quoteName('c.name', 'client_name'),
+            $db->quoteName('a.name', 'account_name'),
             ]
             )
         );
 
         $query->from($db->quoteName('#__mothership_domains', 'd'))
-              ->join('LEFT', $db->quoteName('#__mothership_clients', 'c') . ' ON ' . $db->quoteName('d.client_id') . ' = ' . $db->quoteName('c.id')); // Joining the client table
+              ->join('LEFT', $db->quoteName('#__mothership_clients', 'c') . ' ON ' . $db->quoteName('d.client_id') . ' = ' . $db->quoteName('c.id'))
+              ->join('LEFT', $db->quoteName('#__mothership_accounts', 'a') . ' ON ' . $db->quoteName('d.account_id') . ' = ' . $db->quoteName('a.id')); 
 
         // Filter by search in domain name (or by domain id if prefixed with "cid:").
         if ($search = trim($this->getState('filter.search', ''))) {

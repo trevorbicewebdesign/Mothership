@@ -91,7 +91,7 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                         <a href="<?php echo Route::_("index.php?option=com_mothership&task=client.edit&id={$item->client_id}&return=" . base64_encode(Route::_('index.php?option=com_mothership&view=domains'))) ?>" ><?php echo htmlspecialchars($item->client_name, ENT_QUOTES, 'UTF-8'); ?></a>
                                     </td>
                                     <td>
-                                        <a href="<?php echo Route::_("index.php?option=com_mothership&task=account.edit&id={$item->account_id}&return=" . base64_encode(Route::_('index.php?option=com_mothership&view=domains'))) ?>" ><?php echo htmlspecialchars($item->client_name, ENT_QUOTES, 'UTF-8'); ?></a>
+                                        <a href="<?php echo Route::_("index.php?option=com_mothership&task=account.edit&id={$item->account_id}&return=" . base64_encode(Route::_('index.php?option=com_mothership&view=domains'))) ?>" ><?php echo htmlspecialchars($item->account_name, ENT_QUOTES, 'UTF-8'); ?></a>
                                     </td>
                                     <td>
                                         <?php echo $this->escape($item->registrar); ?>
