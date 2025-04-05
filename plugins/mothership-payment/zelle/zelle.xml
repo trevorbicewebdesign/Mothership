@@ -1,0 +1,19 @@
+<extension type="plugin" group="mothership-payment" version="0.0.5" method="zelle" element="zelle">
+    <name>COM_MOTHERSHIP_ZELLE_PLUGIN</name>
+    <files>
+        <filename plugin="zelle">zelle.php</filename>
+    </files>
+    <languages>
+        <language tag="en-GB">en-GB.plg_mothership-payment_zelle.ini</language>
+        <language tag="en-GB">en-GB.plg_mothership-payment_zelle.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="display_name" type="text" label="COM_MOTHERSHIP_ZELLE_DISPLAY_NAME_LABEL" description="COM_MOTHERSHIP_ZELLE_DISPLAY_NAME_DESC" default="Zelle" />
+                <field name="zelle_email_phone" type="text" label="COM_MOTHERSHIP_ZELLE_EMAIL_PHONE_LABEL" description="COM_MOTHERSHIP_ZELLE_EMAIL_PHONE_DESC" required="true" />
+                <field name="instructions" type="textarea" label="COM_MOTHERSHIP_ZELLE_INSTRUCTIONS_LABEL" description="COM_MOTHERSHIP_ZELLE_INSTRUCTIONS_DESC" />
+            </fieldset>
+        </fields>
+    </config>
+</extension>

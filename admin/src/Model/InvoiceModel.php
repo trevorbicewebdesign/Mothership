@@ -8,6 +8,7 @@ use Joomla\CMS\Table\Table;
 use Joomla\CMS\Versioning\VersionableModelTrait;
 use Joomla\CMS\Log\Log;
 use Joomla\Registry\Registry;
+use Joomla\CMS\Component\ComponentHelper;
 
 \defined('_JEXEC') or die;
 
@@ -40,6 +41,36 @@ class InvoiceModel extends AdminModel
         return $this->getCurrentUser()->authorise('core.edit', 'com_mothership');
     }
 
+    public function canDeleteInvoice($record): bool
+    {
+        // Assume $record is an object or associative array with at least 'id' and 'status'
+        $id = isset($record->id) ? (int) $record->id : (int) $record['id'];
+        $status = isset($record->status) ? (int) $record->status : (int) $record['status'];
+
+        if ($status !== 1) {
+            // Not a draft invoice
+            return false;
+        }
+
+        // Extra check: invoice shouldn't have any linked payments
+        $db = $this->getDatabase();
+
+        $query = $db->getQuery(true)
+            ->select('COUNT(*)')
+            ->from($db->quoteName('#__mothership_invoice_payment'))
+            ->where($db->quoteName('invoice_id') . ' = ' . $id);
+
+        $invoicePaymentCount = (int) $db->setQuery($query)->loadResult();
+
+        if ($invoicePaymentCount > 0) {
+            // Something went wrong — drafts shouldn't have payments
+            throw new \RuntimeException("Draft invoice ID {$id} has associated payments, which should not be possible.");
+        }
+
+        return true;
+    }
+
+
     public function getForm($data = [], $loadData = true)
     {
         return $this->loadForm('com_mothership.invoice', 'invoice', ['control' => 'jform', 'load_data' => $loadData]);
@@ -47,27 +78,37 @@ class InvoiceModel extends AdminModel
 
     protected function loadFormData()
     {
-        $data = Factory::getApplication()->getUserState('com_mothership.edit.invoice.data', []);
+        $app = Factory::getApplication();
+        $data = $app->getUserState('com_mothership.edit.invoice.data', []);
 
-        if (empty($data)) {
+        if ((is_object($data) && isset($data->id) && empty($data->id)) || (is_array($data) && empty($data['id']))) {
             $data = $this->getItem();
+
+            if (empty($data->id)) {
+                $params = ComponentHelper::getParams('com_mothership');
+                $defaultRate = $params->get('company_default_rate');
+                if ($defaultRate !== null) {
+                    $data->rate = $defaultRate;
+                }
+            }
         }
 
         $this->preprocessData('com_mothership.invoice', $data);
-
         return $data;
     }
+
 
     public function getItem($pk = null)
     {
         $item = parent::getItem($pk);
 
         if ($item && $item->id) {
-            $db = $this->getDbo();
+            $db = $this->getDatabase();
             $query = $db->getQuery(true)
-                ->select('*')
-                ->from($db->quoteName('#__mothership_invoice_items'))
-                ->where($db->quoteName('invoice_id') . ' = ' . (int) $item->id);
+            ->select('*')
+            ->from($db->quoteName('#__mothership_invoice_items'))
+            ->where($db->quoteName('invoice_id') . ' = ' . (int) $item->id)
+            ->order($db->quoteName('ordering') . ' ASC');
 
             $db->setQuery($query);
             $item->items = $db->loadAssocList();
@@ -98,6 +139,10 @@ class InvoiceModel extends AdminModel
             $newStatus = (int) $data['status'];
         }
 
+        if($data['due_date'] == '') {
+            $data['due_date'] = null;
+        }
+
         if (!$table->bind($data)) {
             $this->setError($table->getError());
             return false;
@@ -117,17 +162,10 @@ class InvoiceModel extends AdminModel
         if ( !$isNew && ($newStatus == 2 && $previousStatus !== 2)) {
             $this->onInvoiceOpened($table, $previousStatus);
             // Fill in the due date
-            $table->due_date = Factory::getDate()->modify('+30 days')->toSql();
+            $table->due_date = Factory::getDate()->modify('+30 days')->format('Y-m-d');
             $table->store();
         }
-
-        // Store items JSON (optional versioning support)
-        if (!empty($data['items'])) {
-            $registry = new Registry();
-            $registry->loadArray($data['items']);
-            $table->items_json = (string)$registry;
-            $table->store();
-        }
+        
 
         // Delete existing items
         $db->setQuery(
@@ -138,17 +176,19 @@ class InvoiceModel extends AdminModel
 
         // Insert new items
         if (!empty($data['items'])) {
-            foreach ($data['items'] as $item) {
-                $columns = ['invoice_id', 'name', 'description', 'hours', 'minutes', 'quantity', 'rate', 'subtotal'];
+            $i = 0;
+            foreach ($data['items'] as $index => $item) {
+                $columns = ['invoice_id', 'name', 'description', 'hours', 'minutes', 'quantity', 'rate', 'subtotal', 'ordering'];
                 $values = [
                     (int)$invoiceId,
                     $db->quote($item['name']),
                     $db->quote($item['description']),
-                    (float)$item['hours'],
-                    (float)$item['minutes'],
+                    (int)$item['hours'],
+                    (int)$item['minutes'],
                     (float)$item['quantity'],
                     (float)$item['rate'],
-                    (float)$item['subtotal']
+                    (float)$item['subtotal'],
+                    (int)$i + 1 // Assuming ordering starts from 1
                 ];
 
                 $query = $db->getQuery(true)
@@ -157,15 +197,37 @@ class InvoiceModel extends AdminModel
                     ->values(implode(',', $values));
 
                 $db->setQuery($query)->execute();
+                $i++;
             }
         }
+
+        // Set the new record ID into the model state
+        $this->setState($this->getName() . '.id', $table->id);
 
         return true;
     }
 
-    protected function onInvoiceOpened($invoice, $previousStatus)
+    /**
+     * Cancel editing by checking in the record.
+     *
+     * @param   int|null  $pk  The primary key of the record to check in. If null, it attempts to load it from the state.
+     *
+     * @return  bool  True on success, false on failure.
+     */
+    public function cancelEdit($pk = null)
     {
-        
+        // Use the provided primary key or retrieve it from the model state
+        $pk = $pk ? $pk : (int) $this->getState($this->getName() . '.id');
+
+        if ($pk) {
+            $table = $this->getTable();
+            if (!$table->checkin($pk)) {
+                $this->setError($table->getError());
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public function delete(&$pks)

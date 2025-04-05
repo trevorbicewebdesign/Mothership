@@ -1,20 +1,26 @@
 {
-    "name": "trevorbicewebdesign/mothership",
-    "version": "0.0.6",
-    "description": "Mothership is a Joomla extension designed specifically for web development agencies to manage invoicing, quoting, help tickets, timelogging, expenses, taxes, and logging. Version 0.0.5 includes Clients management as the initial feature.",
-    "type": "joomla-extension",
-    "license": "GPL-2.0-or-later",
-    "require": {
-      "php": ">=7.4",
-      "joomla/joomla-cms": "^5.0"
-    },
-    "autoload": {
-      "psr-4": {
-        "Mothership\\": "src/"
-      }
-    },
-    "extra": {
-      "installer-name": "mothership"
+  "name": "trevorbicewebdesign/mothership",
+  "version": "0.0.11",
+  "description": "Mothership is a Joomla extension designed specifically for web development agencies to manage invoicing, quoting, help tickets, timelogging, expenses, taxes, and logging.",
+  "type": "joomla-extension",
+  "license": "GPL-2.0-or-later",
+  "require": {
+    "php": ">=8.1"
+  },
+  "require-dev": {
+    "codeception/codeception": "^5.0",
+    "vlucas/phpdotenv": "^5.3"
+    
+  },
+  "autoload": {
+    "psr-4": {
+      "Mothership\\": "src/"
     }
+  },
+  "extra": {
+    "installer-name": "mothership"
+  },
+  "scripts": {
+    "test": "codecept run"
   }
-  
+}

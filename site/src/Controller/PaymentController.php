@@ -96,8 +96,8 @@ class PaymentController extends BaseController
             $paymentOptions[] = [
                 'element'     => $plugin->name,
                 'name'        => $pluginName,
-                'fee_percent' => (float) $params->get('fee_percent', '3.9'),
-                'fee_fixed'   => (float) $params->get('fee_fixed', '0.30'),
+                'fee_amount'  => $plugin->getFee($invoice->total),
+                'display_fee' => $plugin->displayFee($invoice->total),
             ];
         }
 
@@ -146,20 +146,19 @@ class PaymentController extends BaseController
         $event = new Event('onMothershipPaymentRequest', ['payment' => $payment, 'paymentData' => $paymentData]);
         
         $results = $dispatcher->dispatch('onMothershipPaymentRequest', $event);
-        
+
         if (!empty($results)) {
     
             $arguments = $event->getArguments();
             foreach ($arguments['result'] as $result) {
                 if ($result['status'] === 'redirect') {
-                    $app->enqueueMessage($result['message'], 'info');
                     $this->setRedirect($result['url']);
                     return;
                 }
             }
         }
 
-        $app->enqueueMessage(Text::_('COM_MOTHERSHIP_NO_PAYMENT_HANDLER'), 'danger');
+        $app->enqueueMessage(Text::_(sprintf('COM_MOTHERSHIP_NO_PAYMENT_HANDLER', $paymentMethod)), 'danger');
         $this->setRedirect(Route::_('index.php?option=com_mothership&view=payments', false));
     }
 

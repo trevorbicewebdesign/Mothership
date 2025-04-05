@@ -94,8 +94,14 @@ class HtmlView extends BaseHtmlView
 
         // ✅ Use WebAssetManager to load the script
         $wa = $this->getDocument()->getWebAssetManager();
-        $wa->registerAndUseScript('com_mothership.invoice-edit', 'media/com_mothership/js/invoice-edit.js', [], ['defer' => true]);
-        $wa->registerAndUseStyle('com_mothership.invoice-edit', 'media/com_mothership/css/invoice-edit.css');
+
+        // C:\Users\trevo\LocalSites\joomlav4trevorbicecom\app\public\administrator/components/com_mothership/assets/js/invoice-edit.js
+        $jsPath = JPATH_COMPONENT . '/assets/js/invoice-edit.js';
+        $jsVersion = filemtime($jsPath);
+        $wa->useScript('jquery');
+        $wa->registerAndUseScript('com_mothership.invoice-edit', 'administrator/components/com_mothership/assets/js/invoice-edit.js', [], ['defer' => true, 'version' => $jsVersion]);
+        
+        $wa->registerAndUseStyle('com_mothership.invoice-edit', 'administrator/components/com_mothership/assets/css/invoice-edit.css');
 
         $wa->registerAndUseScript(
             'sortablejs',

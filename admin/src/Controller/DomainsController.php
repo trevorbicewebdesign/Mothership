@@ -24,11 +24,11 @@ class DomainsController extends BaseController
     }
 
     /**
-     * Check in selected domain items.
+     * Check in selected account items.
      *
      * @return  void
      */
-    public function checkin()
+    public function checkIn()
     {
         $app   = Factory::getApplication();
         $input = $app->input;
@@ -56,7 +56,6 @@ class DomainsController extends BaseController
         $app   = Factory::getApplication();
         $input = $app->input;
 
-        // Get the list of IDs from the request.
         $ids = $input->get('cid', [], 'array');
 
         if (empty($ids)) {
@@ -64,7 +63,10 @@ class DomainsController extends BaseController
         } else {
             $model = $this->getModel('Domains');
             if ($model->delete($ids)) {
-                $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_DOMAIN_DELETE_SUCCESS', count($ids)), 'message');
+                $app->enqueueMessage(
+                    Text::sprintf('COM_MOTHERSHIP_DOMAIN_DELETE_SUCCESS', count($ids), count($ids) === 1 ? '' : 's'),
+                    'message'
+                );
             } else {
                 $app->enqueueMessage(Text::_('COM_MOTHERSHIP_DOMAIN_DELETE_FAILED'), 'error');
             }
@@ -72,5 +74,6 @@ class DomainsController extends BaseController
 
         $this->setRedirect(Route::_('index.php?option=com_mothership&view=domains', false));
     }
+
 
 }

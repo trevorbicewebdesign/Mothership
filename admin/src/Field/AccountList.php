@@ -3,7 +3,7 @@
 namespace TrevorBice\Component\Mothership\Administrator\Field;
 
 use Joomla\CMS\Form\Field\ListField;
-use TrevorBice\Component\Mothership\Administrator\Helper\MothershipHelper;
+use TrevorBice\Component\Mothership\Administrator\Helper\AccountHelper;
 
 \defined('_JEXEC') or die;
 
@@ -13,7 +13,7 @@ class AccountListField extends ListField
 
     public function getOptions()
     {
-        $options = MothershipHelper::getAccountListOptions();
+        $options = AccountHelper::getAccountListOptions();
         return array_merge(parent::getOptions(), $options);
     }
 }

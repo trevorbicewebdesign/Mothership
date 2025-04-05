@@ -24,18 +24,24 @@ class DomainsModel extends ListModel
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = [
-                'cid', 'a.id',
-                'name', 'a.name',
+                'id', 'd.id',
+                'client_id', 'd.client_id',
+                'account_id', 'a.account_id',
+                'name', 'd.name',
                 'client_name', 'c.name',
-                'checked_out', 'a.checked_out',
-                'checked_out_time', 'a.checked_out_time',
+                'account_name', 'a.name',
+                'registrar', 'd.registrar',
+                'reseller', 'd.reseller',
+                'status', 'd.status',
+                'dns_provider', 'd.dns_provider',
+                'created', 'd.created',
             ];
         }
 
         parent::__construct($config);
     }
 
-    protected function populateState($ordering = 'a.id', $direction = 'asc')
+    protected function populateState($ordering = 'd.id', $direction = 'asc')
     {
         $app = Factory::getApplication();
 
@@ -54,8 +60,6 @@ class DomainsModel extends ListModel
     {
         // Compile the store id.
         $id .= ':' . $this->getState('filter.search');
-        $id .= ':' . $this->getState('filter.province');
-        $id .= ':' . $this->getState('filter.purchase_type');
 
         return parent::getStoreId($id);
     }
@@ -66,48 +70,46 @@ class DomainsModel extends ListModel
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
 
-        // Get the default purchase type from the component parameters.
-        $defaultPurchase = (int) ComponentHelper::getParams('com_mothership')->get('purchase_type', 3);
-
         // Select the required fields from the table.
         $query->select(
             $this->getState(
             'list.select',
             [
-            $db->quoteName('a.id'),
-            $db->quoteName('a.name'),
-            $db->quoteName('a.primary_domain'),
-            $db->quoteName('a.rate'),
-            $db->quoteName('a.client_id'),
-            $db->quoteName('a.created'),
-            $db->quoteName('a.checked_out_time'),
-            $db->quoteName('a.checked_out'),
-            $db->quoteName('c.name', 'client_name') // Adding client_name from the client table with alias
+            $db->quoteName('d.id'),
+            $db->quoteName('d.name'),
+            $db->quoteName('d.client_id'),
+            $db->quoteName('d.account_id'),
+            $db->quoteName('d.registrar'),
+            $db->quoteName('d.reseller'),
+            $db->quoteName('d.status'),
+            $db->quoteName('d.dns_provider'),
+            $db->quoteName('d.created'),
+            $db->quoteName('c.name', 'client_name'),
+            $db->quoteName('a.name', 'account_name'),
             ]
             )
         );
 
-        $query->from($db->quoteName('#__mothership_domains', 'a'))
-              ->join('LEFT', $db->quoteName('#__mothership_clients', 'c') . ' ON ' . $db->quoteName('a.client_id') . ' = ' . $db->quoteName('c.id')); // Joining the client table
-
-        // No filter by province as there is no 'state' column.
+        $query->from($db->quoteName('#__mothership_domains', 'd'))
+              ->join('LEFT', $db->quoteName('#__mothership_clients', 'c') . ' ON ' . $db->quoteName('d.client_id') . ' = ' . $db->quoteName('c.id'))
+              ->join('LEFT', $db->quoteName('#__mothership_accounts', 'a') . ' ON ' . $db->quoteName('d.account_id') . ' = ' . $db->quoteName('a.id')); 
 
         // Filter by search in domain name (or by domain id if prefixed with "cid:").
         if ($search = trim($this->getState('filter.search', ''))) {
             if (stripos($search, 'cid:') === 0) {
                 $search = (int) substr($search, 4);
-                $query->where($db->quoteName('a.id') . ' = :search')
+                $query->where($db->quoteName('d.id') . ' = :search')
                       ->bind(':search', $search, ParameterType::INTEGER);
             } else {
                 $search = '%' . str_replace(' ', '%', $search) . '%';
-                $query->where($db->quoteName('a.name') . ' LIKE :search')
+                $query->where($db->quoteName('d.name') . ' LIKE :search')
                       ->bind(':search', $search);
             }
         }
 
         // Add the ordering clause.
         $query->order(
-            $db->quoteName($db->escape($this->getState('list.ordering', 'a.name'))) . ' ' . $db->escape($this->getState('list.direction', 'ASC'))
+            $db->quoteName($db->escape($this->getState('list.ordering', 'd.name'))) . ' ' . $db->escape($this->getState('list.direction', 'ASC'))
         );
 
         return $query;
@@ -192,20 +194,19 @@ class DomainsModel extends ListModel
 
         $db = $this->getDatabase();
 
-        // Build the query using an IN clause for multiple IDs
+        // Then delete the domains
         $query = $db->getQuery(true)
             ->delete($db->quoteName('#__mothership_domains'))
             ->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
 
-        $db->setQuery($query);
-
         try {
-            $db->execute();
+            $db->setQuery($query)->execute();
             return true;
         } catch (\Exception $e) {
-            $this->setError($e->getMessage());
+            $this->setError('Failed to delete domains: ' . $e->getMessage());
             return false;
         }
     }
+
 
 }

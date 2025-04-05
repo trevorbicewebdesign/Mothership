@@ -66,6 +66,10 @@ class HtmlView extends BaseHtmlView
         $this->filterForm = $model->getFilterForm();
         $this->activeFilters = $model->getActiveFilters();
 
+        // ✅ Use WebAssetManager to load the script
+        $wa = $this->getDocument()->getWebAssetManager();
+        $wa->registerAndUseStyle('com_mothership.invoices', 'administrator/components/com_mothership/assets/css/invoices.css');
+
         // Ensure transitions is always an array
         $this->transitions = $this->state->get('transitions', []);
         if (!is_array($this->transitions)) {
@@ -107,9 +111,10 @@ class HtmlView extends BaseHtmlView
             $childBar = $dropdown->getChildToolbar();
 
             if ($canDo->get('core.admin')) {
-                $childBar->checkin('invoices.checkin')->listCheck(true);
+                $childBar->checkin('invoices.checkIn')->listCheck(true);
             }
 
+            $childBar->edit('invoice.edit')->listCheck(true); // Add 'Edit' option
             $childBar->delete('invoices.delete')->listCheck(true);
         }
 
@@ -117,6 +122,6 @@ class HtmlView extends BaseHtmlView
             $toolbar->preferences('com_mothership');
         }
 
-        $toolbar->help('Mothership:_Account');
+        $toolbar->help('Mothership:_Invoice');
     }
 }

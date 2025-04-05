@@ -49,6 +49,8 @@ class InvoiceController extends BaseController
         $layout = new FileLayout('pdf', JPATH_ROOT . '/components/com_mothership/layouts');
         $html = $layout->render(['invoice' => $invoice]);
 
+
+
         // Turn off Joomla's output
         ob_end_clean();
         header('Content-Type: application/pdf');
@@ -93,12 +95,21 @@ class InvoiceController extends BaseController
             $params = new \Joomla\Registry\Registry($plugin->params);
             $pluginName = $params->get('display_name') ?: ucfirst(str_replace('mothership-', '', $plugin->element));
 
+            if($plugin->name == 'paypal') {
+                $fee_amount = number_format($invoice->total * 0.039 + 0.30, 2);
+                $display_fee = " 3.9% + $0.30";
+            } else {
+                $fee_amount = number_format(0, 2);
+                $display_fee = "No Fee";
+            }
+
             $paymentOptions[] = [
-                'element'     => $plugin->name,
-                'name'        => $pluginName,
-                'fee_percent' => (float) $params->get('fee_percent', '3.9'),
-                'fee_fixed'   => (float) $params->get('fee_fixed', '0.30'),
+                'element' => $plugin->name,
+                'name' => $pluginName,
+                'fee_amount' => $fee_amount,
+                'display_fee' => $display_fee,
             ];
+
         }
 
         // Correct way to pass data to the view:
@@ -144,11 +155,11 @@ class InvoiceController extends BaseController
 
         $dispatcher = Factory::getApplication()->getDispatcher();
         $event = new Event('onMothershipPaymentRequest', ['invoice' => $invoice, 'paymentData' => $paymentData]);
-        
+
         $results = $dispatcher->dispatch('onMothershipPaymentRequest', $event);
-        
+
         if (!empty($results)) {
-    
+
             $arguments = $event->getArguments();
             foreach ($arguments['result'] as $result) {
                 if ($result['status'] === 'redirect') {
@@ -159,7 +170,7 @@ class InvoiceController extends BaseController
             }
         }
 
-        $app->enqueueMessage(Text::_('COM_MOTHERSHIP_NO_PAYMENT_HANDLER'), 'danger');
+        $app->enqueueMessage(Text::_(sprintf('COM_MOTHERSHIP_NO_PAYMENT_HANDLER', $paymentMethod)), 'danger');
         $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoices', false));
     }
 

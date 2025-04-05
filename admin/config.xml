@@ -3,11 +3,11 @@
 	<help key="Mothership:_Options"/>
 	<inlinehelp button="show"/>
 	<fieldset name="company-information" label="COM_MOTHERSHIP_OPTIONS_COMPANY_INFORMATION" description="">
-		<field name="company_name" type="text" default="" readonly="" class="input-xxlarge input-large-text" label="COM_MOTHERSHIP_OPTIONS_COMPANY_NAME_LABEL" description="COM_MOTHERSHIP_CLIENT_NAME_DESC"/>
-		<field name="company_email" type="text" default="" readonly="" class="" label="COM_MOTHERSHIP_OPTIONS_COMPANY_EMAIL_LABEL" description=""/>
-		<field name="company_address_1" type="text" default="" readonly="" class="" label="COM_MOTHERSHIP_OPTIONS_COMPANY_ADDRESS_1_LABEL" description=""/>
-		<field name="company_address_2" type="text" default="" readonly="" class="" label="COM_MOTHERSHIP_OPTIONS_COMPANY_ADDRESS_2_LABEL" description=""/>
-		<field name="company_city" type="text" default="" readonly="" class="" label="COM_MOTHERSHIP_OPTIONS_COMPANY_CITY_LABEL" description=""/>
+		<field name="company_name" type="text" default="" readonly="" class="input-xxlarge input-large-text" label="COM_MOTHERSHIP_OPTIONS_COMPANY_NAME_LABEL" description="COM_MOTHERSHIP_CLIENT_NAME_DESC" required="true"/>
+		<field name="company_email" type="text" default="" readonly="" class="" label="COM_MOTHERSHIP_OPTIONS_COMPANY_EMAIL_LABEL" description="" required="true"/>
+		<field name="company_address_1" type="text" default="" readonly="" class="" label="COM_MOTHERSHIP_OPTIONS_COMPANY_ADDRESS_1_LABEL" description="" required="true"/>
+		<field name="company_address_2" type="text" default="" readonly="" class="" label="COM_MOTHERSHIP_OPTIONS_COMPANY_ADDRESS_2_LABEL" description="" />
+		<field name="company_city" type="text" default="" readonly="" class="" label="COM_MOTHERSHIP_OPTIONS_COMPANY_CITY_LABEL" description="" required="true"/>
 		<field name="company_state" type="list" default="" readonly="" class="" label="COM_MOTHERSHIP_OPTIONS_COMPANY_STATE_LABEL" required="true">
 			<option value="">Please select a State</option>
 			<option value="AL">Alabama</option>
@@ -61,8 +61,9 @@
 			<option value="WI">Wisconsin</option>
 			<option value="WY">Wyoming</option>
 		</field>
-		<field name="company_zip" type="text" default="" readonly="" class="" label="COM_MOTHERSHIP_OPTIONS_COMPANY_ZIP_LABEL" description=""/>
-		<field name="company_phone" type="text" default="" readonly="" class="" label="COM_MOTHERSHIP_OPTIONS_COMPANY_PHONE_LABEL" description=""/>
+		<field name="company_zip" type="text" default="" readonly="" class="" label="COM_MOTHERSHIP_OPTIONS_COMPANY_ZIP_LABEL" description="" required="true" />
+		<field name="company_phone" type="text" default="" readonly="" class="" label="COM_MOTHERSHIP_OPTIONS_COMPANY_PHONE_LABEL" description="" required="true" />
+		<field name="company_default_rate" type="number" default="" class="" label="COM_MOTHERSHIP_OPTIONS_COMPANY_DEFAULT_RATE_LABEL" description="COM_MOTHERSHIP_OPTIONS_COMPANY_DEFAULT_RATE_DESC" required="true" />
 	</fieldset>
 
 	<fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC">

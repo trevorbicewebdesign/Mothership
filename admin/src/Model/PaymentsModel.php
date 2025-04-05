@@ -14,36 +14,39 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\Database\ParameterType;
 
-// phpcs:disable PSR1.Files.SideEffects
-\defined('_JEXEC') or die;
-// phpcs:enable PSR1.Files.SideEffects
 
-class AccountsModel extends ListModel
+\defined('_JEXEC') or die;
+
+class PaymentsModel extends ListModel
 {
     public function __construct($config = [])
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = [
-                'cid', 'a.id',
-                'name', 'a.name',
-                'client_name', 'c.name',
-                'checked_out', 'a.checked_out',
-                'checked_out_time', 'a.checked_out_time',
+                'p.id',
+                'payment_date',
+                'p.payment_date',
+                'amount',
+                'p.amount',
+                'payment_method',
+                'p.payment_method',
+                'client_name',
+                'c.name',
+                'checked_out',
+                'p.checked_out',
+                'checked_out_time',
+                'p.checked_out_time'
             ];
         }
-
         parent::__construct($config);
     }
 
-    protected function populateState($ordering = 'a.id', $direction = 'asc')
+    protected function populateState($ordering = 'p.payment_date', $direction = 'asc')
     {
         $app = Factory::getApplication();
-
-        // Ensure context is set
         if (empty($this->context)) {
             $this->context = $this->option . '.' . $this->getName();
         }
-
         $clientName = $app->getUserStateFromRequest("{$this->context}.filter.client_name", 'filter_client_name', '', 'string');
         $this->setState('filter.client_name', $clientName);
 
@@ -54,141 +57,112 @@ class AccountsModel extends ListModel
     {
         // Compile the store id.
         $id .= ':' . $this->getState('filter.search');
-        $id .= ':' . $this->getState('filter.province');
-        $id .= ':' . $this->getState('filter.purchase_type');
-
         return parent::getStoreId($id);
     }
 
     protected function getListQuery()
     {
-        // Get a new query object.
-        $db    = $this->getDatabase();
+        $db = $this->getDatabase();
         $query = $db->getQuery(true);
 
-        // Select the required fields from the table.
         $query->select(
             $this->getState(
-            'list.select',
-            [
-            $db->quoteName('a.id')
-            ]
+                'list.select',
+                [
+                    $db->quoteName('p.id'),
+                    $db->quoteName('p.client_id'),
+                    $db->quoteName('p.account_id'),
+                    $db->quoteName('c.name', 'client_name'),
+                    $db->quoteName('a.name', 'account_name'),
+                    $db->quoteName('p.amount'),
+                    $db->quoteName('p.payment_method'),
+                    $db->quoteName('p.payment_date'),
+                    $db->quoteName('p.payment_method'),
+                    $db->quoteName('inv.invoice_ids'),
+
+                    // Interpreted payment status
+                    'CASE ' . $db->quoteName('p.status') . 
+                        ' WHEN 1 THEN ' . $db->quote('Pending') . 
+                        ' WHEN 2 THEN ' . $db->quote('Completed') . 
+                        ' WHEN 3 THEN ' . $db->quote('Failed') . 
+                        ' WHEN 4 THEN ' . $db->quote('Cancelled') .
+                        ' WHEN 5 THEN ' . $db->quote('Refunded') .
+                        ' ELSE ' . $db->quote('Unknown') . 
+                    ' END AS ' . $db->quoteName('status'),
+
+                ]
             )
         );
 
-        $query->from($db->quoteName('#__mothership_payments', 'a'))
-              ->join('LEFT', $db->quoteName('#__mothership_clients', 'c') . ' ON ' . $db->quoteName('c.client_id') . ' = ' . $db->quoteName('c.id'))
-              ->join('LEFT', $db->quoteName('#__mothership_account', 'a') . ' ON ' . $db->quoteName('a.account_id') . ' = ' . $db->quoteName('a.id'));
+        $query->from($db->quoteName('#__mothership_payments', 'p'))
+            ->join('LEFT', $db->quoteName('#__mothership_clients', 'c') . ' ON ' . $db->quoteName('p.client_id') . ' = ' . $db->quoteName('c.id'))
+            ->join('LEFT', $db->quoteName('#__mothership_accounts', 'a') . ' ON ' . $db->quoteName('p.account_id') . ' = ' . $db->quoteName('a.id'))
 
-        // No filter by province as there is no 'state' column.
+            // 👇 JOIN to list invoice_ids and invoice_numbers linked to this payment
+            ->join(
+                'LEFT',
+                '(SELECT ip.payment_id,
+                         GROUP_CONCAT(ip.invoice_id ORDER BY ip.invoice_id) AS invoice_ids,
+                         GROUP_CONCAT(i.number ORDER BY ip.invoice_id) AS invoice_numbers
+                  FROM ' . $db->quoteName('#__mothership_invoice_payment', 'ip') . '
+                  JOIN ' . $db->quoteName('#__mothership_invoices', 'i') . ' ON ip.invoice_id = i.id
+                  GROUP BY ip.payment_id) AS inv
+                 ON inv.payment_id = p.id'
+            );
 
-        // Filter by search in payment name (or by payment id if prefixed with "cid:").
+        // Filter by search term.
         if ($search = trim($this->getState('filter.search', ''))) {
-            if (stripos($search, 'cid:') === 0) {
+            if (stripos($search, 'id:') === 0) {
                 $search = (int) substr($search, 4);
-                $query->where($db->quoteName('a.id') . ' = :search')
-                      ->bind(':search', $search, ParameterType::INTEGER);
+                $query->where($db->quoteName('p.id') . ' = :search')
+                    ->bind(':search', $search, ParameterType::INTEGER);
             } else {
                 $search = '%' . str_replace(' ', '%', $search) . '%';
-                $query->where($db->quoteName('a.name') . ' LIKE :search')
-                      ->bind(':search', $search);
+                $query->where($db->quoteName('p.payment_method') . ' LIKE :search')
+                    ->bind(':search', $search);
             }
         }
 
-        // Add the ordering clause.
+        // Ordering
         $query->order(
-            $db->quoteName($db->escape($this->getState('list.ordering', 'a.name'))) . ' ' . $db->escape($this->getState('list.direction', 'ASC'))
+            $db->quoteName($db->escape($this->getState('list.ordering', 'p.payment_date'))) . ' ' .
+            $db->escape($this->getState('list.direction', 'ASC'))
         );
 
         return $query;
     }
 
+
     public function getItems()
     {
-        // Get a unique cache key.
         $store = $this->getStoreId('getItems');
-
-        // Return from cache if available.
         if (!empty($this->cache[$store])) {
             return $this->cache[$store];
         }
-
-        // Load the list items.
         $items = parent::getItems();
-
-        // If no items or an error occurred, return an empty array.
         if (empty($items)) {
             return [];
         }
-
-        // Since "published" doesn't apply for Accounts,
-        // we simply return the items without additional counting logic.
-
         $this->cache[$store] = $items;
-
         return $this->cache[$store];
     }
 
     public function checkin($ids = null)
     {
-        // Ensure we have valid IDs
         if (empty($ids)) {
             return false;
         }
-        
-        // Convert a single ID into an array
         if (!is_array($ids)) {
             $ids = [$ids];
         }
-        
-        // Sanitize IDs to integers
         $ids = array_map('intval', $ids);
-        
         $db = $this->getDatabase();
-    
-        // Build the query using an IN clause for multiple IDs
         $query = $db->getQuery(true)
             ->update($db->quoteName('#__mothership_payments'))
             ->set($db->quoteName('checked_out') . ' = 0')
             ->set($db->quoteName('checked_out_time') . ' = ' . $db->quote('0000-00-00 00:00:00'))
             ->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
-        
         $db->setQuery($query);
-    
-        try {
-            $db->execute();
-            return true;
-        }
-        catch (\Exception $e) {
-            $this->setError($e->getMessage());
-            return false;
-        }
-    }
-
-    public function delete($ids = [])
-    {
-        // Ensure we have valid IDs
-        if (empty($ids)) {
-            return false;
-        }
-
-        // Convert a single ID into an array
-        if (!is_array($ids)) {
-            $ids = [$ids];
-        }
-
-        // Sanitize IDs to integers
-        $ids = array_map('intval', $ids);
-
-        $db = $this->getDatabase();
-
-        // Build the query using an IN clause for multiple IDs
-        $query = $db->getQuery(true)
-            ->delete($db->quoteName('#__mothership_payments'))
-            ->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
-
-        $db->setQuery($query);
-
         try {
             $db->execute();
             return true;
@@ -198,4 +172,66 @@ class AccountsModel extends ListModel
         }
     }
 
+    /**
+     * Deletes the specified payments and their related invoice payment links.
+     *
+     * @param array|int $ids An array of payment IDs or a single payment ID to delete.
+     * @return bool True on success, false on failure.
+     */
+    public function delete($ids = [])
+    {
+        if (empty($ids)) {
+            return false;
+        }
+
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+
+        $ids = array_map('intval', $ids);
+        $db = $this->getDatabase();
+
+        try {
+            $db->transactionStart();
+
+            foreach ($ids as $paymentId) {
+                // Get related invoice IDs
+                $query = $db->getQuery(true)
+                    ->select($db->quoteName('invoice_id'))
+                    ->from($db->quoteName('#__mothership_invoice_payment'))
+                    ->where($db->quoteName('payment_id') . ' = :paymentId')
+                    ->bind(':paymentId', $paymentId, ParameterType::INTEGER);
+                $db->setQuery($query);
+                $invoiceIds = $db->loadColumn();
+
+                // Delete invoice_payment links
+                $query = $db->getQuery(true)
+                    ->delete($db->quoteName('#__mothership_invoice_payment'))
+                    ->where($db->quoteName('payment_id') . ' = :paymentId')
+                    ->bind(':paymentId', $paymentId, ParameterType::INTEGER);
+                $db->setQuery($query);
+                $db->execute();
+
+                // Recalculate invoice statuses
+                foreach ($invoiceIds as $invoiceId) {
+                    // PaymentHelper::recalculateInvoiceStatus((int) $invoiceId);
+                }
+
+                // Delete the payment itself
+                $query = $db->getQuery(true)
+                    ->delete($db->quoteName('#__mothership_payments'))
+                    ->where($db->quoteName('id') . ' = :paymentId')
+                    ->bind(':paymentId', $paymentId, ParameterType::INTEGER);
+                $db->setQuery($query);
+                $db->execute();
+            }
+
+            $db->transactionCommit();
+            return true;
+        } catch (\Exception $e) {
+            $db->transactionRollback();
+            $this->setError($e->getMessage());
+            return false;
+        }
+    }
 }

@@ -24,7 +24,7 @@ class InvoicesModel extends ListModel
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = [
-                'cid', 'i.id',
+                'id', 'i.id',
                 'client_name', 'c.name',
                 'account_name', 'a.name',
                 'number', 'i.number',
@@ -59,59 +59,84 @@ class InvoicesModel extends ListModel
     {
         // Compile the store id.
         $id .= ':' . $this->getState('filter.search');
-        $id .= ':' . $this->getState('filter.province');
-        $id .= ':' . $this->getState('filter.purchase_type');
 
         return parent::getStoreId($id);
     }
 
     protected function getListQuery()
     {
-        // Get a new query object.
-        $db    = $this->getDatabase();
+        $db = $this->getDatabase();
         $query = $db->getQuery(true);
 
-        // Select the required fields from the table.
         $query->select(
             $this->getState(
-            'list.select',
-            [
-            $db->quoteName('i.id'),
-            $db->quoteName('i.number'),
-            $db->quoteName('i.client_id'),
-            $db->quoteName('c.name', 'client_name'),
-            $db->quoteName('i.account_id'),
-            $db->quoteName('a.name', 'account_name'),
-            $db->quoteName('i.total'),
-            $db->quoteName('i.created'),
-            $db->quoteName('i.checked_out_time'),
-            $db->quoteName('i.checked_out'),
-            ]
+                'list.select',
+                [
+                    $db->quoteName('i.id'),
+                    $db->quoteName('i.number'),
+                    $db->quoteName('i.client_id'),
+                    $db->quoteName('c.name', 'client_name'),
+                    $db->quoteName('i.account_id'),
+                    $db->quoteName('a.name', 'account_name'),
+                    $db->quoteName('i.total'),
+                    $db->quoteName('i.checked_out_time'),
+                    $db->quoteName('i.checked_out'),
+                    $db->quoteName('pay.payment_ids'),
+                    
+
+                    // Invoice status (Draft, Opened, etc.)
+                    'CASE ' . $db->quoteName('i.status') . 
+                        ' WHEN 1 THEN ' . $db->quote('Draft') . 
+                        ' WHEN 2 THEN ' . $db->quote('Opened') . 
+                        ' WHEN 3 THEN ' . $db->quote('Cancelled') . 
+                        ' WHEN 4 THEN ' . $db->quote('Closed') .
+                        ' ELSE ' . $db->quote('Unknown') . ' END AS ' . $db->quoteName('status'),
+
+                    // 👇 Add total_paid and payment_status
+                    'COALESCE(pay.total_paid, 0) AS total_paid',
+                    'CASE' .
+                        ' WHEN COALESCE(pay.total_paid, 0) <= 0 THEN ' . $db->quote('Unpaid') .
+                        ' WHEN COALESCE(pay.total_paid, 0) < i.total THEN ' . $db->quote('Partially Paid') .
+                        ' ELSE ' . $db->quote('Paid') .
+                    ' END AS payment_status'
+                ]
             )
         );
 
         $query->from($db->quoteName('#__mothership_invoices', 'i'))
-              ->join('LEFT', $db->quoteName('#__mothership_clients', 'c') . ' ON ' . $db->quoteName('i.client_id') . ' = ' . $db->quoteName('c.id'))
-              ->join('LEFT', $db->quoteName('#__mothership_accounts', 'a') . ' ON ' . $db->quoteName('i.account_id') . ' = ' . $db->quoteName('a.id'));
+            ->join('LEFT', $db->quoteName('#__mothership_clients', 'c') . ' ON ' . $db->quoteName('i.client_id') . ' = ' . $db->quoteName('c.id'))
+            ->join('LEFT', $db->quoteName('#__mothership_accounts', 'a') . ' ON ' . $db->quoteName('i.account_id') . ' = ' . $db->quoteName('a.id'))
 
-        // No filter by province as there is no 'state' column.
+            // 👇 JOIN: Pull total completed payments per invoice
+            ->join(
+                'LEFT',
+                '(SELECT ip.invoice_id,
+                         SUM(ip.applied_amount) AS total_paid,
+                         GROUP_CONCAT(p.id ORDER BY p.payment_date) AS payment_ids
+                  FROM ' . $db->quoteName('#__mothership_invoice_payment', 'ip') . '
+                  JOIN ' . $db->quoteName('#__mothership_payments', 'p') . ' ON ip.payment_id = p.id
+                  WHERE p.status = 2
+                  GROUP BY ip.invoice_id) AS pay
+                ON pay.invoice_id = i.id'
+            );
 
-        // Filter by search in invoice name (or by invoice id if prefixed with "cid:").
+        // Filter by ID search
         if ($search = trim($this->getState('filter.search', ''))) {
-            if (stripos($search, 'cid:') === 0) {
+            if (stripos($search, 'id:') === 0) {
                 $search = (int) substr($search, 4);
                 $query->where($db->quoteName('i.id') . ' = :search')
-                      ->bind(':search', $search, ParameterType::INTEGER);
+                    ->bind(':search', $search, ParameterType::INTEGER);
             }
         }
 
-        // Add the ordering clause.
         $query->order(
-            $db->quoteName($db->escape($this->getState('list.ordering', 'i.id'))) . ' ' . $db->escape($this->getState('list.direction', 'ASC'))
+            $db->quoteName($db->escape($this->getState('list.ordering', 'i.id'))) . ' ' .
+            $db->escape($this->getState('list.direction', 'ASC'))
         );
 
         return $query;
     }
+
 
     public function getItems()
     {
@@ -133,7 +158,6 @@ class InvoicesModel extends ListModel
 
         // Since "published" doesn't apply for Invoices,
         // we simply return the items without additional counting logic.
-
         $this->cache[$store] = $items;
 
         return $this->cache[$store];
@@ -175,36 +199,89 @@ class InvoicesModel extends ListModel
         }
     }
 
-    public function delete($ids = [])
+    public function canDeleteInvoice($record): bool
     {
-        // Ensure we have valid IDs
-        if (empty($ids)) {
-            return false;
+        $id = (int) ($record->id ?? $record['id'] ?? 0);
+        $status = (int) ($record->status ?? $record['status'] ?? null);
+
+        if ($status !== 1) {
+            return false; // Only allow drafts
         }
 
-        // Convert a single ID into an array
+        return true;
+    }
+
+    public function delete($ids = [])
+    {
+        if (empty($ids)) {
+            return [
+                'deleted' => [],
+                'skipped' => [],
+            ];
+        }
+
         if (!is_array($ids)) {
             $ids = [$ids];
         }
 
-        // Sanitize IDs to integers
         $ids = array_map('intval', $ids);
-
         $db = $this->getDatabase();
 
-        // Build the query using an IN clause for multiple IDs
-        $query = $db->getQuery(true)
-            ->delete($db->quoteName('#__mothership_invoices'))
-            ->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
+        $deletableIds = [];
+        $skippedIds   = [];
 
-        $db->setQuery($query);
+        foreach ($ids as $id) {
+            $query = $db->getQuery(true)
+                ->select($db->quoteName(['id', 'status']))
+                ->from($db->quoteName('#__mothership_invoices'))
+                ->where($db->quoteName('id') . ' = :id')
+                ->bind(':id', $id, ParameterType::INTEGER);
+
+            $record = $db->setQuery($query)->loadObject();
+
+            if ($record && $this->canDeleteInvoice($record)) {
+                $deletableIds[] = $id;
+            } else {
+                $skippedIds[] = $id;
+            }
+        }
+
+        if (empty($deletableIds)) {
+            return [
+                'deleted' => [],
+                'skipped' => $skippedIds,
+            ];
+        }
 
         try {
-            $db->execute();
-            return true;
+            $db->transactionStart();
+
+            // Delete linked invoice_payment rows
+            $query = $db->getQuery(true)
+                ->delete($db->quoteName('#__mothership_invoice_payment'))
+                ->where($db->quoteName('invoice_id') . ' IN (' . implode(',', $deletableIds) . ')');
+            $db->setQuery($query)->execute();
+
+            // Delete invoices
+            $query = $db->getQuery(true)
+                ->delete($db->quoteName('#__mothership_invoices'))
+                ->where($db->quoteName('id') . ' IN (' . implode(',', $deletableIds) . ')');
+            $db->setQuery($query)->execute();
+
+            $db->transactionCommit();
+
+            return [
+                'deleted' => $deletableIds,
+                'skipped' => $skippedIds,
+            ];
         } catch (\Exception $e) {
+            $db->transactionRollback();
             $this->setError($e->getMessage());
-            return false;
+
+            return [
+                'deleted' => [],
+                'skipped' => $ids,
+            ];
         }
     }
 

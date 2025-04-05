@@ -15,6 +15,7 @@ use Joomla\CMS\MVC\Model\AdminModel;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\Versioning\VersionableModelTrait;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Language\Text;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -81,6 +82,28 @@ class AccountModel extends AdminModel
         return $this->getCurrentUser()->authorise('core.edit', 'com_mothership');
     }
 
+    public function canDeleteAccount(int $clientId): bool
+    {
+        $db = Factory::getDbo();
+
+        $hasInvoices = $db->setQuery(
+            $db->getQuery(true)
+                ->select('COUNT(*)')
+                ->from('#__mothership_invoices')
+                ->where('account_id = ' . $clientId)
+        )->loadResult();
+
+        if ($hasInvoices) {
+            Factory::getApplication()->enqueueMessage(
+                Text::sprintf('COM_MOTHERSHIP_ERROR_ACCOUNT_HAS_DEPENDENCIES', count($hasInvoices)),
+                'error'
+            );
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * Method to get the record form.
      *
@@ -143,10 +166,10 @@ class AccountModel extends AdminModel
         $table = $this->getTable();
 
         Log::add('Data received for saving: ' . json_encode($data), Log::DEBUG, 'com_mothership');
-    
+
         if (!$table->bind($data)) {
             $error = $table->getError();
-            Log::add('Bind failed: ' . $error, Log::ERROR, 'com_mothership');
+            Log::add("Bind failed: {$error}", Log::ERROR, 'com_mothership');
             $this->setError($error);
             return false;
         }
@@ -155,23 +178,48 @@ class AccountModel extends AdminModel
         if (empty($table->created)) {
             $table->created = Factory::getDate()->toSql();
         }
-    
+
         if (!$table->check()) {
             $error = $table->getError();
-            Log::add('Check failed: ' . $error, Log::ERROR, 'com_mothership');
+            Log::add("Check failed: {$error}", Log::ERROR, 'com_mothership');
             $this->setError($error);
             return false;
         }
-    
+
         if (!$table->store()) {
             $error = $table->getError();
-            Log::add('Store failed: ' . $error, Log::ERROR, 'com_mothership');
+            Log::add("Store failed: {$error}", Log::ERROR, 'com_mothership');
             $this->setError($error);
             return false;
         }
-    
+
+        // Set the new record ID into the model state
+        $this->setState($this->getName() . '.id', $table->id);
+
         return true;
     }
-    
+
+    /**
+     * Cancel editing by checking in the record.
+     *
+     * @param   int|null  $pk  The primary key of the record to check in. If null, it attempts to load it from the state.
+     *
+     * @return  bool  True on success, false on failure.
+     */
+    public function cancelEdit($pk = null)
+    {
+        // Use the provided primary key or retrieve it from the model state
+        $pk = $pk ? $pk : (int) $this->getState($this->getName() . '.id');
+
+        if ($pk) {
+            $table = $this->getTable();
+            if (!$table->checkin($pk)) {
+                $this->setError($table->getError());
+                return false;
+            }
+        }
+
+        return true;
+    }
 
 }

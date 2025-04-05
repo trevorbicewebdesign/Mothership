@@ -47,8 +47,6 @@ class AccountTable extends Table implements VersionableTableInterface
     {
         $this->typeAlias = 'com_mothership.account';
 
-        $this->setColumnAlias('published', 'state');
-
         parent::__construct('#__mothership_accounts', 'id', $db, $dispatcher);
     }
 

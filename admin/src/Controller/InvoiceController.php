@@ -8,6 +8,8 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Mpdf\Mpdf;
 use Joomla\CMS\Layout\FileLayout;
+use TrevorBice\Component\Mothership\Administrator\Helper\AccountHelper;
+use TrevorBice\Component\Mothership\Administrator\Helper\MothershipHelper;
 
 
 \defined('_JEXEC') or die;
@@ -25,66 +27,13 @@ class InvoiceController extends FormController
         return parent::display();
     }
 
-    public function getAccountsForClient()
+    // Returns a list of accounts for a given client in JSON format
+    public function getAccountsList()
     {
-        $app = \Joomla\CMS\Factory::getApplication();
-        $input = $app->input;
-        $clientId = $input->getInt('client_id');
-
-        $db = Factory::getDbo();
-        $query = $db->getQuery(true)
-            ->select('id, name')
-            ->from('#__mothership_accounts')
-            ->where('client_id = ' . (int) $clientId)
-            ->order('name ASC');
-        $db->setQuery($query);
-
-        $accounts = $db->loadAssocList();
-
-        echo new \Joomla\CMS\Response\JsonResponse($accounts);
-        $app->close();
-    }
-
-    public function processPayment($invoice)
-    {
-        // Load payment plugins
-        PluginHelper::importPlugin('payment');
-
-        $dispatcher = \Joomla\CMS\Factory::getApplication();
-        $results = $dispatcher->trigger('onMothershipPaymentRequest', [$invoice]);
-
-        foreach ($results as $result) {
-            if (!empty($result['status']) && $result['status'] === 'success') {
-                return $result; // Payment succeeded
-            }
-        }
-
-        return ['status' => 'failed', 'message' => 'Payment failed or no handler found.'];
-    }
-
-    public function pay()
-    {
-        $app = Factory::getApplication();
-        $id = $app->input->getInt('id');
-
-        $model = $this->getModel('Invoice');
-        $invoice = $model->getItem($id);
-
-        if (!$invoice) {
-            $app->enqueueMessage('Invoice not found.', 'error');
-            $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoices', false));
-            return;
-        }
-
-        $result = $model->processPayment($invoice);
-
-        if ($result['status'] === 'success') {
-            $app->enqueueMessage('Payment successful!');
-        } else {
-            $app->enqueueMessage('Payment failed: ' . ($result['message'] ?? 'Unknown error'), 'error');
-        }
-
-        $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoices', false));
+        $client_id = Factory::getApplication()->input->getInt('client_id');
+        $accountList = AccountHelper::getAccountListOptions($client_id);
+        echo json_encode($accountList);
+        Factory::getApplication()->close();
     }
 
     public function previewPdf()
@@ -166,9 +115,9 @@ class InvoiceController extends FormController
             // Determine which task was requested to redirect back to the appropriate edit page
             $task = $input->getCmd('task');
             if ($task === 'apply') {
-            $redirectUrl = Route::_('index.php?option=com_mothership&view=invoice&layout=edit&id=' . $data['id'], false);
+                $redirectUrl = Route::_('index.php?option=com_mothership&view=invoice&layout=edit&id=' . $data['id'], false);
             } else {
-            $redirectUrl = Route::_('index.php?option=com_mothership&view=invoice&layout=edit', false);
+                $redirectUrl = Route::_('index.php?option=com_mothership&view=invoices', false);
             }
 
             $this->setRedirect($redirectUrl);
@@ -183,14 +132,28 @@ class InvoiceController extends FormController
 
         // If "Apply" (i.e., invoice.apply) is clicked, remain on the edit page.
         if ($task === 'apply') {
-
-            $redirectUrl = Route::_('index.php?option=com_mothership&view=invoice&layout=edit&id=' . $data['id'], false);
+            $id = !empty($data['id']) ? $data['id'] : $model->getState($model->getName() . '.id');
+            $redirectUrl = Route::_('index.php?option=com_mothership&view=invoice&layout=edit&id=' . $id, false);
         } else {
             // If "Save" (i.e., invoice.save) is clicked, return to the invoices list.
             $redirectUrl = Route::_('index.php?option=com_mothership&view=invoices', false);
         }
 
         $this->setRedirect($redirectUrl);
+        return true;
+    }
+
+    public function cancel($key = null)
+    {
+        $model = $this->getModel('Invoice');
+        $id = $this->input->getInt('id');
+        $model->cancelEdit($id);
+
+        $defaultRedirect = Route::_('index.php?option=com_mothership&view=invoices', false);
+        $returnRedirect = MothershipHelper::getReturnRedirect($defaultRedirect);
+
+        $this->setRedirect($returnRedirect);
+
         return true;
     }
 }

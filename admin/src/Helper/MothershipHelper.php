@@ -29,122 +29,6 @@ use Joomla\Database\ParameterType;
  */
 class MothershipHelper extends ContentHelper
 {
-    /**
-     * Retrieves a list of client options for a select dropdown.
-     *
-     * This method queries the database for a list of clients, sorts them by name,
-     * and returns an array of options suitable for use in a select dropdown.
-     *
-     * @return array An array of select options, each option being an associative array
-     *               with 'value' and 'text' keys.
-     */
-    public static function getClientListOptions()
-    {
-        $db = Factory::getContainer()->get(\Joomla\Database\DatabaseInterface::class);
-
-        $query = $db->getQuery(true)
-            ->select($db->quoteName(['id', 'name']))
-            ->from($db->quoteName('#__mothership_clients'))
-            ->order($db->quoteName('name') . ' ASC');
-
-        $db->setQuery($query);
-        $clients = $db->loadObjectList();
-
-        $options = [];
-
-        // Add placeholder option
-        $options[] = HTMLHelper::_('select.option', '', Text::_('COM_MOTHERSHIP_SELECT_CLIENT'));
-
-        // Build options array
-        if ($clients) {
-            foreach ($clients as $client) {
-                $options[] = HTMLHelper::_('select.option', $client->id, $client->name);
-            }
-        }
-
-        return $options;
-    }
-
-    public static function getAccountListOptions($client_id=NULL)
-    {
-        $db = Factory::getContainer()->get(\Joomla\Database\DatabaseInterface::class);
-
-        $query = $db->getQuery(true)
-            ->select($db->quoteName(['id', 'name']))
-            ->from($db->quoteName('#__mothership_accounts'));
-
-        if ($client_id !== null) {
-            $query->where($db->quoteName('client_id') . ' = ' . $db->quote($client_id));
-        }
-
-        $query->order($db->quoteName('name') . ' ASC');
-
-        $db->setQuery($query);
-        $accounts = $db->loadObjectList();
-
-        $options = [];
-
-        // Add placeholder option
-        $options[] = HTMLHelper::_('select.option', '', Text::_('COM_MOTHERSHIP_SELECT_ACCOUNT'));
-
-        // Build options array
-        if ($accounts) {
-            foreach ($accounts as $account) {
-                $options[] = HTMLHelper::_('select.option', $account->id, $account->name);
-            }
-        }
-
-        return $options;
-    }
-
-    public function getClient($client_id)
-    {
-        $db = Factory::getContainer()->get(\Joomla\Database\DatabaseInterface::class);
-
-        $query = $db->getQuery(true)
-            ->select($db->quoteName([
-                'id', 
-                'name'
-            ]))
-            ->from($db->quoteName('#__mothership_clients'))
-            ->where($db->quoteName('id') . ' = ' . $db->quote($client_id));
-
-        $db->setQuery($query);
-        $client = $db->loadObject();
-
-        return $client;
-    }
-
-    public static function getInvoiceStatus($status_id)
-    {
-        $db = Factory::getContainer()->get(\Joomla\Database\DatabaseInterface::class);
-
-        $query = $db->getQuery(true)
-            ->select($db->quoteName('status'))
-            ->from($db->quoteName('#__mothership_invoices'))
-            ->where($db->quoteName('id') . ' = ' . $db->quote($status_id));
-
-        $db->setQuery($query);
-        $status = $db->loadResult();
-
-        // Transform the status from integer to string
-        switch ($status) {
-            case 0:
-                $status = 'Draft';
-                break;
-            case 1:
-                $status = 'Opened';
-                break;
-            case 2:
-                $status = 'Late';
-                break;
-            default:
-                $status = 'Paid';
-                break;
-        }
-
-        return $status;
-    }
 
     /**
      * Get the return URL from the request or form.
@@ -162,15 +46,41 @@ class MothershipHelper extends ContentHelper
             if (!empty($data['return'])) {
                 $return = base64_decode($data['return'], true);
                 if ($return !== false) {
-                    $return = urldecode($return);
+                    $return = htmlspecialchars_decode($return);
                 }
             }
         }
 
-        if ($return && filter_var($return, FILTER_VALIDATE_URL)) {
+        if (!empty($return)) {
             return $return;
         }
 
         return $default;
     }
+
+    public static function getMothershipOptions($option_name = null)
+    {
+        $params = ComponentHelper::getParams('com_mothership');
+        $options = [];
+            
+        $options['company_name'] = $params->get('company_name', '');
+        $options['company_email'] = $params->get('company_email', '');
+        $options['company_address_1'] = $params->get('company_address_1', '');
+        $options['company_address_2'] = $params->get('company_address_2', '');
+        $options['company_city'] = $params->get('company_city', '');
+        $options['company_state'] = $params->get('company_state', '');
+        $options['company_zip'] = $params->get('company_zip', '');
+        $options['company_phone'] = $params->get('company_phone', '');
+        $options['company_default_rate'] = $params->get('company_default_rate', '');
+
+        if($option_name == null) {
+            return $options;
+        }
+        if (array_key_exists($option_name, $options)) {
+            return $options[$option_name];
+        }
+
+        return $options;
+    }
+    
 }

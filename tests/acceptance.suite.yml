@@ -1,0 +1,55 @@
+actor: AcceptanceTester
+modules:
+  enabled:
+    - Helper\DbHelper
+    - WebDriver
+    - Tests\Support\Helper\Acceptance
+    - Asserts
+    - Filesystem
+  config:
+      WebDriver:
+        url: '%LIVE_SITE%'
+        browser: chrome
+        host: 'localhost'
+        port: '4444'
+        path: '/'
+        restart: true
+        clear_cookies: true
+        window_size: '%WINDOW_SIZE%'
+        capabilities:
+          goog:chromeOptions: 
+            args: [
+              "--start-maximized", 
+              "--ignore-certificate-errors", 
+              "--headless", 
+              "--window-size=${WINDOW_SIZE}", 
+              "--no-sandbox", 
+              "--disable-gpu"
+              ]
+            prefs: 
+              download.default_directory: 'tests/_output/'
+              download.prompt_for_download: false
+              download.directory_upgrade: true
+              safebrowsing.enabled: false
+              safebrowsing.disable_download_protection: true
+              Page.setDownloadBehavior: {behavior: 'allow', downloadPath: 'tests/_output/'}
+      Helper\DbHelper:
+        dsn: '%DSN%'
+        dbname: '%DBNAME%'
+        host: '%DBHOST%'
+        port: '%DBPORT%'
+        user: '%DBUSER%'
+        password: '%DBPASS%'
+        dump: '%DBDUMP%'
+        populate: true
+        populator: '%DBPOPULATOR%'
+        cleanup: true
+        reconnect: true
+        urlReplacement: false
+        waitlock: 5
+        createIfNotExists: true
+        
+
+
+
+

@@ -52,6 +52,10 @@ class ClientModel extends AdminModel
             return false;
         }
 
+        if (!$this->canDeleteClient($record->id)) {
+            return false;
+        }
+
         if (!empty($record->catid)) {
             return $this->getCurrentUser()->authorise('core.delete', 'com_mothership.category.' . (int) $record->catid);
         }
@@ -80,6 +84,29 @@ class ClientModel extends AdminModel
     {
         return $this->getCurrentUser()->authorise('core.edit', 'com_mothership');
     }
+
+    public function canDeleteClient(int $clientId): bool
+    {
+        $db = Factory::getDbo();
+
+        $hasAccounts = $db->setQuery(
+            $db->getQuery(true)
+                ->select('COUNT(*)')
+                ->from('#__mothership_accounts')
+                ->where('client_id = ' . $clientId)
+        )->loadResult();
+
+        if ($hasAccounts ) {
+            Factory::getApplication()->enqueueMessage(
+                Text::sprintf('COM_MOTHERSHIP_ERROR_CLIENT_HAS_DEPENDENCIES', count($hasAccounts)),
+                'error'
+            );
+            return false;
+        }
+
+        return true;
+    }
+
 
     /**
      * Method to get the record form.
@@ -179,5 +206,26 @@ class ClientModel extends AdminModel
         return true;
     }
     
+    /**
+     * Cancel editing by checking in the record.
+     *
+     * @param   int|null  $pk  The primary key of the record to check in. If null, it attempts to load it from the state.
+     *
+     * @return  bool  True on success, false on failure.
+     */
+    public function cancelEdit($pk = null)
+    {
+        // Use the provided primary key or retrieve it from the model state
+        $pk = $pk ? $pk : (int) $this->getState($this->getName() . '.id');
 
+        if ($pk) {
+            $table = $this->getTable();
+            if (!$table->checkin($pk)) {
+                $this->setError($table->getError());
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

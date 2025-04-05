@@ -7,7 +7,7 @@
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <authorEmail>trevorbicewebdesign@gmail.com</authorEmail>
     <authorUrl>https://webdesign.trevorbice.com</authorUrl>
-    <version>0.0.6</version>
+    <version>0.0.10</version>
     <description>COM_MOTHERSHIP_XML_DESCRIPTION</description>
     <namespace path="src">TrevorBice\Component\Mothership</namespace>
     <install>
@@ -20,12 +20,21 @@
             <file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file>
         </sql>
     </uninstall>
+    <updates>
+        <update version="0.0.8">
+            <sql>
+                <file driver="mysqli" charset="utf8">sql/update-0.0.8.mysql.utf8.sql</file>
+            </sql>
+        </update>
+    </updates>
     
     <config>
         <menu>
             <option value="dashboard">Mothership Dashboard</option>
             <option value="accounts">Mothership Accounts</option>
             <option value="invoices">Mothership Invoices</option>
+            <option value="payments">Mothership Payments</option>
+            <option value="clients">Mothership Domains</option>
         </menu>
     </config>
     <administration>
@@ -34,6 +43,8 @@
             <menu link="option=com_mothership&amp;view=clients" view="clients">com_mothership_clients</menu>
             <menu link="option=com_mothership&amp;view=accounts" view="accounts">com_mothership_accounts</menu>
             <menu link="option=com_mothership&amp;view=invoices" view="invoices">com_mothership_invoices</menu>
+            <menu link="option=com_mothership&amp;view=payments" view="payments">com_mothership_payments</menu>
+            <menu link="option=com_mothership&amp;view=domains" view="domains">com_mothership_domains</menu>
         </submenu>
 
         <files folder="admin">

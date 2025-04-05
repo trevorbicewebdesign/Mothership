@@ -2,8 +2,20 @@
 <form addfieldprefix="TrevorBice\Component\Mothership\Administrator\Field">
 	<fieldset name="details">
 		<field name="id" type="text" default="0" readonly="true" class="readonly" label="JGLOBAL_FIELD_ID_LABEL" description="JGLOBAL_FIELD_ID_DESC" />
-		<field name="name" type="text" default="" readonly="" class="input-xxlarge input-large-text" label="COM_MOTHERSHIP_FIELD_ACCOUNT_NAME_LABEL" description="COM_MOTHERSHIP_FIELD_ACCOUNT_NAME_DESC" />
-		<field name="client_id" type="clientlist" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_CLIENT_ID_LABEL" description="COM_MOTHERSHIP_FIELD_CLIENT_NAME_DESC" />
-		<field name="created" type="calendar" readonly="false" class="validate-date" label="COM_MOTHERSHIP_FIELD_ACCOUNT_CREATED_LABEL" description="COM_MOTHERSHIP_FIELD_ACCOUNT_CREATED_DESC" default="" format="%Y-%m-%d" filter="user_utc" />
+		<field name="client_id" type="clientlist" default="0" required="true" class="input-xxlarge" label="COM_MOTHERSHIP_FIELD_PAYMENT_CLIENT_ID_LABEL" description="COM_MOTHERSHIP_FIELD_PAYMENT_CLIENT_ID_DESC" />
+		<field name="account_id" type="accountlist" default="0" required="true" class="input-xxlarge" label="COM_MOTHERSHIP_FIELD_PAYMENT_ACCOUNT_ID_LABEL" description="COM_MOTHERSHIP_FIELD_PAYMENT_ACCOUNT_ID_DESC" />
+		<field name="payment_date" type="calendar" default="now" class="validate-date" label="COM_MOTHERSHIP_FIELD_PAYMENT_PAYMENT_DATE_LABEL" description="COM_MOTHERSHIP_FIELD_PAYMENT_PAYMENT_DATE_DESC" format="%Y-%m-%d %H:%M:%S" filter="user_utc" />
+		<field name="amount" type="text" default="0.00" required="true" class="input-xxlarge" label="COM_MOTHERSHIP_FIELD_PAYMENT_AMOUNT_LABEL" description="COM_MOTHERSHIP_FIELD_PAYMENT_AMOUNT_DESC" />
+		<field name="fee_amount" type="text" default="0.00" required="true" class="input-xxlarge" label="COM_MOTHERSHIP_FIELD_FEE_AMOUNT_LABEL" description="COM_MOTHERSHIP_FIELD_FEE_AMOUNT_DESC" />
+		<field name="fee_passed_on" type="radio" default="1" required="true" class="" label="COM_MOTHERSHIP_FIELD_FEE_PASSED_ON_LABEL" description="COM_MOTHERSHIP_FIELD_FEE_PASSED_ON_DESC">
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+		<field name="payment_method" type="text" default="" class="input-xxlarge" label="COM_MOTHERSHIP_FIELD_PAYMENT_METHOD_LABEL" description="COM_MOTHERSHIP_FIELD_PAYMENT_METHOD_DESC" />
+		<field name="transaction_id" type="text" default="" class="input-xxlarge" label="COM_MOTHERSHIP_FIELD_TRANSACTION_ID_LABEL" description="COM_MOTHERSHIP_FIELD_TRANSACTION_ID_DESC" />
+		
+		<field name="status" type="paymentstatus" default="1" readonly="" class="" label="COM_MOTHERSHIP_FIELD_PAYMENT_STATUS_LABEL" description="COM_MOTHERSHIP_FIELD_PAYMENT_STATUS_DESC" />
+		<field name="created_at" type="calendar" default="" readonly="true" class="validate-date" label="COM_MOTHERSHIP_FIELD_CREATED_AT_LABEL" description="COM_MOTHERSHIP_FIELD_CREATED_AT_DESC" format="%Y-%m-%d %H:%M:%S" filter="user_utc" />
+		<field name="updated_at" type="calendar" default="" readonly="true" class="validate-date" label="COM_MOTHERSHIP_FIELD_UPDATED_AT_LABEL" description="COM_MOTHERSHIP_FIELD_UPDATED_AT_DESC" format="%Y-%m-%d %H:%M:%S" filter="user_utc" />
 	</fieldset>
 </form>

@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: joomla
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  joomla:
+    image: joomla:5.0-php8.2-apache
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    environment:
+      JOOMLA_DB_HOST: db
+      JOOMLA_DB_USER: root
+      JOOMLA_DB_PASSWORD: root
+      JOOMLA_DB_NAME: joomla
+    volumes:
+      - ./src/admin:/var/www/html/administrator/components/com_mothership
+      - ./src/site:/var/www/html/components/com_mothership
+
+volumes:
+  db_data:

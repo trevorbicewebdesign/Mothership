@@ -2,11 +2,11 @@
 <form>
     <fields name="items">
 		<field name="name" type="text" label="Item Name" readonly="false" required="true" />
-        <field name="description" type="text" label="Description" size="40" required="true" />
-		<field name="hours" type="number" label="Hours" step="0.01" required="true" />
-		<field name="minutes" type="number" label="Minutes" step="0.01" required="true" />
-        <field name="quantity" type="number" label="Quantity" step="0.01" required="true" />
-        <field name="rate" type="number" label="Rate" step="0.01" required="true" />
-        <field name="total" type="number" label="Total" step="0.01" readonly="true" />
+        <field name="description" type="text" label="Description" size="40" />
+		<field name="hours" type="number" label="Hours" required="true" />
+		<field name="minutes" type="number" label="Minutes" required="true" />
+        <field name="quantity" type="text" label="Quantity" required="true" />
+        <field name="rate" type="text" label="Rate" required="true" />
+        <field name="subtotal" type="number" label="Total" readonly="true" />
     </fields>
 </form>

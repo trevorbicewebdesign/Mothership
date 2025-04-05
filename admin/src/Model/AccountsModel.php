@@ -24,7 +24,7 @@ class AccountsModel extends ListModel
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = [
-                'cid', 'a.id',
+                'id', 'a.id',
                 'name', 'a.name',
                 'client_name', 'c.name',
                 'checked_out', 'a.checked_out',
@@ -54,8 +54,6 @@ class AccountsModel extends ListModel
     {
         // Compile the store id.
         $id .= ':' . $this->getState('filter.search');
-        $id .= ':' . $this->getState('filter.province');
-        $id .= ':' . $this->getState('filter.purchase_type');
 
         return parent::getStoreId($id);
     }
@@ -66,9 +64,6 @@ class AccountsModel extends ListModel
         $db    = $this->getDatabase();
         $query = $db->getQuery(true);
 
-        // Get the default purchase type from the component parameters.
-        $defaultPurchase = (int) ComponentHelper::getParams('com_mothership')->get('purchase_type', 3);
-
         // Select the required fields from the table.
         $query->select(
             $this->getState(
@@ -76,21 +71,18 @@ class AccountsModel extends ListModel
             [
             $db->quoteName('a.id'),
             $db->quoteName('a.name'),
-            $db->quoteName('a.primary_domain'),
             $db->quoteName('a.rate'),
             $db->quoteName('a.client_id'),
             $db->quoteName('a.created'),
             $db->quoteName('a.checked_out_time'),
             $db->quoteName('a.checked_out'),
-            $db->quoteName('c.name', 'client_name') // Adding client_name from the client table with alias
+            $db->quoteName('c.name', 'client_name')
             ]
             )
         );
 
         $query->from($db->quoteName('#__mothership_accounts', 'a'))
               ->join('LEFT', $db->quoteName('#__mothership_clients', 'c') . ' ON ' . $db->quoteName('a.client_id') . ' = ' . $db->quoteName('c.id')); // Joining the client table
-
-        // No filter by province as there is no 'state' column.
 
         // Filter by search in account name (or by account id if prefixed with "cid:").
         if ($search = trim($this->getState('filter.search', ''))) {
@@ -192,20 +184,32 @@ class AccountsModel extends ListModel
 
         $db = $this->getDatabase();
 
-        // Build the query using an IN clause for multiple IDs
+        // First, unlink any payments from these accounts
+        $query = $db->getQuery(true)
+            ->update($db->quoteName('#__mothership_payments'))
+            ->set($db->quoteName('account_id') . ' = NULL')
+            ->where($db->quoteName('account_id') . ' IN (' . implode(',', $ids) . ')');
+
+        try {
+            $db->setQuery($query)->execute();
+        } catch (\Exception $e) {
+            $this->setError('Failed to unlink payments: ' . $e->getMessage());
+            return false;
+        }
+
+        // Then delete the accounts
         $query = $db->getQuery(true)
             ->delete($db->quoteName('#__mothership_accounts'))
             ->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
 
-        $db->setQuery($query);
-
         try {
-            $db->execute();
+            $db->setQuery($query)->execute();
             return true;
         } catch (\Exception $e) {
-            $this->setError($e->getMessage());
+            $this->setError('Failed to delete accounts: ' . $e->getMessage());
             return false;
         }
     }
+
 
 }

@@ -25,61 +25,48 @@ class AccountController extends FormController
 
     public function save($key = null, $urlVar = null)
     {
-        // Get the Joomla application and input
-        $app = Factory::getApplication();
+        $app   = Factory::getApplication();
         $input = $app->input;
-
-        // Get the submitted form data
-        $data = $input->get('jform', [], 'array');
-
-        // Get the model
+        $data  = $input->get('jform', [], 'array');
         $model = $this->getModel('Account');
 
         if (!$model->save($data)) {
-            // Error occurred, redirect back to form with error messages
             $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ACCOUNT_SAVE_FAILED'), 'error');
             $app->enqueueMessage($model->getError(), 'error');
-
-            // Determine which task was requested to redirect back to the appropriate edit page
-            $task = $input->getCmd('task');
-            if ($task === 'apply') {
-            $redirectUrl = Route::_('index.php?option=com_mothership&view=account&layout=edit&id=' . $data['id'], false);
-            } else {
-            $redirectUrl = Route::_('index.php?option=com_mothership&view=account&layout=edit', false);
-            }
-
-            $this->setRedirect($redirectUrl);
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=account&layout=edit', false));
             return false;
         }
 
-        // Success message
         $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_ACCOUNT_SAVED_SUCCESSFULLY', "<strong>{$data['name']}</strong>"), 'message');
 
-        // Determine which task was requested
         $task = $input->getCmd('task');
 
-        // If "Apply" (i.e., account.apply) is clicked, remain on the edit page.
         if ($task === 'apply') {
-
-            $redirectUrl = Route::_('index.php?option=com_mothership&view=account&layout=edit&id=' . $data['id'], false);
+            $id = !empty($data['id']) ? $data['id'] : $model->getState($model->getName() . '.id');
+            $defaultRedirect = Route::_("index.php?option=com_mothership&view=account&layout=edit&id={$id}", false);
         } else {
-            // If "Save" (i.e., account.save) is clicked, return to the accounts list.
-            $redirectUrl = Route::_('index.php?option=com_mothership&view=accounts', false);
+            $defaultRedirect = Route::_('index.php?option=com_mothership&view=accounts', false);
         }
 
-        $this->setRedirect($redirectUrl);
+        $this->setRedirect($defaultRedirect);
         return true;
     }
 
+
+
     public function cancel($key = null)
     {
+        $model = $this->getModel('Account');
+        $id    = $this->input->getInt('id');
+        $model->cancelEdit($id);
+
         $defaultRedirect = Route::_('index.php?option=com_mothership&view=accounts', false);
         $redirect = MothershipHelper::getReturnRedirect($defaultRedirect);
-
         $this->setRedirect($redirect);
 
         return true;
     }
+
 
     public function delete()
     {

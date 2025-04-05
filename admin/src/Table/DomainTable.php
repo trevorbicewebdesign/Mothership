@@ -47,12 +47,12 @@ class DomainTable extends Table implements VersionableTableInterface
     {
         $this->typeAlias = 'com_mothership.domain';
 
-        parent::__construct('#__mothership_domain', 'id', $db, $dispatcher);
+        parent::__construct('#__mothership_domains', 'id', $db, $dispatcher);
     }
 
     /**
      * Get the type alias for the history table
-     *  
+     *
      * @return  string  The alias as described above
      *
      * @since   4.0.0
@@ -76,6 +76,13 @@ class DomainTable extends Table implements VersionableTableInterface
             parent::check();
         } catch (\Exception $e) {
             $this->setError($e->getMessage());
+
+            return false;
+        }
+
+        // Check for valid name
+        if (trim($this->name) === '') {
+            $this->setError(Text::_('COM_MOTHERSHIP_ACCOUNT_WARNING_PROVIDE_VALID_NAME'));
 
             return false;
         }

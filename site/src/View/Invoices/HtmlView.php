@@ -11,11 +11,13 @@ class HtmlView extends BaseHtmlView
 
     public function display($tpl = null)
     {
+        /*
         $user = Factory::getUser();
         if (!$user->authorise('mothership.view_invoices', 'com_mothership')) {
             echo Text::_('JERROR_ALERTNOAUTHOR');
             return;
         }
+        */
         $this->invoices = $this->getModel()->getItems();
         parent::display($tpl);
     }
