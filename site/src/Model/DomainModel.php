@@ -38,19 +38,7 @@ class DomainModel extends BaseDatabaseModel
             ])
             ->from($db->quoteName('#__mothership_domains', 'p'))
 
-            ->join(
-                'LEFT',
-                '(SELECT ip.domain_id,
-                        GROUP_CONCAT(ip.invoice_id ORDER BY ip.invoice_id) AS invoice_ids,
-                        GROUP_CONCAT(i.number ORDER BY ip.invoice_id) AS invoice_numbers
-                FROM ' . $db->quoteName('#__mothership_invoice_domain', 'ip') . '
-                JOIN ' . $db->quoteName('#__mothership_invoices', 'i') . ' ON ip.invoice_id = i.id
-                GROUP BY ip.domain_id) AS inv
-                ON inv.domain_id = p.id'
-            )
-
             ->where('p.id = :id')
-            ->where('p.status != -1')
             ->bind(':id', $id, \Joomla\Database\ParameterType::INTEGER);
 
         $db->setQuery($query);
