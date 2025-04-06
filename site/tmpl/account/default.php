@@ -107,6 +107,33 @@ $account = $this->item;
     </tbody>
 </table>
 <hr/>
+<h4>Projects</h4>
+<table class="table projectsTable " id="projectsTable">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if(empty($account->projects)) : ?>
+            <tr>
+                <td colspan="8">No projects found.</td>
+            </tr>
+        <?php endif; ?>
+        <?php foreach ($account->projects as $project) : ?>
+            <tr>
+                <td><?php echo $project->id; ?></td>
+                <td><?php echo $project->name; ?></td>
+                <td><?php echo $project->type; ?></td>
+                <td><?php echo $project->status; ?></td>
+            </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
+<hr/>
 <h4>Domains</h4>
 <table class="table domainsTable " id="domainsTable">
     <thead>
