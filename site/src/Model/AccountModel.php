@@ -51,7 +51,7 @@ class AccountModel extends BaseDatabaseModel
         $db->setQuery($query);
         $account->payments = $db->loadObjectList();
 
-        // Load associated payments 
+        // Load associated domains 
         $query = $db->getQuery(true)
             ->select(['d.*'])
             ->from($db->quoteName('#__mothership_domains', 'd'))
@@ -59,6 +59,16 @@ class AccountModel extends BaseDatabaseModel
             ->bind(':accountId', $id, \Joomla\Database\ParameterType::INTEGER);
         $db->setQuery($query);
         $account->domains = $db->loadObjectList();
+
+         // Load associated projects 
+         $query = $db->getQuery(true)
+            ->select(['p.*'])
+            ->from($db->quoteName('#__mothership_projects', 'p'))
+            ->where('account_id = :accountId')
+            ->bind(':accountId', $id, \Joomla\Database\ParameterType::INTEGER);
+        $db->setQuery($query);
+        echo $query;
+        $account->projects = $db->loadObjectList();
 
         return $account;
     }
