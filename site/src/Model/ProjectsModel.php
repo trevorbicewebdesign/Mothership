@@ -19,8 +19,8 @@ class ProjectsModel extends ListModel
         $query = $db->getQuery(true)
             ->select('p.*, c.name AS client_name, a.name AS account_name')
             ->from('#__mothership_projects AS p')
-            ->join('LEFT', '#__mothership_clients AS c ON d.client_id = c.id')
-            ->join('LEFT', '#__mothership_accounts AS a ON d.account_id = a.id')
+            ->join('LEFT', '#__mothership_clients AS c ON p.client_id = c.id')
+            ->join('LEFT', '#__mothership_accounts AS a ON p.account_id = a.id')
             ->where("p.client_id = '{$clientId}'")
             ->order('p.name ASC');
         $db->setQuery($query);
