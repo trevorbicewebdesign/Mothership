@@ -67,7 +67,6 @@ class AccountModel extends BaseDatabaseModel
             ->where('account_id = :accountId')
             ->bind(':accountId', $id, \Joomla\Database\ParameterType::INTEGER);
         $db->setQuery($query);
-        echo $query;
         $account->projects = $db->loadObjectList();
 
         return $account;
