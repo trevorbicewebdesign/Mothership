@@ -24,11 +24,12 @@ class ProjectsModel extends ListModel
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = [
-                'cid', 'a.id',
-                'name', 'a.name',
+                'cid', 'p.id',
+                'name', 'p.name',
+                'client_id', 'p.client_id',
+                'account_id', 'p.account_id',
                 'client_name', 'c.name',
-                'checked_out', 'a.checked_out',
-                'checked_out_time', 'a.checked_out_time',
+                'account_name', 'a.name',
             ];
         }
 
