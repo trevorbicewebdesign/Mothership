@@ -9,7 +9,7 @@ $account = $this->item;
 <h1><?php echo $account->name; ?></h1>
 <hr/>
 <h4>Invoices</h4>
-<table class="table" id="invoicestable">
+<table class="table" id="invoicesTable">
     <thead>
         <tr>
             <th>PDF</th>
