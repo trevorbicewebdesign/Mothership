@@ -6,7 +6,7 @@ namespace TrevorBice\Component\Mothership\Site\Model;
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 
-class DomainMOdel extends BaseDatabaseModel
+class DomainModel extends BaseDatabaseModel
 {
     public function getItem($id = null)
     {
