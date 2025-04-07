@@ -2,62 +2,51 @@
 \defined('_JEXEC') or die;
 
 use Joomla\CMS\Router\Route;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
 
 $project = $this->item;
+
+// Format date fields
+$created = $project->created ? HTMLHelper::_('date', $project->created, Text::_('DATE_FORMAT_LC4')) : '-';
 ?>
 
 <div class="container my-4">
+    <h1><?= $project->name ?></h1>
+
     <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h4 class="mb-0">Project #<?php echo $project->id; ?></h4>
-            <span class="badge bg-light text-dark"><?php echo htmlspecialchars($project->project_method); ?></span>
-        </div>
         <div class="card-body">
-            <p>
-                <strong>Amount:</strong>
-                <span class="text-success fw-bold">$<?php echo number_format($project->amount, 2); ?></span>
-            </p>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <strong>Client ID:</strong> <?= (int) $project->client_id ?>
+                </div>
+                <div class="col-md-6">
+                    <strong>Account ID:</strong>
+                    <?= $project->account_id !== null ? (int) $project->account_id : '<em>None</em>' ?>
+                </div>
+            </div>
 
-            <p>
-                <strong>Status:</strong>
-                <?php
-                    $statusColor = match ((int) $project->status) {
-                        1 => 'warning',
-                        2 => 'success',
-                        3 => 'danger',
-                        4 => 'secondary',
-                        5 => 'info',
-                        default => 'dark',
-                    };
-                ?>
-                <span class="badge bg-<?php echo $statusColor; ?>">
-                    <?php echo $project->status_text ?? $project->status; ?>
-                </span>
-            </p>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <strong>Status:</strong> <?= ucfirst($project->status) ?>
+                </div>
+                <div class="col-md-4">
+                    <strong>Type:</strong> <?= htmlspecialchars($project->type ?? '-') ?>
+                </div>
+                <div class="col-md-4">
+                    <strong>Created:</strong> <?= $created ?>
+                </div>
+            </div>
 
-            <p>
-                <strong>Project Date:</strong>
-                <?php echo htmlspecialchars($project->project_date); ?>
-            </p>
-
-            <?php if (!empty($project->invoice_ids)) : ?>
-                <hr>
-                <p><strong>Invoices Paid With This Project:</strong></p>
-                <ul class="list-group list-group-flush">
-                    <?php
-                    $ids = explode(',', $project->invoice_ids);
-                    $numbers = explode(',', $project->invoice_numbers);
-                    foreach ($ids as $i => $invoiceId) :
-                        $number = $numbers[$i] ?? $invoiceId;
-                        $url = Route::_('index.php?option=com_mothership&view=invoice&id=' . (int) $invoiceId);
-                    ?>
-                        <li class="list-group-item">
-                            <a href="<?php echo $url; ?>">
-                                Invoice #<?php echo htmlspecialchars($number); ?>
-                            </a>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
+            <?php if (!empty($project->description)): ?>
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <strong>Description:</strong>
+                        <div class="border rounded p-2 mt-1 bg-light">
+                            <?= nl2br(htmlspecialchars($project->description)) ?>
+                        </div>
+                    </div>
+                </div>
             <?php endif; ?>
         </div>
     </div>
