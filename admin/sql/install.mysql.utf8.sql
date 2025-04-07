@@ -56,17 +56,14 @@ CREATE TABLE IF NOT EXISTS `#__mothership_domains` (
   `created` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `modified` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `fk_domains_client` (`client_id`),
-  KEY `fk_domains_account` (`account_id`),
+  CONSTRAINT `fk_domains_client_mship` FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients`(`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_domains_account_mship` FOREIGN KEY (`account_id`) REFERENCES `#__mothership_accounts`(`id`) ON DELETE SET NULL,
   KEY `idx_name` (`name`(100))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1;
 
-ALTER TABLE `#__mothership_domains`
-  ADD CONSTRAINT `fk_domains_client` FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients`(`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_domains_account` FOREIGN KEY (`account_id`) REFERENCES `#__mothership_accounts`(`id`) ON DELETE SET NULL;
 
 -- Invoices Table
-CREATE TABLE `#__mothership_invoices` (
+CREATE TABLE IF NOT EXISTS `#__mothership_invoices` (
   `id` INT(10) NOT NULL AUTO_INCREMENT,
   `number` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
   `client_id` INT(10) NULL DEFAULT NULL,
@@ -140,6 +137,26 @@ CREATE TABLE IF NOT EXISTS `#__mothership_invoice_payment` (
   CONSTRAINT `fk_invoice_payment_payment` FOREIGN KEY (`payment_id`) REFERENCES `#__mothership_payments` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_invoice_payment_invoice` FOREIGN KEY (`invoice_id`) REFERENCES `#__mothership_invoices` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Projects Table
+CREATE TABLE IF NOT EXISTS `#__mothership_projects` (
+  `id` INT(10) NOT NULL AUTO_INCREMENT,
+  `client_id` INT(10) NOT NULL,
+  `account_id` INT(10) DEFAULT NULL,
+  `name` VARCHAR(255) NOT NULL,
+  `description` TEXT DEFAULT NULL,
+  `type` VARCHAR(255) DEFAULT NULL,
+  `status` ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
+  `created` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `created_by` INT(11) DEFAULT NULL,
+  `checked_out_time` DATETIME DEFAULT NULL,
+  `checked_out` INT(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_projects_client` (`client_id`),
+  KEY `idx_name` (`name`(100)),
+  CONSTRAINT `fk_projects_client` FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients`(`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_projects_account` FOREIGN KEY (`account_id`) REFERENCES `#__mothership_accounts`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1;
 
 -- Users Table
 CREATE TABLE IF NOT EXISTS `#__mothership_users` (

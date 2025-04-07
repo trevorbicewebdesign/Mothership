@@ -304,44 +304,17 @@ class DbHelper extends Db
         $domain_name = $faker->domainName;
         $primary_url = "https://{$domain_name}";
         // Default values for the project
-        $defaultData = [
-            "archived" => isset($data['archived']) ? $data['archived'] : 0,
-            "status" => isset($data['status']) ? $data['status'] : 0,
-            "favicon" => isset($data['favicon']) ? $data['favicon'] : '',
-            "platform" => isset($data['platform']) ? $data['platform'] : '',
-            "version" => isset($data['version']) ? $data['version'] : '',
-            "last_updated" => isset($data['last_updated']) ? $data['last_updated'] : date('Y-m-d H:i:s'),
-            "under_construction" => isset($data['under_construction']) ? $data['under_construction'] : 0,
-            "last_activity" => isset($data['last_activity']) ? $data['last_activity'] : date('Y-m-d H:i:s'),
-            "project_name" => isset($data['project_name']) ? $data['project_name'] : 'Test Project',
-            "primary_domain" => isset($data['primary_domain']) ? $data['primary_domain'] : $domain_name,
-            "primary_url" => isset($data['primary_url']) ? $data['primary_url'] : $primary_url,
-            "redirect_test" => isset($data['redirect_test']) ? $data['redirect_test'] : '',
-            "www" => isset($data['www']) ? $data['www'] : '',
-            "non_www" => isset($data['non_www']) ? $data['non_www'] : '',
-            "dev_url" => isset($data['dev_url']) ? $data['dev_url'] : '',
-            "type" => isset($data['type']) ? $data['type'] : '',
-            "build" => isset($data['build']) ? $data['build'] : '',
-            "newsite" => isset($data['newsite']) ? $data['newsite'] : 0,
-            "deposit" => isset($data['deposit']) ? $data['deposit'] : 0,
-            "final_payment" => isset($data['final_payment']) ? $data['final_payment'] : 0,
-            "client_id" => isset($data['client_id']) ? $data['client_id'] : 0,
-            "account_id" => isset($data['account_id']) ? $data['account_id'] : 0,
-            "project_created" => isset($data['project_created']) ? $data['project_created'] : date('Y-m-d H:i:s'),
-            "quote_amount" => isset($data['quote_amount']) ? $data['quote_amount'] : 0.00,
-            "domains" => isset($data['domains']) ? $data['domains'] : '',
-            "httpcode" => isset($data['httpcode']) ? $data['httpcode'] : 0,
-            "color" => isset($data['color']) ? $data['color'] : '',
-            "tracking" => isset($data['tracking']) ? $data['tracking'] : '',
-            "name" => isset($data['name']) ? $data['name'] : '',
-            "checked_out_time" => isset($data['checked_out_time']) ? $data['checked_out_time'] : date('Y-m-d H:i:s'),
-            "checked_out" => isset($data['checked_out']) ? $data['checked_out'] : 0,
-            "scan" => isset($data['scan']) ? $data['scan'] : 0,
-            "mothership_scan" => isset($data['mothership_scan']) ? $data['mothership_scan'] : 0,
-            "extensions" => isset($data['extensions']) ? $data['extensions'] : '',
-            "backups" => isset($data['backups']) ? $data['backups'] : '',
-        ];
 
+        $defaultData = [
+            "client_id" => isset($data['name']) ? $data['name'] : NULL,
+            "account_id" => isset($data['name']) ? $data['name'] : NULL,
+            "name" => isset($data['name']) ? $data['name'] : 'Test Project',
+            "description" => isset($data['description']) ? $data['description'] : 'Test Description',
+            "type" => isset($data['type']) ? $data['type'] : 'Test Type',
+            "status" => isset($data['status']) ? $data['status'] : 'active',
+            "created" => date('Y-m-d H:i:s'),
+            "created_by" => isset($data['created_by']) ? $data['created_by'] : 0,
+        ];
 
         // Merge provided data with defaults
         $finalData = array_merge($defaultData, $data);

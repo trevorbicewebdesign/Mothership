@@ -9,7 +9,7 @@ $account = $this->item;
 <h1><?php echo $account->name; ?></h1>
 <hr/>
 <h4>Invoices</h4>
-<table class="table" id="invoicestable">
+<table class="table" id="invoicesTable">
     <thead>
         <tr>
             <th>PDF</th>
@@ -107,6 +107,33 @@ $account = $this->item;
     </tbody>
 </table>
 <hr/>
+<h4>Projects</h4>
+<table class="table projectsTable " id="projectsTable">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if(empty($account->projects)) : ?>
+            <tr>
+                <td colspan="8">No projects found.</td>
+            </tr>
+        <?php endif; ?>
+        <?php foreach ($account->projects as $project) : ?>
+            <tr>
+                <td><a href="<?php echo Route::_("index.php?option=com_mothership&view=project&id={$project->id}"); ?>"><?php echo $project->id; ?></td>
+                <td><a href="<?php echo Route::_("index.php?option=com_mothership&view=project&id={$project->id}"); ?>"><?php echo $project->name; ?></a></td>
+                <td><?php echo $project->type; ?></td>
+                <td><?php echo $project->status; ?></td>
+            </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
+<hr/>
 <h4>Domains</h4>
 <table class="table domainsTable " id="domainsTable">
     <thead>
@@ -129,7 +156,7 @@ $account = $this->item;
         <?php foreach ($account->domains as $domains) : ?>
             <tr>
                 <td><?php echo $domains->id; ?></td>
-                <td><?php echo $domains->name; ?></td>
+                <td><a href="<?php echo Route::_("index.php?option=com_mothership&view=domain&id={$domains->id}"); ?>"><?php echo $domains->name; ?></a></td>
                 <td><?php echo $domains->registrar; ?></td>
                 <td><?php echo $domains->reseller; ?></td>
                 <td><?php echo $domains->dns_provider; ?></td>

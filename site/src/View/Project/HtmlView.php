@@ -1,5 +1,5 @@
 <?php
-namespace TrevorBice\Component\Mothership\Site\View\Domain;
+namespace TrevorBice\Component\Mothership\Site\View\Project;
 
 use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use Joomla\CMS\Factory;
@@ -14,14 +14,14 @@ class HtmlView extends BaseHtmlView
     public function display($tpl = null)
     {
         $user = Factory::getUser();
-        if (!$user->authorise('mothership.view_domain', 'com_mothership')) {
+        if (!$user->authorise('mothership.view_project', 'com_mothership')) {
             echo Text::_('JERROR_ALERTNOAUTHOR');
             return;
         }
         $this->item = $this->getModel()->getItem();
 
         if (!$this->item) {
-            throw new \Exception('Domain not found', 404);
+            throw new \Exception('Project not found', 404);
         }
 
         parent::display($tpl);

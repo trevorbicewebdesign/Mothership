@@ -11,7 +11,7 @@ use Joomla\CMS\Language\Text;
     }
 </style>
 <h1>Invoices</h1>
-<table class="table" id="invoicetable">
+<table class="table" id="invoicesTable">
     <thead>
         <tr>
             <th>PDF</th>
