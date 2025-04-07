@@ -47,7 +47,7 @@ class ProjectTable extends Table implements VersionableTableInterface
     {
         $this->typeAlias = 'com_mothership.project';
 
-        parent::__construct('#__mothership_project', 'id', $db, $dispatcher);
+        parent::__construct('#__mothership_projects', 'id', $db, $dispatcher);
     }
 
     /**
