@@ -8,6 +8,7 @@ class ProjectsModel extends ListModel
 {
     public function getItems()
     {
+        
         $clientId = MothershipHelper::getUserClientId();
 
         if (!$clientId) {
