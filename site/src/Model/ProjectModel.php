@@ -21,8 +21,12 @@ class ProjectModel extends BaseDatabaseModel
         $query = $db->getQuery(true)
             ->select([
                 'p.*'
+                , 'c.name AS client_name'
+                , 'a.name AS account_name'
             ])
             ->from($db->quoteName('#__mothership_projects', 'p'))
+            ->join('LEFT', $db->quoteName('#__mothership_clients', 'c') . ' ON p.client_id = c.id')
+            ->join('LEFT', $db->quoteName('#__mothership_accounts', 'a') . ' ON p.account_id = a.id')
             ->where('p.id = :id')
             ->where('p.status != -1')
             ->bind(':id', $id, \Joomla\Database\ParameterType::INTEGER);
