@@ -125,8 +125,8 @@ $account = $this->item;
         <?php endif; ?>
         <?php foreach ($account->projects as $project) : ?>
             <tr>
-                <td><?php echo $project->id; ?></td>
-                <td><?php echo $project->name; ?></td>
+                <td><a href="<?php echo Route::_("index.php?option=com_mothership&view=project&id={$project->id}"); ?>"><?php echo $project->id; ?></td>
+                <td><a href="<?php echo Route::_("index.php?option=com_mothership&view=project&id={$project->id}"); ?>"><?php echo $project->name; ?></a></td>
                 <td><?php echo $project->type; ?></td>
                 <td><?php echo $project->status; ?></td>
             </tr>
@@ -156,7 +156,7 @@ $account = $this->item;
         <?php foreach ($account->domains as $domains) : ?>
             <tr>
                 <td><?php echo $domains->id; ?></td>
-                <td><?php echo $domains->name; ?></td>
+                <td><a href="<?php echo Route::_("index.php?option=com_mothership&view=domain&id={$domains->id}"); ?>"><?php echo $domains->name; ?></a></td>
                 <td><?php echo $domains->registrar; ?></td>
                 <td><?php echo $domains->reseller; ?></td>
                 <td><?php echo $domains->dns_provider; ?></td>
