@@ -36,7 +36,7 @@ class LogHelper extends ContentHelper
             ->insert($db->quoteName('#__mothership_logs'))
             ->columns([
                 'client_id', 'account_id', 'object_type', 'object_id', 'action',
-                'meta', 'description', 'details', 'user_id', 'ip_address', 'created'
+                'meta', 'description', 'details', 'user_id', 'created'
             ])
             ->values(implode(',', [
                 $db->quote($params['client_id'] ?? null),
@@ -48,7 +48,6 @@ class LogHelper extends ContentHelper
                 $db->quote($params['description'] ?? null),
                 $db->quote($params['details'] ?? null),
                 $db->quote($params['user_id'] ?? Factory::getUser()->id),
-                $db->quote($_SERVER['REMOTE_ADDR'] ?? '127.0.0.1'),
                 $db->quote(date('Y-m-d H:i:s')),
             ]));
 
