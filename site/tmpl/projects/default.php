@@ -33,8 +33,8 @@ use Joomla\CMS\Language\Text;
         <?php foreach ($this->projects as $projects) : ?>
             <tr>
                 <td><?php echo $projects->id; ?></td>
-                <td><?php echo $projects->name; ?></td>
-                <td><?php echo $projects->account_name; ?></td>
+                <td><a href="<?php echo Route::_("index.php?option=com_mothership&view=project&id={$projects->id}"); ?>"><?php echo $projects->name; ?></a></td>
+                <td><a href="<?php echo Route::_("index.php?option=com_mothership&view=account&id={$projects->account_id}"); ?>"><?php echo $projects->account_name; ?></a></td>
                 <td><?php echo $projects->registrar; ?></td>
                 <td><?php echo $projects->reseller; ?></td>
                 <td><?php echo $projects->dns_provider; ?></td>
