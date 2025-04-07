@@ -8,6 +8,7 @@ At its core, Mothership organizes your business around five main objects:
 - **Projects**
 - **Invoices**
 - **Payments**
+- **Domains**
 
 The model is flexible enough to accommodate real-world complexities. For example, a single client might manage multiple accounts—whether these represent different parts of the business, subdomains, or entirely separate brands. Each account can then have its own projects. While projects currently focus on websites, the architecture is designed to eventually support other types of work, like graphic design or any other service you might offer.
 

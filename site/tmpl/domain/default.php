@@ -2,63 +2,84 @@
 \defined('_JEXEC') or die;
 
 use Joomla\CMS\Router\Route;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
 
 $domain = $this->item;
+
+// Format dates
+$purchaseDate = $domain->purchase_date ? HTMLHelper::_('date', $domain->purchase_date, Text::_('DATE_FORMAT_LC4')) : '-';
+$expirationDate = $domain->expiration_date ? HTMLHelper::_('date', $domain->expiration_date, Text::_('DATE_FORMAT_LC4')) : '-';
 ?>
 
 <div class="container my-4">
-    <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h4 class="mb-0">Domain #<?php echo $domain->id; ?></h4>
-            <span class="badge bg-light text-dark"><?php echo htmlspecialchars($domain->domain_method); ?></span>
-        </div>
-        <div class="card-body">
-            <p>
-                <strong>Amount:</strong>
-                <span class="text-success fw-bold">$<?php echo number_format($domain->amount, 2); ?></span>
-            </p>
+	<h1 class="mb-4">Domain: <?= htmlspecialchars($domain->name) ?></h1>
 
-            <p>
-                <strong>Status:</strong>
-                <?php
-                    $statusColor = match ((int) $domain->status) {
-                        1 => 'warning',
-                        2 => 'success',
-                        3 => 'danger',
-                        4 => 'secondary',
-                        5 => 'info',
-                        default => 'dark',
-                    };
-                ?>
-                <span class="badge bg-<?php echo $statusColor; ?>">
-                    <?php echo $domain->status_text ?? $domain->status; ?>
-                </span>
-            </p>
+	<div class="card shadow-sm">
+		<div class="card-body">
+			<div class="row mb-3">
+				<div class="col-md-6">
+					<strong>Client ID:</strong> <?= (int) $domain->client_id ?>
+				</div>
+				<div class="col-md-6">
+					<strong>Account ID:</strong> <?= $domain->account_id !== null ? (int) $domain->account_id : '<em>None</em>' ?>
+				</div>
+			</div>
 
-            <p>
-                <strong>Domain Date:</strong>
-                <?php echo htmlspecialchars($domain->domain_date); ?>
-            </p>
+			<div class="row mb-3">
+				<div class="col-md-4">
+					<strong>Status:</strong> <?= (int) $domain->status ?>
+				</div>
+				<div class="col-md-4">
+					<strong>Auto Renew:</strong> <?= $domain->auto_renew ? 'Yes' : 'No' ?>
+				</div>
+				<div class="col-md-4">
+					<strong>Registrar:</strong> <?= htmlspecialchars($domain->registrar ?? '-') ?>
+				</div>
+			</div>
 
-            <?php if (!empty($domain->invoice_ids)) : ?>
-                <hr>
-                <p><strong>Invoices Paid With This Domain:</strong></p>
-                <ul class="list-group list-group-flush">
-                    <?php
-                    $ids = explode(',', $domain->invoice_ids);
-                    $numbers = explode(',', $domain->invoice_numbers);
-                    foreach ($ids as $i => $invoiceId) :
-                        $number = $numbers[$i] ?? $invoiceId;
-                        $url = Route::_('index.php?option=com_mothership&view=invoice&id=' . (int) $invoiceId);
-                    ?>
-                        <li class="list-group-item">
-                            <a href="<?php echo $url; ?>">
-                                Invoice #<?php echo htmlspecialchars($number); ?>
-                            </a>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
-            <?php endif; ?>
-        </div>
-    </div>
+			<div class="row mb-3">
+				<div class="col-md-6">
+					<strong>Reseller:</strong> <?= htmlspecialchars($domain->reseller ?? '-') ?>
+				</div>
+				<div class="col-md-6">
+					<strong>DNS Provider:</strong> <?= htmlspecialchars($domain->dns_provider ?? '-') ?>
+				</div>
+			</div>
+
+			<div class="row mb-3">
+				<div class="col-md-3"><strong>NS1:</strong> <?= htmlspecialchars($domain->ns1 ?? '-') ?></div>
+				<div class="col-md-3"><strong>NS2:</strong> <?= htmlspecialchars($domain->ns2 ?? '-') ?></div>
+				<div class="col-md-3"><strong>NS3:</strong> <?= htmlspecialchars($domain->ns3 ?? '-') ?></div>
+				<div class="col-md-3"><strong>NS4:</strong> <?= htmlspecialchars($domain->ns4 ?? '-') ?></div>
+			</div>
+
+			<div class="row mb-3">
+				<div class="col-md-6">
+					<strong>Purchase Date:</strong> <?= $purchaseDate ?>
+				</div>
+				<div class="col-md-6">
+					<strong>Expiration Date:</strong> <?= $expirationDate ?>
+				</div>
+			</div>
+
+			<?php if (!empty($domain->notes)) : ?>
+				<div class="row mb-3">
+					<div class="col-12">
+						<strong>Notes:</strong>
+						<div class="border rounded p-2 bg-light"><?= nl2br(htmlspecialchars($domain->notes)) ?></div>
+					</div>
+				</div>
+			<?php endif; ?>
+
+			<div class="text-muted small">
+				Created: <?= HTMLHelper::_('date', $domain->created, Text::_('DATE_FORMAT_LC4')) ?> |
+				Modified: <?= HTMLHelper::_('date', $domain->modified, Text::_('DATE_FORMAT_LC4')) ?>
+			</div>
+		</div>
+	</div>
+
+	<div class="mt-4">
+		<a class="btn btn-secondary" href="<?= Route::_('index.php?option=com_mothership&view=domains') ?>">← Back to Domains</a>
+	</div>
 </div>

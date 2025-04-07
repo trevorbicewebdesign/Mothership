@@ -62,13 +62,14 @@ class AccountsController extends BaseController
         if (empty($ids)) {
             $app->enqueueMessage(Text::_('JGLOBAL_NO_ITEM_SELECTED'), 'warning');
         } else {
-            $blocked = [];
+            $blockedInvoices = [];
+            $blockedProjects = [];
             $allowed = [];
 
             foreach ($ids as $accountId) {
                 $accountId = (int) $accountId;
 
-                // Check for related invoices only
+                // Check for related invoices
                 $query = $db->getQuery(true)
                     ->select('COUNT(*)')
                     ->from('#__mothership_invoices')
@@ -76,8 +77,18 @@ class AccountsController extends BaseController
                 $db->setQuery($query);
                 $invoiceCount = (int) $db->loadResult();
 
+                // Check for related projects
+                $query = $db->getQuery(true)
+                    ->select('COUNT(*)')
+                    ->from('#__mothership_projects')
+                    ->where('account_id = ' . $accountId);
+                $db->setQuery($query);
+                $projectCount = (int) $db->loadResult();
+
                 if ($invoiceCount > 0) {
-                    $blocked[] = $accountId;
+                    $blockedInvoices[] = $accountId;
+                } elseif ($projectCount > 0) {
+                    $blockedProjects[] = $accountId;
                 } else {
                     $allowed[] = $accountId;
                 }
@@ -95,9 +106,16 @@ class AccountsController extends BaseController
                 }
             }
 
-            if (!empty($blocked)) {
+            if (!empty($blockedInvoices)) {
                 $app->enqueueMessage(
-                    Text::sprintf('COM_MOTHERSHIP_ACCOUNT_DELETE_HAS_DEPENDENCIES', implode(', ', $blocked)),
+                    Text::sprintf('COM_MOTHERSHIP_ACCOUNT_DELETE_HAS_INVOICES', implode(', ', $blockedInvoices)),
+                    'warning'
+                );
+            }
+
+            if (!empty($blockedProjects)) {
+                $app->enqueueMessage(
+                    Text::sprintf('COM_MOTHERSHIP_ACCOUNT_DELETE_HAS_PROJECTS', implode(', ', $blockedProjects)),
                     'warning'
                 );
             }
