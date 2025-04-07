@@ -9,6 +9,7 @@ At its core, Mothership organizes your business around five main objects:
 - **Invoices**
 - **Payments**
 - **Domains**
+- **Logs**
 
 The model is flexible enough to accommodate real-world complexities. For example, a single client might manage multiple accounts—whether these represent different parts of the business, subdomains, or entirely separate brands. Each account can then have its own projects. While projects currently focus on websites, the architecture is designed to eventually support other types of work, like graphic design or any other service you might offer.
 
@@ -305,6 +306,42 @@ CREATE TABLE IF NOT EXISTS `#__mothership_invoice_payment` (
 ```
 
 > **Note:** If a draft invoice is deleted, any `Invoice Payments` records linked to that invoice will also be deleted automatically. This helps keep your data consistent and prevents orphaned records.
+
+## Logs 
+
+### Logs Table
+
+- **ID**:
+- **Client Id**:
+- **Account Id**:
+- **Object Type**:
+- **Object Id**:
+- **Action**:
+- **Meta**:
+- **Description**:
+- **Detaisl**:
+- **User Id**: 
+- **Created**:
+- **Notes**:
+
+```
+CREATE TABLE IF NOT EXISTS `#__mothership_logs` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `client_id` INT(11) NULL DEFAULT NULL,
+  `account_id` INT(11) NULL DEFAULT NULL,
+  `object_type` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+  `object_id` INT(11) NULL DEFAULT NULL,
+  `action` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+  `field_changed` VARCHAR(100) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+  `old_value` TEXT NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+  `new_value` TEXT NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+  `user_id` INT(11) NULL DEFAULT NULL,
+  `created` DATETIME NULL DEFAULT (CURRENT_TIMESTAMP),
+  `notes` TEXT NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+;
+```
 
 ---
 
