@@ -171,7 +171,7 @@ CREATE TABLE IF NOT EXISTS `#__mothership_users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Logs Table
-CREATE TABLE `jos_mothership_logs` (
+CREATE TABLE IF NOT EXISTS `#__mothership_logs` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `client_id` INT(11) NULL DEFAULT NULL,
   `account_id` INT(11) NULL DEFAULT NULL,
