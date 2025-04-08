@@ -140,7 +140,7 @@ class PlgMothershipPaymentPaypal extends CMSPlugin
             'no_shipping' => 1,
             'cancel_return' => "{$domain}index.php?option=com_mothership&view=invoices",
             'notify_url' => "{$domain}index.php?option=com_mothership&paypal_notify=1&invoice={$invoice_id}",
-            'return' => "{$domain}index.php?option=com_mothership&view=invoices",
+            'return' => "{$domain}index.php?option=com_mothership&view=payments&task=thankyou&invoice_id={$invoice_id}",
         ];
 
         return $paypalUrl . http_build_query($paypalData);

@@ -24,6 +24,35 @@ class PaymentController extends BaseController
         parent::display($cachable, $urlparams);
     }
 
+    public function thankyou()
+    {
+        $app = Factory::getApplication();
+        $input = $app->getInput();
+        $id = $input->getInt('id');
+
+        if (!$id) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVALID_PAYMENT_ID'), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=payments', false));
+            return;
+        }
+
+        $model = $this->getModel('Payment');
+        $payment = $model->getItem($id);
+
+        if (!$payment) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_PAYMENT_NOT_FOUND'), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=payments', false));
+            return;
+        }
+
+        // Correct way to pass data to the view:
+        $view = $this->getView('Payment', 'html');
+        $view->setModel($model, true);
+        $view->item = $payment;
+        $view->setLayout('thank-you');
+        $view->display();
+    }
+
     public function downloadPdf()
     {
         $app = Factory::getApplication();
