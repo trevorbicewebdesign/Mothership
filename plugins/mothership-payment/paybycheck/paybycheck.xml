@@ -11,7 +11,6 @@
         <fields name="params">
             <fieldset name="basic">
                 <field name="display_name" type="text" label="COM_MOTHERSHIP_PAYBYCHECK_DISPLAY_NAME_LABEL" description="COM_MOTHERSHIP_PAYBYCHECK_DISPLAY_NAME_DESC" default="Zelle" />
-                <field name="paybycheck_email_phone" type="text" label="COM_MOTHERSHIP_PAYBYCHECK_EMAIL_PHONE_LABEL" description="COM_MOTHERSHIP_PAYBYCHECK_EMAIL_PHONE_DESC" required="true" />
                 <field name="instructions" type="textarea" label="COM_MOTHERSHIP_PAYBYCHECK_INSTRUCTIONS_LABEL" description="COM_MOTHERSHIP_PAYBYCHECK_INSTRUCTIONS_DESC" />
             </fieldset>
         </fields>
