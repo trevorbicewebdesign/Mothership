@@ -54,4 +54,21 @@ class LogHelper extends ContentHelper
         $db->setQuery($query);
         return $db->execute();
     }
+
+    public static function logPaymentInitiated($invoice_id, $payment_id, $client_id, $account_id, $invoice_total, $payment_method): void
+    {
+        // description: Short description of the log entry
+        // details: Detailed information about the log entry
+        self::log([
+            'object_type' => 'payment',
+            'object_id'   => $payment_id,
+            'client_id'   => $client_id,
+            'account_id'  => $account_id,
+            'action'      => 'initiated',
+            'description' => "Payment initiated for Invoice #" . str_pad($invoice_id, 4, '0', STR_PAD_LEFT),
+            'details'     => "A payment of \${$invoice_total} was initiated for Invoice #" . str_pad($invoice_id, 4, '0', STR_PAD_LEFT) . " using {$payment_method}.",
+            'meta'        => json_encode([]),
+            'user_id'     => Factory::getUser()->id,
+        ]);
+    }
 }
