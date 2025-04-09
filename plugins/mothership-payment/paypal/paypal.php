@@ -23,46 +23,6 @@ class PlgMothershipPaymentPaypal extends CMSPlugin
 
     protected $autoloadLanguage = true;
 
-    public function onAfterInitialiseMothership()
-    {
-        $app = Factory::getApplication();
-
-        // Process only if this is a PayPal IPN request.
-        if ($app->input->getCmd('paypal_notify') !== '1') {
-            return;
-        }
-
-        require_once JPATH_ROOT . '/plugins/mothership-payment/paypal/assets/vendor/autoload.php';
-
-        $this->processNotify();
-
-    }
-
-    /**
-     * Handle payment requests from Mothership.
-     *
-     * @param   object  $invoice      The invoice object (from Mothership)
-     * @param   array   $paymentData  Any relevant payment data
-     *
-     * @return  array|null  Result of the payment process or null if not handled
-     */
-    public function onMothershipPaymentRequest($invoice, $paymentData)
-    {
-        // Only handle if this is PayPal
-        if ($invoice->payment_method !== 'paypal') {
-            return null;
-        }
-
-        // Construct final payment link
-        $paymentLink = $this->getPaypalRedirectUrl((int) $invoice->id, (float) $invoice->total);
-
-        return [
-            'status' => 'redirect',
-            'url' => $paymentLink,
-        ];
-    }
-
-
     /**
      * Calculate the processing fee based on the payment amount.
      *
@@ -72,8 +32,8 @@ class PlgMothershipPaymentPaypal extends CMSPlugin
      */
     public function getFee($amount)
     {
-        $base_fee = 0.49;
-        $percentage_fee = 3.63;
+        $base_fee = 0.30;
+        $percentage_fee = 3.83;
         $fee_total = $base_fee + ($amount * ($percentage_fee / 100));
         return number_format($fee_total, 2, '.', '');
     }
@@ -107,7 +67,7 @@ class PlgMothershipPaymentPaypal extends CMSPlugin
      * @param float $amount The amount to be paid.
      * @return string The PayPal redirect URL.
      */
-    public function getPaypalRedirectUrl(int $invoice_id, float $amount)
+    public function getPaypalRedirectUrl(int $invoice_id, float $amount, $payment_id)
     {
         $domain = $this->getDomain();
         if (empty($domain)) {
@@ -139,8 +99,8 @@ class PlgMothershipPaymentPaypal extends CMSPlugin
             'currency_code' => 'USD',
             'no_shipping' => 1,
             'cancel_return' => "{$domain}index.php?option=com_mothership&view=invoices",
-            'notify_url' => "{$domain}index.php?option=com_mothership&paypal_notify=1&invoice={$invoice_id}",
-            'return' => "{$domain}index.php?option=com_mothership&view=payments&task=thankyou&invoice_id={$invoice_id}",
+            'notify_url' => "{$domain}index.php?option=com_mothership&view=payment&task=paypal.notify&id={$payment_id}",
+            'return' => "{$domain}index.php?option=com_mothership&view=payment&task=payment.thankyou&invoice_id={$invoice_id}",
         ];
 
         return $paypalUrl . http_build_query($paypalData);
@@ -165,14 +125,29 @@ class PlgMothershipPaymentPaypal extends CMSPlugin
         return $response;
     }
 
+    public function initiate($payment, $invoice)
+    {
+        // Construct final payment link
+        $paymentLink = $this->getPaypalRedirectUrl($invoice->id, $invoice->total, $payment->id);
+
+        // redirect the user to the payment link
+        Factory::getApplication()->redirect($paymentLink);
+    }
+
     public function process()
     {
-        $task = Factory::getApplication()->input->getCmd('task', '');
-        switch ($task) {
-            case 'notify':
-                $this->processNotify();
-                break;
-        }
+        $this->processNotify(); // Or just move logic here directly
+
+        echo 'IPN processed.';
+        exit();
+    }
+
+    public function notify()
+    {
+        $this->processNotify(); // Or just move logic here directly
+
+        echo 'IPN processed.';
+        exit();
     }
 
     public function processNotify()
