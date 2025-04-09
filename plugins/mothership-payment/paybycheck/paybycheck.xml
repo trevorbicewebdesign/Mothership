@@ -1,0 +1,19 @@
+<extension type="plugin" group="mothership-payment" version="0.0.5" method="paybycheck" element="paybycheck">
+    <name>COM_MOTHERSHIP_PAYBYCHECK_PLUGIN</name>
+    <files>
+        <filename plugin="paybycheck">paybycheck.php</filename>
+    </files>
+    <languages>
+        <language tag="en-GB">en-GB.plg_mothership-payment_paybycheck.ini</language>
+        <language tag="en-GB">en-GB.plg_mothership-payment_paybycheck.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="display_name" type="text" label="COM_MOTHERSHIP_PAYBYCHECK_DISPLAY_NAME_LABEL" description="COM_MOTHERSHIP_PAYBYCHECK_DISPLAY_NAME_DESC" default="Zelle" />
+                <field name="checkpayee" type="text" label="COM_MOTHERSHIP_PAYBYCHECK_PAYEE_LABEL" description="COM_MOTHERSHIP_PAYBYCHECK_PAYEE_DESC" default="Your Company Name" />
+                <field name="instructions" type="textarea" label="COM_MOTHERSHIP_PAYBYCHECK_INSTRUCTIONS_LABEL" description="COM_MOTHERSHIP_PAYBYCHECK_INSTRUCTIONS_DESC" />
+            </fieldset>
+        </fields>
+    </config>
+</extension>

@@ -368,15 +368,10 @@ To create a Mothership Payment plugin, follow these steps:
 
     class PlgMothershipPaymentsmypaymentmethod extends MothershipPaymentsPlugin
     {
-         public function onMothershipPaymentRequest($paymentData)
-         {
-              // Implement your payment processing logic here
+         public function initiate($payment, $invoice) {
+          /* Initiates the payment process for this plugin whatever that is */
          }
-
-         public function onAfterInitialiseMothership()
-         {
-              // Any initialization code for your plugin
-         }
+         
     }
     ```
 
@@ -391,6 +386,9 @@ To create a Mothership Payment plugin, follow these steps:
          <files>
               <filename plugin="mypaymentmethod">mypaymentmethod.php</filename>
          </files>
+         <fieldset name="basic">
+              <field name="display_name" type="text" label="Display Name" description="Description here" default="mypaymentmethod" />
+          </fieldset>
     </extension>
     ```
 
@@ -405,6 +403,9 @@ This payment method allows clients to pay invoices using PayPal. Once the paymen
 
 ### Zelle
 This payment method is essentially a digital version of "Pay by Check". Once the payment has been confirmed, an administrator will need to manually update the status of the payment to confirmed.
+
+### Pay By Check
+This payment method allows clients to pay invoices by mailing a physical check. Once the check is received and processed, an administrator will need to manually update the status of the payment to confirmed. This method is ideal for clients who prefer traditional payment methods or do not use digital payment platforms.
 
 ---
 

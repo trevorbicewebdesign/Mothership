@@ -19,6 +19,8 @@ class HtmlView extends BaseHtmlView
             return;
         }
         $this->item = $this->getModel()->getItem();
+        $input = Factory::getApplication()->getInput();
+        $this->invoiceId = $input->getInt('invoice_id');
 
         if (!$this->item) {
             throw new \Exception('Payment not found', 404);

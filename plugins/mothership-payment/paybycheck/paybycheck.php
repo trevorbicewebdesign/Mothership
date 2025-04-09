@@ -17,9 +17,54 @@ use Joomla\Database\DatabaseDriver;
 use TrevorBice\Component\Mothership\Administrator\Helper\PaymentHelper;
 use TrevorBice\Component\Mothership\Administrator\Helper\InvoiceHelper;
 
-class PlgMothershipPaymentZelle extends CMSPlugin
+class PlgMothershipPaymentPaybycheck extends CMSPlugin
 {
     protected $autoloadLanguage = true;
+
+    
+    public function initiate($payment, $invoice)
+    {
+        $app = Factory::getApplication();
+        $input = $app->getInput();
+        $invoiceId = $input->getInt('id', 0);
+        // $amount = $input->getFloat('amount', 0.0); // Retrieve the amount from the input
+        // echo 'index.php?option=com_mothership&view=payment&task=zelle.displayInstructions&invoice_id=' . $invoiceId . '&amount=' . $amount;
+        // die();
+
+        if ($invoiceId) {
+            // Redirect to the `Pay By Check` instructions page with the invoice ID and amount
+            $paymentLink = Route::_("index.php?option=com_mothership&controller=payment&task=pluginTask&plugin=paybycheck&action=displayInstructions&invoice_id={$invoiceId}", false);
+            Factory::getApplication()->redirect($paymentLink);
+        } else {
+            // Handle error: invalid invoice ID or amount
+            // Log::add('Invalid invoice ID or amount for Zelle payment.', 'error', 'jerror');
+            return false;
+        }
+    }
+
+    
+    public function displayInstructions()
+    {
+        // Load the Joomla application and input objects
+        $app = Factory::getApplication();
+        $input = $app->getInput();
+        $invoiceId = $input->getInt('invoice_id', 0);
+        $amount = $input->getFloat('amount', 0.0);
+
+        if ($invoiceId) {
+            // Load the `Pay By Check` instructions layout
+            $layoutPath = __DIR__ . '/tmpl'; // plugin folder/tmpl
+            $layout = new FileLayout('instructions', $layoutPath);
+
+            // Render the layout, passing data in an array
+            echo $layout->render(['invoiceId' => $invoiceId, 'amount' => $amount]);
+        } else {
+            // Handle error: invalid invoice ID or amount
+            // Log::add('Invalid invoice ID or amount for `Pay By Check` payment.', 'error', 'jerror');
+            return false;
+        }
+    }
+
 
 
     /**
@@ -48,48 +93,6 @@ class PlgMothershipPaymentZelle extends CMSPlugin
     {
         $calculatedFee = $this->getFee($amount);
         return "Fee: 3.9% + \$0.30 = \$" . $calculatedFee;
-    }
-
-    public function initiate($payment, $invoice)
-    {
-        $app = Factory::getApplication();
-        $input = $app->getInput();
-        $invoiceId = $input->getInt('id', 0);
-        // $amount = $input->getFloat('amount', 0.0); // Retrieve the amount from the input
-        // echo 'index.php?option=com_mothership&view=payment&task=zelle.displayInstructions&invoice_id=' . $invoiceId . '&amount=' . $amount;
-        // die();
-
-        if ($invoiceId) {
-            // Redirect to the Zelle instructions page with the invoice ID and amount
-            $paymentLink = Route::_("index.php?option=com_mothership&controller=payment&task=pluginTask&plugin=zelle&action=displayInstructions&invoice_id={$invoiceId}", false);
-            Factory::getApplication()->redirect($paymentLink);
-        } else {
-            // Handle error: invalid invoice ID or amount
-            // Log::add('Invalid invoice ID or amount for Zelle payment.', 'error', 'jerror');
-            return false;
-        }
-    }
-
-    public function displayInstructions()
-    {
-        // Load the Joomla application and input objects
-        $app = Factory::getApplication();
-        $input = $app->getInput();
-        $invoiceId = $input->getInt('invoice_id', 0);
-        $amount = $input->getFloat('amount', 0.0);
-
-        if ($invoiceId) {
-            // Load the Zelle instructions layout
-            $layoutPath = __DIR__ . '/tmpl'; // plugin folder/tmpl
-            $layout = new FileLayout('instructions', $layoutPath);
-
-            // Render the layout, passing data in an array
-            echo $layout->render(['invoiceId' => $invoiceId, 'amount' => $amount]);
-        } else {
-            // Handle error: invalid invoice ID or amount
-            // Log::add('Invalid invoice ID or amount for Zelle payment.', 'error', 'jerror');
-            return false;
-        }
     }
 
 }
