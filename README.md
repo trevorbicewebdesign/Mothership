@@ -331,15 +331,10 @@ To create a Mothership Payment plugin, follow these steps:
 
     class PlgMothershipPaymentsmypaymentmethod extends MothershipPaymentsPlugin
     {
-         public function onMothershipPaymentRequest($paymentData)
-         {
-              // Implement your payment processing logic here
+         public function initiate($payment, $invoice) {
+          /* Initiates the payment process for this plugin whatever that is */
          }
-
-         public function onAfterInitialiseMothership()
-         {
-              // Any initialization code for your plugin
-         }
+         
     }
     ```
 
@@ -354,6 +349,9 @@ To create a Mothership Payment plugin, follow these steps:
          <files>
               <filename plugin="mypaymentmethod">mypaymentmethod.php</filename>
          </files>
+         <fieldset name="basic">
+              <field name="display_name" type="text" label="Display Name" description="Description here" default="mypaymentmethod" />
+          </fieldset>
     </extension>
     ```
 
