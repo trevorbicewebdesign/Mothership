@@ -37,7 +37,13 @@ use Joomla\CMS\Language\Text;
                 <td>$<?php echo number_format($payment->amount, 2); ?></td>
                 <td><?php echo $payment->status; ?></td>
                 <td>$<?php echo number_format($payment->fee_amount, 2); ?></td>
-                <td><?php echo $payment->payment_method; ?></td>
+                <td>
+                    <?php 
+                    $plugin = \Joomla\CMS\Plugin\PluginHelper::getPlugin('mothership-payment', $payment->payment_method);
+                    $pluginParams = new \Joomla\Registry\Registry($plugin->params);
+                    echo $pluginParams->get('display_name');
+                    ?>
+                </td>
                 <td><?php echo $payment->transaction_id; ?></td>
                 <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=invoice&id=' . $payment->invoice_ids); ?>" ><?php echo $payment->invoice_ids; ?></a></td>
             </tr>
