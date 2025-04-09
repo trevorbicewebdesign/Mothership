@@ -18,6 +18,8 @@ PluginHelper::importPlugin('mothership-payment');
 
 class InvoiceController extends BaseController
 {
+
+
     public function display($cachable = false, $urlparams = [])
     {
         $this->input->set('view', $this->input->getCmd('view', 'invoice'));
@@ -121,57 +123,101 @@ class InvoiceController extends BaseController
         $view->display();
     }
 
+    protected function getPluginInstance(string $pluginName)
+    {
+        // Normalize plugin name casing
+        $normalized = strtolower($pluginName);
+
+        // Load the plugin group
+        PluginHelper::importPlugin('mothership-payment');
+
+        $plugins = PluginHelper::getPlugin('mothership-payment');
+
+        foreach ($plugins as $plugin) {
+            if ($plugin->name === $normalized) {
+                // Build expected class name, e.g., PlgMothershippaymentPaypal
+                $className = 'PlgMothershipPayment' . ucfirst($plugin->name);
+       
+                if (!class_exists($className)) {
+                    throw new \RuntimeException("Plugin class '$className' not found.");
+                }
+
+                // Instantiate and return
+                $dispatcher = Factory::getApplication()->getDispatcher();
+                return new $className($dispatcher, (array) $plugin);
+            }
+        }
+
+        throw new \RuntimeException("Payment plugin '$pluginName' not found or not enabled. 1 ".json_encode($plugins));
+    }
+
     public function processPayment()
     {
         $app = Factory::getApplication();
         $input = $app->getInput();
-        $id = $input->getInt('id');
+
+        $invoiceId = $input->getCmd('id');
         $paymentMethod = $input->getCmd('payment_method');
 
-        if (!$id || !$paymentMethod) {
+        
+
+        if (!$invoiceId || !$paymentMethod) {
             $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVALID_PAYMENT_REQUEST'), 'error');
-            $this->setRedirect(Route::_('index.php?option=com_mothership&task=invoice.payment&id=' . $id, false));
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoice&id=' . $invoiceId, false));
             return;
         }
 
-        $model = $this->getModel('Invoice');
-        $invoice = $model->getItem($id);
+        // Load the invoice
+        $invoiceModel = $this->getModel('Invoice');
+        $invoice = $invoiceModel->getItem($invoiceId);
 
-        if (!$invoice) {
-            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVOICE_NOT_FOUND'), 'error');
-            $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoices', false));
+        // Create the payment record
+        $payment = Factory::getApplication()
+            ->bootComponent('com_mothership')
+            ->getMVCFactory()
+            ->createTable('Payment', 'MothershipTable');
+        $payment->client_id = $invoice->client_id;
+        $payment->account_id = $invoice->account_id;
+        $payment->amount = $invoice->total;
+        $payment->status = 1; // Pending
+        $payment->payment_method = $paymentMethod;
+        $payment->payment_date = Factory::getDate()->toSql();
+        $payment->created = Factory::getDate()->toSql();
+
+        if (!$payment->store()) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_PAYMENT_SAVE_FAILED'), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoice&id=' . $invoiceId, false));
             return;
         }
 
-        // Set the payment method
-        $invoice->payment_method = $paymentMethod;
+        // Create the invoice payment record
+        $invoicePayment = Factory::getApplication()
+            ->bootComponent('com_mothership')
+            ->getMVCFactory()
+            ->createTable('InvoicePayment', 'MothershipTable');
+        $invoicePayment->invoice_id = $invoiceId;
+        $invoicePayment->payment_id = $payment->id;
+        $invoicePayment->applied_amount = $invoice->total;
+        if (!$invoicePayment->store()) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_PAYMENT_SAVE_FAILED'), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoice&id=' . $invoiceId, false));
+            return;
+        }
 
-        $paymentData = [
-            'payment_method' => $paymentMethod,
-        ];
+        // Invoke the plugin to process
+        try {
+            $plugin = $this->getPluginInstance($paymentMethod);
 
-        // Import the payment plugins BEFORE dispatching the event
-        \Joomla\CMS\Plugin\PluginHelper::importPlugin('mothership-payment');
-
-        $dispatcher = Factory::getApplication()->getDispatcher();
-        $event = new Event('onMothershipPaymentRequest', ['invoice' => $invoice, 'paymentData' => $paymentData]);
-
-        $results = $dispatcher->dispatch('onMothershipPaymentRequest', $event);
-
-        if (!empty($results)) {
-
-            $arguments = $event->getArguments();
-            foreach ($arguments['result'] as $result) {
-                if ($result['status'] === 'redirect') {
-                    $app->enqueueMessage($result['message'], 'info');
-                    $this->setRedirect($result['url']);
-                    return;
-                }
+            if (!method_exists($plugin, 'initiate')) {
+                throw new \RuntimeException("Plugin '{$paymentMethod}' cannot be initiated.");
             }
-        }
 
-        $app->enqueueMessage(Text::_(sprintf('COM_MOTHERSHIP_NO_PAYMENT_HANDLER', $paymentMethod)), 'danger');
-        $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoices', false));
+            return $plugin->initiate($payment, $invoice); // Plugin handles redirect or rendering
+        } catch (\Exception $e) {
+            $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_PAYMENT_PROCESSING_FAILED', $e->getMessage()), 'error');
+            $this->setRedirect(Route::_("index.php?option=com_mothership&view=invoice&id={$invoiceId}&task=invoice.payment", false));
+            return;
+        }
     }
 
 }

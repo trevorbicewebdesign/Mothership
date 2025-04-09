@@ -51,7 +51,7 @@ use Joomla\CMS\Language\Text;
                     <?php endif; ?>
                 </td>
                 <td>
-                    <?php if($invoice->status === 'Opened' || $invoice->status === 'Late'): ?>
+                    <?php if($invoice->status === 'Opened'): ?>
                     <?php
                     $dueDate = new DateTime($invoice->due_date, new DateTimeZone('UTC'));
                     $dueDate->setTime(23, 59, 59);
@@ -66,7 +66,7 @@ use Joomla\CMS\Language\Text;
                 <td>
                     <ul>
                         <li><a href="<?php echo Route::_('index.php?option=com_mothership&task=invoice.edit&id=' . $invoice->id); ?>">View</a></li>
-                        <?php if($invoice->status === 'Opened' || $invoice->status === 'Late'): ?>
+                        <?php if($invoice->status === 'Opened' && $invoice->payment_status != 'Pending Confirmation'): ?>
                         <li><a href="<?php echo Route::_("index.php?option=com_mothership&task=invoice.payment&id={$invoice->id}"); ?>">Pay</a></li>
                         <?php endif; ?>
                     </ul>
@@ -77,15 +77,35 @@ use Joomla\CMS\Language\Text;
         <?php endforeach; ?>
     </tbody>
 </table>
-<div class="card mt-4">
-  <div class="card-header">
-    Invoice Status Legend
-  </div>
-  <div class="card-body">
-    <ul class="mb-0">
-        <li><strong>Opened</strong>: Invoice is awaiting payment.</li>
-        <li><strong>Late</strong>: Invoice is past due.</li>
-        <li><strong>Paid</strong>: Invoice has been paid.</li>
-    </ul>
-  </div>
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Invoice Status Legend
+            </div>
+            <div class="card-body">
+                <ul class="mb-0"></ul>
+                    <li><strong>Opened</strong>: Invoice is awaiting payment.</li>
+                    <li><strong>Cancelled</strong>: Invoice has been voided and is no longer valid.</li>
+                    <li><strong>Closed</strong>: Invoice has been paid and is no longer active.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                Payment Status Legend
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li><strong>Unpaid</strong>: Payment has not been made yet.</li>
+                    <li><strong>Paid</strong>: Payment has been completed in full.</li>
+                    <li><strong>Partially Paid</strong>: A partial payment has been made, but the full amount is still outstanding.</li>
+                    <li><strong>Pending Confirmation</strong>: Payment has been initiated but is awaiting confirmation.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
 </div>
+
