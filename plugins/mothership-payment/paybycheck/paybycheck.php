@@ -17,39 +17,55 @@ use Joomla\Database\DatabaseDriver;
 use TrevorBice\Component\Mothership\Administrator\Helper\PaymentHelper;
 use TrevorBice\Component\Mothership\Administrator\Helper\InvoiceHelper;
 
-class PlgMothershipPaymentZelle extends CMSPlugin
+class PlgMothershipPaymentPaybycheck extends CMSPlugin
 {
     protected $autoloadLanguage = true;
 
-    /**
-     * Intercept request after routing. If "paybycheckinstructions=1", display our custom HTML.
-     */
-    public function onAfterRoute()
+    
+    public function initiate($payment, $invoice)
     {
-        $app     = Factory::getApplication();
-        $option  = $app->input->getCmd('option');
-        $isZelle = $app->input->getCmd('paybycheckinstructions', '0');
+        $app = Factory::getApplication();
+        $input = $app->getInput();
+        $invoiceId = $input->getInt('id', 0);
+        // $amount = $input->getFloat('amount', 0.0); // Retrieve the amount from the input
+        // echo 'index.php?option=com_mothership&view=payment&task=zelle.displayInstructions&invoice_id=' . $invoiceId . '&amount=' . $amount;
+        // die();
 
-        // Only act on front-end requests to com_mothership with &paybycheckinstructions=1
-        if ($app->isClient('site') && $option === 'com_mothership' && $isZelle === '1')
-        {
-            // Gather data as needed
-            $invoiceId = $app->input->getInt('invoice_id', 0);
-
-            // Use Joomla's FileLayout to load the layout from /tmpl/paybycheckinstructions.php
-            $layoutPath = __DIR__ . '/tmpl'; // plugin folder/tmpl
-            $layout     = new FileLayout('paybycheckinstructions', $layoutPath);
-
-            // Render the layout, passing data in an array
-            $html = $layout->render(['invoiceId' => $invoiceId]);
-
-            // Output the HTML
-            echo $html;
-
-            // End the request so Joomla doesn't continue
-            $app->close();
+        if ($invoiceId) {
+            // Redirect to the `Pay By Check` instructions page with the invoice ID and amount
+            $paymentLink = Route::_("index.php?option=com_mothership&controller=payment&task=pluginTask&plugin=paybycheck&action=displayInstructions&invoice_id={$invoiceId}", false);
+            Factory::getApplication()->redirect($paymentLink);
+        } else {
+            // Handle error: invalid invoice ID or amount
+            // Log::add('Invalid invoice ID or amount for Zelle payment.', 'error', 'jerror');
+            return false;
         }
     }
+
+    
+    public function displayInstructions()
+    {
+        // Load the Joomla application and input objects
+        $app = Factory::getApplication();
+        $input = $app->getInput();
+        $invoiceId = $input->getInt('invoice_id', 0);
+        $amount = $input->getFloat('amount', 0.0);
+
+        if ($invoiceId) {
+            // Load the `Pay By Check` instructions layout
+            $layoutPath = __DIR__ . '/tmpl'; // plugin folder/tmpl
+            $layout = new FileLayout('instructions', $layoutPath);
+
+            // Render the layout, passing data in an array
+            echo $layout->render(['invoiceId' => $invoiceId, 'amount' => $amount]);
+        } else {
+            // Handle error: invalid invoice ID or amount
+            // Log::add('Invalid invoice ID or amount for `Pay By Check` payment.', 'error', 'jerror');
+            return false;
+        }
+    }
+
+
 
     /**
      * Calculate the processing fee based on the payment amount.
@@ -77,43 +93,6 @@ class PlgMothershipPaymentZelle extends CMSPlugin
     {
         $calculatedFee = $this->getFee($amount);
         return "Fee: 3.9% + \$0.30 = \$" . $calculatedFee;
-    }
-
-    /**
-     * Handle payment requests from Mothership.
-     *
-     * @param   object  $invoice      The invoice object (from Mothership)
-     * @param   array   $paymentData  Any relevant payment data
-     *
-     * @return  array|null  Result of the payment process or null if not handled
-     */
-    public function onMothershipPaymentRequest($invoice, $paymentData)
-    {
-        // Only handle if this is the selected payment method
-        if ($invoice->payment_method !== 'paybycheck') {
-            return null;
-        }
-
-        $paymentLink = "https://joomlav4.trevorbice.com/?option=com_mothership&view=&invoices";
-
-        InvoiceHelper::updateInvoiceStatus($invoice->id, 1);
-
-        PaymentHelper::insertPaymentRecord(
-            $invoice->client_id,
-            $invoice->account_id,
-            $invoice->total,
-            date("Y-m-d H:i:s"),
-            0,
-            false,
-            'PayPal',
-            0,
-            2,
-        );
-
-        return [
-            'status'  => 'redirect',
-            'url'     => $paymentLink,
-        ];
     }
 
 }
