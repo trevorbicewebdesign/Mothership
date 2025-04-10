@@ -39,19 +39,28 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                     <?php echo HTMLHelper::_('grid.checkall'); ?>
                                 </th>
                                 <th scope="col" class="w-3 d-none d-lg-table-cell">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'JGRID_HEADING_ID', 'l.id', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_CLIENT_HEADING_NAME', 'a.name', $listDirn, $listOrder); ?>
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_LOGS_HEADING_CLIENT_NAME', 'c.name', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_CLIENT_HEADING_PHONE', 'a.phone', $listDirn, $listOrder); ?>
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_LOGS_HEADING_ACCOUNT_NAME', 'a.name', $listDirn, $listOrder); ?>
+                                </th>
+                                <th scope="col" class="w-10">
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_LOGS_HEADING_DESCRIPTION', 'l.description', $listDirn, $listOrder); ?>
+                                </th>
+                                <th scope="col" class="w-10">
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_LOGS_HEADING_DETAILS', 'l.details', $listDirn, $listOrder); ?>
                                 </th>                                
                                 <th scope="col" class="w-10">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_CLIENT_HEADING_DEFAULT_RATE', 'a.default_rate', $listDirn, $listOrder); ?>
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_LOGS_HEADING_OBJECT_TYPE', 'l.object_type', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_CLIENT_HEADING_CREATED', 'a.created', $listDirn, $listOrder); ?>
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_LOGS_HEADING_OBJECT_ID', 'l.object_id', $listDirn, $listOrder); ?>
+                                </th>
+                                <th scope="col" class="w-10">
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_LOGS_HEADING_CREATED', 'l.created', $listDirn, $listOrder); ?>
                                 </th>
                             </tr>
                         </thead>
@@ -70,26 +79,25 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                         <?php echo (int) $item->id; ?>
                                     </td>
                                     <td>
-                                        <?php if ($item->checked_out) : ?>
-                                            <?php echo HTMLHelper::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'articles.', $canCheckin); ?>
-                                        <?php endif; ?>
-
-                                        <?php if ($canEdit || $canEditOwn) : ?>
-                                            <a href="<?php echo Route::_('index.php?option=com_mothership&task=log.edit&id=' . $item->id); ?>" title="<?php echo Text::_('JACTION_EDIT'); ?> <?php echo $this->escape($item->name); ?>">
-                                                <?php echo $this->escape($item->name); ?></a>
-                                        <?php else : ?>
-                                            <span title="<?php echo Text::sprintf('JFIELD_ALIAS_LABEL', $this->escape($item->alias)); ?>"><?php echo $this->escape($item->name); ?></span>
-                                        <?php endif; ?>
-      
+                                        <?php echo $item->client_name; ?>
                                     </td>
                                     <td>
-                                        <?php echo htmlspecialchars($item->phone, ENT_QUOTES, 'UTF-8'); ?>
+                                        <?php echo $item->account_name; ?>
                                     </td>
                                     <td>
-                                        $<?php echo number_format($item->default_rate, 2); ?>
+                                        <?php echo htmlspecialchars($item->description, ENT_QUOTES, 'UTF-8'); ?>
                                     </td>
                                     <td>
-                                        <?php echo HTMLHelper::_('date', $item->created, Text::_('DATE_FORMAT_LC4')); ?>
+                                        <?php echo htmlspecialchars($item->details, ENT_QUOTES, 'UTF-8'); ?>
+                                    </td>
+                                    <td>
+                                        <?php echo $item->object_type; ?>
+                                    </td>
+                                    <td>
+                                        <?php echo $item->object_id; ?>
+                                    </td>
+                                    <td>
+                                        <?php echo $item->created; ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

@@ -35,8 +35,16 @@ class LogHelper extends ContentHelper
         $query = $db->getQuery(true)
             ->insert($db->quoteName('#__mothership_logs'))
             ->columns([
-                'client_id', 'account_id', 'object_type', 'object_id', 'action',
-                'meta', 'description', 'details', 'user_id', 'created'
+                'client_id',
+                'account_id',
+                'object_type',
+                'object_id',
+                'action',
+                'meta',
+                'description',
+                'details',
+                'user_id',
+                'created'
             ])
             ->values(implode(',', [
                 $db->quote($params['client_id'] ?? null),
@@ -55,20 +63,76 @@ class LogHelper extends ContentHelper
         return $db->execute();
     }
 
-    public static function logPaymentInitiated($invoice_id, $payment_id, $client_id, $account_id, $invoice_total, $payment_method): void
-    {
-        // description: Short description of the log entry
-        // details: Detailed information about the log entry
+    public static function logPaymentLifecycle(
+        string $event,
+        int $invoiceId,
+        int $paymentId,
+        ?int $clientId = null,
+        ?int $accountId = null,
+        float $amount = 0.0,
+        string $method = '',
+        ?string $extraDetails = null
+    ): void {
+        $eventLabels = [
+            'initiated' => 'initiated',
+            'completed' => 'completed',
+            'failed' => 'failed',
+            'refunded' => 'refunded',
+        ];
+
+        $description = "Payment {$eventLabels[$event]} for Invoice #" . str_pad($invoiceId, 4, '0', STR_PAD_LEFT);
+        $details = match ($event) {
+            'initiated', 'completed' => "A payment of \${$amount} was {$eventLabels[$event]} for Invoice #" . str_pad($invoiceId, 4, '0', STR_PAD_LEFT) . " using {$method}.",
+            'failed' => "Payment ID {$paymentId} failed. " . $extraDetails,
+            'refunded' => "Payment ID {$paymentId} was refunded. " . $extraDetails,
+            default => "Payment event '{$event}' occurred for Payment ID {$paymentId}."
+        };
+
         self::log([
             'object_type' => 'payment',
-            'object_id'   => $payment_id,
-            'client_id'   => $client_id,
-            'account_id'  => $account_id,
-            'action'      => 'initiated',
-            'description' => "Payment initiated for Invoice #" . str_pad($invoice_id, 4, '0', STR_PAD_LEFT),
-            'details'     => "A payment of \${$invoice_total} was initiated for Invoice #" . str_pad($invoice_id, 4, '0', STR_PAD_LEFT) . " using {$payment_method}.",
-            'meta'        => json_encode([]),
-            'user_id'     => Factory::getUser()->id,
+            'object_id' => $paymentId,
+            'client_id' => $clientId,
+            'account_id' => $accountId,
+            'action' => $event,
+            'description' => $description,
+            'details' => $details,
+            'meta' => json_encode([]),
+            'user_id' => Factory::getUser()->id,
         ]);
     }
+
+    public static function logPaymentInitiated($invoiceId, $paymentId, $clientId, $accountId, $invoiceTotal, $paymentMethod): void
+    {
+        self::logPaymentLifecycle('initiated', $invoiceId, $paymentId, $clientId, $accountId, $invoiceTotal, $paymentMethod);
+    }
+
+    public static function logPaymentCompleted($invoiceId, $paymentId, $clientId, $accountId, $invoiceTotal, $paymentMethod): void
+    {
+        self::logPaymentLifecycle('completed', $invoiceId, $paymentId, $clientId, $accountId, $invoiceTotal, $paymentMethod);
+    }
+
+    public static function logPaymentFailed($paymentId, ?string $reason = null): void
+    {
+        self::logPaymentLifecycle('failed', 0, $paymentId, null, null, 0.0, '', $reason);
+    }
+
+    public static function logPaymentViewed($client_id, $account_id, $payment_id): void
+    {
+        $user = Factory::getUser();
+        $userId = $user->id;
+        $username = $user->name ?: $user->username;
+
+        self::log([
+            'client_id' => $client_id,
+            'account_id' => $account_id,
+            'object_type' => 'payment',
+            'object_id' => $payment_id,
+            'action' => 'viewed',
+            'description' => "Payment viewed",
+            'details' => "Payment ID {$payment_id } was viewed by `{$username}`.",
+            'meta' => json_encode([]),
+            'user_id' => $userId,
+        ]);
+    }
+
 }

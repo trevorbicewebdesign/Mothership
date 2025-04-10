@@ -22,6 +22,7 @@ use Joomla\CMS\Toolbar\Toolbar;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use TrevorBice\Component\Mothership\Administrator\Model\PaymentModel;
 use TrevorBice\Component\Mothership\Administrator\Helper\MothershipHelper;
+use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
