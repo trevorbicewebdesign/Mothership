@@ -91,8 +91,6 @@ class LogHelper extends ContentHelper
             'client_id' => $clientId,
             'account_id' => $accountId,
             'action' => $event,
-            'description' => $description,
-            'details' => $details,
             'meta' => [],
             'user_id' => Factory::getUser()->id,
         ]);
@@ -129,7 +127,7 @@ class LogHelper extends ContentHelper
         self::logPaymentLifecycle('failed', 0, $paymentId, null, null, 0.0, '', $reason);
     }
 
-    public static function logDomainViewed($client_id, $account_id, $domain_id): void
+    public static function logObjectViewed($object_type, $object_id, $client_id, $account_id): void
     {
         $user = Factory::getUser();
         $userId = $user->id;
@@ -138,80 +136,37 @@ class LogHelper extends ContentHelper
         self::log([
             'client_id' => $client_id,
             'account_id' => $account_id,
-            'object_type' => 'domain',
-            'object_id' => $domain_id,
+            'object_type' => $object_type,
+            'object_id' => $object_id,
             'action' => 'viewed',
             'meta' =>[],
             'user_id' => $userId,
         ]);
+    }
+
+    public static function logDomainViewed($client_id, $account_id, $domain_id): void
+    {
+       self::logObjectViewed('domain', $domain_id, $client_id, $account_id);
     }
 
     public static function logProjectViewed($client_id, $account_id, $project_id): void
     {
-        $user = Factory::getUser();
-        $userId = $user->id;
-        $username = $user->name ?: $user->username;
-
-        self::log([
-            'client_id' => $client_id,
-            'account_id' => $account_id,
-            'object_type' => 'project',
-            'object_id' => $project_id,
-            'action' => 'viewed',
-            'meta' =>[],
-            'user_id' => $userId,
-        ]);
+        self::logObjectViewed('project', $project_id, $client_id, $account_id);
     }
 
     public static function logPaymentViewed($client_id, $account_id, $payment_id): void
     {
-        $user = Factory::getUser();
-        $userId = $user->id;
-        $username = $user->name ?: $user->username;
-
-        self::log([
-            'client_id' => $client_id,
-            'account_id' => $account_id,
-            'object_type' => 'payment',
-            'object_id' => $payment_id,
-            'action' => 'viewed',
-            'meta' =>[],
-            'user_id' => $userId,
-        ]);
+        self::logObjectViewed( 'payment', $payment_id, $client_id, $account_id);
     }
 
     public static function logInvoiceViewed($client_id, $account_id, $invoice_id): void
     {
-        $user = Factory::getUser();
-        $userId = $user->id;
-        $username = $user->name ?: $user->username;
-
-        self::log([
-            'client_id' => $client_id,
-            'account_id' => $account_id,
-            'object_type' => 'invoice',
-            'object_id' => $invoice_id,
-            'action' => 'viewed',
-            'meta' =>[],
-            'user_id' => $userId,
-        ]);
+        self::logObjectViewed( 'invoice', $invoice_id, $client_id, $account_id);
     }
 
     public static function logAccountViewed($client_id, $account_id): void
     {
-        $user = Factory::getUser();
-        $userId = $user->id;
-        $username = $user->name ?: $user->username;
-
-        self::log([
-            'client_id' => $client_id,
-            'account_id' => $account_id,
-            'object_type' => 'account',
-            'object_id' => $account_id,
-            'action' => 'viewed',
-            'meta' =>[],
-            'user_id' => $userId,
-        ]);
+        self::logObjectViewed( 'account', $account_id, $client_id, $account_id);
     }
 
     /**
