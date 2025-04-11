@@ -149,7 +149,7 @@ The **Invoices** object represents the invoices generated for clients. Each invo
 - **Client ID**: The ID of the client to whom the invoice belongs.
 - **Account ID**: The ID of the account associated with the invoice.
 - **Rate**: The billing rate for the invoice.
-- **Status**: The status of the invoice (e.g., draft, opened, cancelled, closed).
+- **Status**: The status of the invoice (e.g., draft, opened, canceled, closed).
 - **Total**: The total amount of the invoice.
 - **Due Date**: The date by which the invoice should be paid.
 - **Sent Date**: The date the invoice was sent to the client.
@@ -188,7 +188,7 @@ CREATE TABLE `#__mothership_invoices` (
 ### Invoice Lifecycle Status Levels
 - **Draft**: The invoice is being created and is not yet finalized.
 - **Opened**: The invoice has been finalized and sent to the client and is awaiting payment.
-- **Cancelled**: The invoice has been cancelled and is no longer valid.
+- **Cancelled**: The invoice has been canceled and is no longer valid.
 - **Closed**: The invoice has been paid and is considered complete.
 
 ### Invoice Payment Status Levels
@@ -281,7 +281,7 @@ CREATE TABLE IF NOT EXISTS `#__mothership_payments` (
 - **Completed**: The payment has been successfully processed.
 - **Failed**: The payment attempt was unsuccessful.
 - **Refunded**: The payment has been refunded to the client.
-- **Cancelled**: The payment was cancelled before completion.
+- **Canceled**: The payment was canceled before completion.
 - **Disputed**: The payment is under dispute and is being reviewed.
 
 ## Invoice Payments
