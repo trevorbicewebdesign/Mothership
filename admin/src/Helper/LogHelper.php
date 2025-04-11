@@ -98,9 +98,25 @@ class LogHelper extends ContentHelper
         ]);
     }
 
-    public static function logPaymentInitiated($invoiceId, $paymentId, $clientId, $accountId, $invoiceTotal, $paymentMethod): void
+    public static function logPaymentInitiated($invoice_id, $payment_id, $client_id, $account_id, $invoiceTotal, $paymentMethod): void
     {
-        self::logPaymentLifecycle('initiated', $invoiceId, $paymentId, $clientId, $accountId, $invoiceTotal, $paymentMethod);
+        $user = Factory::getUser();
+        $userId = $user->id;
+        $username = $user->name ?: $user->username;
+
+        self::log([
+            'client_id' => $client_id,
+            'account_id' => $account_id,
+            'object_type' => 'payment',
+            'object_id' => $payment_id,
+            'action' => 'initiated',
+            'meta' =>[
+                'invoice_id' => $invoice_id,
+                'payment_method' => $paymentMethod,
+                'amount' => $invoiceTotal,
+            ],
+            'user_id' => $userId,
+        ]);
     }
 
     public static function logPaymentCompleted($invoiceId, $paymentId, $clientId, $accountId, $invoiceTotal, $paymentMethod): void
@@ -124,6 +140,40 @@ class LogHelper extends ContentHelper
             'account_id' => $account_id,
             'object_type' => 'payment',
             'object_id' => $payment_id,
+            'action' => 'viewed',
+            'meta' =>[],
+            'user_id' => $userId,
+        ]);
+    }
+
+    public static function logInvoiceViewed($client_id, $account_id, $invoice_id): void
+    {
+        $user = Factory::getUser();
+        $userId = $user->id;
+        $username = $user->name ?: $user->username;
+
+        self::log([
+            'client_id' => $client_id,
+            'account_id' => $account_id,
+            'object_type' => 'invoice',
+            'object_id' => $invoice_id,
+            'action' => 'viewed',
+            'meta' =>[],
+            'user_id' => $userId,
+        ]);
+    }
+
+    public static function logAccountViewed($client_id, $account_id): void
+    {
+        $user = Factory::getUser();
+        $userId = $user->id;
+        $username = $user->name ?: $user->username;
+
+        self::log([
+            'client_id' => $client_id,
+            'account_id' => $account_id,
+            'object_type' => 'account',
+            'object_id' => $account_id,
             'action' => 'viewed',
             'meta' =>[],
             'user_id' => $userId,
