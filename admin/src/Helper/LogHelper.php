@@ -17,6 +17,7 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\ParameterType;
+use TrevorBice\Component\Mothership\Administrator\Helper\PaymentHelper;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -41,8 +42,6 @@ class LogHelper extends ContentHelper
                 'object_id',
                 'action',
                 'meta',
-                'description',
-                'details',
                 'user_id',
                 'created'
             ])
@@ -53,8 +52,6 @@ class LogHelper extends ContentHelper
                 $db->quote($params['object_id'] ?? null),
                 $db->quote($params['action'] ?? null),
                 $db->quote(json_encode($params['meta'] ?? [])),
-                $db->quote($params['description'] ?? null),
-                $db->quote($params['details'] ?? null),
                 $db->quote($params['user_id'] ?? Factory::getUser()->id),
                 $db->quote(date('Y-m-d H:i:s')),
             ]));
@@ -128,11 +125,58 @@ class LogHelper extends ContentHelper
             'object_type' => 'payment',
             'object_id' => $payment_id,
             'action' => 'viewed',
-            'description' => "Payment viewed",
-            'details' => "Payment ID {$payment_id } was viewed by `{$username}`.",
             'meta' => json_encode([]),
             'user_id' => $userId,
         ]);
+    }
+
+    /**
+     * Log a payment status change.
+     *
+     * @param object $payment     The payment object.
+     * @param string $newStatus   The new status (e.g., 'completed').
+     *
+     * @return void
+     */
+    public static function logStatusChange(object $payment, string $newStatus): void
+    {
+        $oldStatus = $payment->status ?? null;
+        if ($oldStatus === $newStatus) {
+            // Don't log if there's no actual change
+            return;
+        }
+
+        $client_id = $payment->client_id ?? null;
+        $account_id = $payment->account_id ?? null;
+        $object_id = $payment->id ?? null;
+
+        $user = Factory::getApplication()->getIdentity();
+        $user_display_name = $user->name ?: $user->username;
+
+        $meta = [
+            'old_status' => PaymentHelper::getStatus($oldStatus),
+            'new_status' => PaymentHelper::getStatus($newStatus),
+        ];
+
+        $logEntry = [
+            'client_id' => $client_id,
+            'account_id' => $account_id,
+            'object_type' => 'payment',
+            'object_id' => $object_id,
+            'action'=> 'payment_status_changed',
+            'meta' => json_encode($meta),
+            'user_id' => $user->id,
+            'created' => date('Y-m-d H:i:s'),
+        ];
+
+        
+        try{
+            self::log($logEntry);
+        }
+        catch (\Exception $e) {
+            // Handle logging error (e.g., log to a file, send an email, etc.)
+            Factory::getApplication()->enqueueMessage(Text::_('COM_MOTHERSHIP_LOGGING_ERROR'), 'error');
+        }
     }
 
 }
