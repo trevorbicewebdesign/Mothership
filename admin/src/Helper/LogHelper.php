@@ -93,7 +93,7 @@ class LogHelper extends ContentHelper
             'action' => $event,
             'description' => $description,
             'details' => $details,
-            'meta' => json_encode([]),
+            'meta' => [],
             'user_id' => Factory::getUser()->id,
         ]);
     }
@@ -125,7 +125,7 @@ class LogHelper extends ContentHelper
             'object_type' => 'payment',
             'object_id' => $payment_id,
             'action' => 'viewed',
-            'meta' => json_encode([]),
+            'meta' =>[],
             'user_id' => $userId,
         ]);
     }
@@ -164,7 +164,7 @@ class LogHelper extends ContentHelper
             'object_type' => 'payment',
             'object_id' => $object_id,
             'action'=> 'payment_status_changed',
-            'meta' => json_encode($meta),
+            'meta' => $meta,
             'user_id' => $user->id,
             'created' => date('Y-m-d H:i:s'),
         ];
@@ -175,7 +175,7 @@ class LogHelper extends ContentHelper
         }
         catch (\Exception $e) {
             // Handle logging error (e.g., log to a file, send an email, etc.)
-            Factory::getApplication()->enqueueMessage(Text::_('COM_MOTHERSHIP_LOGGING_ERROR'), 'error');
+            Factory::getApplication()->enqueueMessage(sprintf(Text::_('COM_MOTHERSHIP_LOGGING_ERROR'), $e->getMessage()), 'error');
         }
     }
 
