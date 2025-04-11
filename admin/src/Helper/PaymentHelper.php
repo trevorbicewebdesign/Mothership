@@ -111,6 +111,52 @@ class PaymentHelper
         }
     }
 
+    public static function updatePayment($paymendId, $data)
+    {
+        $allowedData = ['amount', 'fee', 'date', 'processed_date'];
+        $data = array_intersect_key($data, array_flip($allowedData));
+        if (empty($data)) {
+            throw new \RuntimeException("No valid data provided for update.");
+        }
+
+        $db = Factory::getContainer()->get(DatabaseDriver::class);
+        $query = $db->getQuery(true)
+            ->update($db->quoteName('#__mothership_payments'))
+            ->set($db->quoteName('amount') . ' = ' . (float) $data['amount'])
+            ->set($db->quoteName('fee_amount') . ' = ' . (float) $data['fee'])
+            ->set($db->quoteName('payment_date') . ' = ' . $db->quote($data['date']))
+            ->set($db->quoteName('processed_date') . ' = ' . $db->quote($data['processed_date']))
+            ->where($db->quoteName('id') . ' = ' . (int) $paymendId);
+        $db->setQuery($query);
+
+        try {
+            $db->execute();
+            return true;
+        } catch (\Exception $e) {
+            Log::add("Failed to update payment ID $paymendId: " . $e->getMessage(), Log::ERROR, 'payment');
+            return false;
+        }
+    }
+
+    public static function updateInvoicePayment($paymentId, $invoiceId, $applied_amount)
+    {
+        $db = Factory::getContainer()->get(DatabaseDriver::class);
+        $query = $db->getQuery(true)
+            ->update($db->quoteName('#__mothership_invoice_payment'))
+            ->set($db->quoteName('applied_amount') . ' = ' . (float) $applied_amount)
+            ->where($db->quoteName('payment_id') . ' = ' . (int) $paymentId)
+            ->where($db->quoteName('invoice_id') . ' = ' . (int) $invoiceId);
+        $db->setQuery($query);
+
+        try {
+            $db->execute();
+            return true;
+        } catch (\Exception $e) {
+            Log::add("Failed to update invoice payment ID $paymentId: " . $e->getMessage(), Log::ERROR, 'payment');
+            return false;
+        }
+    }
+
 
     /**
      * Inserts a payment record.
