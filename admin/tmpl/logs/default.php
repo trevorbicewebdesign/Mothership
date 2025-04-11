@@ -105,6 +105,12 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                         else if($item->action == 'viewed' && $item->object_type =='account'){
                                             echo sprintf(Text::_('COM_MOTHERSHIP_LOG_ACCOUNT_VIEWED'), $item->account_name);                                        
                                         }
+                                        else if($item->action == 'viewed' && $item->object_type =='project'){
+                                            echo sprintf(Text::_('COM_MOTHERSHIP_LOG_PROJECT_VIEWED'), $item->object_id);                                        
+                                        }
+                                        else if($item->action == 'viewed' && $item->object_type =='domain'){
+                                            echo sprintf(Text::_('COM_MOTHERSHIP_LOG_DOMAIN_VIEWED'), $item->object_id);                                        
+                                        }
                                         
                                         
                 
@@ -128,6 +134,11 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                         else if($item->action == 'viewed' && $item->object_type =='account'){
                                             echo sprintf(Text::_('COM_MOTHERSHIP_LOG_ACCOUNT_VIEWED_DESC'), $item->account_name, $item->user_id);                                        
                                         }
+                                        else if($item->action == 'viewed' && $item->object_type =='project'){
+                                            echo sprintf(Text::_('COM_MOTHERSHIP_LOG_PROJECT_VIEWED_DESC'), $item->object_id, $item->user_id);                                                                             
+                                        }
+                                        else if($item->action == 'viewed' && $item->object_type =='domain'){
+                                            echo sprintf(Text::_('COM_MOTHERSHIP_LOG_DOMAIN_VIEWED_DESC'), $item->object_id, $item->user_id);                                                                                                                     }
                                         ?>
                                     </td>
                                     <td>
