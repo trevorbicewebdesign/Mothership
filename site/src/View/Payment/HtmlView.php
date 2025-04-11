@@ -5,6 +5,7 @@ use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Exception;
+use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper; // Adjust the namespace if LogHelper is located elsewhere
 
 class HtmlView extends BaseHtmlView
 {
@@ -25,6 +26,8 @@ class HtmlView extends BaseHtmlView
         if (!$this->item) {
             throw new \Exception('Payment not found', 404);
         }
+
+        LogHelper::logPaymentViewed($this->item->client_id, $this->item->account_id, $this->item->id);
 
         parent::display($tpl);
     }

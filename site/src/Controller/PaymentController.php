@@ -5,6 +5,7 @@ namespace TrevorBice\Component\Mothership\Site\Controller;
 
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Factory;
+use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper; // Import LogHelper
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\FileLayout;
@@ -17,20 +18,7 @@ use Joomla\Event\Event;
 PluginHelper::importPlugin('mothership-payment');
 
 class PaymentController extends BaseController
-{
-    public function __construct($config = [])
-    {
-        parent::__construct($config);
-        $this->registerTask('zelle.displayInstructions', 'zelleDisplayInstructions');
-    }
-
-    public function zelleDisplayInstructions()
-    {
-        // Add the logic for displaying Zelle instructions here
-        $app = Factory::getApplication();
-        $app->enqueueMessage('Zelle instructions displayed successfully.', 'message');
-    }
-    
+{    
     public function display($cachable = false, $urlparams = [])
     {
         $this->input->set('view', $this->input->getCmd('view', 'payment'));
@@ -130,7 +118,6 @@ class PaymentController extends BaseController
                 'display_fee' => $plugin->displayFee($invoice->total),
             ];
         }
-
         // Correct way to pass data to the view:
         $view = $this->getView('Payment', 'html');
         $view->setModel($model, true);

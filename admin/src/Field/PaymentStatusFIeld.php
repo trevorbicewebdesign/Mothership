@@ -16,7 +16,13 @@ class PaymentstatusField extends ListField
     {
         $options = [];
 
-        $statuses = ['draft'=>1, 'opened'=>2, 'late'=>3, 'paid'=>4];
+        $statuses = [
+            'pending'=>1, 
+            'completed'=>2, 
+            'failed'=>3, 
+            'canceled'=>4, 
+            'refunded'=>5
+        ];
         foreach ($statuses as $key=>$status) {
             $options[] = (object) [
             'value' => $status,
