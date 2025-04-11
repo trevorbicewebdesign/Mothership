@@ -60,6 +60,9 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_LOGS_HEADING_OBJECT_ID', 'l.object_id', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_LOGS_HEADING_ACTION', 'l.action', $listDirn, $listOrder); ?>
+                                </th>
+                                <th scope="col" class="w-10">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_LOGS_HEADING_CREATED', 'l.created', $listDirn, $listOrder); ?>
                                 </th>
                             </tr>
@@ -86,24 +89,44 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                     </td>
                                     <td>
                                         <?php 
+                                        $meta = json_decode($item->meta);
                                         if($item->action == 'status_changed' && $item->object_type == 'payment'){
-                                            $meta = json_decode($item->meta);
                                             echo sprintf(Text::_('COM_MOTHERSHIP_LOG_PAYMENT_STATUS_CHANGED'), $meta->old_status, $meta->new_status);                                        
                                         }
                                         else if($item->action == 'viewed' && $item->object_type == 'payment'){
                                             echo sprintf(Text::_('COM_MOTHERSHIP_LOG_PAYMENT_VIEWED'), $item->object_id);                                        
                                         }
+                                        else if($item->action == 'initiated' && $item->object_type == 'payment'){
+                                            echo sprintf(Text::_('COM_MOTHERSHIP_LOG_PAYMENT_INITIATED'), $item->object_id);                                        
+                                        }
+                                        else if($item->action == 'viewed' && $item->object_type =='invoice'){
+                                            echo sprintf(Text::_('COM_MOTHERSHIP_LOG_INVOICE_VIEWED'), $item->object_id);                                        
+                                        }
+                                        else if($item->action == 'viewed' && $item->object_type =='account'){
+                                            echo sprintf(Text::_('COM_MOTHERSHIP_LOG_ACCOUNT_VIEWED'), $item->account_name);                                        
+                                        }
+                                        
+                                        
                 
                                         ?>
                                     </td>
                                     <td>
                                     <?php 
                                         if($item->action == 'status_changed' && $item->object_type == 'payment'){
-                                            $meta = json_decode($item->meta);
+                                            
                                             echo sprintf(Text::_('COM_MOTHERSHIP_LOG_PAYMENT_STATUS_CHANGED_DESC'), $item->object_id,$meta->old_status, $meta->new_status, $item->user_id);
                                         }
                                         else if($item->action == 'viewed' && $item->object_type == 'payment'){
                                             echo sprintf(Text::_('COM_MOTHERSHIP_LOG_PAYMENT_VIEWED_DESC'), $item->object_id, $item->user_id);                                        
+                                        }
+                                        else if($item->action == 'initiated' && $item->object_type == 'payment'){
+                                            echo sprintf(Text::_('COM_MOTHERSHIP_LOG_PAYMENT_INITIATED_DESC'), $item->object_id, $meta->payment_method,$item->user_id, $meta->invoice_id);                                        
+                                        }
+                                        else if($item->action == 'viewed' && $item->object_type =='invoice'){
+                                            echo sprintf(Text::_('COM_MOTHERSHIP_LOG_INVOICE_VIEWED_DESC'), $item->object_id, $item->user_id);                                        
+                                        }
+                                        else if($item->action == 'viewed' && $item->object_type =='account'){
+                                            echo sprintf(Text::_('COM_MOTHERSHIP_LOG_ACCOUNT_VIEWED_DESC'), $item->account_name, $item->user_id);                                        
                                         }
                                         ?>
                                     </td>
@@ -112,6 +135,9 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                     </td>
                                     <td>
                                         <?php echo $item->object_id; ?>
+                                    </td>
+                                    <td>
+                                        <?php echo $item->action; ?>
                                     </td>
                                     <td>
                                         <?php echo $item->created; ?>
