@@ -86,9 +86,8 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                     </td>
                                     <td>
                                         <?php 
-
-                                        if($item->action == 'payment_status_changed'){
-                                            $meta = json_decode(json_decode($item->meta));
+                                        if($item->action == 'status_changed' && $item->object_type == 'payment'){
+                                            $meta = json_decode($item->meta);
                                             echo sprintf(Text::_('COM_MOTHERSHIP_LOG_PAYMENT_STATUS_CHANGED'), $meta->old_status, $meta->new_status);                                        
                                         }
                                         else if($item->action == 'viewed' && $item->object_type == 'payment'){
@@ -99,8 +98,8 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                     </td>
                                     <td>
                                     <?php 
-                                        if($item->action == 'payment_status_changed'){
-                                            $meta = json_decode(json_decode($item->meta));
+                                        if($item->action == 'status_changed' && $item->object_type == 'payment'){
+                                            $meta = json_decode($item->meta);
                                             echo sprintf(Text::_('COM_MOTHERSHIP_LOG_PAYMENT_STATUS_CHANGED_DESC'), $item->object_id,$meta->old_status, $meta->new_status, $item->user_id);
                                         }
                                         else if($item->action == 'viewed' && $item->object_type == 'payment'){
