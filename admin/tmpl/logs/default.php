@@ -85,10 +85,28 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                         <?php echo $item->account_name; ?>
                                     </td>
                                     <td>
-                                        <?php echo htmlspecialchars($item->description, ENT_QUOTES, 'UTF-8'); ?>
+                                        <?php 
+
+                                        if($item->action == 'payment_status_changed'){
+                                            $meta = json_decode(json_decode($item->meta));
+                                            echo sprintf(Text::_('COM_MOTHERSHIP_LOG_PAYMENT_STATUS_CHANGED'), $meta->old_status, $meta->new_status);                                        
+                                        }
+                                        else if($item->action == 'viewed' && $item->object_type == 'payment'){
+                                            echo sprintf(Text::_('COM_MOTHERSHIP_LOG_PAYMENT_VIEWED'), $item->object_id);                                        
+                                        }
+                
+                                        ?>
                                     </td>
                                     <td>
-                                        <?php echo htmlspecialchars($item->details, ENT_QUOTES, 'UTF-8'); ?>
+                                    <?php 
+                                        if($item->action == 'payment_status_changed'){
+                                            $meta = json_decode(json_decode($item->meta));
+                                            echo sprintf(Text::_('COM_MOTHERSHIP_LOG_PAYMENT_STATUS_CHANGED_DESC'), $item->object_id,$meta->old_status, $meta->new_status, $item->user_id);
+                                        }
+                                        else if($item->action == 'viewed' && $item->object_type == 'payment'){
+                                            echo sprintf(Text::_('COM_MOTHERSHIP_LOG_PAYMENT_VIEWED_DESC'), $item->object_id, $item->user_id);                                        
+                                        }
+                                        ?>
                                     </td>
                                     <td>
                                         <?php echo $item->object_type; ?>
