@@ -129,6 +129,40 @@ class LogHelper extends ContentHelper
         self::logPaymentLifecycle('failed', 0, $paymentId, null, null, 0.0, '', $reason);
     }
 
+    public static function logDomainViewed($client_id, $account_id, $domain_id): void
+    {
+        $user = Factory::getUser();
+        $userId = $user->id;
+        $username = $user->name ?: $user->username;
+
+        self::log([
+            'client_id' => $client_id,
+            'account_id' => $account_id,
+            'object_type' => 'domain',
+            'object_id' => $domain_id,
+            'action' => 'viewed',
+            'meta' =>[],
+            'user_id' => $userId,
+        ]);
+    }
+
+    public static function logProjectViewed($client_id, $account_id, $project_id): void
+    {
+        $user = Factory::getUser();
+        $userId = $user->id;
+        $username = $user->name ?: $user->username;
+
+        self::log([
+            'client_id' => $client_id,
+            'account_id' => $account_id,
+            'object_type' => 'project',
+            'object_id' => $project_id,
+            'action' => 'viewed',
+            'meta' =>[],
+            'user_id' => $userId,
+        ]);
+    }
+
     public static function logPaymentViewed($client_id, $account_id, $payment_id): void
     {
         $user = Factory::getUser();
