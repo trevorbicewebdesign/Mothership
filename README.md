@@ -9,6 +9,7 @@ At its core, Mothership organizes your business around five main objects:
 - **Invoices**
 - **Payments**
 - **Domains**
+- **Logs**
 
 The model is flexible enough to accommodate real-world complexities. For example, a single client might manage multiple accounts—whether these represent different parts of the business, subdomains, or entirely separate brands. Each account can then have its own projects. While projects currently focus on websites, the architecture is designed to eventually support other types of work, like graphic design or any other service you might offer.
 
@@ -148,7 +149,7 @@ The **Invoices** object represents the invoices generated for clients. Each invo
 - **Client ID**: The ID of the client to whom the invoice belongs.
 - **Account ID**: The ID of the account associated with the invoice.
 - **Rate**: The billing rate for the invoice.
-- **Status**: The status of the invoice (e.g., draft, opened, cancelled, closed).
+- **Status**: The status of the invoice (e.g., draft, opened, canceled, closed).
 - **Total**: The total amount of the invoice.
 - **Due Date**: The date by which the invoice should be paid.
 - **Sent Date**: The date the invoice was sent to the client.
@@ -187,7 +188,7 @@ CREATE TABLE `#__mothership_invoices` (
 ### Invoice Lifecycle Status Levels
 - **Draft**: The invoice is being created and is not yet finalized.
 - **Opened**: The invoice has been finalized and sent to the client and is awaiting payment.
-- **Cancelled**: The invoice has been cancelled and is no longer valid.
+- **Cancelled**: The invoice has been canceled and is no longer valid.
 - **Closed**: The invoice has been paid and is considered complete.
 
 ### Invoice Payment Status Levels
@@ -280,7 +281,7 @@ CREATE TABLE IF NOT EXISTS `#__mothership_payments` (
 - **Completed**: The payment has been successfully processed.
 - **Failed**: The payment attempt was unsuccessful.
 - **Refunded**: The payment has been refunded to the client.
-- **Cancelled**: The payment was cancelled before completion.
+- **Canceled**: The payment was canceled before completion.
 - **Disputed**: The payment is under dispute and is being reviewed.
 
 ## Invoice Payments
@@ -305,6 +306,42 @@ CREATE TABLE IF NOT EXISTS `#__mothership_invoice_payment` (
 ```
 
 > **Note:** If a draft invoice is deleted, any `Invoice Payments` records linked to that invoice will also be deleted automatically. This helps keep your data consistent and prevents orphaned records.
+
+## Logs 
+
+### Logs Table
+
+- **ID**:
+- **Client Id**:
+- **Account Id**:
+- **Object Type**:
+- **Object Id**:
+- **Action**:
+- **Meta**:
+- **Description**:
+- **Detaisl**:
+- **User Id**: 
+- **Created**:
+- **Notes**:
+
+```
+CREATE TABLE IF NOT EXISTS `#__mothership_logs` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `client_id` INT(11) NULL DEFAULT NULL,
+  `account_id` INT(11) NULL DEFAULT NULL,
+  `object_type` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+  `object_id` INT(11) NULL DEFAULT NULL,
+  `action` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+  `field_changed` VARCHAR(100) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+  `old_value` TEXT NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+  `new_value` TEXT NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+  `user_id` INT(11) NULL DEFAULT NULL,
+  `created` DATETIME NULL DEFAULT (CURRENT_TIMESTAMP),
+  `notes` TEXT NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+;
+```
 
 ---
 

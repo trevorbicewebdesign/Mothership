@@ -7,6 +7,7 @@ use Joomla\CMS\MVC\Controller\FormController;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use TrevorBice\Component\Mothership\Administrator\Helper\MothershipHelper;
+use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper;
 
 \defined('_JEXEC') or die;
 
@@ -30,6 +31,9 @@ class PaymentController extends FormController
         $data  = $input->get('jform', [], 'array');
         $model = $this->getModel('Payment');
 
+        $payment = $model->getItem($data['id'] ?? 0);
+        $new_payment_status = $data['status'] ?? null;
+
         if (!$model->save($data)) {
             $app->enqueueMessage(Text::_('COM_MOTHERSHIP_PAYMENT_SAVE_FAILED'), 'error');
             $app->enqueueMessage($model->getError(), 'error');
@@ -47,6 +51,8 @@ class PaymentController extends FormController
         } else {
             $defaultRedirect = Route::_('index.php?option=com_mothership&view=payments', false);
         }
+
+        LogHelper::logStatusChange($payment, $new_payment_status);
 
         $this->setRedirect($defaultRedirect);
         return true;

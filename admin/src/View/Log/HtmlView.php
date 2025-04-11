@@ -8,7 +8,7 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace TrevorBice\Component\Mothership\Administrator\View\Payment;
+namespace TrevorBice\Component\Mothership\Administrator\View\Log;
 
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
@@ -20,16 +20,14 @@ use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use Joomla\CMS\Toolbar\Toolbar;
 use Joomla\CMS\Toolbar\ToolbarHelper;
-use TrevorBice\Component\Mothership\Administrator\Model\PaymentModel;
-use TrevorBice\Component\Mothership\Administrator\Helper\MothershipHelper;
-use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper;
+use TrevorBice\Component\Mothership\Administrator\Model\LogModel;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
 /**
- * View to edit an payment.
+ * View to edit a log.
  *
  * @since  1.5
  */
@@ -80,18 +78,17 @@ class HtmlView extends BaseHtmlView
      */
     public function display($tpl = null): void
     {
-        /** @var PaymentModel $model */
+        /** @var LogModel $model */
         $model = $this->getModel();
         $this->form = $model->getForm();
         $this->item = $model->getItem();
         $this->state = $model->getState();
-        $this->helper = new MothershipHelper;
         $this->canDo = ContentHelper::getActions('com_mothership');
 
         // ✅ Use WebAssetManager to load the script
         $wa = $this->getDocument()->getWebAssetManager();
-        $wa->registerAndUseScript('com_mothership.payment-edit', 'media/com_mothership/js/payment-edit.js', [], ['defer' => true]);
-        $wa->registerAndUseStyle('com_mothership.payment-edit', 'media/com_mothership/css/payment-edit.css');
+        $wa->registerAndUseScript('com_mothership.log-edit', 'media/com_mothership/js/log-edit.js', [], ['defer' => true]);
+        $wa->registerAndUseStyle('com_mothership.log-edit', 'media/com_mothership/css/log-edit.css');
 
         // Check for errors.
         if (\count($errors = $this->get('Errors'))) {
@@ -123,13 +120,13 @@ class HtmlView extends BaseHtmlView
         $toolbar = $this->getDocument()->getToolbar();
 
         ToolbarHelper::title(
-            $isNew ? Text::_('COM_MOTHERSHIP_MANAGER_PAYMENT_NEW') : Text::_('COM_MOTHERSHIP_MANAGER_PAYMENT_EDIT'),
-            'bookmark mothership-payments'
+            $isNew ? Text::_('COM_MOTHERSHIP_MANAGER_LOG_NEW') : Text::_('COM_MOTHERSHIP_MANAGER_LOG_EDIT'),
+            'bookmark mothership-logs'
         );
 
         // If not checked out, can save the item.
         if (!$checkedOut && ($canDo->get('core.edit') || $canDo->get('core.create'))) {
-            $toolbar->apply('payment.apply');
+            $toolbar->apply('log.apply');
         }
 
         $saveGroup = $toolbar->dropdownButton('save-group');
@@ -137,27 +134,27 @@ class HtmlView extends BaseHtmlView
             function (Toolbar $childBar) use ($checkedOut, $canDo, $isNew) {
                 // If not checked out, can save the item.
                 if (!$checkedOut && ($canDo->get('core.edit') || $canDo->get('core.create'))) {
-                    $childBar->save('payment.save');
+                    $childBar->save('log.save');
                 }
 
                 if (!$checkedOut && $canDo->get('core.create')) {
-                    $childBar->save2new('payment.save2new');
+                    $childBar->save2new('log.save2new');
                 }
 
                 // If an existing item, can save to a copy.
                 if (!$isNew && $canDo->get('core.create')) {
-                    $childBar->save2copy('payment.save2copy');
+                    $childBar->save2copy('log.save2copy');
                 }
             }
         );
 
         if (empty($this->item->id)) {
-            $toolbar->cancel('payment.cancel', 'JTOOLBAR_CANCEL');
+            $toolbar->cancel('log.cancel', 'JTOOLBAR_CANCEL');
         } else {
-            $toolbar->cancel('payment.cancel');
+            $toolbar->cancel('log.cancel');
 
             if (ComponentHelper::isEnabled('com_contenthistory') && $this->state->params->get('save_history', 0) && $canDo->get('core.edit')) {
-                $toolbar->versions('com_mothership.payment', $this->item->id);
+                $toolbar->versions('com_mothership.log', $this->item->id);
             }
         }
     }
