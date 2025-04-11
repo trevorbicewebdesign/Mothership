@@ -17,27 +17,7 @@ use Joomla\Database\ParameterType;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
-/*
-CREATE TABLE `jos_mothership_logs` (
-	`id` INT(11) NOT NULL AUTO_INCREMENT,
-	`client_id` INT(11) NULL DEFAULT NULL,
-	`account_id` INT(11) NULL DEFAULT NULL,
-	`object_type` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
-	`object_id` INT(11) NULL DEFAULT NULL,
-	`action` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
-	`field_changed` VARCHAR(100) NULL DEFAULT NULL COLLATE 'utf8_general_ci',
-	`old_value` TEXT NULL DEFAULT NULL COLLATE 'utf8_general_ci',
-	`new_value` TEXT NULL DEFAULT NULL COLLATE 'utf8_general_ci',
-	`user_id` INT(11) NULL DEFAULT NULL,
-	`created` DATETIME NULL DEFAULT (CURRENT_TIMESTAMP),
-	`notes` TEXT NULL DEFAULT NULL COLLATE 'utf8_general_ci',
-	PRIMARY KEY (`id`) USING BTREE
-)
-COLLATE='utf8_general_ci'
-ENGINE=InnoDB
-;
 
-*/
 class LogsModel extends ListModel
 {
     public function __construct($config = [])
@@ -50,9 +30,6 @@ class LogsModel extends ListModel
                 'object_type', 'l.object_type',
                 'object_id', 'l.object_id',
                 'action', 'l.action',
-                'field_changed', 'l.field_changed',
-                'old_value', 'l.old_value',
-                'new_value', 'l.new_value',
                 'user_id', 'l.user_id',
                 'created', 'l.created',
                 'notes', 'l.notes',
@@ -64,7 +41,7 @@ class LogsModel extends ListModel
         parent::__construct($config);
     }
 
-    protected function populateState($ordering = 'c.name', $direction = 'asc')
+    protected function populateState($ordering = 'l.created', $direction = 'desc')
     {
         // Load the parameters.
         $this->setState('params', ComponentHelper::getParams('com_mothership'));
@@ -98,8 +75,6 @@ class LogsModel extends ListModel
                     $db->quoteName('l.object_id'),
                     $db->quoteName('l.action'),
                     $db->quoteName('l.meta'),
-                    $db->quoteName('l.description'),
-                    $db->quoteName('l.details'),
                     $db->quoteName('l.user_id'),
                     $db->quoteName('l.created'),
                     $db->quoteName('l.notes'),
@@ -130,7 +105,7 @@ class LogsModel extends ListModel
 
         // Add the ordering clause.
         $query->order(
-            $db->quoteName($db->escape($this->getState('list.ordering', 'l.created'))) . ' ' . $db->escape($this->getState('list.direction', 'ASC'))
+            $db->quoteName($db->escape($this->getState('list.ordering', 'l.created'))) . ' ' . $db->escape($this->getState('list.direction', 'DESC'))
         );
 
         return $query;
