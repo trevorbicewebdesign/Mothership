@@ -32,7 +32,6 @@ class LogsModel extends ListModel
                 'action', 'l.action',
                 'user_id', 'l.user_id',
                 'created', 'l.created',
-                'notes', 'l.notes',
                 'client_name', 'c.name',
                 'account_name', 'a.name',
             ];
@@ -77,7 +76,6 @@ class LogsModel extends ListModel
                     $db->quoteName('l.meta'),
                     $db->quoteName('l.user_id'),
                     $db->quoteName('l.created'),
-                    $db->quoteName('l.notes'),
                     $db->quoteName('c.name', 'client_name'),
                     $db->quoteName('a.name', 'account_name'),
                 ]
