@@ -363,5 +363,3 @@ jQuery(document).ready(function ($) {
         });
     });
 });
-
-
