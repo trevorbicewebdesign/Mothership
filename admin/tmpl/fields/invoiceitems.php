@@ -92,7 +92,6 @@ jQuery(document).ready(function ($) {
 
     function validateRows() {
         let hasErrors = false;
-        alert('validate rows');
         $tableBody.find('tr').each(function () {
             const $row = $(this);
             const $input = $row.find('input[name$="[name]"]');
