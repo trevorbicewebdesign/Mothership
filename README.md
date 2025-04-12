@@ -314,30 +314,24 @@ CREATE TABLE IF NOT EXISTS `#__mothership_invoice_payment` (
 - **ID**:
 - **Client Id**:
 - **Account Id**:
-- **Object Type**:
+- **User Id**: 
 - **Object Id**:
+- **Object Type**:
 - **Action**:
 - **Meta**:
-- **Description**:
-- **Detaisl**:
-- **User Id**: 
 - **Created**:
-- **Notes**:
 
 ```
 CREATE TABLE IF NOT EXISTS `#__mothership_logs` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `client_id` INT(11) NULL DEFAULT NULL,
   `account_id` INT(11) NULL DEFAULT NULL,
-  `object_type` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
-  `object_id` INT(11) NULL DEFAULT NULL,
-  `action` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
-  `field_changed` VARCHAR(100) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
-  `old_value` TEXT NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
-  `new_value` TEXT NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
   `user_id` INT(11) NULL DEFAULT NULL,
+  `object_id` INT(11) NULL DEFAULT NULL,
+  `object_type` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+  `action` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+  `meta` JSON NULL DEFAULT NULL,
   `created` DATETIME NULL DEFAULT (CURRENT_TIMESTAMP),
-  `notes` TEXT NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ;
