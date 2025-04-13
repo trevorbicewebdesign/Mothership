@@ -50,10 +50,8 @@ class EmailService
     {
         $html = self::renderLayout("emails.$template", $data);
 
-        $textLayout = "emails.$template.text";
-        $text = self::layoutExists($textLayout)
-            ? self::renderLayout($textLayout, $data)
-            : strip_tags($html);
+        // $text should be generated from the HTML layout, but for now, we will just use the HTML content.
+        $text = strip_tags($html);
 
         return [
             'html' => $html,
