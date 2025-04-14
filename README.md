@@ -447,5 +447,30 @@ The **Payments Helper** provides several methods to manage and update payment re
 
 
 
+# Notification Emails
+
+## Invoice Opened
+The invoice has been set from `Draft` to `Opened`. This will send the email template `invoice.opened` to the Client Owner and BCC an administrator.
+
+## Invoice Closed
+The invoice status has been set from `Opened` to `Closed`. This will send the email template `invoice.closed` to the Client Owner and BCC an administrator
+
+## Payment Completed
+The payment has been set from `pending` to `completed`. This will send the email template `payment.completed` to the Client Owner and BCC an administrator. This should be sent to the payee whenever the payment cycle has been completed. 
+
+### Emails Left to create
+- **Invoice Cancelled**:
+- **Invoice due in 7 days**:
+- **Invoice due in 1 day**:
+- **Invoice 1 day late**:
+- **Invoice 7 days late**:
+- **Invoice 1 Month Late**:
+- **Invoice Refunded**:
+- **Payment Cancelled**:
+- **Payment Failed**:
+- **Domain Expiring in 30 days**::
+
+
+
 
 
