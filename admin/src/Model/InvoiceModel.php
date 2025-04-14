@@ -9,6 +9,8 @@ use Joomla\CMS\Versioning\VersionableModelTrait;
 use Joomla\CMS\Log\Log;
 use Joomla\Registry\Registry;
 use Joomla\CMS\Component\ComponentHelper;
+use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper; // Ensure this is the correct namespace for LogHelper
+use TrevorBice\Component\Mothership\Administrator\Service\EmailService; // Ensure this is the correct namespace for EmailService
 
 \defined('_JEXEC') or die;
 
@@ -120,6 +122,48 @@ class InvoiceModel extends AdminModel
     protected function prepareTable($table)
     {
         $table->name = htmlspecialchars_decode($table->name, ENT_QUOTES);
+    }
+
+    /**
+     * Triggered when an invoice transitions to "Opened".
+     *
+     * @param  \Joomla\CMS\Table\Table  $invoice         The invoice table object.
+     * @param  int                      $previousStatus  The previous status ID.
+     *
+     * @return void
+     */
+    protected function onInvoiceOpened($invoice, int $previousStatus): void
+    {
+        // Log the event or trigger plugins here
+        \Joomla\CMS\Log\Log::add(
+            sprintf('Invoice #%d status changed from %d to Opened (2).', $invoice->id, $previousStatus),
+            \Joomla\CMS\Log\Log::INFO,
+            'com_mothership'
+        );
+
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onMothershipInvoiceOpened', [$invoice]);
+
+        // SEnd the invoice template to the client
+        EmailService::sendTemplate('invoice', 'test.smith@mailinator.com', 'New Invoice Opened', [
+            'fname' => 'Trevor',
+            'invoice_number' => 'INV-2045',
+            'account_name' => 'Trevor Bice Webdesign',
+            'account_center_url' => 'https://example.com/account',
+            'invoice_due_date' => 'April 30, 2025',
+            'pay_invoice_link' => 'https://example.com/pay?invoice=2045',
+            'company_name' => 'Trevor Bice Webdesign',
+            'company_address' => '123 Main St, San Francisco, CA',
+            'company_address_1' => '123 Main St',
+            'company_address_2' => 'Suite 100',
+            'company_city' => 'San Francisco',
+            'company_state' => 'CA',
+            'company_zip' => '94111',
+            'company_phone' => '(555) 555-5555',
+            'company_email' => 'info@trevorbice.com',
+        ]);
+
+        // Optional: add history or record in a log table
+        LogHelper::logInvoiceStatusOpened($invoice->id, $invoice->client_id, $invoice->account_id);
     }
 
     public function save($data)
