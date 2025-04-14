@@ -136,7 +136,7 @@ class InvoiceModel extends AdminModel
     {
         // Log the event or trigger plugins here
         \Joomla\CMS\Log\Log::add(
-            sprintf('Invoice #%d status changed from %d to Opened (2).', $invoice->id, $previousStatus),
+            sprintf('Invoice #%d status changed from %d to Opened.', $invoice->id, $previousStatus),
             \Joomla\CMS\Log\Log::INFO,
             'com_mothership'
         );
