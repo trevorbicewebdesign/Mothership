@@ -21,6 +21,8 @@ use Joomla\Database\DatabaseDriver;
 use TrevorBice\Component\Mothership\Administrator\Helper\ClientHelper;
 use TrevorBice\Component\Mothership\Administrator\Helper\AccountHelper;
 use TrevorBice\Component\Mothership\Administrator\Helper\InvoiceHelper;
+use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper; // Ensure this is the correct namespace for LogHelper
+use TrevorBice\Component\Mothership\Administrator\Service\EmailService; // Ensure this is the correct namespace for EmailService
 
 class PaymentHelper
 {
@@ -48,6 +50,40 @@ class PaymentHelper
     {
 
     }
+
+    public static function onPaymentCompleted($payment)
+    {
+        // Log the event or trigger plugins here
+        \Joomla\CMS\Log\Log::add(
+            sprintf('Invoice #%d status changed from %d to Opened.', $payment->id, $previousStatus),
+            \Joomla\CMS\Log\Log::INFO,
+            'com_mothership'
+        );
+
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onMothershipPaymentCompleted', [$payment]);
+
+        // SEnd the invoice template to the client
+        EmailService::sendTemplate('payment', 'test.smith@mailinator.com', 'Payment Completed', [
+            'fname' => 'Trevor',
+            'invoice_number' => 'INV-2045',
+            'account_name' => 'Trevor Bice Webdesign',
+            'account_center_url' => 'https://example.com/account',
+            'invoice_due_date' => 'April 30, 2025',
+            'pay_invoice_link' => 'https://example.com/pay?invoice=2045',
+            'company_name' => 'Trevor Bice Webdesign',
+            'company_address' => '123 Main St, San Francisco, CA',
+            'company_address_1' => '123 Main St',
+            'company_address_2' => 'Suite 100',
+            'company_city' => 'San Francisco',
+            'company_state' => 'CA',
+            'company_zip' => '94111',
+            'company_phone' => '(555) 555-5555',
+            'company_email' => 'info@trevorbice.com',
+        ]);
+
+        // Optional: add history or record in a log table
+        LogHelper::logPaymentCompleted($payment);
+    }
     public static function updateStatus($paymentId, $status_id)
     {
         $db = Factory::getContainer()->get(DatabaseDriver::class);
@@ -56,14 +92,16 @@ class PaymentHelper
             ->set($db->quoteName('status') . ' = ' . (int) $status_id)
             ->where($db->quoteName('id') . ' = ' . (int) $paymentId);
         $db->setQuery($query);
-
+        
         try {
             $db->execute();
-            return true;
+            
         } catch (\Exception $e) {
             Log::add("Failed to update payment ID $paymentId: " . $e->getMessage(), Log::ERROR, 'payment');
             return false;
         }
+                
+        
     }
 
     public static function getStatus($status_id)
@@ -95,6 +133,14 @@ class PaymentHelper
 
     public static function updatePaymentStatus($paymentId, $status)
     {
+        try{
+            $payment = self::getPayment($paymentId);
+        } catch (\Exception $e) {
+            throw new \RuntimeException("Failed to get payment record: " . $e->getMessage());
+        }
+        $old_status = $payment->status;
+        $new_status = $status;
+
         $db = Factory::getContainer()->get(DatabaseDriver::class);
         $query = $db->getQuery(true)
             ->update($db->quoteName('#__mothership_payments'))
@@ -104,11 +150,16 @@ class PaymentHelper
 
         try {
             $db->execute();
-            return true;
+            
         } catch (\Exception $e) {
             Log::add("Failed to update payment ID $paymentId: " . $e->getMessage(), Log::ERROR, 'payment');
             return false;
         }
+
+        if($old_status !== $new_status && $new_status ==2){
+            self::onPaymentCompleted($payment);
+        }
+        return true;
     }
 
     public static function updatePayment($paymendId, $data)
