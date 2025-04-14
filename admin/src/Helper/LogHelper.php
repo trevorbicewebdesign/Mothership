@@ -117,8 +117,15 @@ class LogHelper extends ContentHelper
         ]);
     }
 
-    public static function logPaymentCompleted($invoiceId, $paymentId, $clientId, $accountId, $invoiceTotal, $paymentMethod): void
+    public static function logPaymentCompleted($payment): void
     {
+        $invoiceId = $payment->invoice_id ?? 0;
+        $paymentId = $payment->id ?? 0;
+        $clientId = $payment->client_id ?? null;
+        $accountId = $payment->account_id ?? null;
+        $invoiceTotal = $payment->amount ?? 0.0;
+        $paymentMethod = $payment->payment_method ?? '';
+        
         self::logPaymentLifecycle('completed', $invoiceId, $paymentId, $clientId, $accountId, $invoiceTotal, $paymentMethod);
     }
 
