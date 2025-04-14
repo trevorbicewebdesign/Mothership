@@ -169,6 +169,23 @@ class LogHelper extends ContentHelper
         self::logObjectViewed( 'account', $account_id, $client_id, $account_id);
     }
 
+    public static function logInvoiceStatusOpened($invoice_id, $client_id, $account_id): void
+    {
+        $user = Factory::getApplication()->getIdentity();
+        $user_display_name = $user->name ?: $user->username;
+
+        self::log([
+            'client_id' => $client_id,
+            'account_id' => $account_id,
+            'object_type' => 'invoice',
+            'object_id' => $invoice_id,
+            'action' => 'status_opened',
+            'meta' => [],
+            'user_id' => $user->id,
+            'created' => date('Y-m-d H:i:s'),
+        ]);
+    }
+
     /**
      * Log a payment status change.
      *
