@@ -43,8 +43,7 @@ body[yahoo] .center { text-align: center!important; }
     <tbody>
         <tr>
             <td style="padding-top: 20px;" valign="top" bgcolor="#FFF" width="100%">
-                <table border="0" class="deviceWidth" style="border: 1px solid #3498db; width: 580px;" cellspacing="0"
-                    cellpadding="0" align="center">
+                <table border="0" class="deviceWidth" style="border: 1px solid #3498db; width: 580px;" cellspacing="0" cellpadding="0" align="center">
                     <tbody>
                         <tr>
                             <td bgcolor="#3498db" width="100%">
@@ -62,12 +61,10 @@ body[yahoo] .center { text-align: center!important; }
                         </tr>
                     </tbody>
                 </table>
-                <table border="0" class="deviceWidth" style="width: 580px;" cellspacing="0" cellpadding="0"
-                    align="center" bgcolor="#FFFFFF">
+                <table border="0" class="deviceWidth" style="width: 580px;" cellspacing="0" cellpadding="0" align="center" bgcolor="#FFFFFF">
                     <tbody>
                         <tr>
-                            <td style="font-size: 13px; color: #959595; font-weight: normal; text-align: left; font-family: 'Open Sans', sans-serif; line-height: 24px; vertical-align: top; padding: 20px 18px 20px 18px;"
-                                bgcolor="#eeeeed">
+                            <td style="font-size: 13px; color: #959595; font-weight: normal; text-align: left; font-family: 'Open Sans', sans-serif; line-height: 24px; vertical-align: top; padding: 20px 18px 20px 18px;" bgcolor="#eeeeed">
                                 <table>
                                     <tbody>
                                         <tr>
@@ -102,9 +99,7 @@ body[yahoo] .center { text-align: center!important; }
                                                 <table border="0" class="deviceWidth" style="width: 45%;" cellspacing="0" cellpadding="0" align="left">
                                                     <tbody>
                                                         <tr>
-                                                            <td class="center"
-                                                                style="font-size: 11px; color: #fff; font-family: Arial, sans-serif; padding-bottom: 20px;"
-                                                                valign="top">
+                                                            <td class="center"  style="font-size: 11px; color: #fff; font-family: Arial, sans-serif; padding-bottom: 20px;" valign="top">
                                                                 <div style="font-size: 12px; line-height: 1.2em;">
                                                                     <em><?php echo $displayData['company_address_1']; ?></em>
                                                                     <em><?php echo $displayData['company_address_2']; ?></em>
