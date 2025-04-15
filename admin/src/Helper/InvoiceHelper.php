@@ -266,4 +266,28 @@ class InvoiceHelper
     {
         
     }
+
+    public static function handleInvoicePayment($invoice_id, $payment_id, $applied_amount)
+    {
+        $db = Factory::getContainer()->get(DatabaseDriver::class);
+
+        // Insert the invoice_payment record
+        $query = $db->getQuery(true)
+            ->insert($db->quoteName('#__mothership_invoice_payment'))
+            ->columns([
+                'invoice_id',
+                'payment_id',
+                'applied_amount',
+            ])
+            ->values(implode(',', [
+                $db->quote($invoice_id),
+                $db->quote($payment_id),
+                $db->quote($applied_amount),
+            ]));
+        $db->setQuery($query);
+        $db->execute();
+
+        // Recalculate the invoice status
+        self::recalculateInvoiceStatus($invoice_id);
+    }
 }
