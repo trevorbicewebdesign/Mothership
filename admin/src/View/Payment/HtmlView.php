@@ -139,7 +139,11 @@ class HtmlView extends BaseHtmlView
         $toolbar = $this->getDocument()->getToolbar();
 
         ToolbarHelper::title(
-            $isNew ? Text::_('COM_MOTHERSHIP_MANAGER_PAYMENT_NEW') : Text::_('COM_MOTHERSHIP_MANAGER_PAYMENT_EDIT'),
+            $isLocked 
+            ? Text::_('COM_MOTHERSHIP_MANAGER_PAYMENT_VIEW') 
+            : ($isNew 
+                ? Text::_('COM_MOTHERSHIP_MANAGER_PAYMENT_NEW') 
+                : Text::_('COM_MOTHERSHIP_MANAGER_PAYMENT_EDIT')),
             'bookmark mothership-payments'
         );
 
