@@ -207,6 +207,7 @@ class InvoiceModel extends AdminModel
             $this->onInvoiceOpened($table, $previousStatus);
             // Fill in the due date
             $table->due_date = Factory::getDate()->modify('+30 days')->format('Y-m-d');
+            $table->locked = 1;
             $table->store();
         }
         
