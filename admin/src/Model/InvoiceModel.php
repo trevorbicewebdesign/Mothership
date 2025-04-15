@@ -302,7 +302,7 @@ class InvoiceModel extends AdminModel
         $table->load($id);
 
         if ($table->locked) {
-            return false; // Already locked
+            return false; 
         }
 
         $table->locked = 1;
@@ -314,7 +314,7 @@ class InvoiceModel extends AdminModel
         $table->load($id);
 
         if (!$table->locked) {
-            return false; // Already unlocked
+            return false; 
         }
 
         $table->locked = 0;
