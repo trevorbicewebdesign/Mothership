@@ -94,4 +94,46 @@ class PaymentController extends FormController
 
         $this->setRedirect(MothershipHelper::getReturnRedirect(Route::_('index.php?option=com_mothership&view=payments', false)));
     }
+
+    public function unlock($key = null)
+    {
+        $app = Factory::getApplication();
+        $id = $app->getInput()->getInt('id');
+
+        if (!$id) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVALID_PAYMENT_ID'), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=payments', false));
+            return;
+        }
+
+        $model = $this->getModel('Payment');
+        if ($model->unlock($id)) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_PAYMENT_UNLOCKED_SUCCESSFULLY'), 'message');
+        } else {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_PAYMENT_UNLOCK_FAILED'), 'error');
+        }
+
+        $this->setRedirect(Route::_("index.php?option=com_mothership&view=payment&layout=edit&id={$id}", false));
+    }
+
+    public function lock($key = null)
+    {
+        $app = Factory::getApplication();
+        $id = $app->getInput()->getInt('id');
+
+        if (!$id) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVALID_PAYMENT_ID'), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=payments', false));
+            return;
+        }
+
+        $model = $this->getModel('Payment');
+        if ($model->lock($id)) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_PAYMENT_LOCKED_SUCCESSFULLY'), 'message');
+        } else {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_PAYMENT_LOCK_FAILED'), 'error');
+        }
+
+        $this->setRedirect(Route::_("index.php?option=com_mothership&view=payment&layout=edit&id={$id}", false));
+    }
 }

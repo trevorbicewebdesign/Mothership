@@ -195,4 +195,30 @@ class PaymentModel extends AdminModel
 
         return true;
     }
+
+    public function lock($id)
+    {
+        $table = $this->getTable();
+        $table->load($id);
+
+        if ($table->locked) {
+            return false; 
+        }
+
+        $table->locked = 1;
+        return $table->store();
+    }
+    public function unlock($id)
+    {
+        $table = $this->getTable();
+        $table->load($id);
+
+        if (!$table->locked) {
+            return false; 
+        }
+
+        $table->locked = 0;
+        return $table->store();
+    }
+
 }
