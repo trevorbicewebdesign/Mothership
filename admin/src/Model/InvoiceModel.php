@@ -182,7 +182,6 @@ class InvoiceModel extends AdminModel
             $previousStatus = (int) $existingTable->status;
             $newStatus = (int) $data['status'];
         
-            // 🔒 Prevent editing a locked invoice
             if (!empty($existingTable->locked)) {
                 $this->setError(JText::_('COM_MOTHERSHIP_ERROR_INVOICE_LOCKED'));
                 return false;
@@ -295,5 +294,30 @@ class InvoiceModel extends AdminModel
         }
 
         return $result;
+    }
+
+    public function lock($id)
+    {
+        $table = $this->getTable();
+        $table->load($id);
+
+        if ($table->locked) {
+            return false; // Already locked
+        }
+
+        $table->locked = 1;
+        return $table->store();
+    }
+    public function unlock($id)
+    {
+        $table = $this->getTable();
+        $table->load($id);
+
+        if (!$table->locked) {
+            return false; // Already unlocked
+        }
+
+        $table->locked = 0;
+        return $table->store();
     }
 }
