@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS `#__mothership_invoices` (
   `due_date` DATE NULL DEFAULT NULL,
   `sent_date` DATE NULL DEFAULT NULL,
   `paid_date` DATE NULL DEFAULT NULL,
-  'locked' BOOLEAN NOT NULL DEFAULT 0,
+  `locked` BOOLEAN NOT NULL DEFAULT 0,
   `created` DATETIME NULL DEFAULT (CURRENT_TIMESTAMP),
   `created_by` INT(11) NULL DEFAULT NULL,
   `checked_out_time` DATETIME NULL DEFAULT NULL,
