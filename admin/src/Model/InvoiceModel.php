@@ -144,7 +144,7 @@ class InvoiceModel extends AdminModel
         \Joomla\CMS\Factory::getApplication()->triggerEvent('onMothershipInvoiceOpened', [$invoice]);
 
         // SEnd the invoice template to the client
-        EmailService::sendTemplate('invoice', 'test.smith@mailinator.com', 'New Invoice Opened', [
+        EmailService::sendTemplate('invoice.opened', 'test.smith@mailinator.com', 'New Invoice Opened', [
             'fname' => 'Trevor',
             'invoice_number' => 'INV-2045',
             'account_name' => 'Trevor Bice Webdesign',
