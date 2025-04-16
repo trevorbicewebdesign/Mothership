@@ -143,6 +143,21 @@ class PaymentModel extends AdminModel
         $table = $this->getTable();
 
         Log::add('Data received for saving: ' . json_encode($data), Log::DEBUG, 'com_mothership');
+
+        $isNew = empty($data['id']);
+        $previousStatus = null;
+
+        if (!$isNew) {
+            $existingTable = $this->getTable();
+            $existingTable->load($data['id']);
+            $previousStatus = (int) $existingTable->status;
+            $newStatus = (int) $data['status'];
+        
+            if (!empty($existingTable->locked)) {
+                $this->setError(\JText::_('COM_MOTHERSHIP_ERROR_PAYMENT_LOCKED'));
+                return false;
+            }
+        }
     
         if (!$table->bind($data)) {
             $error = $table->getError();
