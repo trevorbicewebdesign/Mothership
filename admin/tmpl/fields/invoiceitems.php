@@ -8,8 +8,12 @@ defined('_JEXEC') or die;
 $app = JFactory::getApplication();
 $input = $app->input;
 $id = $input->getInt('id', 0);
-$invoice = InvoiceHelper::getInvoice($id);
-$isLocked = $invoice->locked ?? false;
+try{
+    $invoice = InvoiceHelper::getInvoice($id);
+    $isLocked = $invoice->locked ?? false;
+}catch (Exception $e) {
+    $isLocked = false;
+}
 
 $field = $displayData['field'];
 $items = $field->value ?? [];
