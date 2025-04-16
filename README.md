@@ -154,6 +154,7 @@ The **Invoices** object represents the invoices generated for clients. Each invo
 - **Due Date**: The date by which the invoice should be paid.
 - **Sent Date**: The date the invoice was sent to the client.
 - **Paid Date**: The date the invoice was paid.
+- **Locked**: Setting this to true will make the invoice view only.
 - **Created**: The timestamp when the invoice was created.
 - **Created By**: The ID of the user who created the invoice.
 - **Checked Out Time**: The timestamp when the invoice record was last checked out.
@@ -172,6 +173,7 @@ CREATE TABLE `#__mothership_invoices` (
   `due_date` DATE NULL DEFAULT NULL,
   `sent_date` DATE NULL DEFAULT NULL,
   `paid_date` DATE NULL DEFAULT NULL,
+  `locked` BOOLEAN NOT NULL DEFAULT 0,
   `created` DATETIME NULL DEFAULT (CURRENT_TIMESTAMP),
   `created_by` INT(11) NULL DEFAULT NULL,
   `checked_out_time` DATETIME NULL DEFAULT NULL,
@@ -186,6 +188,8 @@ CREATE TABLE `#__mothership_invoices` (
 ```
 
 ### Invoice Lifecycle Status Levels
+Invoices that are set from `Draft` to `Opened` will have their `Locked` status set to true. Opened invoices should not be modified.
+
 - **Draft**: The invoice is being created and is not yet finalized.
 - **Opened**: The invoice has been finalized and sent to the client and is awaiting payment.
 - **Cancelled**: The invoice has been canceled and is no longer valid.
@@ -249,6 +253,7 @@ The **Payments** object represents the payments made by clients. Each payment ha
 - **Transaction ID**: The transaction ID of the payment.
 - **Payment Date**: The date and time when the payment was made.
 - **Status**: The status of the payment.
+- **Locked**: Setting this to true will make the invoice view only.
 - **Checked Out Time**: The timestamp when the payment record was last checked out.
 - **Checked Out**: The ID of the user who last checked out the payment record.
 
@@ -266,6 +271,7 @@ CREATE TABLE IF NOT EXISTS `#__mothership_payments` (
   `transaction_id` VARCHAR(255) DEFAULT NULL,
   `status` INT NOT NULL DEFAULT 0,
   `processed_date` DATETIME DEFAULT NULL,
+  `locked` BOOLEAN NOT NULL DEFAULT 0,
   `created_by` INT(11) DEFAULT NULL,
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
