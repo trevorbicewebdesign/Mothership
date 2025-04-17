@@ -188,7 +188,7 @@ CREATE TABLE `#__mothership_invoices` (
 ```
 
 ### Invoice Lifecycle Status Levels
-Invoices that are set from `Draft` to `Opened` will have their `Locked` status set to true. Opened invoices should not be modified.
+Invoices that are set from `Draft` to `Opened` will have their `Locked` status set to true. Opened invoices should not be modified. Invoices that are in a `Locked` state can be `Unlocked` if it is necessary to override for some reason.
 
 - **Draft**: The invoice is being created and is not yet finalized.
 - **Opened**: The invoice has been finalized and sent to the client and is awaiting payment.
