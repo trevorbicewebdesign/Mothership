@@ -483,9 +483,6 @@ The payment has been set from `pending` to `completed`. This will send the email
 - **Invoice Refunded**:
 - **Payment Cancelled**:
 - **Payment Failed**:
-- **Domain Expiring in 30 days**::
-
-
-
+- **Domain Expiring in 30 days**:
 
 
