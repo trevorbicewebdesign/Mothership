@@ -452,20 +452,19 @@ The **Payments Helper** provides several methods to manage and update payment re
 - **getStatus(int $status_id)**: Retrieves the domain status based on a provided integer status level
 
 ## Logs Helper
-
-- **log(array $params)**:
-- **logPaymentLifecycle(string $event, int $invoiceId, int $paymentId, ?int $clientId = null, ?int $accountId = null, float $amount = 0.0, string $method = '', ?string $extraDetails = null)**:
-- **logPaymentInitiated($invoice_id, $payment_id, $client_id, $account_id, $invoiceTotal, $paymentMethod)**:
-- **logPaymentCompleted($payment)**:
-- **logPaymentFailed($paymentId, ?string $reason = null)**:
-- **logObjectViewed($object_type, $object_id, $client_id, $account_id)**:
-- **logDomainViewed($client_id, $account_id, $domain_id)**:
-- **logProjectViewed($client_id, $account_id, $project_id)**:
-- **logPaymentViewed($client_id, $account_id, $payment_id)**:
-- **logInvoiceViewed($client_id, $account_id, $invoice_id)**:
-- **logAccountViewed($client_id, $account_id)**:
-- **logInvoiceStatusOpened($invoice_id, $client_id, $account_id)**:
-- **logStatusChange(object $payment, string $newStatus)**:
+- **log(array $params)**: Logs a generic event with the provided parameters.
+- **logPaymentLifecycle(string $event, int $invoiceId, int $paymentId, ?int $clientId = null, ?int $accountId = null, float $amount = 0.0, string $method = '', ?string $extraDetails = null)**: Logs the lifecycle events of a payment, such as initiation or completion.
+- **logPaymentInitiated($invoice_id, $payment_id, $client_id, $account_id, $invoiceTotal, $paymentMethod)**: Logs when a payment process is initiated for a specific invoice.
+- **logPaymentCompleted($payment)**: Logs the completion of a payment.
+- **logPaymentFailed($paymentId, ?string $reason = null)**: Logs a failed payment attempt with an optional reason.
+- **logObjectViewed($object_type, $object_id, $client_id, $account_id)**: Logs when a specific object (e.g., invoice, domain) is viewed.
+- **logDomainViewed($client_id, $account_id, $domain_id)**: Logs when a domain is viewed by a user.
+- **logProjectViewed($client_id, $account_id, $project_id)**: Logs when a project is viewed by a user.
+- **logPaymentViewed($client_id, $account_id, $payment_id)**: Logs when a payment record is viewed by a user.
+- **logInvoiceViewed($client_id, $account_id, $invoice_id)**: Logs when an invoice is viewed by a user.
+- **logAccountViewed($client_id, $account_id)**: Logs when an account is viewed by a user.
+- **logInvoiceStatusOpened($invoice_id, $client_id, $account_id)**: Logs when an invoice status is changed to "Opened."
+- **logStatusChange(object $payment, string $newStatus)**: Logs a status change for a payment, including the new status.
 
 # Notification Emails
 
