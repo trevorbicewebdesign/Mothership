@@ -60,16 +60,7 @@ class LogHelper extends ContentHelper
         return $db->execute();
     }
 
-    public static function logPaymentLifecycle(
-        string $event,
-        int $invoiceId,
-        int $paymentId,
-        ?int $clientId = null,
-        ?int $accountId = null,
-        float $amount = 0.0,
-        string $method = '',
-        ?string $extraDetails = null
-    ): void {
+    public static function logPaymentLifecycle(string $event, int $invoiceId, int $paymentId, ?int $clientId = null, ?int $accountId = null, float $amount = 0.0, string $method = '', ?string $extraDetails = null): void {
         $eventLabels = [
             'initiated' => 'initiated',
             'completed' => 'completed',
