@@ -471,9 +471,6 @@ The **Payments Helper** provides several methods to manage and update payment re
 ## Invoice Opened
 The invoice has been set from `Draft` to `Opened`. This will send the email template `invoice.opened` to the Client Owner and BCC an administrator.
 
-## Invoice Closed
-The invoice status has been set from `Opened` to `Closed`. This will send the email template `invoice.closed` to the Client Owner and BCC an administrator
-
 ## Payment Completed
 The payment has been set from `pending` to `completed`. This will send the email template `payment.completed` to the Client Owner and BCC an administrator. This should be sent to the payee whenever the payment cycle has been completed. 
 
