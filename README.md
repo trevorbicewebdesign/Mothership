@@ -253,8 +253,7 @@ The **Payments** object represents the payments made by clients. Each payment ha
 - **Transaction ID**: The transaction ID of the payment.
 - **Payment Date**: The date and time when the payment was made.
 - **Status**: The status of the payment.
-- **Locked**: Setting this to true will make the invoice view only.
-- **Checked Out Time**: The timestamp when the payment record was last checked out.
+- **Locked**: Setting this to true will make the payment view only.
 - **Checked Out**: The ID of the user who last checked out the payment record.
 
 ### Payments Table
@@ -484,9 +483,6 @@ The payment has been set from `pending` to `completed`. This will send the email
 - **Invoice Refunded**:
 - **Payment Cancelled**:
 - **Payment Failed**:
-- **Domain Expiring in 30 days**::
-
-
-
+- **Domain Expiring in 30 days**:
 
 
