@@ -451,7 +451,21 @@ The **Payments Helper** provides several methods to manage and update payment re
 - **getDomain(int $domain_id)**: Retrieves the domain information based on the provided domain ID.
 - **getStatus(int $status_id)**: Retrieves the domain status based on a provided integer status level
 
+## Logs Helper
 
+- **log(array $params)**:
+- **logPaymentLifecycle(string $event, int $invoiceId, int $paymentId, ?int $clientId = null, ?int $accountId = null, float $amount = 0.0, string $method = '', ?string $extraDetails = null)**:
+- **logPaymentInitiated($invoice_id, $payment_id, $client_id, $account_id, $invoiceTotal, $paymentMethod)**:
+- **logPaymentCompleted($payment)**:
+- **logPaymentFailed($paymentId, ?string $reason = null)**:
+- **logObjectViewed($object_type, $object_id, $client_id, $account_id)**:
+- **logDomainViewed($client_id, $account_id, $domain_id)**:
+- **logProjectViewed($client_id, $account_id, $project_id)**:
+- **logPaymentViewed($client_id, $account_id, $payment_id)**:
+- **logInvoiceViewed($client_id, $account_id, $invoice_id)**:
+- **logAccountViewed($client_id, $account_id)**:
+- **logInvoiceStatusOpened($invoice_id, $client_id, $account_id)**:
+- **logStatusChange(object $payment, string $newStatus)**:
 
 # Notification Emails
 
