@@ -154,6 +154,7 @@ The **Invoices** object represents the invoices generated for clients. Each invo
 - **Due Date**: The date by which the invoice should be paid.
 - **Sent Date**: The date the invoice was sent to the client.
 - **Paid Date**: The date the invoice was paid.
+- **Locked**: Setting this to true will make the invoice view only.
 - **Created**: The timestamp when the invoice was created.
 - **Created By**: The ID of the user who created the invoice.
 - **Checked Out Time**: The timestamp when the invoice record was last checked out.
@@ -172,6 +173,7 @@ CREATE TABLE `#__mothership_invoices` (
   `due_date` DATE NULL DEFAULT NULL,
   `sent_date` DATE NULL DEFAULT NULL,
   `paid_date` DATE NULL DEFAULT NULL,
+  `locked` BOOLEAN NOT NULL DEFAULT 0,
   `created` DATETIME NULL DEFAULT (CURRENT_TIMESTAMP),
   `created_by` INT(11) NULL DEFAULT NULL,
   `checked_out_time` DATETIME NULL DEFAULT NULL,
@@ -186,6 +188,8 @@ CREATE TABLE `#__mothership_invoices` (
 ```
 
 ### Invoice Lifecycle Status Levels
+Invoices that are set from `Draft` to `Opened` will have their `Locked` status set to true. Opened invoices should not be modified. Invoices that are in a `Locked` state can be `Unlocked` if it is necessary to override for some reason.
+
 - **Draft**: The invoice is being created and is not yet finalized.
 - **Opened**: The invoice has been finalized and sent to the client and is awaiting payment.
 - **Cancelled**: The invoice has been canceled and is no longer valid.
@@ -249,7 +253,7 @@ The **Payments** object represents the payments made by clients. Each payment ha
 - **Transaction ID**: The transaction ID of the payment.
 - **Payment Date**: The date and time when the payment was made.
 - **Status**: The status of the payment.
-- **Checked Out Time**: The timestamp when the payment record was last checked out.
+- **Locked**: Setting this to true will make the payment view only.
 - **Checked Out**: The ID of the user who last checked out the payment record.
 
 ### Payments Table
@@ -266,6 +270,7 @@ CREATE TABLE IF NOT EXISTS `#__mothership_payments` (
   `transaction_id` VARCHAR(255) DEFAULT NULL,
   `status` INT NOT NULL DEFAULT 0,
   `processed_date` DATETIME DEFAULT NULL,
+  `locked` BOOLEAN NOT NULL DEFAULT 0,
   `created_by` INT(11) DEFAULT NULL,
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -445,7 +450,39 @@ The **Payments Helper** provides several methods to manage and update payment re
 - **getDomain(int $domain_id)**: Retrieves the domain information based on the provided domain ID.
 - **getStatus(int $status_id)**: Retrieves the domain status based on a provided integer status level
 
+## Logs Helper
+- **log(array $params)**: Logs a generic event with the provided parameters.
+- **logPaymentLifecycle(string $event, int $invoiceId, int $paymentId, ?int $clientId = null, ?int $accountId = null, float $amount = 0.0, string $method = '', ?string $extraDetails = null)**: Logs the lifecycle events of a payment, such as initiation or completion.
+- **logPaymentInitiated($invoice_id, $payment_id, $client_id, $account_id, $invoiceTotal, $paymentMethod)**: Logs when a payment process is initiated for a specific invoice.
+- **logPaymentCompleted($payment)**: Logs the completion of a payment.
+- **logPaymentFailed($paymentId, ?string $reason = null)**: Logs a failed payment attempt with an optional reason.
+- **logObjectViewed($object_type, $object_id, $client_id, $account_id)**: Logs when a specific object (e.g., invoice, domain) is viewed.
+- **logDomainViewed($client_id, $account_id, $domain_id)**: Logs when a domain is viewed by a user.
+- **logProjectViewed($client_id, $account_id, $project_id)**: Logs when a project is viewed by a user.
+- **logPaymentViewed($client_id, $account_id, $payment_id)**: Logs when a payment record is viewed by a user.
+- **logInvoiceViewed($client_id, $account_id, $invoice_id)**: Logs when an invoice is viewed by a user.
+- **logAccountViewed($client_id, $account_id)**: Logs when an account is viewed by a user.
+- **logInvoiceStatusOpened($invoice_id, $client_id, $account_id)**: Logs when an invoice status is changed to "Opened."
+- **logStatusChange(object $payment, string $newStatus)**: Logs a status change for a payment, including the new status.
 
+# Notification Emails
 
+## Invoice Opened
+The invoice has been set from `Draft` to `Opened`. This will send the email template `invoice.opened` to the Client Owner and BCC an administrator.
+
+## Payment Completed
+The payment has been set from `pending` to `completed`. This will send the email template `payment.completed` to the Client Owner and BCC an administrator. This should be sent to the payee whenever the payment cycle has been completed. 
+
+### Emails Left to create
+- **Invoice Cancelled**:
+- **Invoice due in 7 days**:
+- **Invoice due in 1 day**:
+- **Invoice 1 day late**:
+- **Invoice 7 days late**:
+- **Invoice 1 Month Late**:
+- **Invoice Refunded**:
+- **Payment Cancelled**:
+- **Payment Failed**:
+- **Domain Expiring in 30 days**:
 
 

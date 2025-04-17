@@ -156,4 +156,46 @@ class InvoiceController extends FormController
 
         return true;
     }
+
+    public function unlock($key = null)
+    {
+        $app = Factory::getApplication();
+        $id = $app->getInput()->getInt('id');
+
+        if (!$id) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVALID_INVOICE_ID'), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoices', false));
+            return;
+        }
+
+        $model = $this->getModel('Invoice');
+        if ($model->unlock($id)) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_INVOICE_UNLOCKED_SUCCESSFULLY'), 'message');
+        } else {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_INVOICE_UNLOCK_FAILED'), 'error');
+        }
+
+        $this->setRedirect(Route::_("index.php?option=com_mothership&view=invoice&layout=edit&id={$id}", false));
+    }
+
+    public function lock($key = null)
+    {
+        $app = Factory::getApplication();
+        $id = $app->getInput()->getInt('id');
+
+        if (!$id) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVALID_INVOICE_ID'), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoices', false));
+            return;
+        }
+
+        $model = $this->getModel('Invoice');
+        if ($model->lock($id)) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_INVOICE_LOCKED_SUCCESSFULLY'), 'message');
+        } else {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_INVOICE_LOCK_FAILED'), 'error');
+        }
+
+        $this->setRedirect(Route::_("index.php?option=com_mothership&view=invoice&layout=edit&id={$id}", false));
+    }
 }

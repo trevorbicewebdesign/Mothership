@@ -75,7 +75,11 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                             ?>
                                 <tr class="row<?php echo $i % 2; ?>">
                                     <td class="text-center">
-                                        <?php echo HTMLHelper::_('grid.id', $i, $item->id); ?>
+                                        <?php if($item->locked): ?>
+                                            <i class="fa-solid fa-lock" aria-hidden="true"></i>
+                                        <?php else: ?>
+                                            <?php echo HTMLHelper::_('grid.id', $i, $item->id); ?>
+                                        <?php endif; ?>
                                     </td>
                                     <td class="d-none d-lg-table-cell">
                                         <a href="index.php?option=com_mothership&task=payment.edit&id=<?php echo (int) $item->id; ?>"><?php echo (int) $item->id; ?></a>

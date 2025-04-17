@@ -1,5 +1,19 @@
 <?php
+
+use TrevorBice\Component\Mothership\Administrator\Helper\InvoiceHelper;
+
 defined('_JEXEC') or die;
+
+// There is deff a better way to handle this, but for now this is a quick fix
+$app = JFactory::getApplication();
+$input = $app->input;
+$id = $input->getInt('id', 0);
+try{
+    $invoice = InvoiceHelper::getInvoice($id);
+    $isLocked = $invoice->locked ?? false;
+}catch (Exception $e) {
+    $isLocked = false;
+}
 
 $field = $displayData['field'];
 $items = $field->value ?? [];
@@ -27,20 +41,21 @@ $items = $field->value ?? [];
         <?php if (!empty($items)) : ?>
             <?php foreach ($items as $index => $item) : ?>
                 <tr class="invoice-item-row">
-                    <td class="drag-handle">☰</td>
+                    <td class="drag-handle"><?php if (!$isLocked) : ?>☰<?php endif; ?></td>
                     <td>
                         <div class="form-group">
-                        <input type="text" name="jform[items][<?php echo $index; ?>][name]" required="required" class="form-control" value="<?php echo htmlspecialchars($item['name'] ?? ''); ?>">
+                        <input type="text" name="jform[items][<?php echo $index; ?>][name]" required="required" class="form-control" value="<?php echo htmlspecialchars($item['name'] ?? ''); ?>" <?php if($isLocked): ?>disabled="true"<?php endif; ?>>
                             <div class="invalid-feedback">Please provide an item name.</div>
                         </div>
                     </td>
-                    <td><input type="text" name="jform[items][<?php echo $index; ?>][description]" class="form-control" value="<?php echo htmlspecialchars($item['description'] ?? ''); ?>"></td>
-                    <td><input type="number" name="jform[items][<?php echo $index; ?>][hours]" class="form-control" value="<?php echo (float)($item['hours'] ?? 0); ?>"></td>
-                    <td><input type="number" name="jform[items][<?php echo $index; ?>][minutes]" class="form-control" value="<?php echo (float)($item['minutes'] ?? 0); ?>"></td>
-                    <td><input type="number" step="0.01" name="jform[items][<?php echo $index; ?>][quantity]" class="form-control" value="<?php echo (float)($item['quantity'] ?? 1); ?>"></td>
-                    <td><input type="number" step="0.01" name="jform[items][<?php echo $index; ?>][rate]" class="form-control" value="<?php echo (float)($item['rate'] ?? 0); ?>"></td>
-                    <td><input type="number" step="0.01" name="jform[items][<?php echo $index; ?>][subtotal]" class="form-control" readonly value="<?php echo (float)($item['subtotal'] ?? 0); ?>"></td>
-                    <td><button type="button" class="btn btn-danger remove-row">×</button></td>
+                    <td><input type="text" name="jform[items][<?php echo $index; ?>][description]" class="form-control" value="<?php echo htmlspecialchars($item['description'] ?? ''); ?>" <?php if($isLocked): ?>disabled="true"<?php endif; ?>></td>
+                    <td><input type="number" name="jform[items][<?php echo $index; ?>][hours]" class="form-control" value="<?php echo (float)($item['hours'] ?? 0); ?>" <?php if($isLocked): ?>disabled="true"<?php endif; ?>></td>
+                    <td><input type="number" name="jform[items][<?php echo $index; ?>][minutes]" class="form-control" value="<?php echo (float)($item['minutes'] ?? 0); ?>" <?php if($isLocked): ?>disabled="true"<?php endif; ?>></td>
+                    <td><input type="number" step="0.01" name="jform[items][<?php echo $index; ?>][quantity]" class="form-control" value="<?php echo (float)($item['quantity'] ?? 1); ?>" <?php if($isLocked): ?>disabled="true"<?php endif; ?>></td>
+                    <td><input type="number" step="0.01" name="jform[items][<?php echo $index; ?>][rate]" class="form-control" value="<?php echo (float)($item['rate'] ?? 0); ?>" <?php if($isLocked): ?>disabled="true"<?php endif; ?>></td>
+                    <td><input type="number" step="0.01" name="jform[items][<?php echo $index; ?>][subtotal]" class="form-control" readonly value="<?php echo (float)($item['subtotal'] ?? 0); ?>" <?php if($isLocked): ?>disabled="true"<?php endif; ?>></td>
+                    
+                    <td><?php if (!$isLocked) : ?><button type="button" class="btn btn-danger remove-row">×</button><?php endif; ?></td>
                 </tr>
             <?php endforeach; ?>
         <?php else: ?>
@@ -48,25 +63,26 @@ $items = $field->value ?? [];
                 <td class="drag-handle">☰</td>
                 <td>
                     <div class="form-group">
-                    <input type="text" name="jform[items][0][name]" required="required" class="form-control">
+                    <input type="text" name="jform[items][0][name]" required="required" class="form-control"  <?php if($isLocked): ?>disabled="true"<?php endif; ?>>
                         <div class="invalid-feedback">Please provide an item name.</div>
                     </div>
                 </td>
-                <td><input type="text" name="jform[items][0][description]" class="form-control"></td>
-                <td><input type="number" name="jform[items][0][hours]" class="form-control" value="0"></td>
-                <td><input type="number" name="jform[items][0][minutes]" class="form-control" value="0"></td>
-                <td><input type="number" step="0.01" name="jform[items][0][quantity]" class="form-control" value="1"></td>
-                <td><input type="number" step="0.01" name="jform[items][0][rate]" class="form-control" value="0"></td>
-                <td><input type="number" step="0.01" name="jform[items][0][subtotal]" class="form-control" readonly value="0"></td>
-                <td><button type="button" class="btn btn-danger remove-row">×</button></td>
+                <td><input type="text" name="jform[items][0][description]" class="form-control"  <?php if($isLocked): ?>disabled="true"<?php endif; ?>></td>
+                <td><input type="number" name="jform[items][0][hours]" class="form-control" value="0"  <?php if($isLocked): ?>disabled="true"<?php endif; ?>></td>
+                <td><input type="number" name="jform[items][0][minutes]" class="form-control" value="0"  <?php if($isLocked): ?>disabled="true"<?php endif; ?>></td>
+                <td><input type="number" step="0.01" name="jform[items][0][quantity]" class="form-control" value="1"  <?php if($isLocked): ?>disabled="true"<?php endif; ?>></td>
+                <td><input type="number" step="0.01" name="jform[items][0][rate]" class="form-control" value="0"  <?php if($isLocked): ?>disabled="true"<?php endif; ?>></td>
+                <td><input type="number" step="0.01" name="jform[items][0][subtotal]" class="form-control" readonly value="0"  <?php if($isLocked): ?>disabled="true"<?php endif; ?>></td>
+                <td><?php if (!$isLocked) : ?><button type="button" class="btn btn-danger remove-row">×</button><?php endif; ?></td>
             </tr>
         <?php endif; ?>
     </tbody>
 </table>
-
+<?php if (!$isLocked) : ?>
 <button type="button" class="btn btn-success" id="add-invoice-item">
     <?php echo JText::_('COM_MOTHERSHIP_ADD_ITEM'); ?>
 </button>
+<?php endif; ?>
 
 <script type="text/javascript">
 jQuery(document).ready(function ($) {

@@ -117,8 +117,15 @@ class LogHelper extends ContentHelper
         ]);
     }
 
-    public static function logPaymentCompleted($invoiceId, $paymentId, $clientId, $accountId, $invoiceTotal, $paymentMethod): void
+    public static function logPaymentCompleted($payment): void
     {
+        $invoiceId = $payment->invoice_id ?? 0;
+        $paymentId = $payment->id ?? 0;
+        $clientId = $payment->client_id ?? null;
+        $accountId = $payment->account_id ?? null;
+        $invoiceTotal = $payment->amount ?? 0.0;
+        $paymentMethod = $payment->payment_method ?? '';
+        
         self::logPaymentLifecycle('completed', $invoiceId, $paymentId, $clientId, $accountId, $invoiceTotal, $paymentMethod);
     }
 
@@ -167,6 +174,23 @@ class LogHelper extends ContentHelper
     public static function logAccountViewed($client_id, $account_id): void
     {
         self::logObjectViewed( 'account', $account_id, $client_id, $account_id);
+    }
+
+    public static function logInvoiceStatusOpened($invoice_id, $client_id, $account_id): void
+    {
+        $user = Factory::getApplication()->getIdentity();
+        $user_display_name = $user->name ?: $user->username;
+
+        self::log([
+            'client_id' => $client_id,
+            'account_id' => $account_id,
+            'object_type' => 'invoice',
+            'object_id' => $invoice_id,
+            'action' => 'status_opened',
+            'meta' => [],
+            'user_id' => $user->id,
+            'created' => date('Y-m-d H:i:s'),
+        ]);
     }
 
     /**

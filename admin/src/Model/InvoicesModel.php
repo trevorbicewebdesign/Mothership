@@ -32,6 +32,7 @@ class InvoicesModel extends ListModel
                 'account_id', 'i.account_id',
                 'total', 'i.total',
                 'client_id', 'i.client_id',
+                'locked', 'i.locked',
                 'checked_out', 'i.checked_out',
                 'checked_out_time', 'i.checked_out_time',
             ];
@@ -81,6 +82,7 @@ class InvoicesModel extends ListModel
                     $db->quoteName('i.total'),
                     $db->quoteName('i.checked_out_time'),
                     $db->quoteName('i.checked_out'),
+                    $db->quoteName('i.locked'),
                     $db->quoteName('pay.payment_ids'),
                     
 

@@ -88,6 +88,21 @@ class HtmlView extends BaseHtmlView
         $this->helper = new MothershipHelper;
         $this->canDo = ContentHelper::getActions('com_mothership');
 
+        $isLocked = $this->item->locked;
+        if ($isLocked && $this->form instanceof Form)
+        {
+            foreach ($this->form->getFieldsets() as $fieldset)
+            {
+                if (isset($fieldset->name)) {
+                    foreach ($this->form->getFieldset($fieldset->name) as $field)
+                    {
+                        $this->form->setFieldAttribute($field->fieldname, 'readonly', 'readonly');
+                        $this->form->setFieldAttribute($field->fieldname, 'disabled', 'disabled');                        
+                    }
+                }
+            }
+        }
+
         // ✅ Use WebAssetManager to load the script
         $wa = $this->getDocument()->getWebAssetManager();
         $wa->registerAndUseScript('com_mothership.payment-edit', 'media/com_mothership/js/payment-edit.js', [], ['defer' => true]);
@@ -120,36 +135,48 @@ class HtmlView extends BaseHtmlView
         $isNew = empty($this->item->id);
         $checkedOut = !(\is_null($this->item->checked_out) || $this->item->checked_out == $user->id);
         $canDo = $this->canDo;
+        $isLocked = $this->item->locked;
         $toolbar = $this->getDocument()->getToolbar();
 
         ToolbarHelper::title(
-            $isNew ? Text::_('COM_MOTHERSHIP_MANAGER_PAYMENT_NEW') : Text::_('COM_MOTHERSHIP_MANAGER_PAYMENT_EDIT'),
+            $isLocked 
+            ? Text::_('COM_MOTHERSHIP_MANAGER_PAYMENT_VIEW') 
+            : ($isNew 
+                ? Text::_('COM_MOTHERSHIP_MANAGER_PAYMENT_NEW') 
+                : Text::_('COM_MOTHERSHIP_MANAGER_PAYMENT_EDIT')),
             'bookmark mothership-payments'
         );
 
         // If not checked out, can save the item.
-        if (!$checkedOut && ($canDo->get('core.edit') || $canDo->get('core.create'))) {
+        if (!$checkedOut && !$isLocked && ($canDo->get('core.edit') || $canDo->get('core.create'))) {
             $toolbar->apply('payment.apply');
         }
 
         $saveGroup = $toolbar->dropdownButton('save-group');
         $saveGroup->configure(
-            function (Toolbar $childBar) use ($checkedOut, $canDo, $isNew) {
+            function (Toolbar $childBar) use ($checkedOut, $canDo, $isNew, $isLocked) {
                 // If not checked out, can save the item.
-                if (!$checkedOut && ($canDo->get('core.edit') || $canDo->get('core.create'))) {
+                if (!$checkedOut && !$isLocked && ($canDo->get('core.edit') || $canDo->get('core.create'))) {
                     $childBar->save('payment.save');
                 }
 
-                if (!$checkedOut && $canDo->get('core.create')) {
+                if (!$checkedOut && !$isLocked && $canDo->get('core.create')) {
                     $childBar->save2new('payment.save2new');
                 }
 
                 // If an existing item, can save to a copy.
-                if (!$isNew && $canDo->get('core.create')) {
+                if (!$isNew && !$isLocked && $canDo->get('core.create')) {
                     $childBar->save2copy('payment.save2copy');
                 }
             }
         );
+
+        if($isLocked){
+            ToolbarHelper::custom('payment.unlock', 'unlock', 'unlock', 'COM_MOTHERSHIP_UNLOCK', false);
+        } else {
+            ToolbarHelper::custom('payment.lock', 'lock', 'lock', 'COM_MOTHERSHIP_LOCK', false);
+        }
+
 
         if (empty($this->item->id)) {
             $toolbar->cancel('payment.cancel', 'JTOOLBAR_CANCEL');

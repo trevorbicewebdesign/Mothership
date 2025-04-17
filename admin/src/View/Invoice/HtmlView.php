@@ -92,6 +92,21 @@ class HtmlView extends BaseHtmlView
             throw new GenericDataException(implode("\n", $errors), 500);
         }
 
+        $isLocked = $this->item->locked;
+        if ($isLocked && $this->form instanceof Form)
+        {
+            foreach ($this->form->getFieldsets() as $fieldset)
+            {
+                if (isset($fieldset->name)) {
+                    foreach ($this->form->getFieldset($fieldset->name) as $field)
+                    {
+                        $this->form->setFieldAttribute($field->fieldname, 'readonly', 'readonly');
+                        $this->form->setFieldAttribute($field->fieldname, 'disabled', 'disabled');                        
+                    }
+                }
+            }
+        }
+
         // ✅ Use WebAssetManager to load the script
         $wa = $this->getDocument()->getWebAssetManager();
 
@@ -140,36 +155,47 @@ class HtmlView extends BaseHtmlView
         $isNew = empty($this->item->id);
         $checkedOut = !(\is_null($this->item->checked_out) || $this->item->checked_out == $user->id);
         $canDo = $this->canDo;
+        $isLocked = $this->item->locked;
         $toolbar = $this->getDocument()->getToolbar();
 
         ToolbarHelper::title(
-            $isNew ? Text::_('COM_MOTHERSHIP_MANAGER_INVOICE_NEW') : Text::_('COM_MOTHERSHIP_MANAGER_INVOICE_EDIT'),
+            $isLocked 
+            ? Text::_('COM_MOTHERSHIP_MANAGER_INVOICE_VIEW') 
+            : ($isNew 
+                ? Text::_('COM_MOTHERSHIP_MANAGER_INVOICE_NEW') 
+                : Text::_('COM_MOTHERSHIP_MANAGER_INVOICE_EDIT')),
             'bookmark mothership-invoices'
         );
 
         // If not checked out, can save the item.
-        if (!$checkedOut && ($canDo->get('core.edit') || $canDo->get('core.create'))) {
+        if (!$checkedOut && !$isLocked && ($canDo->get('core.edit') || $canDo->get('core.create'))) {
             $toolbar->apply('invoice.apply');
         }
 
         $saveGroup = $toolbar->dropdownButton('save-group');
         $saveGroup->configure(
-            function (Toolbar $childBar) use ($checkedOut, $canDo, $isNew) {
+            function (Toolbar $childBar) use ($checkedOut, $canDo, $isNew, $isLocked) {
                 // If not checked out, can save the item.
-                if (!$checkedOut && ($canDo->get('core.edit') || $canDo->get('core.create'))) {
+                if ((!$checkedOut && !$isLocked && ($canDo->get('core.edit') || $canDo->get('core.create')))) {
                     $childBar->save('invoice.save');
                 }
 
-                if (!$checkedOut && $canDo->get('core.create')) {
+                if ((!$checkedOut && !$isLocked && $canDo->get('core.create'))) {
                     $childBar->save2new('invoice.save2new');
                 }
 
                 // If an existing item, can save to a copy.
-                if (!$isNew && $canDo->get('core.create')) {
+                if (!$isNew && !$isLocked && $canDo->get('core.create')) {
                     $childBar->save2copy('invoice.save2copy');
                 }
             }
         );
+
+        if($isLocked){
+            ToolbarHelper::custom('invoice.unlock', 'unlock', 'unlock', 'COM_MOTHERSHIP_UNLOCK', false);
+        } else {
+            ToolbarHelper::custom('invoice.lock', 'lock', 'lock', 'COM_MOTHERSHIP_LOCK', false);
+        }
 
         if (empty($this->item->id)) {
             $toolbar->cancel('invoice.cancel', 'JTOOLBAR_CANCEL');
