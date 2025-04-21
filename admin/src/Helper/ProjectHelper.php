@@ -47,7 +47,7 @@ class ProjectHelper
                 'host' => $host,
                 'path' => $path,
                 'headers' => $headers,
-
+                'html' => $html = file_get_contents($url),
             ]
         ];
     }
