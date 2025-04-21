@@ -23,21 +23,78 @@ use TrevorBice\Component\Mothership\Administrator\Service\EmailService;
 
 class ProjectHelper
 {
+    /**
+     * Scans a website URL and retrieves headers, HTML, cookies, and other data
+     * that can be used to identify the platform.
+     *
+     * @param string $url The URL of the website to scan (https://mothership.trevorbice.com).
+     * @return array An array containing the scan results or an error message.
+     */
     public static function scanWebsiteProject(string $url): array
     {
         $url = rtrim($url, '/');
+        
+        if (!filter_var($url, FILTER_VALIDATE_URL)) {
+            return ['error' => 'Invalid URL provided.'];
+        }
+
         $parsedUrl = parse_url($url);
         $host = $parsedUrl['host'] ?? null;
         $path = $parsedUrl['path'] ?? null;
 
-        $headers = [];
-        // scan the website for headers
-        if ($host) {
-            $headers = get_headers($url, 1);
-        }
 
         if ($host === null) {
             return ['error' => 'Invalid URL provided.'];
+        }
+
+        $headers = [];
+        $html = '';
+        $cookies = [];
+
+        // Attempt to retrieve headers
+        try {
+            $contextOptions = [
+                "ssl" => [
+                "verify_peer" => false,
+                "verify_peer_name" => false,
+                ],
+            ];
+            $context = stream_context_create($contextOptions);
+    
+            // Attempt to retrieve headers with disabled SSL checks
+            $headers = get_headers($url, 1, $context);
+        } catch (\Exception $e) {
+            Log::add('Failed to retrieve headers: ' . $e->getMessage(), Log::ERROR, 'scanWebsiteProject');
+        }
+
+        // Attempt to retrieve HTML content
+        try {
+            $contextOptions = [
+            "ssl" => [
+                "verify_peer" => false,
+                "verify_peer_name" => false,
+            ],
+            ];
+            $context = stream_context_create($contextOptions);
+            $html = file_get_contents($url, false, $context);
+        } catch (\Exception $e) {
+            Log::add('Failed to retrieve HTML content: ' . $e->getMessage(), Log::ERROR, 'scanWebsiteProject');
+        }
+
+        // Attempt to retrieve cookies using cURL
+        try {
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HEADER, true);
+            curl_setopt($ch, CURLOPT_NOBODY, true);
+            curl_setopt($ch, CURLOPT_COOKIEFILE, '');
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Ignore SSL certificate verification
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false); // Ignore SSL host verification
+            curl_exec($ch);
+            $cookies = curl_getinfo($ch, CURLINFO_COOKIELIST);
+            curl_close($ch);
+        } catch (\Exception $e) {
+            Log::add('Failed to retrieve cookies: ' . $e->getMessage(), Log::ERROR, 'scanWebsiteProject');
         }
 
         return [
@@ -47,30 +104,39 @@ class ProjectHelper
                 'host' => $host,
                 'path' => $path,
                 'headers' => $headers,
-                'html' => $html = file_get_contents($url),
+                'html' => $html,
+                'cookies' => $cookies,
             ]
         ];
     }
 
-    public static function detectJoomla(array $headers, string $html): array
+    public static function detectJoomla(array $headers, string $html): bool
     {
-        $joomlaHeaders = [];
+        // First lets parse the html inside the <head> tag into an array
+        preg_match_all('/<head.*?>(.*?)<\/head>/si', $html, $matches);
+        $headContent = implode(' ', $matches[1]);
+        $headContent = strip_tags($headContent); // Remove HTML tags
+        $headContent = preg_replace('/\s+/', ' ', $headContent); // Remove extra whitespace
+        $headContent = trim($headContent); // Trim leading/trailing whitespace
+        // exctract the <link href and <script src= from the headContent as well as all the meta tags
+        preg_match_all('/<link.*?href=["\'](.*?)["\'].*?>/si', $headContent, $linkMatches);
+        preg_match_all('/<script.*?src=["\'](.*?)["\'].*?>/si', $headContent, $scriptMatches);
+        preg_match_all('/<meta.*?name=["\'](.*?)["\'].*?>/si', $headContent, $metaMatches);
+        preg_match_all('/<meta.*?property=["\'](.*?)["\'].*?>/si', $headContent, $propertyMatches);
+        preg_match_all('/<meta.*?content=["\'](.*?)["\'].*?>/si', $headContent, $contentMatches);
+        preg_match_all('/<meta.*?http-equiv=["\'](.*?)["\'].*?>/si', $headContent, $httpMatches);
+        preg_match_all('/<meta.*?charset=["\'](.*?)["\'].*?>/si', $headContent, $charsetMatches);
+        preg_match_all('/<meta.*?name=["\']generator["\'].*?>/si', $headContent, $generatorMatches);
 
-        foreach ($headers as $key => $value) {
-            if (is_array($value)) {
-                foreach ($value as $v) {
-                    if (stripos($v, 'Joomla') !== false) {
-                        $joomlaHeaders[$key] = $v;
-                        return true;
-                    }
-                }
-            } else {
-                if (stripos($value, 'Joomla') !== false) {
-                    $joomlaHeaders[$key] = $value;
-                    return true;
-                }
-            }
+
+        // Check for Joomla specific meta tags and links in the headers and html
+        if (preg_match('/Joomla!/', $headContent) || preg_match('/Joomla/', $headContent) || preg_match('/joomla/', $headContent)) {
+            return true;
         }
+        if (preg_match('/Joomla!/', $html) || preg_match('/Joomla/', $html) || preg_match('/joomla/', $html)) {
+            return true;
+        }
+        
 
         return false;
     }
