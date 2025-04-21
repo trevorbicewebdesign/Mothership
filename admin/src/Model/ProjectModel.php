@@ -160,8 +160,6 @@ class ProjectModel extends AdminModel
     {
         $table = $this->getTable();
 
-        Log::add('Data received for saving: ' . json_encode($data), Log::DEBUG, 'com_mothership');
-
         // Convert metadata array to JSON
         if (isset($data['metadata']) && is_array($data['metadata'])) {
             $data['metadata'] = json_encode($data['metadata']);
