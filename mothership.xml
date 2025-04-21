@@ -7,7 +7,7 @@
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <authorEmail>trevorbicewebdesign@gmail.com</authorEmail>
     <authorUrl>https://webdesign.trevorbice.com</authorUrl>
-    <version>0.0.13</version>
+    <version>0.0.14</version>
     <description>COM_MOTHERSHIP_XML_DESCRIPTION</description>
     <namespace path="src">TrevorBice\Component\Mothership</namespace>
     <install>
