@@ -1,0 +1,24 @@
+<form>
+    <fields name="metadata">
+        <fieldset name="project_website" label="Website Information">
+            <field name="primary_url" type="url" label="Primary URL" />
+            <field name="cms_type" type="list" label="CMS Type">
+                <option value="joomla">Joomla</option>
+                <option value="wordpress">WordPress</option>
+                <option value="phpbb">phpBB</option>
+            </field>
+            <field name="cms_version" type="text" label="CMS Version" />
+            <field name="status" type="list" label="Status">
+                <option value="online">Online</option>
+                <option value="offline">Offline</option>
+            </field>
+            <field name="under_construction" type="radio" label="Under Construction">
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+            </field>
+            <field name="staging_url" type="url" label="Staging URL" />
+            <field name="dev_url" type="url" label="Dev URL" />
+            <field name="favicon_url" type="url" label="Favicon URL" />
+        </fieldset>
+    </fields>
+</form>
