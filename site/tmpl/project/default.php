@@ -33,6 +33,20 @@ $created = $project->created ? HTMLHelper::_('date', $project->created, Text::_(
                     <strong>Created:</strong> <?= $created ?>
                 </div>
             </div>
+            <div class="row mb-12">
+                <div class="col-md-12">
+                    <?php if (!empty($project->metadata)) : ?>
+                        <strong>Meta-data:</strong>
+                        <ul>
+                            <?php foreach ($project->metadata as $key => $value) : ?>
+                                <li><strong><?= htmlspecialchars(ucfirst($key)) ?>:</strong> <?= htmlspecialchars($value) ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php else : ?>
+                        <em>No meta-data available</em>
+                    <?php endif; ?>
+                </div>
+            </div>
         </div>
     </div>
 </div>
