@@ -124,21 +124,9 @@ class ProjectHelper
 
     public static function detectJoomla(array $headers, string $html): bool
     {
-        // First lets parse the html inside the <head> tag into an array
-        preg_match_all('/<head.*?>(.*?)<\/head>/si', $html, $matches);
-        $headContent = implode(' ', $matches[1]);
-        $headContent = strip_tags($headContent); // Remove HTML tags
-        $headContent = preg_replace('/\s+/', ' ', $headContent); // Remove extra whitespace
-        $headContent = trim($headContent); // Trim leading/trailing whitespace
-
-        // Check for Joomla specific meta tags and links in the headers and html
-        if (preg_match('/Joomla!/', $headContent) || preg_match('/Joomla/', $headContent) || preg_match('/joomla/', $headContent)) {
+        if(preg_match('/<script[^>]+class=[\"|\']joomla-script-options[^\"|\']+[\"|\'].*?>.*?<\/script>/si', $html)) {
             return true;
         }
-        if (preg_match('/Joomla!/', $html) || preg_match('/Joomla/', $html) || preg_match('/joomla/', $html)) {
-            return true;
-        }
-        
 
         return false;
     }
