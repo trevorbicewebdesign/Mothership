@@ -110,7 +110,7 @@ class ProjectHelper
         ];
     }
 
-    public static function getGenerator($html)
+    public static function getGeneratorMeta($html)
     {
         // First lets parse the html inside the <head> tag into an array
         preg_match_all('/<head.*?>(.*?)<\/head>/si', $html, $matches);
@@ -133,7 +133,7 @@ class ProjectHelper
 
     public static function detectWordpress(array $headers, string $html): bool
     {
-        $generator = self::getGenerator($html);
+        $generator = self::getGeneratorMeta($html);
         if(preg_match('/WordPress/', $generator) || preg_match('/wordpress/', $generator)) {
             return true;
         }
