@@ -17,12 +17,12 @@ class ProjectModel extends BaseDatabaseModel
 
         $db = $this->getDatabase();
 
-        // Load the project with status and related invoices
+        // Load the project with status and related client/account names
         $query = $db->getQuery(true)
             ->select([
-                'p.*'
-                , 'c.name AS client_name'
-                , 'a.name AS account_name'
+                'p.*',
+                'c.name AS client_name',
+                'a.name AS account_name'
             ])
             ->from($db->quoteName('#__mothership_projects', 'p'))
             ->join('LEFT', $db->quoteName('#__mothership_clients', 'c') . ' ON p.client_id = c.id')
@@ -33,6 +33,16 @@ class ProjectModel extends BaseDatabaseModel
 
         $db->setQuery($query);
         $project = $db->loadObject();
+
+        // ✅ Decode metadata if present
+        if ($project && isset($project->metadata) && is_string($project->metadata)) {
+            $decoded = json_decode($project->metadata, true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $project->metadata = $decoded;
+            } else {
+                $project->metadata = null;
+            }
+        }
 
         return $project;
     }

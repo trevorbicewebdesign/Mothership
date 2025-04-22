@@ -112,17 +112,25 @@ class ProjectModel extends AdminModel
      */
     protected function loadFormData()
     {
-        // Check the session for previously entered form data.
         $data = Factory::getApplication()->getUserState('com_mothership.edit.project.data', []);
 
         if (empty($data)) {
             $data = $this->getItem();
         }
 
+        // Decode the metadata JSON into an array so the form can populate it
+        if (isset($data->metadata) && is_string($data->metadata)) {
+            $decoded = json_decode($data->metadata, true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $data->metadata = $decoded;
+            }
+        }
+
         $this->preprocessData('com_mothership.project', $data);
 
         return $data;
     }
+
 
     /**
      * Prepare and sanitise the table prior to saving.
@@ -138,12 +146,25 @@ class ProjectModel extends AdminModel
         $table->name = htmlspecialchars_decode($table->name, ENT_QUOTES);
     }
 
+    protected function preprocessForm(\Joomla\CMS\Form\Form $form, $data, $group = 'content')
+    {
+        parent::preprocessForm($form, $data, $group);
+
+        // Merge in additional metadata fields
+        \Joomla\CMS\Form\Form::addFormPath(JPATH_COMPONENT_ADMINISTRATOR . '/models/forms');
+        $form->loadFile('project-website', false);
+    }
+
+
     public function save($data)
     {
         $table = $this->getTable();
 
-        Log::add('Data received for saving: ' . json_encode($data), Log::DEBUG, 'com_mothership');
-    
+        // Convert metadata array to JSON
+        if (isset($data['metadata']) && is_array($data['metadata'])) {
+            $data['metadata'] = json_encode($data['metadata']);
+        }
+
         if (!$table->bind($data)) {
             $error = $table->getError();
             Log::add('Bind failed: ' . $error, Log::ERROR, 'com_mothership');
@@ -151,27 +172,27 @@ class ProjectModel extends AdminModel
             return false;
         }
 
-        // Set created date if empty
         if (empty($table->created)) {
             $table->created = Factory::getDate()->toSql();
         }
-    
+
         if (!$table->check()) {
             $error = $table->getError();
             Log::add('Check failed: ' . $error, Log::ERROR, 'com_mothership');
             $this->setError($error);
             return false;
         }
-    
+
         if (!$table->store()) {
             $error = $table->getError();
             Log::add('Store failed: ' . $error, Log::ERROR, 'com_mothership');
             $this->setError($error);
             return false;
         }
-    
+
         return true;
     }
+
     
 
 }

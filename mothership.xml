@@ -7,7 +7,7 @@
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <authorEmail>trevorbicewebdesign@gmail.com</authorEmail>
     <authorUrl>https://webdesign.trevorbice.com</authorUrl>
-    <version>0.0.13</version>
+    <version>0.0.14</version>
     <description>COM_MOTHERSHIP_XML_DESCRIPTION</description>
     <namespace path="src">TrevorBice\Component\Mothership</namespace>
     <install>
@@ -23,6 +23,11 @@
     <updateservers>
         <server type="extension" priority="1" name="Mothership Update Server">https://mothership.trevorbice.com/updates.xml</server>
     </updateservers>
+    <update>
+        <schemas>
+            <schemapath type="mysql">sql</schemapath>
+        </schemas>
+    </update>
     <files folder="site">
         <folder>src</folder>
     </files>

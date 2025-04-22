@@ -17,69 +17,72 @@ $expirationDate = $domain->expiration_date ? HTMLHelper::_('date', $domain->expi
 
 	<div class="card shadow-sm">
 		<div class="card-body">
-			<div class="row mb-3">
-				<div class="col-md-6">
-					<strong>Client ID:</strong> <?= (int) $domain->client_id ?>
-				</div>
-				<div class="col-md-6">
-					<strong>Account ID:</strong> <?= $domain->account_id !== null ? (int) $domain->account_id : '<em>None</em>' ?>
-				</div>
-			</div>
+			<!-- Domain Metadata -->
+			<dl class="row">
 
-			<div class="row mb-3">
-				<div class="col-md-4">
-					<strong>Status:</strong> <?= (int) $domain->status ?>
-				</div>
-				<div class="col-md-4">
-					<strong>Auto Renew:</strong> <?= $domain->auto_renew ? 'Yes' : 'No' ?>
-				</div>
-				<div class="col-md-4">
-					<strong>Registrar:</strong> <?= htmlspecialchars($domain->registrar ?? '-') ?>
-				</div>
-			</div>
+				<dt class="col-md-3">Account Name:</dt>
+				<dd class="col-md-3"><?= $domain->account_name !== null ? (int) $domain->account_name : '<em>None</em>' ?></dd>
 
-			<div class="row mb-3">
-				<div class="col-md-6">
-					<strong>Reseller:</strong> <?= htmlspecialchars($domain->reseller ?? '-') ?>
-				</div>
-				<div class="col-md-6">
-					<strong>DNS Provider:</strong> <?= htmlspecialchars($domain->dns_provider ?? '-') ?>
-				</div>
-			</div>
+				<dt class="col-md-3">Status:</dt>
+				<dd class="col-md-3"><?= ucfirst(htmlspecialchars($domain->status)) ?></dd>
 
-			<div class="row mb-3">
-				<div class="col-md-3"><strong>NS1:</strong> <?= htmlspecialchars($domain->ns1 ?? '-') ?></div>
-				<div class="col-md-3"><strong>NS2:</strong> <?= htmlspecialchars($domain->ns2 ?? '-') ?></div>
-				<div class="col-md-3"><strong>NS3:</strong> <?= htmlspecialchars($domain->ns3 ?? '-') ?></div>
-				<div class="col-md-3"><strong>NS4:</strong> <?= htmlspecialchars($domain->ns4 ?? '-') ?></div>
-			</div>
+				<dt class="col-md-3">Auto Renew:</dt>
+				<dd class="col-md-3"><?= $domain->auto_renew ? 'Yes' : 'No' ?></dd>
 
-			<div class="row mb-3">
-				<div class="col-md-6">
-					<strong>Purchase Date:</strong> <?= $purchaseDate ?>
-				</div>
-				<div class="col-md-6">
-					<strong>Expiration Date:</strong> <?= $expirationDate ?>
-				</div>
-			</div>
+				<dt class="col-md-3">Registrar:</dt>
+				<dd class="col-md-3"><?= htmlspecialchars($domain->registrar ?? '-') ?></dd>
 
+				<dt class="col-md-3">Reseller:</dt>
+				<dd class="col-md-3"><?= htmlspecialchars($domain->reseller ?? '-') ?></dd>
+
+				<dt class="col-md-3">DNS Provider:</dt>
+				<dd class="col-md-3"><?= htmlspecialchars($domain->dns_provider ?? '-') ?></dd>
+			</dl>
+
+			<!-- Nameservers -->
+			<hr>
+			<h5 class="mb-3">Nameservers</h5>
+			<dl class="row">
+				<?php for ($i = 1; $i <= 4; $i++) : ?>
+					<?php $ns = $domain->{'ns' . $i} ?? '-'; ?>
+					<dt class="col-md-3">NS<?= $i ?>:</dt>
+					<dd class="col-md-3"><?= htmlspecialchars($ns) ?></dd>
+				<?php endfor; ?>
+			</dl>
+
+			<!-- Dates -->
+			<hr>
+			<dl class="row">
+				<dt class="col-md-3">Purchase Date:</dt>
+				<dd class="col-md-3"><?= $purchaseDate ?></dd>
+
+				<dt class="col-md-3">Expiration Date:</dt>
+				<dd class="col-md-3"><?= $expirationDate ?></dd>
+			</dl>
+
+			<!-- Notes -->
 			<?php if (!empty($domain->notes)) : ?>
-				<div class="row mb-3">
-					<div class="col-12">
-						<strong>Notes:</strong>
-						<div class="border rounded p-2 bg-light"><?= nl2br(htmlspecialchars($domain->notes)) ?></div>
-					</div>
+				<hr>
+				<h5 class="mb-2">Notes</h5>
+				<div class="bg-light border rounded p-3">
+					<?= nl2br(htmlspecialchars($domain->notes)) ?>
 				</div>
 			<?php endif; ?>
 
+			<!-- Metadata -->
+			<hr>
 			<div class="text-muted small">
-				Created: <?= HTMLHelper::_('date', $domain->created, Text::_('DATE_FORMAT_LC4')) ?> |
-				Modified: <?= HTMLHelper::_('date', $domain->modified, Text::_('DATE_FORMAT_LC4')) ?>
+				<i class="icon-calendar"></i> Created: <?= HTMLHelper::_('date', $domain->created, Text::_('DATE_FORMAT_LC4')) ?>
+				&nbsp;|&nbsp;
+				<i class="icon-pencil"></i> Modified: <?= HTMLHelper::_('date', $domain->modified, Text::_('DATE_FORMAT_LC4')) ?>
 			</div>
 		</div>
 	</div>
 
+	<!-- Back button -->
 	<div class="mt-4">
-		<a class="btn btn-secondary" href="<?= Route::_('index.php?option=com_mothership&view=domains') ?>">← Back to Domains</a>
+		<a class="btn btn-outline-secondary" href="<?= Route::_('index.php?option=com_mothership&view=domains') ?>">
+			← Back to Domains
+		</a>
 	</div>
 </div>
