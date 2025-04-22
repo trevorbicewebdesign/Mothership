@@ -243,7 +243,6 @@ The **Payments** object represents the payments made by clients. Each payment ha
 - **User ID**: The ID of the user who made the payment.
 - **Client ID**: The ID of the client associated with the payment.
 - **Account ID**: The ID of the account associated with the payment.
-- **Name**: The name of the payment.
 - **Payer Email**: The email address of the payer.
 - **Invoices**: The invoices associated with the payment.
 - **Method**: The method of payment (e.g., credit card, PayPal).
@@ -311,6 +310,43 @@ CREATE TABLE IF NOT EXISTS `#__mothership_invoice_payment` (
 ```
 
 > **Note:** If a draft invoice is deleted, any `Invoice Payments` records linked to that invoice will also be deleted automatically. This helps keep your data consistent and prevents orphaned records.
+
+## Projects
+
+- **ID**: A unique identifier for the project.
+- **Client ID**: The ID of the client associated with the project.
+- **Account ID**: The ID of the account associated with the project.
+- **Name**: The name of the project.
+- **Description**: The description of the project.
+- **Type**: The type of project, currently there are only `Websites`
+- **Status**: The status of the project. Can be `active` or `inactive`
+- **Metadata**: Json to store data related to different project types
+- **Created**: The date the project was created
+- **Created By**" The user that created the project
+- **Checked Out Time**: The time the project was checked out.
+- **Checked Out**: The ID of the user who last checked out the project record.
+
+### Projects Table
+```
+CREATE TABLE IF NOT EXISTS `#__mothership_projects` (
+  `id` INT(10) NOT NULL AUTO_INCREMENT,
+  `client_id` INT(10) NOT NULL,
+  `account_id` INT(10) DEFAULT NULL,
+  `name` VARCHAR(255) NOT NULL,
+  `description` TEXT DEFAULT NULL,
+  `type` VARCHAR(255) DEFAULT NULL,
+  `status` ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
+  `created` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `created_by` INT(11) DEFAULT NULL,
+  `checked_out_time` DATETIME DEFAULT NULL,
+  `checked_out` INT(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_projects_client` (`client_id`),
+  KEY `idx_name` (`name`(100)),
+  CONSTRAINT `fk_projects_client` FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients`(`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_projects_account` FOREIGN KEY (`account_id`) REFERENCES `#__mothership_accounts`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1;
+```
 
 ## Logs 
 
