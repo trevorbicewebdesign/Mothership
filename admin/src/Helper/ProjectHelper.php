@@ -110,6 +110,18 @@ class ProjectHelper
         ];
     }
 
+    public static function getGenerator($html)
+    {
+        // First lets parse the html inside the <head> tag into an array
+        preg_match_all('/<head.*?>(.*?)<\/head>/si', $html, $matches);
+        $headContent = implode(' ', $matches[1]);
+        // Get all the html elements inside the head into an array
+        preg_match_all('/<meta[^>]+name=["\']generator["\'][^>]+content=["\']([^"\']+)["\'][^>]*>/si', $headContent, $matches);
+        $generator = isset($matches[1][0]) ? trim($matches[1][0]) : null;
+
+        return $generator;
+    }
+
     public static function detectJoomla(array $headers, string $html): bool
     {
         // First lets parse the html inside the <head> tag into an array
@@ -118,16 +130,6 @@ class ProjectHelper
         $headContent = strip_tags($headContent); // Remove HTML tags
         $headContent = preg_replace('/\s+/', ' ', $headContent); // Remove extra whitespace
         $headContent = trim($headContent); // Trim leading/trailing whitespace
-        // exctract the <link href and <script src= from the headContent as well as all the meta tags
-        preg_match_all('/<link.*?href=["\'](.*?)["\'].*?>/si', $headContent, $linkMatches);
-        preg_match_all('/<script.*?src=["\'](.*?)["\'].*?>/si', $headContent, $scriptMatches);
-        preg_match_all('/<meta.*?name=["\'](.*?)["\'].*?>/si', $headContent, $metaMatches);
-        preg_match_all('/<meta.*?property=["\'](.*?)["\'].*?>/si', $headContent, $propertyMatches);
-        preg_match_all('/<meta.*?content=["\'](.*?)["\'].*?>/si', $headContent, $contentMatches);
-        preg_match_all('/<meta.*?http-equiv=["\'](.*?)["\'].*?>/si', $headContent, $httpMatches);
-        preg_match_all('/<meta.*?charset=["\'](.*?)["\'].*?>/si', $headContent, $charsetMatches);
-        preg_match_all('/<meta.*?name=["\']generator["\'].*?>/si', $headContent, $generatorMatches);
-
 
         // Check for Joomla specific meta tags and links in the headers and html
         if (preg_match('/Joomla!/', $headContent) || preg_match('/Joomla/', $headContent) || preg_match('/joomla/', $headContent)) {
@@ -138,6 +140,16 @@ class ProjectHelper
         }
         
 
+        return false;
+    }
+
+    public static function detectWordpress(array $headers, string $html): bool
+    {
+        $generator = self::getGenerator($html);
+        if(preg_match('/WordPress/', $generator) || preg_match('/wordpress/', $generator)) {
+            return true;
+        }
+        
         return false;
     }
 }
