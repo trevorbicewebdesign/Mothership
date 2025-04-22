@@ -322,8 +322,7 @@ CREATE TABLE IF NOT EXISTS `#__mothership_invoice_payment` (
 - **Status**: The status of the project. Can be `active` or `inactive`
 - **Metadata**: Json to store data related to different project types
 - **Created**: The date the project was created
-- **Created By**" The user that created the project
-- **Checked Out Time**: The time the project was checked out.
+- **Created By**: The user that created the project
 - **Checked Out**: The ID of the user who last checked out the project record.
 
 ### Projects Table
