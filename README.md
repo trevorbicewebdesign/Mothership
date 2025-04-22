@@ -486,6 +486,14 @@ The **Payments Helper** provides several methods to manage and update payment re
 - **getDomain(int $domain_id)**: Retrieves the domain information based on the provided domain ID.
 - **getStatus(int $status_id)**: Retrieves the domain status based on a provided integer status level
 
+## Project Helper
+
+- **scanWebsiteProject(string $url): array**: Scans the given website URL and returns an array containing information about the website's structure, metadata, and other relevant details.
+- **getGenerator($html)**: Extracts and returns the generator meta tag from the provided HTML content, which typically indicates the CMS or framework used by the website.
+- **detectJoomla(array $headers, string $html): bool**: Analyzes the provided HTTP headers and HTML content to determine if the website is powered by Joomla. Returns `true` if Joomla is detected, otherwise `false`.
+- **detectWordpress(array $headers, string $html): bool**: Analyzes the provided HTTP headers and HTML content to determine if the website is powered by WordPress. Returns `true` if WordPress is detected, otherwise `false`.
+
+
 ## Logs Helper
 - **log(array $params)**: Logs a generic event with the provided parameters.
 - **logPaymentLifecycle(string $event, int $invoiceId, int $paymentId, ?int $clientId = null, ?int $accountId = null, float $amount = 0.0, string $method = '', ?string $extraDetails = null)**: Logs the lifecycle events of a payment, such as initiation or completion.
