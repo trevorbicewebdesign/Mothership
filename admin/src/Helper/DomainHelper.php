@@ -70,7 +70,6 @@ class DomainHelper extends ContentHelper
             $info = $whois->loadDomainInfo($domainName);
 
             $domain_name = $info->getDomainName() ?: null;
-            // $registry_domain_id = $info->get
             $creation_date = $info->getCreationDate() ?: null;
             $expiration_date = $info->getExpirationDate() ?: null;
             $registrar = $info->getRegistrar() ?: null;
@@ -91,7 +90,6 @@ class DomainHelper extends ContentHelper
 
             return [
                 'domain' => $domain_name,
-                // 'registry_domain_id' => $info->getRegistryDomainId() ?: null,
                 'creation_date' => $creation_date,
                 'expiration_date' => $expiration_date,
                 'registrar' => $registrar,
