@@ -77,9 +77,19 @@ class DomainHelper extends ContentHelper
             $states = $info->getStates() ?: null;
 
             // Extracting the extra information from the domain info
+            $data = $info->getData() ?: null;
             $extra = $info->getExtra() ?: null;
 
             $reseller = $extra['groups'][0]["Reseller"];
+            $domain_status = $extra['groups'][0]["Domain Status"];
+            $domain_status = explode(" ", $domain_status);
+
+            // Check the domain of the name servers
+            foreach ($name_servers as $key => $value) {
+                // strip eric.ns.cloudflare.com down to just cloudflare 
+                $dns_provider = preg_replace('/^([^.]+)\.ns\./', '', $value);
+
+            }
             
             if (!$info) {
                 return [
@@ -94,8 +104,11 @@ class DomainHelper extends ContentHelper
                 'expiration_date' => $expiration_date,
                 'registrar' => $registrar,
                 'reseller' => $reseller,
-                'states' => $states,
-                'name_servers' => $name_servers
+                'status' => $domain_status,
+                'name_servers' => $name_servers,
+                'dns_provider' => $dns_provider,
+                'data' => $data,
+                'extra' => $extra,
             ];
         } catch (\Exception $e) {
             return [
