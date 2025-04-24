@@ -7,6 +7,7 @@ use Joomla\CMS\MVC\Controller\FormController;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use TrevorBice\Component\Mothership\Administrator\Helper\MothershipHelper;
+use TrevorBice\Component\Mothership\Administrator\Helper\DomainHelper;
 
 \defined('_JEXEC') or die;
 
@@ -21,6 +22,59 @@ class DomainController extends FormController
     public function display($cachable = false, $urlparams = [])
     {
         return parent::display();
+    }
+
+    public function whoisScan()
+    {
+        $app = Factory::getApplication();
+        $input = $app->input;
+        $model = $this->getModel('Domain');
+
+        $domain = $model->getItem($input->getInt('id'));
+        $domainName = $domain->name;
+
+        try {
+            $domainInfo = DomainHelper::scanDomain($domainName);
+            
+        } catch (\Exception $e) {
+            echo json_encode(['error' => true, 'message' => $e->getMessage()]);
+        }
+
+        $domain->available = $domainInfo['available'];
+        $domain->message = $domainInfo['message'];
+        $domain->domain = $domainInfo['domain'] ?? null;
+        $domain->registrar = $domainInfo['registrar'] ?? null;
+        $domain->reseller = $domainInfo['reseller'] ?? null;
+
+        $domain->purchase_date = isset($domainInfo['creationDate']) ? date('Y-m-d H:i:s', $domainInfo['creationDate']) : null;
+        $domain->created = isset($domainInfo['creationDate']) ? date('Y-m-d H:i:s', $domainInfo['creationDate']) : null;
+        $domain->modified = isset($domainInfo['updatedDate']) ? date('Y-m-d H:i:s', $domainInfo['updatedDate']) : null;
+        $domain->expiration_date = isset($domainInfo['expirationDate']) ? date('Y-m-d H:i:s', $domainInfo['expirationDate']) : null;
+
+        $domain->status = $domainInfo['status'][0] ?? null;
+
+        $domain->ns1 = $domainInfo['name_servers'][0] ?? null;
+        $domain->ns2 = $domainInfo['name_servers'][1] ?? null;
+        $domain->ns3 = $domainInfo['name_servers'][2] ?? null;
+        $domain->ns4 = $domainInfo['name_servers'][3] ?? null;
+
+        $domain->status = $domainInfo['status'] ?? null;
+        $domain->rawText = $domainInfo['rawText'] ?? null;
+
+        $domain->last_scan = date('Y-m-d H:i:s');
+
+        $model = $this->getModel('Domain');
+        if (!$model->save($domain)) {
+            $app->enqueueMessage(Text::_('Mothership WHOIS Scan Failed'), 'error');
+            $app->enqueueMessage($model->getError(), 'error');
+            $this->setRedirect(Route::_("index.php?option=com_mothership&view=domain&layout=edit&id={$domain->id}", false));
+            return false;
+        }
+        $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_DOMAIN_WHOIS_SCANNED_SUCCESSFULLY', "<strong>{$domain->name}</strong>"), 'message');
+        $this->setRedirect(Route::_("index.php?option=com_mothership&view=domain&layout=edit&id={$domain->id}", false));
+
+
+        return false;
     }
 
     public function save($key = null, $urlVar = null)
