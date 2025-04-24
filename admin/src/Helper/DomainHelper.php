@@ -10,13 +10,9 @@
 
 namespace TrevorBice\Component\Mothership\Administrator\Helper;
 
-use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Helper\ContentHelper;
-use Joomla\CMS\HTML\HTMLHelper;
-use Joomla\CMS\Language\Text;
-use Joomla\CMS\Table\Table;
-use Joomla\Database\ParameterType;
+use Iodev\Whois\Factory as WhoisFactory;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -29,6 +25,87 @@ use Joomla\Database\ParameterType;
  */
 class DomainHelper extends ContentHelper
 {
+
+    /**
+     * Scans the WHOIS information of a given domain name and returns the details.
+     *
+     * @param string $domainName The domain name to scan.
+     *
+     * @return array An associative array containing the following keys:
+     *               - 'available' (bool): Indicates if the domain is available.
+     *               - 'message' (string): A message about the domain's availability or error details.
+     *               - 'domain' (string|null): The domain name (if available in WHOIS data).
+     *               - 'registrar' (string|null): The registrar of the domain (if available in WHOIS data).
+     *               - 'creationDate' (\DateTime|null): The creation date of the domain (if available in WHOIS data).
+     *               - 'expirationDate' (\DateTime|null): The expiration date of the domain (if available in WHOIS data).
+     *               - 'whoisServer' (string|null): The WHOIS server used (if available in WHOIS data).
+     *               - 'status' (array|null): The status of the domain (if available in WHOIS data).
+     *               - 'rawText' (string|null): The raw WHOIS response text (if available in WHOIS data).
+     *               - 'error' (bool|null): Indicates if an error occurred during the scan.
+     *               - 'message' (string): A message describing the error, if applicable.
+     *
+     * @throws \Exception If an unexpected error occurs during the WHOIS scan.
+     *
+     * @example
+     * $result = DomainHelper::scanDomain('example.com');
+     * if (isset($result['error']) && $result['error']) {
+     *     echo 'Error: ' . $result['message'];
+     * } elseif ($result['available']) {
+     *     echo 'Domain is available: ' . $result['message'];
+     * } else {
+     *     echo 'Domain is not available. Details:' . PHP_EOL;
+     *     echo 'Domain: ' . $result['domain'] . PHP_EOL;
+     *     echo 'Registrar: ' . $result['registrar'] . PHP_EOL;
+     *     echo 'Creation Date: ' . $result['creationDate']->format('Y-m-d') . PHP_EOL;
+     *     echo 'Expiration Date: ' . $result['expirationDate']->format('Y-m-d') . PHP_EOL;
+     *     echo 'WHOIS Server: ' . $result['whoisServer'] . PHP_EOL;
+     *     echo 'Status: ' . implode(', ', $result['status']) . PHP_EOL;
+     * }
+     */
+    public static function scanDomain(string $domainName): array
+    {
+        $whois = WhoisFactory::get()->createWhois();
+
+        try {
+            $info = $whois->loadDomainInfo($domainName);
+
+            $domain_name = $info->getDomainName() ?: null;
+            // $registry_domain_id = $info->get
+            $creation_date = $info->getCreationDate() ?: null;
+            $expiration_date = $info->getExpirationDate() ?: null;
+            $registrar = $info->getRegistrar() ?: null;
+            $name_servers = $info->getNameServers() ?: null;
+            $states = $info->getStates() ?: null;
+
+            // Extracting the extra information from the domain info
+            $extra = $info->getExtra() ?: null;
+
+            $reseller = $extra['groups'][0]["Reseller"];
+            
+            if (!$info) {
+                return [
+                    'available' => true,
+                    'message' => 'Domain appears to be available',
+                ];
+            }
+
+            return [
+                'domain' => $domain_name,
+                // 'registry_domain_id' => $info->getRegistryDomainId() ?: null,
+                'creation_date' => $creation_date,
+                'expiration_date' => $expiration_date,
+                'registrar' => $registrar,
+                'reseller' => $reseller,
+                'states' => $states,
+                'name_servers' => $name_servers
+            ];
+        } catch (\Exception $e) {
+            return [
+                'error' => true,
+                'message' => 'WHOIS scan failed: ' . $e->getMessage(),
+            ];
+        }
+    }
    
     /**
      * Retrieves a domain record from the database based on the provided domain ID.
