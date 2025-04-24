@@ -14,18 +14,9 @@ jobs:
       - name: Start Docker Services
         run: docker compose up -d --build
 
-      - name: Wait for Joomla to be ready
+      - name: Install Joomla
         run: |
-          echo "Waiting for Joomla..."
-          until curl -s http://localhost:8080 | grep -q "DOCTYPE"; do
-            echo "Still waiting for Joomla..."
-            sleep 5
-          done
-          echo "Joomla is ready."
-
-      - name: Install Joomla (CLI)
-        run: |
-          docker compose exec joomla php cli/joomla.php site:install \
+          docker-compose exec joomla php cli/joomla.php site:install \
             --db-user root \
             --db-pass root \
             --db-name joomla \
@@ -34,6 +25,16 @@ jobs:
             --admin-pass admin123 \
             --admin-email admin@example.com \
             --site-name "Mothership Test Site"
+      
+      - name: Wait for Joomla to be ready
+        run: |
+          echo "Waiting for Joomla..."
+          until curl -s http://localhost:8080 | grep -q "DOCTYPE"; do
+            echo "Still waiting for Joomla..."
+            sleep 5
+          done
+          echo "Joomla is ready."
+      
 
       - name: Install Mothership via CLI
         run: |
