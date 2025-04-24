@@ -12,7 +12,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Start Docker Services
-        run: docker-compose up -d --build
+        run: docker compose up -d --build
 
       - name: Wait for Joomla to be ready
         run: |
@@ -25,7 +25,7 @@ jobs:
 
       - name: Install Joomla (CLI)
         run: |
-          docker-compose exec joomla php cli/joomla.php site:install \
+          docker compose exec joomla php cli/joomla.php site:install \
             --db-user root \
             --db-pass root \
             --db-name joomla \
@@ -37,12 +37,12 @@ jobs:
 
       - name: Install Mothership via CLI
         run: |
-          docker-compose exec joomla php cli/joomla.php extension:install /var/www/html/tmp/mothership
+          docker compose exec joomla php cli/joomla.php extension:install /var/www/html/tmp/mothership
 
       - name: Run Codeception Acceptance Tests
         run: |
-          docker-compose exec joomla bash -c 'cd /var/www/html && ~/.composer/vendor/bin/codecept run acceptance -d -f'
+          docker compose exec joomla bash -c 'cd /var/www/html && ~/.composer/vendor/bin/codecept run acceptance -d -f'
 
       - name: Teardown
         if: always()
-        run: docker-compose down -v
+        run: docker compose down -v
