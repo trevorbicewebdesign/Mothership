@@ -1,4 +1,4 @@
-name: Run Tests
+name: Run Mothership Tests
 
 on:
   workflow_dispatch:
@@ -8,27 +8,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-      - name: Set up PHP for testing tools
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-          extensions: mbstring, json, curl, zip
+      - name: Start Docker
+        run: docker-compose up -d --build
 
-      - name: Install Composer dependencies (Codeception only)
-        run: composer update --prefer-dist --no-interaction
-
-      - name: Start Docker services (Joomla + MySQL)
-        run: docker compose up -d --build
-
-      - name: Create .env file and populate
+      - name: Wait for Joomla to be up
         run: |
-          touch ./tests/.env
+          echo "Waiting for Joomla..."
+          until curl -s http://localhost:8080 | grep -q "DOCTYPE"; do
+            sleep 5
+          done
+          echo "Joomla is ready"
 
-      - name: Install Joomla via CLI
+      - name: Install Joomla (if not already installed)
         run: |
-          docker exec mothership-joomla-1 php cli/joomla.php site:install \
+          docker-compose exec joomla php cli/joomla.php site:install \
             --db-user root \
             --db-pass root \
             --db-name joomla \
@@ -38,17 +34,14 @@ jobs:
             --admin-email admin@example.com \
             --site-name "Mothership Test Site"
 
-      - name: Wait for Joomla to be ready
+      - name: Install Mothership via CLI
         run: |
-          until curl -s --head http://localhost:8080 | grep "200 OK"; do
-            echo "Waiting for Joomla..."
-            sleep 5
-          done
-          echo "Joomla is up"
+          docker-compose exec joomla php cli/joomla.php extension:install /var/www/html/tmp/mothership
 
       - name: Run Codeception Tests
-        run: ./vendor/bin/codecept run acceptance -d -f
+        run: |
+          docker-compose exec joomla bash -c 'cd /var/www/html && ~/.composer/vendor/bin/codecept run acceptance -d -f'
 
-      - name: Shut down containers
+      - name: Teardown
         if: always()
         run: docker-compose down -v
