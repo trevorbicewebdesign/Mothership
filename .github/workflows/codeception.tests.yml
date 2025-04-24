@@ -16,7 +16,7 @@ jobs:
 
       - name: Install Joomla
         run: |
-          docker compose exec joomla php cli/joomla.php site:install \
+          docker compose exec joomla php /var/www/html/cli/joomla.php site:install \
             --db-user root \
             --db-pass root \
             --db-name joomla \
