@@ -31,7 +31,7 @@ class RegistrarField extends ListField
             HTMLHelper::_('select.option', 'cloudflare', 'Cloudflare'),
             HTMLHelper::_('select.option', 'register_com', 'Register.com'),
             HTMLHelper::_('select.option', 'enom', 'eNom'),
-            HTMLHelper::_('select.option', 'tucows', 'Tucows'),
+            HTMLHelper::_('select.option', 'TUCOWS, INC.', 'TUCOWS, INC.'),
             HTMLHelper::_('select.option', 'gandi', 'Gandi'),
             HTMLHelper::_('select.option', 'scalahosting', 'ScalaHosting'),
             HTMLHelper::_('select.option', 'bigrock', 'BigRock'),
