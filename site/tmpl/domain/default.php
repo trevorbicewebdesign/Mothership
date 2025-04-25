@@ -26,9 +26,6 @@ $expirationDate = $domain->expiration_date ? HTMLHelper::_('date', $domain->expi
 				<dt class="col-md-3">Status:</dt>
 				<dd class="col-md-3"><?= ucfirst(htmlspecialchars($domain->status)) ?></dd>
 
-				<dt class="col-md-3">Auto Renew:</dt>
-				<dd class="col-md-3"><?= $domain->auto_renew ? 'Yes' : 'No' ?></dd>
-
 				<dt class="col-md-3">Registrar:</dt>
 				<dd class="col-md-3"><?= htmlspecialchars($domain->registrar ?? '-') ?></dd>
 
