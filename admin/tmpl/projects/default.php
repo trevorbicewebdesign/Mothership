@@ -72,8 +72,15 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                         <?php echo (int) $item->id; ?>
                                     </td>
                                     <td>
+                                        <?php $metadata = json_decode($item->metadata, true); ?>
                                         <?php if ($item->checked_out) : ?>
                                             <?php echo HTMLHelper::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'articles.', $canCheckin); ?>
+                                        <?php endif; ?>
+
+                                        <?php if($metadata['status'] == 'online'):?>
+                                            <span class="badge bg-success" title="<?php echo Text::_('COM_MOTHERSHIP_PROJECT_STATUS_ONLINE'); ?>" style="border-radius: 50%; display: inline-block; width: 10px; height: 10px;"></span>
+                                        <?php else: ?>
+                                            <span class="badge bg-danger" title="<?php echo Text::_('COM_MOTHERSHIP_PROJECT_STATUS_OFFLINE'); ?>" style="border-radius: 50%; display: inline-block; width: 10px; height: 10px;"></span>
                                         <?php endif; ?>
 
                                         <?php if ($canEdit || $canEditOwn) : ?>
