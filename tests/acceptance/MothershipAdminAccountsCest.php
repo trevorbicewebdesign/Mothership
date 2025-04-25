@@ -187,6 +187,9 @@ class MothershipAdminAccountsCest
         $I->click("input[name=checkall-toggle]");
         $I->click("Actions");
         $I->see("Check-in", "joomla-toolbar-button#status-group-children-checkin");
+        $I->seeElement("joomla-toolbar-button#status-group-children-checkin", ['task' => "accounts.checkIn"]);
+        $I->see("Edit", "joomla-toolbar-button#status-group-children-edit");
+        $I->seeElement("joomla-toolbar-button#status-group-children-edit", ['task' => "account.edit"]);
         $I->see("Delete", "joomla-toolbar-button#status-group-children-delete");
         $I->seeElement("joomla-toolbar-button#status-group-children-delete", ['task' => "accounts.delete"]);
 

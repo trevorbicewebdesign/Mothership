@@ -150,6 +150,11 @@ class HtmlView extends BaseHtmlView
             }
         );
 
+        if(!$isNew)
+        {
+            ToolbarHelper::custom('domain.whoisScan', 'refresh', '', 'COM_MOTHERSHIP_DOMAIN_WHOIS_SCAN_UPDATE', false);
+        }
+
         if (empty($this->item->id)) {
             $toolbar->cancel('domain.cancel', 'JTOOLBAR_CANCEL');
         } else {

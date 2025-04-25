@@ -45,4 +45,13 @@ class MothershipClientHelperTest extends \Codeception\Test\Unit
             $this->assertStringContainsString('Client ID 9999 not found.', $e->getMessage());
         }
     }
+
+    public function testGetClientEmptyId()
+    {
+        try{
+            ClientHelper::getClient('');
+        } catch (\Exception $e) {
+            $this->assertStringContainsString('Client ID cannot be null or empty.', $e->getMessage());
+        }
+    }
 }

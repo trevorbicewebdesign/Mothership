@@ -7,47 +7,25 @@ use DateTime;
 use DateTimeZone;
 
 
-class MothershipAdminClientsCest
+class MothershipAdminLogsCest
 {
-    private $clientData;
+    private $logData;
     private $userData;
     private $accountData;
     private $invoiceData;
     private $paymentData;
     private $joomlaUserData;
 
-    const CLIENTS_VIEW_ALL_URL = "/administrator/index.php?option=com_mothership&view=clients";
-    const CLIENT_EDIT_URL = "/administrator/index.php?option=com_mothership&view=client&layout=edit&id=%s";
+    const LOGS_VIEW_ALL_URL = "/administrator/index.php?option=com_mothership&view=logs";
+    const LOG_EDIT_URL = "/administrator/index.php?option=com_mothership&view=log&layout=edit&id=%s";
 
     public function _before(AcceptanceTester $I)
     {
         $I->resetMothershipTables();
 
-        $this->clientData = $I->createMothershipClient([
-            'name' => 'Test Client',
-        ]);
-
-        $this->joomlaUserData = $I->createJoomlaUser([
-            'name' => 'Test Smith',
-        ], 10);
-
-        $this->accountData = $I->createMothershipAccount([
-            'client_id' => $this->clientData['id'],
-            'name' => 'Test Account',
-        ]);
-
-        $this->invoiceData = $I->createMothershipInvoice([
-            'client_id' => $this->clientData['id'],
-            'account_id' => $this->accountData['id'],
-            'total' => '100.00',
-            'number' => 1000,
-            'invoice_date' => date('Y-m-d'),
-            'status' => 1,
-        ]);
-
-        $this->paymentData = $I->createMothershipPaymentData([
-            'client_id' => $this->clientData['id'],
-            'account_id' => $this->accountData['id'],
+        $this->logData = $I->createMothershipLog([
+            'description' => 'Test Log',
+            'details' => 'Test Log Details',
         ]);
 
         $I->amOnPage("/administrator/");
@@ -59,14 +37,14 @@ class MothershipAdminClientsCest
 
     /**
      * @group backend
-     * @group client
+     * @group log
      */
-    public function MothershipViewClients(AcceptanceTester $I)
+    public function MothershipViewLogs(AcceptanceTester $I)
     {
-        $I->amOnPage(self::CLIENTS_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Clients", 20, "h1.page-title");
+        $I->amOnPage(self::LOGS_VIEW_ALL_URL);
+        $I->waitForText("Mothership: Logs", 20, "h1.page-title");
 
-        $I->makeScreenshot("mothership-clients-view-all");
+        $I->makeScreenshot("mothership-logs-view-all");
 
         $toolbar = "#toolbar";
         $toolbarNew = "#toolbar-new";
@@ -77,7 +55,7 @@ class MothershipAdminClientsCest
         $I->seeElement("#j-main-container ");
         $I->seeElement("#j-main-container thead");
 
-        $I->see("Client Name Asc");
+        $I->see("Log Name Asc");
 
         $I->see("Id", "#j-main-container table thead tr th:nth-child(2)");
         $I->see("Name", "#j-main-container table thead tr th:nth-child(3)");
@@ -86,8 +64,8 @@ class MothershipAdminClientsCest
         $I->see("Created", "#j-main-container table thead tr th:nth-child(6)");
 
         $I->see("1", "#j-main-container table tbody tr td:nth-child(2)");
-        $I->see("Test Client", "#j-main-container table tbody tr td:nth-child(3)");
-        $I->see($this->clientData['phone'], "#j-main-container table tbody tr td:nth-child(4)");
+        $I->see("Test Log", "#j-main-container table tbody tr td:nth-child(3)");
+        $I->see($this->logData['phone'], "#j-main-container table tbody tr td:nth-child(4)");
         $I->see("$100.00", "#j-main-container table tbody tr td:nth-child(5)");
         $I->see(date("Y-m-d"), "#j-main-container table tbody tr td:nth-child(6)");
 
@@ -98,12 +76,12 @@ class MothershipAdminClientsCest
 
     /**
      * @group backend
-     * @group client
+     * @group log
      */
-    public function MothershipAddClient(AcceptanceTester $I)
+    public function MothershipAddLog(AcceptanceTester $I)
     {
-        $I->amOnPage(self::CLIENTS_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Clients", 20, "h1.page-title");
+        $I->amOnPage(self::LOGS_VIEW_ALL_URL);
+        $I->waitForText("Mothership: Logs", 20, "h1.page-title");
 
         $toolbar = "#toolbar";
         $toolbarNew = "#toolbar-new";
@@ -112,19 +90,19 @@ class MothershipAdminClientsCest
         $I->see("New", "{$toolbar} {$toolbarNew} .btn.button-new");
 
         $I->click("{$toolbar} {$toolbarNew} .btn.button-new");
-        $I->waitForText("Mothership: New Client", 20, "h1.page-title");
+        $I->waitForText("Mothership: New Log", 20, "h1.page-title");
 
-        $I->makeScreenshot("mothership-client-add-details");
+        $I->makeScreenshot("mothership-log-add-details");
 
         $I->see("Save", "#toolbar");
         $I->see("Save & Close", "#toolbar");
         $I->see("Cancel", "#toolbar");
 
         $I->seeElement("form[name=adminForm]");
-        $I->seeElement("form#client-form");
+        $I->seeElement("form#log-form");
 
         $I->seeElement("#myTab");
-        $I->see("Client Details", "#myTab");
+        $I->see("Log Details", "#myTab");
 
         $I->seeElement("input#jform_name");
         $I->seeElement("input#jform_email");
@@ -137,8 +115,8 @@ class MothershipAdminClientsCest
         $I->seeElement("input#jform_default_rate");
         $I->seeElement("input#jform_owner_user_id");
 
-        $I->fillField("input#jform_name", "Another Client");
-        $I->fillField("input#jform_email", "another.client@mailinator.com");
+        $I->fillField("input#jform_name", "Another Log");
+        $I->fillField("input#jform_email", "another.log@mailinator.com");
         $I->fillField("input#jform_phone", "(555) 555-5555");
         $I->fillField("input#jform_address_1", "12345 St.");
         $I->fillField("input#jform_address_2", "APT 123");
@@ -148,7 +126,7 @@ class MothershipAdminClientsCest
         $I->fillField("input#jform_default_rate", "100.00");
 
         $I->click(".icon-user");
-        $I->makeScreenshot("mothership-client-add-contact");
+        $I->makeScreenshot("mothership-log-add-contact");
         $I->switchToIFrame(".iframe-content");       
         $I->fillFIeld("#filter_search", $this->joomlaUserData['name']);
         $I->click('//button[contains(@class, "btn") and .//span[contains(@class, "icon-search")]]');
@@ -159,21 +137,21 @@ class MothershipAdminClientsCest
 
         $I->click("Save & Close", "#toolbar");
         $I->wait(3);
-        $I->seeInCurrentUrl(("/administrator/index.php?option=com_mothership&view=clients"));
-        $I->see("Client saved", ".alert-message");
+        $I->seeInCurrentUrl(("/administrator/index.php?option=com_mothership&view=logs"));
+        $I->see("Log saved", ".alert-message");
 
-        $I->seeInCurrentUrl(self::CLIENTS_VIEW_ALL_URL);
+        $I->seeInCurrentUrl(self::LOGS_VIEW_ALL_URL);
         $I->seeNumberOfElements("#j-main-container table tbody tr", 2);
 
-        $client_id = $I->grabTextFrom("#j-main-container table tbody tr:nth-child(1) td:nth-child(2)");
+        $log_id = $I->grabTextFrom("#j-main-container table tbody tr:nth-child(1) td:nth-child(2)");
 
-        $I->see($client_id . "", "#j-main-container table tbody tr:nth-child(1) td:nth-child(2)");
-        $I->see("Another Client", "#j-main-container table tbody tr:nth-child(1) td:nth-child(3)");
+        $I->see($log_id . "", "#j-main-container table tbody tr:nth-child(1) td:nth-child(2)");
+        $I->see("Another Log", "#j-main-container table tbody tr:nth-child(1) td:nth-child(3)");
         $I->see((new DateTime('now', new DateTimeZone('America/Los_Angeles')))->format('Y-m-d'), "#j-main-container table tbody tr:nth-child(1) td:nth-child(6)");
 
-        $I->seeInDatabase("jos_mothership_clients", [
-            'name' => 'Another Client',
-            'email' => 'another.client@mailinator.com',
+        $I->seeInDatabase("jos_mothership_logs", [
+            'name' => 'Another Log',
+            'email' => 'another.log@mailinator.com',
             'phone' => '(555) 555-5555',
             'address_1' => '12345 St.',
             'address_2' => 'APT 123',
@@ -186,33 +164,33 @@ class MothershipAdminClientsCest
         ]);
 
         // Open the Invoice again and confirm the data is correct
-        $I->amOnPage(sprintf(self::CLIENT_EDIT_URL, $client_id));
+        $I->amOnPage(sprintf(self::LOG_EDIT_URL, $log_id));
         $I->click("Details");
         // Confirm the value in jform_number is correct
-        $I->seeInField("input#jform_name", "Another Client");
+        $I->seeInField("input#jform_name", "Another Log");
         $I->click("Save", "#toolbar");
 
         $I->wait(1);
-        $I->see("Mothership: Edit Client", "h1.page-title");
-        $I->seeCurrentUrlEquals(sprintf(self::CLIENT_EDIT_URL, $client_id));
-        $I->waitForText("Client Another Client saved successfully.", 20, ".alert-message");
+        $I->see("Mothership: Edit Log", "h1.page-title");
+        $I->seeCurrentUrlEquals(sprintf(self::LOG_EDIT_URL, $log_id));
+        $I->see("Log Another Log saved successfully.", ".alert-message");
     }
 
     /**
      * @group backend
-     * @group client
+     * @group log
      * @group delete
      */
-    public function MothershipDeleteClientWithAccountsFailure(AcceptanceTester $I)
+    public function MothershipDeleteLogWithAccountsFailure(AcceptanceTester $I)
     {
-        $I->seeInDatabase("jos_mothership_clients", [
-            'id' => $this->clientData['id'],
+        $I->seeInDatabase("jos_mothership_logs", [
+            'id' => $this->logData['id'],
         ]);
         $I->seeInDatabase("jos_mothership_accounts", [
-            'client_id' => $this->clientData['id'],
+            'log_id' => $this->logData['id'],
         ]);
-        $I->amOnPage(self::CLIENTS_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Clients", 20, "h1.page-title");
+        $I->amOnPage(self::LOGS_VIEW_ALL_URL);
+        $I->waitForText("Mothership: Logs", 20, "h1.page-title");
 
         $I->seeNumberOfElements("#j-main-container table tbody tr", 1);
         
@@ -222,36 +200,36 @@ class MothershipAdminClientsCest
         $I->click("Actions");
         $I->see("Check-in", "joomla-toolbar-button#status-group-children-checkin");
         $I->see("Delete", "joomla-toolbar-button#status-group-children-delete");
-        $I->seeElement("joomla-toolbar-button#status-group-children-delete", ['task' => "clients.delete"]);
+        $I->seeElement("joomla-toolbar-button#status-group-children-delete", ['task' => "logs.delete"]);
 
         $I->click("Delete", "#toolbar");
         $I->wait(1);
 
-        $I->seeInCurrentUrl(self::CLIENTS_VIEW_ALL_URL);
-        $I->see("Mothership: Clients", "h1.page-title");
-        $I->see("Cannot delete client(s) [1] because they have one or more associated accounts.", ".alert-message");
+        $I->seeInCurrentUrl(self::LOGS_VIEW_ALL_URL);
+        $I->see("Mothership: Logs", "h1.page-title");
+        $I->see("Cannot delete log(s) [1] because they have one or more associated accounts.", ".alert-message");
         $I->seeNumberOfElements("#j-main-container table tbody tr", 1);
-        $I->seeInDatabase("jos_mothership_clients", [
-            'id' => $this->clientData['id'],
+        $I->seeInDatabase("jos_mothership_logs", [
+            'id' => $this->logData['id'],
         ]);
         $I->seeInDatabase("jos_mothership_accounts", [
-            'client_id' => $this->clientData['id'],
+            'log_id' => $this->logData['id'],
         ]);
     }
 
     /**
      * @group backend
-     * @group client
+     * @group log
      * @group delete
      */
-    public function MothershipDeleteClientSuccess(AcceptanceTester $I)
+    public function MothershipDeleteLogSuccess(AcceptanceTester $I)
     {
-        $noAccountsClient = $I->createMothershipClient([
-            'name' => 'No Accounts Client',
+        $noAccountsLog = $I->createMothershipLog([
+            'name' => 'No Accounts Log',
         ]);
 
-        $I->amOnPage(self::CLIENTS_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Clients", 20, "h1.page-title");
+        $I->amOnPage(self::LOGS_VIEW_ALL_URL);
+        $I->waitForText("Mothership: Logs", 20, "h1.page-title");
 
         $I->seeNumberOfElements("#j-main-container table tbody tr", 2);
         
@@ -260,29 +238,29 @@ class MothershipAdminClientsCest
         $I->click("input[name=checkall-toggle]");
         $I->click("Actions");
         $I->see("Check-in", "joomla-toolbar-button#status-group-children-checkin");
-        $I->seeElement("joomla-toolbar-button#status-group-children-checkin", ['task' => "clients.checkIn"]);
+        $I->seeElement("joomla-toolbar-button#status-group-children-checkin", ['task' => "logs.checkIn"]);
         $I->see("Edit", "joomla-toolbar-button#status-group-children-edit");
-        $I->seeElement("joomla-toolbar-button#status-group-children-edit", ['task' => "client.edit"]);
+        $I->seeElement("joomla-toolbar-button#status-group-children-edit", ['task' => "log.edit"]);
         $I->see("Delete", "joomla-toolbar-button#status-group-children-delete");
-        $I->seeElement("joomla-toolbar-button#status-group-children-delete", ['task' => "clients.delete"]);
+        $I->seeElement("joomla-toolbar-button#status-group-children-delete", ['task' => "logs.delete"]);
 
         $I->click("Delete", "#toolbar");
         $I->wait(1);
 
-        $I->seeInCurrentUrl(self::CLIENTS_VIEW_ALL_URL);
-        $I->see("Mothership: Clients", "h1.page-title");
-        $I->see("Cannot delete client(s) [1] because they have one or more associated accounts.", ".alert-message");
-        $I->see("1 Client deleted successfully.", ".alert-message");
+        $I->seeInCurrentUrl(self::LOGS_VIEW_ALL_URL);
+        $I->see("Mothership: Logs", "h1.page-title");
+        $I->see("Cannot delete log(s) [1] because they have one or more associated accounts.", ".alert-message");
+        $I->see("1 Log deleted successfully.", ".alert-message");
         $I->seeNumberOfElements("#j-main-container table tbody tr", 1);
 
-        $I->seeInDatabase("jos_mothership_clients", [
-            'id' => $this->clientData['id'],
+        $I->seeInDatabase("jos_mothership_logs", [
+            'id' => $this->logData['id'],
         ]);
         $I->seeInDatabase("jos_mothership_accounts", [
-            'client_id' => $this->clientData['id'],
+            'log_id' => $this->logData['id'],
         ]);
-        $I->dontSeeInDatabase('jos_mothership_clients', [
-            'id' => $noAccountsClient['id'],
+        $I->dontSeeInDatabase('jos_mothership_logs', [
+            'id' => $noAccountsLog['id'],
         ]);
     }
 }

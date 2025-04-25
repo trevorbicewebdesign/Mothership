@@ -161,9 +161,14 @@ class ProjectModel extends AdminModel
         $table = $this->getTable();
 
         // Convert metadata array to JSON
-        if (isset($data['metadata']) && is_array($data['metadata'])) {
+        if( is_object($data) && (isset($data->metadata) && is_array($data->metadata))) {
+            $data->metadata = json_encode($data->metadata);
+        }
+
+        if(is_array($data) && isset($data['metadata'])) {
             $data['metadata'] = json_encode($data['metadata']);
         }
+        
 
         if (!$table->bind($data)) {
             $error = $table->getError();
@@ -190,9 +195,33 @@ class ProjectModel extends AdminModel
             return false;
         }
 
+        // Set the new record ID into the model state
+        $this->setState($this->getName() . '.id', $table->id);
+
         return true;
     }
 
-    
+     /**
+     * Cancel editing by checking in the record.
+     *
+     * @param   int|null  $pk  The primary key of the record to check in. If null, it attempts to load it from the state.
+     *
+     * @return  bool  True on success, false on failure.
+     */
+    public function cancelEdit($pk = null)
+    {
+        // Use the provided primary key or retrieve it from the model state
+        $pk = $pk ? $pk : (int) $this->getState($this->getName() . '.id');
+
+        if ($pk) {
+            $table = $this->getTable();
+            if (!$table->checkin($pk)) {
+                $this->setError($table->getError());
+                return false;
+            }
+        }
+
+        return true;
+    }
 
 }

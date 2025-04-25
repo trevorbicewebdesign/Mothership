@@ -13,6 +13,7 @@ class MothershipAdminInvoicesCest
     private $accountData;
     private $invoiceData;
     private $invoiceItemData = [];
+    private $mothershipConfig = [];
 
     const INVOICES_VIEW_ALL_URL = "/administrator/index.php?option=com_mothership&view=invoices";
     const INVOICE_EDIT_URL = "/administrator/index.php?option=com_mothership&view=invoice&layout=edit&id=%s";
@@ -20,8 +21,19 @@ class MothershipAdminInvoicesCest
     {
         $I->resetMothershipTables();
 
+        $this->mothershipConfig = $I->setMothershipConfig([
+            'company_name' => 'A Fake Company',
+            'company_address_1' => '12345 Nowhere St.',
+            'company_city' => 'Nowhere',
+            'company_state' => 'California',
+            'company_zip' => '99999',
+            'company_phone' => '555-555-5555',
+            'company_default_rate' => '100.00',
+        ]);
+
         $this->clientData = $I->createMothershipClient([
             'name' => 'Test Client',
+            'default_rate' => '111.00',
         ]);
 
         $this->userData = $I->createMothershipUser([
@@ -87,18 +99,125 @@ class MothershipAdminInvoicesCest
 
     /**
      * @group backend
+     * @group client
+     * @group invoice
+     */
+    public function MothershipCancelClientEdit(AcceptanceTester $I)
+    {
+        $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
+        $I->waitForText("Mothership: Invoices", 20, "h1.page-title");
+
+        $I->click("Test Client");
+        $I->wait(1);
+        $I->see("Mothership: Edit Client", "h1.page-title");
+        $I->click("Close", "#toolbar");
+        $I->wait(1);
+        $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
+        $I->see("Mothership: Invoices", "h1.page-title");
+    }
+
+    /**
+     * @group backend
+     * @group account
+     * @group invoice
+     */
+    public function MothershipCancelAccountEdit(AcceptanceTester $I)
+    {
+        $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
+        $I->waitForText("Mothership: Invoices", 20, "h1.page-title");
+
+        $I->click("Test Account");
+        $I->wait(1);
+        $I->see("Mothership: Edit Account", "h1.page-title");
+        $I->click("Close", "#toolbar");
+        $I->wait(1);
+        $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
+        $I->see("Mothership: Invoices", "h1.page-title");
+    }
+
+    /**
+     * @group backend
+     * @group account
+     * @group invoice
+     */
+    public function MothershipCancelPaymentEdit(AcceptanceTester $I)
+    {
+        $paymentData = $I->createMothershipPayment([
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'amount' => $this->invoiceData['total'],
+            'payment_method' => 'paypal',
+            'status' => 2,
+        ]);
+        $invoicePaymentData = $I->createMothershipInvoicePayment([
+            'invoice_id' => $this->invoiceData['id'],
+            'payment_id' => $paymentData['id'],
+            'applied_amount' => $this->invoiceData['total'],
+        ]);
+
+        $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
+        $I->waitForText("Mothership: Invoices", 20, "h1.page-title");
+
+        $I->click("Payment #{$paymentData['id']}");
+        $I->waitForText("Mothership: Edit Payment", 10, "h1.page-title");
+        $I->click("Close", "#toolbar");
+        $I->wait(1);
+        $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
+        $I->see("Mothership: Invoices", "h1.page-title");
+    }
+
+    /**
+     * @group backend
      * @group invoice
      */
     public function MothershipViewInvoices(AcceptanceTester $I)
     {
 
-        $I->createMothershipInvoice([
+        $invoiceData = $I->createMothershipInvoice([
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
             'total' => '475.00',
             'number' => 1004,
             'created' => date('Y-m-d H:i:s'),
             'status' => 4,
+            'locked' => 1,
+        ]);
+
+        $invoiceItemData[] = $I->createMothershipInvoiceItem([
+            'invoice_id' => $invoiceData['id'],
+            'name' => 'Test Item 1',
+            'description' => 'Test Description 1',
+            'hours' => '1',
+            'minutes' => '30',
+            'quantity' => '1.5',
+            'rate' => '70.00',
+            'subtotal' => '105.00',
+        ]);
+
+        $invoiceItemData[] = $I->createMothershipInvoiceItem([
+            'invoice_id' => $invoiceData['id'],
+            'name' => 'Test Item 2',
+            'description' => 'Test Description 2',
+            'hours' => '1',
+            'minutes' => '0',
+            'quantity' => '1',
+            'rate' => '70.00',
+            'subtotal' => '70.00',
+        ]);
+        
+        $paymentData = $I->createMothershipPayment([
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'amount' => $invoiceData['total'],
+            'payment_method' => 'paypal',
+            'status' => 2,
+            'locked' => 1,
+        ]);
+
+        $paymentInvoiceData = $I->createMothershipInvoicePayment([
+            'invoice_id' => $invoiceData['id'],
+            'payment_id' => $paymentData['id'],
+            'applied_amount' => $invoiceData['total'],
         ]);
 
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
@@ -128,26 +247,50 @@ class MothershipAdminInvoicesCest
 
         $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 2);
 
-        $I->see("{$this->invoiceData['id']}", "#j-main-container table tbody tr:nth-child(2) td:nth-child(2)");
-        $I->see("{$this->invoiceData['number']}", "#j-main-container table tbody tr:nth-child(2) td:nth-child(3)");
-        $I->seeNumberOfElements("#j-main-container table tbody tr:nth-child(2) td:nth-child(4) a", 2);
-        $I->seeElement("#j-main-container table tbody tr:nth-child(2) td:nth-child(4) a.downloadPdf");
-        $I->seeElement("#j-main-container table tbody tr:nth-child(2) td:nth-child(4) a.previewPdf");
+        $row = 1;
+        // This invoice is not locked, so it should not have the lock icon
+        $I->dontSeeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(1) i.fa-solid.fa-lock");
+        $I->see("{$this->invoiceData['id']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(2)");
+        $I->see("{$this->invoiceData['number']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(3)");
+        $I->seeNumberOfElements("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4) a", 2);
+        $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4) a.downloadPdf");
+        $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4) a.previewPdf");
 
-        $downloadPdfUrl = $I->grabAttributeFrom("#j-main-container table tbody tr:nth-child(2) td:nth-child(4) a.downloadPdf", 'href');
-        $previewPdfUrl = $I->grabAttributeFrom("#j-main-container table tbody tr:nth-child(2) td:nth-child(4) a.previewPdf", 'href');
+        $downloadPdfUrl = $I->grabAttributeFrom("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4) a.downloadPdf", 'href');
+        $previewPdfUrl = $I->grabAttributeFrom("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4) a.previewPdf", 'href');
 
         $I->assertEquals("/administrator/index.php?option=com_mothership&task=invoice.downloadPdf&id={$this->invoiceData['id']}", $downloadPdfUrl);
         $I->assertEquals("/administrator/index.php?option=com_mothership&task=invoice.previewPdf&id={$this->invoiceData['id']}", $previewPdfUrl);
 
-        $I->see("{$this->clientData['name']}", "#j-main-container table tbody tr:nth-child(2) td:nth-child(5)");
-        $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr:nth-child(2) td:nth-child(6)");
-        $I->see("{$this->invoiceData['total']}", "#j-main-container table tbody tr:nth-child(2) td:nth-child(7)");
-        $I->see("Draft", "#j-main-container table tbody tr:nth-child(2) td:nth-child(8)");
-        $I->see("Completed", "#j-main-container table tbody tr:nth-child(2) td:nth-child(9)");
-        $I->see("Payment #21", "#j-main-container table tbody tr:nth-child(2) td:nth-child(9)");
-        $I->see("", "#j-main-container table tbody tr:nth-child(2) td:nth-child(10)"); // Due date is NULL
-        $I->see(date('Y-m-d'), "#j-main-container table tbody tr:nth-child(2) td:nth-child(11)");
+        $I->see("{$this->clientData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5)");
+        $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(6)");
+        $I->see("{$this->invoiceData['total']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(7)");
+        $I->see("Draft", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(8)");
+        $I->see("Unpaid", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(9)");
+        $I->see(date('Y-m-d'), "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(11)");
+
+        $row = 2;
+        // This invoice IS not locked, so it SHOULD have the lock icon
+        $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(1) i.fa-solid.fa-lock");
+        $I->see("{$invoiceData['id']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(2)");
+        $I->see("{$invoiceData['number']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(3)");
+        $I->seeNumberOfElements("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4) a", 2);
+        $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4) a.downloadPdf");
+        $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4) a.previewPdf");
+
+        $downloadPdfUrl = $I->grabAttributeFrom("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4) a.downloadPdf", 'href');
+        $previewPdfUrl = $I->grabAttributeFrom("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4) a.previewPdf", 'href');
+
+        $I->assertEquals("/administrator/index.php?option=com_mothership&task=invoice.downloadPdf&id={$invoiceData['id']}", $downloadPdfUrl);
+        $I->assertEquals("/administrator/index.php?option=com_mothership&task=invoice.previewPdf&id={$invoiceData['id']}", $previewPdfUrl);
+
+        $I->see("{$this->clientData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5)");
+        $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(6)");
+        $I->see("{$invoiceData['total']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(7)");
+        $I->see("Closed", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(8)");
+        $I->see("Paid", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(9)");
+        $I->see("Payment #{$paymentData['id']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(9)"); 
+        $I->see(date('Y-m-d'), "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(11)");
 
         $I->see("1 - 2 / 2 items", "#j-main-container .pagination__wrapper");
     }
@@ -170,6 +313,9 @@ class MothershipAdminInvoicesCest
         $I->click("input[name=checkall-toggle]");
         $I->click("Actions");
         $I->see("Check-in", "joomla-toolbar-button#status-group-children-checkin");
+        $I->seeElement("joomla-toolbar-button#status-group-children-checkin", ['task' => "invoices.checkIn"]);
+        $I->see("Edit", "joomla-toolbar-button#status-group-children-edit");
+        $I->seeElement("joomla-toolbar-button#status-group-children-edit", ['task' => "invoice.edit"]);
         $I->see("Delete", "joomla-toolbar-button#status-group-children-delete");
         $I->seeElement("joomla-toolbar-button#status-group-children-delete", ['task' => "invoices.delete"]);
 
@@ -365,7 +511,7 @@ class MothershipAdminInvoicesCest
         
         $I->see("One of the options must be selected", "label#jform_client_id-lbl .form-control-feedback");
         $I->see("Please fill in this field", "label#jform_number-lbl .form-control-feedback");
-        $I->see("Please fill in this field", "label#jform_rate-lbl .form-control-feedback");
+        $I->see("Please provide an item name.", ".form-group .invalid-feedback");
 
         $I->amGoingTo("Fill out the form");
 
@@ -374,7 +520,8 @@ class MothershipAdminInvoicesCest
         $I->selectOption("select#jform_account_id", $this->accountData['id']);
 
         $I->fillFIeld("input#jform_number", "1001");
-        $I->fillFIeld("input#jform_rate", "100");
+        $I->seeInField("input#jform_rate", $this->clientData['default_rate']);
+
         $I->fillFIeld("input#jform_total", "105.00");
 
         $I->amGoingTo("Fill out the first row of the invoice items table");
@@ -386,16 +533,18 @@ class MothershipAdminInvoicesCest
         $I->seeInField("#invoice-items-table input[name='jform[items][0][hours]']", "1");
         $I->seeInField("#invoice-items-table input[name='jform[items][0][minutes]']", "0");
         $I->seeInField("#invoice-items-table input[name='jform[items][0][quantity]']", "1.00");
-        $I->seeInField("#invoice-items-table input[name='jform[items][0][rate]']", "0.00");
-        $I->seeInField("#invoice-items-table input[name='jform[items][0][subtotal]']", "0.00");
+        $I->seeInField("#invoice-items-table input[name='jform[items][0][rate]']", $this->clientData['default_rate']);
+        $expectedSubtotal = number_format(($this->clientData['default_rate'] * 1), 2); // Update this value if needed based on calculations
+        $I->seeInField("#invoice-items-table input[name='jform[items][0][subtotal]']", $expectedSubtotal);
 
         $I->fillField("#invoice-items-table input[name='jform[items][0][minutes]']", "30");
 
         $I->seeInField("#invoice-items-table input[name='jform[items][0][hours]']", "1");
         $I->seeInField("#invoice-items-table input[name='jform[items][0][minutes]']", "30");
         $I->seeInField("#invoice-items-table input[name='jform[items][0][quantity]']", "1.50");
-        $I->seeInField("#invoice-items-table input[name='jform[items][0][rate]']", "0.00");
-        $I->seeInField("#invoice-items-table input[name='jform[items][0][subtotal]']", "0.00");
+        $I->seeInField("#invoice-items-table input[name='jform[items][0][rate]']", $this->clientData['default_rate']);
+        $expectedSubtotal = number_format(($this->clientData['default_rate'] * 1.5), 2); // Update this value if needed based on calculations
+        $I->seeInField("#invoice-items-table input[name='jform[items][0][subtotal]']", $expectedSubtotal);
 
         // Delete whats in quantity
         $I->executeJS("document.querySelector(\"#invoice-items-table input[name='jform[items][0][quantity]']\").value = '';");
@@ -404,8 +553,9 @@ class MothershipAdminInvoicesCest
         $I->seeInField("#invoice-items-table input[name='jform[items][0][hours]']", "2");
         $I->seeInField("#invoice-items-table input[name='jform[items][0][minutes]']", "0");
         $I->seeInField("#invoice-items-table input[name='jform[items][0][quantity]']", "2.00");
-        $I->seeInField("#invoice-items-table input[name='jform[items][0][rate]']", "0.00");
-        $I->seeInField("#invoice-items-table input[name='jform[items][0][subtotal]']", "0.00");
+        $I->seeInField("#invoice-items-table input[name='jform[items][0][rate]']", $this->clientData['default_rate']);
+        $expectedSubtotal = number_format(($this->clientData['default_rate'] * 2), 2); // Update this value if needed based on calculations
+        $I->seeInField("#invoice-items-table input[name='jform[items][0][subtotal]']", $expectedSubtotal);
 
         $I->executeJS("document.querySelector(\"#invoice-items-table input[name='jform[items][0][rate]']\").value = '';");
         $I->fillField("table tbody tr:first-child input[name='jform[items][0][rate]']", "70.00");
@@ -481,7 +631,7 @@ class MothershipAdminInvoicesCest
         $I->see("1001", "#j-main-container table.itemList tbody tr td:nth-child(3)");
         $I->see("Test Client", "#j-main-container table.itemList tbody tr td:nth-child(5)");
         $I->see("Test Account", "#j-main-container table.itemList tbody tr td:nth-child(6)");
-        $I->see(date("Y-m-d"), "#j-main-container table.itemList tbody tr td:nth-child(10)");
+        $I->see(date("Y-m-d"), "#j-main-container table.itemList tbody tr td:nth-child(11)");
 
         // Open the Invoice again and confirm the data is correct
         $I->amOnPage(sprintf(self::INVOICE_EDIT_URL, ($this->invoiceData['id'] + 1)));
@@ -489,7 +639,7 @@ class MothershipAdminInvoicesCest
         $I->seeInField("input#jform_number", "1001");
 
         $I->click("Save", "#toolbar");
-        $I->wait(1);
+        $I->wait(2);
 
         // We should still be on the same edit page, with the same ID
         $I->seeInCurrentUrl(sprintf(self::INVOICE_EDIT_URL, ($this->invoiceData['id'] + 1)));
@@ -517,6 +667,165 @@ class MothershipAdminInvoicesCest
         $I->seeInField("#invoice-items-table input[name='jform[items][1][subtotal]']", "262.50");
 
     }
+
+    /**
+     * @group backend
+     * @group invoice
+     */
+    public function SetInvoiceOpened(AcceptanceTester $I)
+    {
+        $I->seeInDatabase("jos_mothership_invoices", [
+            'id' => $this->invoiceData['id'],
+            'locked' => 0,
+            'status' => 1,
+        ]);   
+        $I->amOnPage(sprintf(self::INVOICE_EDIT_URL, $this->invoiceData['id']));
+        $I->waitForText("Mothership: Edit Invoice", 20, "h1.page-title");
+
+        $I->seeOptionIsSelected("select#jform_status", "Draft");
+        $I->selectOption("select#jform_status", "Opened");
+        $I->fillFIeld("input#jform_rate", "70.00");
+        $I->click("Save", "#toolbar"); 
+        $I->waitForText("Invoice saved successfully.", 5, "#system-message-container .alert-message");
+        $I->waitForText("Mothership: View Invoice", 20, "h1.page-title");
+        
+        $I->seeInDatabase("jos_mothership_invoices", [
+            'id' => $this->invoiceData['id'],
+            'locked' => 1,
+            'status' => 2,
+        ]);   
+
+        $I->seeInDatabase('jos_mothership_logs', [
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'action' => 'status_opened',
+            'object_id' => $this->invoiceData['id'],
+            'object_type' => 'invoice',
+        ]);
+
+        $email_id = $I->getLastEmailId();
+        $I->assertEmailSubjectEquals($email_id, "New Invoice Opened");
+    }
+
+    /**
+     * @group backend
+     * @group invoice
+     */
+    public function LockedInvoiceCannotBeEdited(AcceptanceTester $I)
+    {
+        $I->seeInDatabase("jos_mothership_invoices", [
+            'id' => $this->invoiceData['id'],
+            'status' => 1,
+        ]); 
+        // Set the invoice to the locked state
+        $I->setInvoiceLocked($this->invoiceData['id']);
+        $I->amOnPage(sprintf(self::INVOICE_EDIT_URL, $this->invoiceData['id']));
+        $I->waitForText("Mothership: View Invoice", 20, "h1.page-title");
+
+        $I->seeElement("#jform_client_id");
+        $I->assertEquals("true", $I->grabAttributeFrom("#jform_client_id", "disabled"));
+        $I->seeElement("#jform_account_id");
+        $I->assertEquals("true", $I->grabAttributeFrom("#jform_account_id", "disabled"));
+        $I->seeElement("#jform_number");
+        $I->assertEquals("true", $I->grabAttributeFrom("#jform_number", "disabled"));
+        $I->seeElement("#jform_created");
+        $I->assertEquals("true", $I->grabAttributeFrom("#jform_created", "disabled"));
+        $I->seeElement("#jform_due_date");
+        $I->assertEquals("true", $I->grabAttributeFrom("#jform_due_date", "disabled"));
+        $I->seeElement("#jform_rate");
+        $I->assertEquals("true", $I->grabAttributeFrom("#jform_rate", "disabled"));
+        $I->seeElement("#jform_total");
+        $I->assertEquals("true", $I->grabAttributeFrom("#jform_total", "disabled"));
+        $I->seeElement("#jform_status");
+        $I->assertEquals("true", $I->grabAttributeFrom("#jform_status", "disabled"));
+
+        $I->seeElement("#invoice-items-table input[name='jform[items][0][name]']");
+        $I->assertEquals("true", $I->grabAttributeFrom("#invoice-items-table input[name='jform[items][0][name]']", "disabled"));
+        $I->seeElement("#invoice-items-table input[name='jform[items][0][description]']");
+        $I->assertEquals("true", $I->grabAttributeFrom("#invoice-items-table input[name='jform[items][0][description]']", "disabled"));
+        $I->seeElement("#invoice-items-table input[name='jform[items][0][hours]']");
+        $I->assertEquals("true", $I->grabAttributeFrom("#invoice-items-table input[name='jform[items][0][hours]']", "disabled"));
+        $I->seeElement("#invoice-items-table input[name='jform[items][0][minutes]']");
+        $I->assertEquals("true", $I->grabAttributeFrom("#invoice-items-table input[name='jform[items][0][minutes]']", "disabled"));
+        $I->seeElement("#invoice-items-table input[name='jform[items][0][quantity]']");
+        $I->assertEquals("true", $I->grabAttributeFrom("#invoice-items-table input[name='jform[items][0][quantity]']", "disabled"));
+        $I->seeElement("#invoice-items-table input[name='jform[items][0][rate]']");
+        $I->assertEquals("true", $I->grabAttributeFrom("#invoice-items-table input[name='jform[items][0][rate]']", "disabled"));
+        $I->seeElement("#invoice-items-table input[name='jform[items][0][subtotal]']");
+        $I->assertEquals("true", $I->grabAttributeFrom("#invoice-items-table input[name='jform[items][0][subtotal]']", "disabled"));
+
+        $I->seeElement("#invoice-items-table input[name='jform[items][1][name]']");
+        $I->assertEquals("true", $I->grabAttributeFrom("#invoice-items-table input[name='jform[items][1][name]']", "disabled"));
+        $I->seeElement("#invoice-items-table input[name='jform[items][1][description]']");
+        $I->assertEquals("true", $I->grabAttributeFrom("#invoice-items-table input[name='jform[items][1][description]']", "disabled"));
+        $I->seeElement("#invoice-items-table input[name='jform[items][1][hours]']");
+        $I->assertEquals("true", $I->grabAttributeFrom("#invoice-items-table input[name='jform[items][1][hours]']", "disabled"));
+        $I->seeElement("#invoice-items-table input[name='jform[items][1][minutes]']");
+        $I->assertEquals("true", $I->grabAttributeFrom("#invoice-items-table input[name='jform[items][1][minutes]']", "disabled"));
+        $I->seeElement("#invoice-items-table input[name='jform[items][1][quantity]']");
+        $I->assertEquals("true", $I->grabAttributeFrom("#invoice-items-table input[name='jform[items][1][quantity]']", "disabled"));
+        $I->seeElement("#invoice-items-table input[name='jform[items][1][rate]']");
+        $I->assertEquals("true", $I->grabAttributeFrom("#invoice-items-table input[name='jform[items][1][rate]']", "disabled"));
+        $I->seeElement("#invoice-items-table input[name='jform[items][1][subtotal]']");
+        $I->assertEquals("true", $I->grabAttributeFrom("#invoice-items-table input[name='jform[items][1][subtotal]']", "disabled"));
+
+        $I->click("Unlock", "#toolbar");
+        $I->waitForText("Mothership: Edit Invoice", 20, "h1.page-title");
+        $I->waitForText("Invoice unlocked successfully.", 20, "#system-message-container .alert-message");
+
+        $I->seeElement("#jform_client_id");
+        $I->assertEquals(NULL, $I->grabAttributeFrom("#jform_client_id", "disabled"));
+        $I->seeElement("#jform_account_id");
+        $I->assertEquals(NULL, $I->grabAttributeFrom("#jform_account_id", "disabled"));
+        $I->seeElement("#jform_number");
+        $I->assertEquals(NULL, $I->grabAttributeFrom("#jform_number", "disabled"));
+        $I->seeElement("#jform_created");
+        $I->assertEquals(NULL, $I->grabAttributeFrom("#jform_created", "disabled"));
+        $I->seeElement("#jform_due_date");
+        $I->assertEquals(NULL, $I->grabAttributeFrom("#jform_due_date", "disabled"));
+        $I->seeElement("#jform_rate");
+        $I->assertEquals(NULL, $I->grabAttributeFrom("#jform_rate", "disabled"));
+        $I->seeElement("#jform_total");
+        $I->assertEquals(NULL, $I->grabAttributeFrom("#jform_total", "disabled"));
+        $I->seeElement("#jform_status");
+        $I->assertEquals(NULL, $I->grabAttributeFrom("#jform_status", "disabled"));
+
+        $I->seeElement("#invoice-items-table input[name='jform[items][0][name]']");
+        $I->assertEquals(NULL, $I->grabAttributeFrom("#invoice-items-table input[name='jform[items][0][name]']", "disabled"));
+        $I->seeElement("#invoice-items-table input[name='jform[items][0][description]']");
+        $I->assertEquals(NULL, $I->grabAttributeFrom("#invoice-items-table input[name='jform[items][0][description]']", "disabled"));
+        $I->seeElement("#invoice-items-table input[name='jform[items][0][hours]']");
+        $I->assertEquals(NULL, $I->grabAttributeFrom("#invoice-items-table input[name='jform[items][0][hours]']", "disabled"));
+        $I->seeElement("#invoice-items-table input[name='jform[items][0][minutes]']");
+        $I->assertEquals(NULL, $I->grabAttributeFrom("#invoice-items-table input[name='jform[items][0][minutes]']", "disabled"));
+        $I->seeElement("#invoice-items-table input[name='jform[items][0][quantity]']");
+        $I->assertEquals(NULL, $I->grabAttributeFrom("#invoice-items-table input[name='jform[items][0][quantity]']", "disabled"));
+        $I->seeElement("#invoice-items-table input[name='jform[items][0][rate]']");
+        $I->assertEquals(NULL, $I->grabAttributeFrom("#invoice-items-table input[name='jform[items][0][rate]']", "disabled"));
+        $I->seeElement("#invoice-items-table input[name='jform[items][0][subtotal]']");
+        $I->assertEquals(NULL, $I->grabAttributeFrom("#invoice-items-table input[name='jform[items][0][subtotal]']", "disabled"));
+
+        $I->seeElement("#invoice-items-table input[name='jform[items][1][name]']");
+        $I->assertEquals(NULL, $I->grabAttributeFrom("#invoice-items-table input[name='jform[items][1][name]']", "disabled"));
+        $I->seeElement("#invoice-items-table input[name='jform[items][1][description]']");
+        $I->assertEquals(NULL, $I->grabAttributeFrom("#invoice-items-table input[name='jform[items][1][description]']", "disabled"));
+        $I->seeElement("#invoice-items-table input[name='jform[items][1][hours]']");
+        $I->assertEquals(NULL, $I->grabAttributeFrom("#invoice-items-table input[name='jform[items][1][hours]']", "disabled"));
+        $I->seeElement("#invoice-items-table input[name='jform[items][1][minutes]']");
+        $I->assertEquals(NULL, $I->grabAttributeFrom("#invoice-items-table input[name='jform[items][1][minutes]']", "disabled"));
+        $I->seeElement("#invoice-items-table input[name='jform[items][1][quantity]']");
+        $I->assertEquals(NULL, $I->grabAttributeFrom("#invoice-items-table input[name='jform[items][1][quantity]']", "disabled"));
+        $I->seeElement("#invoice-items-table input[name='jform[items][1][rate]']");
+        $I->assertEquals(NULL, $I->grabAttributeFrom("#invoice-items-table input[name='jform[items][1][rate]']", "disabled"));
+        $I->seeElement("#invoice-items-table input[name='jform[items][1][subtotal]']");
+        $I->assertEquals(NULL, $I->grabAttributeFrom("#invoice-items-table input[name='jform[items][1][subtotal]']", "disabled"));
+
+        $I->click("Lock", "#toolbar");
+        $I->waitForText("Mothership: View Invoice", 20, "h1.page-title");
+        $I->waitForText("Invoice locked successfully.", 20, "#system-message-container .alert-message");
+    }
+
+    
 
     /**
      * @group backend

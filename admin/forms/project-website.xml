@@ -1,12 +1,9 @@
 <form>
     <fields name="metadata">
         <fieldset name="project_website" label="Website Information">
-            <field name="primary_url" type="url" label="Primary URL" />
-            <field name="cms_type" type="list" label="CMS Type">
-                <option value="joomla">Joomla</option>
-                <option value="wordpress">WordPress</option>
-                <option value="phpbb">phpBB</option>
-            </field>
+            <field name="primary_url" type="url" label="Primary URL" required="required" />
+            <field name="primary_domain" type="text" label="Primary Domain" />
+            <field name="cms_type" type="text" label="CMS Type" />
             <field name="cms_version" type="text" label="CMS Version" />
             <field name="status" type="list" label="Status">
                 <option value="online">Online</option>

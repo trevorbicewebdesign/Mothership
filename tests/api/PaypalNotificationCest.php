@@ -9,9 +9,10 @@ class PaypalNotificationCest
     private $accountData;
     private $userData;
     private $invoiceData;
+    private $invoiceItemData =[];
     private $paymentData;
 
-    const PAYPAL_NOTIFY_URL = '/index.php?option=com_mothership&paypal_notify=1&invoice=%d';
+    const PAYPAL_NOTIFY_URL = '/index.php?option=com_mothership&controller=payment&task=pluginTask&plugin=paypal&action=notify&id=%d&invoice_id=%d';
 
     public function _before(ApiTester $I)
     {
@@ -33,13 +34,35 @@ class PaypalNotificationCest
             'status' => 2,
         ]);
 
+        $this->invoiceItemData[] = $I->createMothershipInvoiceItem([
+            'invoice_id' => $this->invoiceData['id'],
+            'description' => 'Test Item',
+            'subtotal' => '100.00',
+            'quantity' => 1,
+        ]);
+        $this->invoiceItemData[][] = $I->createMothershipInvoiceItem([
+            'invoice_id' => $this->invoiceData['id'],
+            'description' => 'Test Item 2',
+            'subtotal' => '50.00',
+            'quantity' => 2,
+        ]);
+
+
+        $this->paymentData = $I->createMothershipPayment([
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'amount' => '100.00',
+            'payment_method' => 'paypal',
+            'status' => 1,
+        ]);
+
 
     }
     public function testPaypalNotification(ApiTester $I)
     {
         $I->haveHttpHeader('Content-Type', 'application/x-www-form-urlencoded');
 
-        $url = sprintf(self::PAYPAL_NOTIFY_URL, $this->invoiceData['id']);
+        $url = sprintf(self::PAYPAL_NOTIFY_URL, $this->paymentData['id'], $this->invoiceData['id']);
         codecept_debug($url);
 
         $I->sendPOST($url, [
@@ -55,36 +78,56 @@ class PaypalNotificationCest
 
         $I->seeResponseCodeIsSuccessful();
 
-        $paymentId = $I->grabLastCompletedPaymentId();
-        codecept_debug($paymentId);
-
         $I->seeResponseContains('IPN Received');
         $I->assertInvoiceStatusPaid($this->invoiceData['id']);
-        $I->assertPaymentStatusCompleted( $paymentId );
+        $I->assertPaymentStatusCompleted( $this->paymentData['id'] );
 
         $I->seeInDatabase("jos_mothership_payments", [
-            'id' => $paymentId,
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'], 
+            'id' => $this->paymentData['id'],
             'amount' => '103.20',
             'fee_amount' => '3.20',
             'fee_passed_on' => 0,
-            'payment_method' => 'PayPal',
-            'transaction_id' => '1234567890ABCDEF',
+            'payment_method' => 'paypal',
+            // 'transaction_id' => '1234567890ABCDEF',
             'status' => 2,
         ]);
 
         $I->seeInDatabase("jos_mothership_invoice_payment", [
             'invoice_id' => $this->invoiceData['id'],
-            'payment_id' => $paymentId,
+            'payment_id' => $this->paymentData['id'],
             'applied_amount' => '103.2',
         ]);
+        
+        $I->seeInDatabase("jos_mothership_logs", [
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            // user_id' => $this->joomlaUserData['id'],            
+            'action' => 'completed',
+            'object_type' => 'payment',
+            'object_id' => $this->accountData['id'], 
+        ]);
+
+        $meta = json_decode($I->grabFromDatabase("jos_mothership_logs", "meta", [
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            // 'user_id' => $this->joomlaUserData['id'],            
+            'action' => 'completed',
+            'object_type' => 'payment',
+            'object_id' => $this->accountData['id'], 
+        ]));
+
+        codecept_debug($meta);
+
     }
 
-        /**
+    /**
      * Same txn_id used in two IPNs; ensure only one payment is created.
      */
     public function testDuplicateTransactionId(ApiTester $I)
     {
-        $url = sprintf(self::PAYPAL_NOTIFY_URL, $this->invoiceData['id']);
+        $url = sprintf(self::PAYPAL_NOTIFY_URL, $this->paymentData['id'], $this->invoiceData['id']);
 
         $I->sendPOST($url, [
             'custom' => $this->invoiceData['id'],
@@ -118,7 +161,9 @@ class PaypalNotificationCest
      */
     public function testInvalidInvoiceId(ApiTester $I)
     {
-        $I->sendPOST('/index.php?option=com_mothership&paypal_notify=1&invoice=9999', [
+        $url = sprintf(self::PAYPAL_NOTIFY_URL, $this->paymentData['id'], "9999");
+
+        $I->sendPOST($url, [
             'custom' => 9999,
             'txn_id' => 'TXN12345INVALID',
             'payment_status' => 'Completed',

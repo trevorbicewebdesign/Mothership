@@ -7,7 +7,9 @@ namespace Composer\Autoload;
 class ComposerStaticInit5465c58bbcf8277b7d4ecd1e0c4ad39e
 {
     public static $files = array (
+        'e69f7f6ee287b969198c3c9d6777bd38' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/bootstrap.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
+        'f598d06aa772fa33d905e87be6398fb1' => __DIR__ . '/..' . '/symfony/polyfill-intl-idn/bootstrap.php',
         'db356362850385d08a5381de2638b5fd' => __DIR__ . '/..' . '/mpdf/mpdf/src/functions.php',
     );
 
@@ -15,6 +17,11 @@ class ComposerStaticInit5465c58bbcf8277b7d4ecd1e0c4ad39e
         's' => 
         array (
             'setasign\\Fpdi\\' => 14,
+        ),
+        'S' => 
+        array (
+            'Symfony\\Polyfill\\Intl\\Normalizer\\' => 33,
+            'Symfony\\Polyfill\\Intl\\Idn\\' => 26,
         ),
         'P' => 
         array (
@@ -27,6 +34,10 @@ class ComposerStaticInit5465c58bbcf8277b7d4ecd1e0c4ad39e
             'Mpdf\\PsrHttpMessageShim\\' => 24,
             'Mpdf\\' => 5,
         ),
+        'I' => 
+        array (
+            'Iodev\\' => 6,
+        ),
         'D' => 
         array (
             'DeepCopy\\' => 9,
@@ -37,6 +48,14 @@ class ComposerStaticInit5465c58bbcf8277b7d4ecd1e0c4ad39e
         'setasign\\Fpdi\\' => 
         array (
             0 => __DIR__ . '/..' . '/setasign/fpdi/src',
+        ),
+        'Symfony\\Polyfill\\Intl\\Normalizer\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer',
+        ),
+        'Symfony\\Polyfill\\Intl\\Idn\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-intl-idn',
         ),
         'Psr\\Log\\' => 
         array (
@@ -58,6 +77,10 @@ class ComposerStaticInit5465c58bbcf8277b7d4ecd1e0c4ad39e
         array (
             0 => __DIR__ . '/..' . '/mpdf/mpdf/src',
         ),
+        'Iodev\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/io-developer/php-whois/src/Iodev',
+        ),
         'DeepCopy\\' => 
         array (
             0 => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy',
@@ -66,6 +89,7 @@ class ComposerStaticInit5465c58bbcf8277b7d4ecd1e0c4ad39e
 
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'Normalizer' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/Resources/stubs/Normalizer.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

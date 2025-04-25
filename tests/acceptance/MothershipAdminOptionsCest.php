@@ -55,6 +55,18 @@ class MothershipAdminOptionsCest
         $I->seeElement("label[for='jform_company_zip']");
         $I->seeElement("#jform_company_phone");
         $I->seeElement("label[for='jform_company_phone']");
+        $I->seeElement("#jform_company_default_rate");
+        $I->seeElement("label[for='jform_company_default_rate']");
+
+        $I->see("Company Name *", "label[for='jform_company_name']");
+        $I->see("Primary Email *", "label[for='jform_company_email']");
+        $I->see("Address 1 *", "label[for='jform_company_address_1']");
+        $I->see("Address 2", "label[for='jform_company_address_2']");
+        $I->see("City *", "label[for='jform_company_city']");
+        $I->see("State *", "label[for='jform_company_state']");
+        $I->see("Zip *", "label[for='jform_company_zip']");
+        $I->see("Primary Phone *", "label[for='jform_company_phone']");
+        $I->see("Default Rate *", "label[for='jform_company_default_rate']");
 
         $I->click("Save", "#toolbar-apply");
 
@@ -68,6 +80,7 @@ class MothershipAdminOptionsCest
         $I->seeElement("#jform_company_state.form-control-danger");
         $I->seeElement("#jform_company_zip.form-control-danger");
         $I->seeElement("#jform_company_phone.form-control-danger");
+        $I->seeElement("#jform_company_default_rate.form-control-danger");
 
         $I->fillField("#jform_company_name", "Trevor Bice Webdesign");
         $I->fillField("#jform_company_email", "trevorbicewebdesign@gmail.com");
@@ -77,9 +90,11 @@ class MothershipAdminOptionsCest
         $I->selectOption("#jform_company_state", "CA");
         $I->fillField("#jform_company_zip", "95524");
         $I->fillField("#jform_company_phone", "(707) 880-0156");
+        $I->fillField("#jform_company_default_rate", "70.00");
 
         $I->click("Save", "#toolbar-apply");
 
         $I->waitForText("Configuration saved.", 10);
+
     }
 }

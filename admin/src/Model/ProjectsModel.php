@@ -86,6 +86,7 @@ class ProjectsModel extends ListModel
             $db->quoteName('p.checked_out'),
             $db->quoteName('c.name', 'client_name'),
             $db->quoteName('a.name', 'account_name'),
+            $db->quoteName('p.metadata'),
             ]
             )
         );
@@ -109,7 +110,7 @@ class ProjectsModel extends ListModel
 
         // Add the ordering clause.
         $query->order(
-            $db->quoteName($db->escape($this->getState('list.ordering', 'a.name'))) . ' ' . $db->escape($this->getState('list.direction', 'ASC'))
+            $db->quoteName($db->escape($this->getState('list.ordering', 'p.name'))) . ' ' . $db->escape($this->getState('list.direction', 'ASC'))
         );
 
         return $query;

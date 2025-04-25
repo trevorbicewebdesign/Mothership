@@ -150,6 +150,11 @@ class HtmlView extends BaseHtmlView
             }
         );
 
+        if(!$isNew)
+        {
+            ToolbarHelper::custom('project.mothershipScan', 'refresh', '', 'COM_MOTHERSHIP_PROJECT_SCAN_UPDATE', false);
+        }
+
         if (empty($this->item->id)) {
             $toolbar->cancel('project.cancel', 'JTOOLBAR_CANCEL');
         } else {
