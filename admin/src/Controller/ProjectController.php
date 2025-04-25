@@ -56,8 +56,7 @@ class ProjectController extends FormController
             // Perform the scan (assuming this method exists in your model)
             $scanResults = ProjectHelper::scanWebsiteProject($primary_url);
 
-            LogHelper::logProjectScanned($project->id, $project->client_id, $project->accout_id);
-
+            LogHelper::logProjectScanned($project->id, $project->client_id, $project->account_id);
 
             if (ProjectHelper::detectJoomla($scanResults['data']['headers'], $scanResults['data']['html'])) {
                 $project->metadata['cms_type'] = 'joomla';
@@ -67,26 +66,22 @@ class ProjectController extends FormController
                 $project->metadata['cms_type'] = 'unknown';
             }
 
-            if ($scanResults['response_code'] == 'HTTP/1.1 200 OK') {
+            if (strpos($scanResults['data']['response_code'], '200 OK') !== false) {
                 $project->status = 'active';
                 $project->metadata['status'] = 'online';
             } else {
                 $project->status = 'inactive';
             }
 
-            print_r($project);
-            die();
-
-            if (!$model->save($project)) {
-                $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_PROJECT_SCAN_UPDATE_FAILED', "<strong>{$project->name}</strong>"), 'message');
-                $app->enqueueMessage($model->getError(), 'error');
-                $this->setRedirect(Route::_("index.php?option=com_mothership&view=project&layout=edit&id={$project->id}", false));
-                return false;
-            }
-
-
         } catch (\Exception $e) {
             echo json_encode(['error' => true, 'message' => $e->getMessage()]);
+        }
+
+        if (!$model->save($project)) {
+            $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_PROJECT_SCAN_UPDATE_FAILED', "<strong>{$project->name}</strong>"), 'message');
+            $app->enqueueMessage($model->getError(), 'error');
+            $this->setRedirect(Route::_("index.php?option=com_mothership&view=project&layout=edit&id={$project->id}", false));
+            return false;
         }
 
         $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_PROJECT_SCAN_SUCCESS', "<strong>{$project->name}</strong>"), 'message');
