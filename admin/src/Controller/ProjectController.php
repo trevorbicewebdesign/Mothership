@@ -124,9 +124,12 @@ class ProjectController extends FormController
 
     public function cancel($key = null)
     {
+        $model = $this->getModel('Project');
+        $id    = $this->input->getInt('id');
+        $model->cancelEdit($id);
+
         $defaultRedirect = Route::_('index.php?option=com_mothership&view=projects', false);
         $redirect = MothershipHelper::getReturnRedirect($defaultRedirect);
-
         $this->setRedirect($redirect);
 
         return true;
