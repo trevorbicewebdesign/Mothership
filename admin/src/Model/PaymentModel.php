@@ -184,6 +184,9 @@ class PaymentModel extends AdminModel
             $this->setError($error);
             return false;
         }
+
+        // Set the new record ID into the model state
+        $this->setState($this->getName() . '.id', $table->id);
     
         return true;
     }
