@@ -150,6 +150,9 @@ class HtmlView extends BaseHtmlView
             }
         );
 
+        // Add custom toolbar button for WHOIS scan
+        ToolbarHelper::custom('project.mothershipScan', 'refresh', '', 'COM_MOTHERSHIP_PROJECT_SCAN_UPDATE', false);
+
         if (empty($this->item->id)) {
             $toolbar->cancel('project.cancel', 'JTOOLBAR_CANCEL');
         } else {
