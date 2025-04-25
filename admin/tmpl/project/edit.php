@@ -41,6 +41,8 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                 <div>
                     <fieldset class="adminform">
                     <?php echo $this->form->renderField('client_id'); ?>
+                    <?php echo $this->form->renderField('account_id'); ?>
+                    <?php echo $this->form->renderField('type'); ?>
                     <?php echo $this->form->renderField('name'); ?>
                     <?php echo $this->form->renderField('rate'); ?>
                    
