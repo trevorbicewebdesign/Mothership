@@ -55,26 +55,25 @@ class ProjectController extends FormController
         try {
             // Perform the scan (assuming this method exists in your model)
             $scanResults = ProjectHelper::scanWebsiteProject($primary_url);
-
-            LogHelper::logProjectScanned($project->id, $project->client_id, $project->account_id);
-
-            if (ProjectHelper::detectJoomla($scanResults['data']['headers'], $scanResults['data']['html'])) {
-                $project->metadata['cms_type'] = 'joomla';
-            } elseif (ProjectHelper::detectWordPress($scanResults['data']['headers'], $scanResults['data']['html'])) {
-                $project->metadata['cms_type'] = 'wordpress';
-            } else {
-                $project->metadata['cms_type'] = 'unknown';
-            }
-
-            if (strpos($scanResults['data']['response_code'], '200 OK') !== false) {
-                $project->status = 'active';
-                $project->metadata['status'] = 'online';
-            } else {
-                $project->status = 'inactive';
-            }
-
         } catch (\Exception $e) {
             echo json_encode(['error' => true, 'message' => $e->getMessage()]);
+        }
+
+        LogHelper::logProjectScanned($project->id, $project->client_id, $project->account_id);
+
+        if (ProjectHelper::detectJoomla($scanResults['data']['headers'], $scanResults['data']['html'])) {
+            $project->metadata['cms_type'] = 'joomla';
+        } elseif (ProjectHelper::detectWordPress($scanResults['data']['headers'], $scanResults['data']['html'])) {
+            $project->metadata['cms_type'] = 'wordpress';
+        } else {
+            $project->metadata['cms_type'] = 'None';
+        }
+
+        if (strpos($scanResults['data']['response_code'], '200 OK') !== false) {
+            $project->status = 'active';
+            $project->metadata['status'] = 'online';
+        } else {
+            $project->status = 'inactive';
         }
 
         if (!$model->save($project)) {
@@ -92,30 +91,16 @@ class ProjectController extends FormController
 
     public function save($key = null, $urlVar = null)
     {
-        // Get the Joomla application and input
-        $app = Factory::getApplication();
+        $app   = Factory::getApplication();
         $input = $app->input;
-
-        // Get the submitted form data
-        $data = $input->get('jform', [], 'array');
-
-        // Get the model
+        $data  = $input->get('jform', [], 'array');
         $model = $this->getModel('Project');
 
         if (!$model->save($data)) {
             // Error occurred, redirect back to form with error messages
             $app->enqueueMessage(Text::_('COM_MOTHERSHIP_PROJECT_SAVE_FAILED'), 'error');
             $app->enqueueMessage($model->getError(), 'error');
-
-            // Determine which task was requested to redirect back to the appropriate edit page
-            $task = $input->getCmd('task');
-            if ($task === 'apply') {
-                $redirectUrl = Route::_('index.php?option=com_mothership&view=project&layout=edit&id=' . $data['id'], false);
-            } else {
-                $redirectUrl = Route::_('index.php?option=com_mothership&view=project&layout=edit', false);
-            }
-
-            $this->setRedirect($redirectUrl);
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=project&layout=edit', false));
             return false;
         }
 
@@ -124,11 +109,10 @@ class ProjectController extends FormController
 
         // Determine which task was requested
         $task = $input->getCmd('task');
-
         // If "Apply" (i.e., project.apply) is clicked, remain on the edit page.
         if ($task === 'apply') {
-
-            $redirectUrl = Route::_('index.php?option=com_mothership&view=project&layout=edit&id=' . $data['id'], false);
+            $id = !empty($data['id']) ? $data['id'] : $model->getState($model->getName() . '.id');
+            $redirectUrl = Route::_("index.php?option=com_mothership&view=project&layout=edit&id={$id}", false);
         } else {
             // If "Save" (i.e., project.save) is clicked, return to the projects list.
             $redirectUrl = Route::_('index.php?option=com_mothership&view=projects', false);
