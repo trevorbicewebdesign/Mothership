@@ -233,4 +233,37 @@ class LogHelper extends ContentHelper
         }
     }
 
+    public static function logDomainScanned($domain_id, $client_id, $account_id): void
+    {
+        $user = Factory::getUser();
+        $userId = $user->id;
+        $username = $user->name ?: $user->username;
+
+        self::log([
+            'client_id' => $client_id,
+            'account_id' => $account_id,
+            'object_type' => 'domain',
+            'object_id' => $domain_id,
+            'action' => 'scanned',
+            'meta' => [],
+            'user_id' => $userId,
+        ]);
+    }
+
+    public static function logProjectScanned($project_id, $client_id, $account_id): void
+    {
+        $user = Factory::getUser();
+        $userId = $user->id;
+        $username = $user->name ?: $user->username;
+
+        self::log([
+            'client_id' => $client_id,
+            'account_id' => $account_id,
+            'object_type' => 'project',
+            'object_id' => $project_id,
+            'action' => 'scanned',
+            'meta' => [],
+            'user_id' => $userId,
+        ]);
+
 }
