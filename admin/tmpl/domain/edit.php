@@ -44,6 +44,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                         <?php echo $this->form->renderField('account_id'); ?>
                         <?php echo $this->form->renderField('name'); ?>
                         <?php echo $this->form->renderField('status'); ?>
+                        <?php echo $this->form->renderField('epp_status'); ?>
                         <?php echo $this->form->renderField('registrar'); ?>
                         <?php echo $this->form->renderField('dns_provider'); ?>
                         <?php echo $this->form->renderField('notes'); ?>
