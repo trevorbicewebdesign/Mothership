@@ -46,19 +46,20 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                         <?php echo $this->form->renderField('status'); ?>
                         <?php echo $this->form->renderField('registrar'); ?>
                         <?php echo $this->form->renderField('dns_provider'); ?>
-                        <?php echo $this->form->renderField('purchase_date'); ?>
-                        <?php echo $this->form->renderField('expiration_date'); ?>
-                        <?php echo $this->form->renderField('auto_renew'); ?>
                         <?php echo $this->form->renderField('notes'); ?>
                     </fieldset>
                 </div>
             </div>
-            <div class="col-lg-3">                
+            <div class="col-lg-3">  
+                <?php echo $this->form->renderField('purchase_date'); // The date the domain was purchased ?>            
+                <?php echo $this->form->renderField('created'); // The date the record was created ?>
+                <?php echo $this->form->renderField('expiration_date'); // The expiration date of the domain ?>
+                <?php echo $this->form->renderField('updated'); // The date the domain was last scanned ?>
                 <?php echo $this->form->renderFIeld("ns1"); ?>
                 <?php echo $this->form->renderFIeld("ns2"); ?>
                 <?php echo $this->form->renderFIeld("ns3"); ?>
                 <?php echo $this->form->renderFIeld("ns4"); ?>
-                <?php echo $this->form->renderField('created'); ?>
+                
             </div>
         </div>
 
