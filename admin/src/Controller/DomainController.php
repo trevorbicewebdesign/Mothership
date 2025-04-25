@@ -8,6 +8,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use TrevorBice\Component\Mothership\Administrator\Helper\MothershipHelper;
 use TrevorBice\Component\Mothership\Administrator\Helper\DomainHelper;
+use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper;
 
 \defined('_JEXEC') or die;
 
@@ -33,6 +34,17 @@ class DomainController extends FormController
         $domain = $model->getItem($input->getInt('id'));
         $domainName = $domain->name;
 
+        // Check last_scan value and compare with current time
+        $lastScan = strtotime($domain->last_scan);
+        $currentTime = time();
+        $timeDifference = $currentTime - $lastScan;
+        // If the current scan was less than 1 hour ago, return an error message about the scan being too recent
+        if ($timeDifference < 3600) {
+            $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_DOMAIN_WHOIS_SCAN_TOO_RECENT', "<strong>{$domain->name}</strong>"), 'error');
+            $this->setRedirect(Route::_("index.php?option=com_mothership&view=domain&layout=edit&id={$domain->id}", false));
+            return false;
+        }
+
         try {
             $domainInfo = DomainHelper::scanDomain($domainName);
             
@@ -46,30 +58,32 @@ class DomainController extends FormController
         $domain->registrar = $domainInfo['registrar'] ?? null;
         $domain->reseller = $domainInfo['reseller'] ?? null;
 
-        $domain->purchase_date = isset($domainInfo['creationDate']) ? date('Y-m-d H:i:s', $domainInfo['creationDate']) : null;
-        $domain->created = isset($domainInfo['creationDate']) ? date('Y-m-d H:i:s', $domainInfo['creationDate']) : null;
-        $domain->modified = isset($domainInfo['updatedDate']) ? date('Y-m-d H:i:s', $domainInfo['updatedDate']) : null;
-        $domain->expiration_date = isset($domainInfo['expirationDate']) ? date('Y-m-d H:i:s', $domainInfo['expirationDate']) : null;
+        $domain->purchase_date = isset($domainInfo['creation_date']) ? date('Y-m-d H:i:s', $domainInfo['creation_date']) : null;
+        $domain->modified = isset($domainInfo['updated_date']) ? date('Y-m-d H:i:s', $domainInfo['updated_date']) : null;
+        $domain->expiration_date = isset($domainInfo['expiration_date']) ? date('Y-m-d H:i:s', $domainInfo['expiration_date']) : null;
 
-        $domain->status = $domainInfo['status'][0] ?? null;
+        $domain->epp_status = $domainInfo['status'][0] ?? null;
 
         $domain->ns1 = $domainInfo['name_servers'][0] ?? null;
         $domain->ns2 = $domainInfo['name_servers'][1] ?? null;
         $domain->ns3 = $domainInfo['name_servers'][2] ?? null;
         $domain->ns4 = $domainInfo['name_servers'][3] ?? null;
 
-        $domain->status = $domainInfo['status'] ?? null;
-        $domain->rawText = $domainInfo['rawText'] ?? null;
+        $domain->raw_text = $domainInfo['rawText'] ?? null;
 
         $domain->last_scan = date('Y-m-d H:i:s');
 
         $model = $this->getModel('Domain');
         if (!$model->save($domain)) {
-            $app->enqueueMessage(Text::_('Mothership WHOIS Scan Failed'), 'error');
+            $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_DOMAIN_WHOIS_SCAN_UPDATE_FAILED', "<strong>{$domain->name}</strong>"), 'message');
             $app->enqueueMessage($model->getError(), 'error');
             $this->setRedirect(Route::_("index.php?option=com_mothership&view=domain&layout=edit&id={$domain->id}", false));
             return false;
         }
+
+        LogHelper::logDomainScanned($domain->id, $domain->client_id, $domain->accout_id);
+
+
         $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_DOMAIN_WHOIS_SCANNED_SUCCESSFULLY', "<strong>{$domain->name}</strong>"), 'message');
         $this->setRedirect(Route::_("index.php?option=com_mothership&view=domain&layout=edit&id={$domain->id}", false));
 
