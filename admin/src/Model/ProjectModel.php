@@ -165,7 +165,6 @@ class ProjectModel extends AdminModel
             $data->metadata = json_encode($data->metadata);
         }
 
-
         if (!$table->bind($data)) {
             $error = $table->getError();
             Log::add('Bind failed: ' . $error, Log::ERROR, 'com_mothership');
