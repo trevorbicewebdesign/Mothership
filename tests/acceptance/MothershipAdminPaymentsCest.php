@@ -137,9 +137,66 @@ class MothershipAdminPaymentsCest
     /**
      * @group backend
      * @group payment
+     * @group account
+     */
+    public function MothershipCancelInvoiceEdit(AcceptanceTester $I)
+    {
+        $paymentData = $I->createMothershipPayment([
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'amount' => 103.2,
+            'fee_amount' => 3.2,
+            'fee_passed_on' => FALSE,
+            'payment_method' => 'paypal',
+            'transaction_id' => '123456',
+            'status' => 2,
+            'processed_date' => date('Y-m-d H:i:s'),
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s'),
+        ]);
+
+        $invoicePaymentData = $I->createMothershipInvoicePayment([
+            'invoice_id' => $this->invoiceData['id'],
+            'payment_id' => $paymentData['id'],
+            'applied_amount' => 103.20,
+        ]);
+
+        $I->amOnPage( self::PAYMENTS_VIEW_ALL_URL);
+        $I->waitForText("Mothership: Payments", 20, "h1.page-title");
+
+        $I->click("Invoice #{$this->invoiceData['id']}");
+        $I->waitForText("Mothership: Edit Invoice", 20, "h1.page-title");
+        $I->click("Close", "#toolbar");
+        $I->waitForText("Mothership: Payments", 20, "h1.page-title");
+        $I->seeCurrentUrlEquals(self::PAYMENTS_VIEW_ALL_URL);
+    }
+
+    /**
+     * @group backend
+     * @group payment
      */
     public function MothershipViewPayments(AcceptanceTester $I)
     {
+        $paymentData = $I->createMothershipPayment([
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'amount' => 103.2,
+            'fee_amount' => 3.2,
+            'fee_passed_on' => FALSE,
+            'payment_method' => 'paypal',
+            'transaction_id' => '123456',
+            'status' => 2,
+            'processed_date' => date('Y-m-d H:i:s'),
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s'),
+        ]);
+
+        $invoicePaymentData = $I->createMothershipInvoicePayment([
+            'invoice_id' => $this->invoiceData['id'],
+            'payment_id' => $paymentData['id'],
+            'applied_amount' => 103.20,
+        ]);
+
         $I->amOnPage(self::PAYMENTS_VIEW_ALL_URL);
         $I->waitForText("Mothership: Payments", 20, "h1.page-title");
 
@@ -158,23 +215,23 @@ class MothershipAdminPaymentsCest
         $I->see("Payment Date", "#j-main-container table thead tr th:nth-child(3)");
         $I->see("Amount", "#j-main-container table thead tr th:nth-child(4)");
         $I->see("Payment Method", "#j-main-container table thead tr th:nth-child(5)");
-        $I->see("Status", "#j-main-container table thead tr th:nth-child(6)");
-        $I->see("Client", "#j-main-container table thead tr th:nth-child(7)");
-        $I->see("Account", "#j-main-container table thead tr th:nth-child(8)");
-        $I->see("Created", "#j-main-container table thead tr th:nth-child(9)");
+        $I->see("Client", "#j-main-container table thead tr th:nth-child(6)");
+        $I->see("Account", "#j-main-container table thead tr th:nth-child(7)");
+        $I->see("Created", "#j-main-container table thead tr th:nth-child(8)");
+        $I->see("Status", "#j-main-container table thead tr th:nth-child(9)");
         $I->see("Allocations", "#j-main-container table thead tr th:nth-child(10)");
 
-        $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 1);
+        $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 2);
 
         $I->see("{$this->paymentData['id']}", "#j-main-container table tbody tr td:nth-child(2)");
         //$I->see("{$this->paymentData['payment_date']}", "#j-main-container table tbody tr td:nth-child(3)");
         $I->see("{$this->paymentData['amount']}", "#j-main-container table tbody tr td:nth-child(4)");
         $I->see("{$this->paymentData['payment_method']}", "#j-main-container table tbody tr td:nth-child(5)");
-        $I->see("{$this->paymentData['status']}", "#j-main-container table tbody tr td:nth-child(6)");
-        $I->see("{$this->clientData['name']}", "#j-main-container table tbody tr td:nth-child(7)");
-        $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr td:nth-child(8)");
+        $I->see("{$this->clientData['name']}", "#j-main-container table tbody tr td:nth-child(6)");
+        $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr td:nth-child(7)");
+        $I->see("Completed", "#j-main-container table tbody tr td:nth-child(9)");    
 
-        $I->see("1 - 1 / 1 items", "#j-main-container .pagination__wrapper");
+        $I->see("1 - 2 / 2 items", "#j-main-container .pagination__wrapper");
     }
 
     /**
@@ -204,6 +261,9 @@ class MothershipAdminPaymentsCest
         $I->click("input[name=checkall-toggle]");
         $I->click("Actions");
         $I->see("Check-in", "joomla-toolbar-button#status-group-children-checkin");
+        $I->seeElement("joomla-toolbar-button#status-group-children-checkin", ['task' => "payments.checkIn"]);
+        $I->see("Edit", "joomla-toolbar-button#status-group-children-edit");
+        $I->seeElement("joomla-toolbar-button#status-group-children-edit", ['task' => "payment.edit"]);
         $I->see("Delete", "joomla-toolbar-button#status-group-children-delete");
         $I->seeElement("joomla-toolbar-button#status-group-children-delete", ['task' => "payments.delete"]);
 
@@ -362,12 +422,54 @@ class MothershipAdminPaymentsCest
 
         // We should still be on the same edit page, with the same ID
         $I->seeInCurrentUrl(sprintf(self::PAYMENT_EDIT_URL, ($this->paymentData['id'] + 1)));
-        $I->see("Payment saved successfully.", "#system-message-container .alert-message");
+        $I->waitForText("Payment saved successfully.", 5, "#system-message-container .alert-message");
 
         // Check that the invoice displays the same data that was entered before
         $I->seeOptionIsSelected("select#jform_client_id", "Test Client");
         $I->seeOptionIsSelected("select#jform_account_id", "Test Account");
     }
 
+        /**
+     * @group backend
+     * @group invoice
+     */
+    public function LockedPaymentCannotBeEdited(AcceptanceTester $I)
+    {
+        $paymentData = $I->createMothershipPayment([
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'amount' => 103.2,
+            'fee_amount' => 3.2,
+            'fee_passed_on' => FALSE,
+            'payment_method' => 'paypal',
+            'transaction_id' => '123456',
+            'status' => 1,
+            'processed_date' => date('Y-m-d H:i:s'),
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s'),
+        ]);
 
+        // Set the invoice to the locked state
+        $I->setPaymentLocked($paymentData['id']);
+        $I->amOnPage(sprintf(self::PAYMENT_EDIT_URL, $paymentData['id']));
+        $I->waitForText("Mothership: View Payment", 20, "h1.page-title");
+
+        $I->seeElement("#jform_client_id");
+        $I->assertEquals("true", $I->grabAttributeFrom("#jform_client_id", "disabled"));
+        $I->seeElement("#jform_account_id");
+        $I->assertEquals("true", $I->grabAttributeFrom("#jform_account_id", "disabled"));
+
+        $I->click("Unlock", "#toolbar");
+        $I->waitForText("Mothership: Edit Payment", 20, "h1.page-title");
+        $I->waitForText("Payment unlocked successfully.", 20, "#system-message-container .alert-message");
+
+        $I->seeElement("#jform_client_id");
+        $I->assertEquals(NULL, $I->grabAttributeFrom("#jform_client_id", "disabled"));
+        $I->seeElement("#jform_account_id");
+        $I->assertEquals(NULL, $I->grabAttributeFrom("#jform_account_id", "disabled"));
+
+        $I->click("Lock", "#toolbar");
+        $I->waitForText("Mothership: View Payment", 20, "h1.page-title");
+        $I->waitForText("Payment locked successfully.", 20, "#system-message-container .alert-message");
+    }
 }
