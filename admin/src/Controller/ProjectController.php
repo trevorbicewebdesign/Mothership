@@ -7,6 +7,8 @@ use Joomla\CMS\MVC\Controller\FormController;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use TrevorBice\Component\Mothership\Administrator\Helper\MothershipHelper;
+use TrevorBice\Component\Mothership\Administrator\Helper\ProjectHelper;
+use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper;
 
 \defined('_JEXEC') or die;
 
@@ -21,6 +23,67 @@ class ProjectController extends FormController
     public function display($cachable = false, $urlparams = [])
     {
         return parent::display();
+    }
+
+    public function mothershipScan()
+    {
+        $app = Factory::getApplication();
+        $input = $app->input;
+        $model = $this->getModel('Project');
+
+        $project = $model->getItem($input->getInt('id'));
+        $projectName = $project->name;
+
+        // Check last_scan value and compare with current time
+        $lastScan = strtotime($project->last_scan);
+        $currentTime = time();
+        $timeDifference = $currentTime - $lastScan;
+        // If the current scan was less than 1 hour ago, return an error message about the scan being too recent
+        if ($timeDifference < 3600) {
+            $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_PROJECT_SCAN_TOO_RECENT', "<strong>{$project->name}</strong>"), 'error');
+            $this->setRedirect(Route::_("index.php?option=com_mothership&view=project&layout=edit&id={$project->id}", false));
+            return false;
+        }
+
+        $project->metadata = json_decode($project->metadata, true);
+
+        $primary_url = $project->metadata['primary_url'] ?? null;
+
+        $parsedUrl = parse_url($primary_url);
+        $project->primary_domain = $parsedUrl['host'] ?? '';
+
+        try {
+            // Perform the scan (assuming this method exists in your model)
+            $scanResults = ProjectHelper::scanWebsiteProject($primary_url);
+
+            LogHelper::logProjectScanned($project->id, $project->client_id, $project->accout_id);
+
+
+            if(ProjectHelper::detectJoomla($scanResults['data']['headers'], $scanResults['data']['html']))
+            {
+                $project->metadata['cms_type'] = 'joomla';
+            } elseif (ProjectHelper::detectWordPress($scanResults['data']['headers'], $scanResults['data']['html'])) {
+                $project->metadata['cms_type'] = 'wordpress';
+            } else {
+                $project->metadata['cms_type'] = 'unknown';
+            }
+
+            if($scanResults['response_code'] == 'HTTP/1.1 200 OK') {
+                $project->status = 'active';
+                $project->metadata['status'] = 'active';
+            } else {
+                $project->status = 'inactive';
+            }
+
+            
+        } catch (\Exception $e) {
+            echo json_encode(['error' => true, 'message' => $e->getMessage()]);
+        }
+
+        $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_PROJECT_SCAN_SUCCESS', "<strong>{$project->name}</strong>"), 'message');
+
+        // Redirect back to the project edit page after scanning
+        $this->setRedirect(Route::_("index.php?option=com_mothership&view=project&layout=edit&id={$project->id}", false));
     }
 
     public function save($key = null, $urlVar = null)
