@@ -82,7 +82,13 @@ class DomainHelper extends ContentHelper
 
             $reseller = $extra['groups'][0]["Reseller"];
             $domain_status = $extra['groups'][0]["Domain Status"];
-            $domain_status = explode(" ", $domain_status);
+            if(is_string($domain_status)) {
+                $domain_status = explode(" ", $domain_status);
+            }
+
+            $domain_status = json_encode($domain_status);
+
+            $updated_date = $data['updatedDate'] ?: null;
 
             // Check the domain of the name servers
             foreach ($name_servers as $key => $value) {
@@ -98,17 +104,21 @@ class DomainHelper extends ContentHelper
                 ];
             }
 
+            LogHelper::logDomainScanned($domainName);
+
             return [
                 'domain' => $domain_name,
                 'creation_date' => $creation_date,
                 'expiration_date' => $expiration_date,
+                'updated_date' => $updated_date,
                 'registrar' => $registrar,
                 'reseller' => $reseller,
-                'status' => $domain_status,
+                'epp_status' => $domain_status,
                 'name_servers' => $name_servers,
                 'dns_provider' => $dns_provider,
                 'data' => $data,
                 'extra' => $extra,
+                'rawText' => json_encode($info)
             ];
         } catch (\Exception $e) {
             return [
@@ -117,6 +127,8 @@ class DomainHelper extends ContentHelper
             ];
         }
     }
+
+
    
     /**
      * Retrieves a domain record from the database based on the provided domain ID.
