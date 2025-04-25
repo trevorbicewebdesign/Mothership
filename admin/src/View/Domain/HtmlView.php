@@ -150,8 +150,10 @@ class HtmlView extends BaseHtmlView
             }
         );
 
-        // Add custom toolbar button for WHOIS scan
-        ToolbarHelper::custom('domain.whoisScan', 'refresh', '', 'COM_MOTHERSHIP_DOMAIN_WHOIS_SCAN_UPDATE', false);
+        if(!$isNew)
+        {
+            ToolbarHelper::custom('domain.whoisScan', 'refresh', '', 'COM_MOTHERSHIP_DOMAIN_WHOIS_SCAN_UPDATE', false);
+        }
 
         if (empty($this->item->id)) {
             $toolbar->cancel('domain.cancel', 'JTOOLBAR_CANCEL');
