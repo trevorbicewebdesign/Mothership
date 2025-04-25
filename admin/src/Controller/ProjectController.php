@@ -59,8 +59,7 @@ class ProjectController extends FormController
             LogHelper::logProjectScanned($project->id, $project->client_id, $project->accout_id);
 
 
-            if(ProjectHelper::detectJoomla($scanResults['data']['headers'], $scanResults['data']['html']))
-            {
+            if (ProjectHelper::detectJoomla($scanResults['data']['headers'], $scanResults['data']['html'])) {
                 $project->metadata['cms_type'] = 'joomla';
             } elseif (ProjectHelper::detectWordPress($scanResults['data']['headers'], $scanResults['data']['html'])) {
                 $project->metadata['cms_type'] = 'wordpress';
@@ -68,14 +67,24 @@ class ProjectController extends FormController
                 $project->metadata['cms_type'] = 'unknown';
             }
 
-            if($scanResults['response_code'] == 'HTTP/1.1 200 OK') {
+            if ($scanResults['response_code'] == 'HTTP/1.1 200 OK') {
                 $project->status = 'active';
-                $project->metadata['status'] = 'active';
+                $project->metadata['status'] = 'online';
             } else {
                 $project->status = 'inactive';
             }
 
-            
+            print_r($project);
+            die();
+
+            if (!$model->save($project)) {
+                $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_PROJECT_SCAN_UPDATE_FAILED', "<strong>{$project->name}</strong>"), 'message');
+                $app->enqueueMessage($model->getError(), 'error');
+                $this->setRedirect(Route::_("index.php?option=com_mothership&view=project&layout=edit&id={$project->id}", false));
+                return false;
+            }
+
+
         } catch (\Exception $e) {
             echo json_encode(['error' => true, 'message' => $e->getMessage()]);
         }
@@ -106,9 +115,9 @@ class ProjectController extends FormController
             // Determine which task was requested to redirect back to the appropriate edit page
             $task = $input->getCmd('task');
             if ($task === 'apply') {
-            $redirectUrl = Route::_('index.php?option=com_mothership&view=project&layout=edit&id=' . $data['id'], false);
+                $redirectUrl = Route::_('index.php?option=com_mothership&view=project&layout=edit&id=' . $data['id'], false);
             } else {
-            $redirectUrl = Route::_('index.php?option=com_mothership&view=project&layout=edit', false);
+                $redirectUrl = Route::_('index.php?option=com_mothership&view=project&layout=edit', false);
             }
 
             $this->setRedirect($redirectUrl);
