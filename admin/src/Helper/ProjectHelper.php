@@ -88,8 +88,8 @@ class ProjectHelper
             curl_setopt($ch, CURLOPT_HEADER, true);
             curl_setopt($ch, CURLOPT_NOBODY, true);
             curl_setopt($ch, CURLOPT_COOKIEFILE, '');
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Ignore SSL certificate verification
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false); // Ignore SSL host verification
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
             curl_exec($ch);
             $cookies = curl_getinfo($ch, CURLINFO_COOKIELIST);
             curl_close($ch);
@@ -101,6 +101,7 @@ class ProjectHelper
             'status' => 'success',
             'message' => 'Scan completed successfully.',
             'data' => [
+                'response_code' => $headers[0] ?? null,
                 'host' => $host,
                 'path' => $path,
                 'headers' => $headers,
