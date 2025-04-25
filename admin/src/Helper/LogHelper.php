@@ -265,5 +265,5 @@ class LogHelper extends ContentHelper
             'meta' => [],
             'user_id' => $userId,
         ]);
-
+    }
 }
