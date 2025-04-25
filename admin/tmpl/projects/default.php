@@ -93,7 +93,16 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                         <?php echo HTMLHelper::_('date', $item->created, Text::_('DATE_FORMAT_LC4')); ?>
                                     </td>
                                     <td>
-                                        <?php echo strtoupper($item->type); ?>
+                                        <?php 
+                                        echo strtoupper($item->type); 
+                                        $metadata = json_decode($item->metadata, true);
+                                        if($item->type=="website"){
+                                            echo "<br/><small>";
+                                            echo $metadata['primary_url']."<br/>";
+                                            echo "".$metadata['cms_type']." ";
+                                            echo $metadata['cms_version']."</small><br/>";
+                                        }
+                                        ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
