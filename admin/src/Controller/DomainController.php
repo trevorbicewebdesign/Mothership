@@ -81,7 +81,7 @@ class DomainController extends FormController
             return false;
         }
 
-        LogHelper::logDomainScanned($domain->id, $domain->client_id, $domain->accout_id);
+        LogHelper::logDomainScanned($domain->id, $domain->client_id, $domain->account_id);
 
 
         $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_DOMAIN_WHOIS_SCANNED_SUCCESSFULLY', "<strong>{$domain->name}</strong>"), 'message');
