@@ -82,27 +82,6 @@ class DomainModel extends AdminModel
         return $this->getCurrentUser()->authorise('core.edit', 'com_mothership');
     }
 
-    public function canDeleteDomain(int $clientId): bool
-    {
-        $db = Factory::getDbo();
-
-        $hasInvoices = $db->setQuery(
-            $db->getQuery(true)
-                ->select('COUNT(*)')
-                ->from('#__mothership_invoices')
-                ->where('domain_id = ' . $clientId)
-        )->loadResult();
-
-        if ($hasInvoices) {
-            Factory::getApplication()->enqueueMessage(
-                Text::sprintf('COM_MOTHERSHIP_ERROR_DOMAIN_HAS_DEPENDENCIES', count($hasInvoices)),
-                'error'
-            );
-            return false;
-        }
-
-        return true;
-    }
 
     /**
      * Method to get the record form.
