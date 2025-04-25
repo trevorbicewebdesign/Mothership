@@ -61,20 +61,24 @@ class ProjectController extends FormController
 
         LogHelper::logProjectScanned($project->id, $project->client_id, $project->account_id);
 
-        if (ProjectHelper::detectJoomla($scanResults['data']['headers'], $scanResults['data']['html'])) {
-            $project->metadata['cms_type'] = 'joomla';
-        } elseif (ProjectHelper::detectWordPress($scanResults['data']['headers'], $scanResults['data']['html'])) {
-            $project->metadata['cms_type'] = 'wordpress';
-        } else {
-            $project->metadata['cms_type'] = 'None';
-        }
-
         if (strpos($scanResults['data']['response_code'], '200 OK') !== false) {
             $project->status = 'active';
             $project->metadata['status'] = 'online';
         } else {
             $project->status = 'inactive';
+            $project->metadata['status'] = 'offline';
         }
+
+        if(!empty($scanResults['data']['headers']) && !empty($scanResults['data']['html'])) {
+            if (ProjectHelper::detectJoomla($scanResults['data']['headers'], $scanResults['data']['html'])) {
+                $project->metadata['cms_type'] = 'joomla';
+            } elseif (ProjectHelper::detectWordPress($scanResults['data']['headers'], $scanResults['data']['html'])) {
+                $project->metadata['cms_type'] = 'wordpress';
+            } else {
+                $project->metadata['cms_type'] = 'None';
+            }
+        }
+
 
         if (!$model->save($project)) {
             $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_PROJECT_SCAN_UPDATE_FAILED', "<strong>{$project->name}</strong>"), 'message');
