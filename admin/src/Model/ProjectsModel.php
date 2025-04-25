@@ -86,6 +86,7 @@ class ProjectsModel extends ListModel
             $db->quoteName('p.checked_out'),
             $db->quoteName('c.name', 'client_name'),
             $db->quoteName('a.name', 'account_name'),
+            $db->quoteName('p.metadata'),
             ]
             )
         );
