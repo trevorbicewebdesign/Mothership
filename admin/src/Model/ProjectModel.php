@@ -161,8 +161,8 @@ class ProjectModel extends AdminModel
         $table = $this->getTable();
 
         // Convert metadata array to JSON
-        if (isset($data['metadata']) && is_array($data['metadata'])) {
-            $data['metadata'] = json_encode($data['metadata']);
+        if (isset($data->metadata) && is_array($data->metadata)) {
+            $data->metadata = json_encode($data->metadata);
         }
 
         if (!$table->bind($data)) {
