@@ -165,6 +165,7 @@ class ProjectModel extends AdminModel
             $data->metadata = json_encode($data->metadata);
         }
 
+
         if (!$table->bind($data)) {
             $error = $table->getError();
             Log::add('Bind failed: ' . $error, Log::ERROR, 'com_mothership');
@@ -189,6 +190,9 @@ class ProjectModel extends AdminModel
             $this->setError($error);
             return false;
         }
+
+        // Set the new record ID into the model state
+        $this->setState($this->getName() . '.id', $table->id);
 
         return true;
     }
