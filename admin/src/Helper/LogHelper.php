@@ -233,13 +233,13 @@ class LogHelper extends ContentHelper
         }
     }
 
-    public static function logDomainScanned($domain_id, $client_id, $account_id): void
+    public static function logDomainScanned($domain_id, $client_id, $account_id=NULL): void
     {
         $user = Factory::getUser();
         $userId = $user->id;
         $username = $user->name ?: $user->username;
 
-        self::log([
+        $logArray = [
             'client_id' => $client_id,
             'account_id' => $account_id,
             'object_type' => 'domain',
@@ -247,7 +247,9 @@ class LogHelper extends ContentHelper
             'action' => 'scanned',
             'meta' => [],
             'user_id' => $userId,
-        ]);
+        ];
+
+        self::log($logArray);
     }
 
     public static function logProjectScanned($project_id, $client_id, $account_id): void
