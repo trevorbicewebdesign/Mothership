@@ -53,12 +53,7 @@ class ProjectHelper
 
         // Attempt to retrieve headers
         try {
-            $contextOptions = [
-                "ssl" => [
-                "verify_peer" => false,
-                "verify_peer_name" => false,
-                ],
-            ];
+            $contextOptions = [];
             $context = stream_context_create($contextOptions);
     
             // Attempt to retrieve headers with disabled SSL checks
@@ -69,12 +64,7 @@ class ProjectHelper
 
         // Attempt to retrieve HTML content
         try {
-            $contextOptions = [
-            "ssl" => [
-                "verify_peer" => false,
-                "verify_peer_name" => false,
-            ],
-            ];
+            $contextOptions = [];
             $context = stream_context_create($contextOptions);
             $html = file_get_contents($url, false, $context);
         } catch (\Exception $e) {
@@ -88,8 +78,6 @@ class ProjectHelper
             curl_setopt($ch, CURLOPT_HEADER, true);
             curl_setopt($ch, CURLOPT_NOBODY, true);
             curl_setopt($ch, CURLOPT_COOKIEFILE, '');
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
             curl_exec($ch);
             $cookies = curl_getinfo($ch, CURLINFO_COOKIELIST);
             curl_close($ch);
