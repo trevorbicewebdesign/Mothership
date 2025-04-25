@@ -104,8 +104,6 @@ class DomainHelper extends ContentHelper
                 ];
             }
 
-            LogHelper::logDomainScanned($domainName);
-
             return [
                 'domain' => $domain_name,
                 'creation_date' => $creation_date,
