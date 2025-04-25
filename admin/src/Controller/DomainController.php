@@ -120,8 +120,6 @@ class DomainController extends FormController
         return true;
     }
 
-
-
     public function cancel($key = null)
     {
         $model = $this->getModel('Domain');
@@ -134,7 +132,6 @@ class DomainController extends FormController
 
         return true;
     }
-
 
     public function delete()
     {
