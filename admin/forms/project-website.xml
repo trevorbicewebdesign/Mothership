@@ -2,6 +2,7 @@
     <fields name="metadata">
         <fieldset name="project_website" label="Website Information">
             <field name="primary_url" type="url" label="Primary URL" />
+            <field name="primary_domain" type="text" label="Primary Domain" />
             <field name="cms_type" type="list" label="CMS Type">
                 <option value="joomla">Joomla</option>
                 <option value="wordpress">WordPress</option>
