@@ -80,21 +80,31 @@ class DomainHelper extends ContentHelper
             $data = $info->getData() ?: null;
             $extra = $info->getExtra() ?: null;
 
-            $reseller = $extra['groups'][0]["Reseller"];
-            $domain_status = $extra['groups'][0]["Domain Status"];
-            if(is_string($domain_status)) {
-                $domain_status = explode(" ", $domain_status);
+            if( isset($extra['groups'][0]["Reseller"]) ) {
+                $reseller = $extra['groups'][0]["Reseller"];
+            } else {
+                $reseller = null;
             }
-
-            $domain_status = json_encode($domain_status);
+           
+            if( isset($extra['groups'][0]["Domain Status"]) ) {
+                $domain_status = $extra['groups'][0]["Domain Status"];
+                $domain_status = json_encode($domain_status);
+            } else {
+                $domain_status = json_encode(null);
+            }
 
             $updated_date = $data['updatedDate'] ?: null;
 
             // Check the domain of the name servers
-            foreach ($name_servers as $key => $value) {
-                // strip eric.ns.cloudflare.com down to just cloudflare 
-                $dns_provider = preg_replace('/^([^.]+)\.ns\./', '', $value);
+            if( is_array($name_servers) ) {                    
+                foreach ($name_servers as $key => $value) {
+                    // strip eric.ns.cloudflare.com down to just cloudflare 
+                    $dns_provider = preg_replace('/^([^.]+)\.ns\./', '', $value);
 
+                }
+            }
+            else {
+                $dns_provider = null;
             }
             
             if (!$info) {
