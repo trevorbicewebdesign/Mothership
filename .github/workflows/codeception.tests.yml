@@ -50,7 +50,7 @@ jobs:
 
       - name: Run Codeception Acceptance Tests
         run: |
-          docker compose exec joomla ~/.composer/vendor/bin/codecept run acceptance -d -f
+          docker compose exec --user root joomla /root/.composer/vendor/bin/codecept run acceptance -d -f
 
       - name: Teardown
         if: always()
