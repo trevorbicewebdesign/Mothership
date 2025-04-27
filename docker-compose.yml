@@ -15,7 +15,9 @@ services:
     depends_on:
       - db
     volumes:
-      - ./mothership:/var/www/html/tmp/mothership  # << Mount into tmp/mothership
+      - ./:/var/www/html/tmp/mothership
+      - ./tests:/var/www/html/tests
+
     restart: always
 
   db:
