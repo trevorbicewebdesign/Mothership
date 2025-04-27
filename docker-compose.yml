@@ -11,11 +11,14 @@ services:
       JOOMLA_DB_HOST: db
       JOOMLA_DB_USER: root
       JOOMLA_DB_PASSWORD: root
-      JOOMLA_DB_NAME: joomla
+      JOOMLA_DB_NAME: local
     depends_on:
       - db
+    volumes:
+      - ./mothership:/var/www/html/tmp/mothership  # << Mount into tmp/mothership
+    restart: always
 
-db:
+  db:
     image: mysql:8.0
     restart: always
     environment:
@@ -27,5 +30,7 @@ db:
       - "3306:3306"
     volumes:
       - ./tests/sql:/docker-entrypoint-initdb.d
+      - db_data:/var/lib/mysql
+
 volumes:
   db_data:
