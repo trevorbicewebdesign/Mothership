@@ -14,6 +14,15 @@ jobs:
       - name: Start Docker Services
         run: docker compose up -d --build
 
+      - name: Wait for Database to be ready
+        run: |
+          echo "Waiting for Database..."
+          until docker compose exec db mysqladmin ping -h"localhost" --silent; do
+            echo "Still waiting for Database..."
+            sleep 5
+          done
+          echo "Database is ready."
+
       - name: Install Joomla
         run: |
           docker compose exec joomla php /var/www/html/cli/joomla.php site:install \
@@ -25,20 +34,19 @@ jobs:
             --admin-pass admin123 \
             --admin-email admin@example.com \
             --site-name "Mothership Test Site"
-      
-      - name: Wait for Joomla to be ready
+
+      - name: Wait for Joomla Web to be ready
         run: |
-          echo "Waiting for Joomla..."
-          until curl --fail --silent --show-error http://localhost:8080 | grep -q "DOCTYPE"; do
-            echo "Still waiting for Joomla..."
+          echo "Waiting for Joomla Web..."
+          until curl --fail --silent --output /dev/null http://localhost:8080; do
+            echo "Still waiting for Joomla Web..."
             sleep 5
           done
-          echo "Joomla is ready."
-      
+          echo "Joomla Web is ready."
 
       - name: Install Mothership via CLI
         run: |
-          docker compose exec joomla php cli/joomla.php extension:install /var/www/html/tmp/mothership
+          docker compose exec joomla php /var/www/html/cli/joomla.php extension:install /var/www/html/tmp/mothership
 
       - name: Run Codeception Acceptance Tests
         run: |
