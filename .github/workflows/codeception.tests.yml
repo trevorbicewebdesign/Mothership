@@ -44,12 +44,16 @@ jobs:
           done
           echo "Joomla Web is ready."
 
+      - name: Copy Mothership Files into Container
+        run: |
+          docker cp . mothership-joomla-1:/var/www/html/tmp/mothership
+
       - name: Install Mothership via CLI
         run: |
-          docker compose exec joomla php /var/www/html/cli/joomla.php extension:install /var/www/html/tmp/mothership
+          docker compose exec joomla bash -c "php /var/www/html/cli/joomla.php extension:install /var/www/html/tmp/mothership"
 
       - name: Run Codeception Acceptance Tests
-        run: |
+        run: |  
           docker compose exec --user root joomla /root/.composer/vendor/bin/codecept run acceptance -d -f
 
       - name: Teardown
