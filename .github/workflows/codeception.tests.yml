@@ -29,10 +29,6 @@ jobs:
             sleep 5
           done
           echo "Joomla Database is ready."
-
-      - name: Copy default configuration.php
-        run: |
-          docker compose exec joomla sh -c "cp /var/www/html/installation/configuration.php-dist /var/www/html/configuration.php"
       
       - name: Install Joomla
         run: |
