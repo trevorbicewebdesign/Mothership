@@ -24,11 +24,15 @@ jobs:
           echo "MySQL server is up."
       
           echo "Waiting for Joomla Database..."
-          until docker compose exec db mysql -uroot -proot -e "USE joomla"; do
+          until docker compose exec db mysql -uroot -proot -e "USE local"; do
             echo "Still waiting for joomla database to be ready..."
             sleep 5
           done
           echo "Joomla Database is ready."
+
+      - name: Copy default configuration.php
+        run: |
+          docker compose exec joomla sh -c "cp /var/www/html/installation/configuration.php-dist /var/www/html/configuration.php"
       
       - name: Install Joomla
         run: |
