@@ -23,10 +23,6 @@ RUN curl -sSL https://downloads.joomla.org/cms/joomla${JOOMLA_VERSION}/Joomla_${
 # Fix permissions
 RUN chown -R www-data:www-data /var/www/html
 
-# Copy your Mothership extension (optional here — usually installed later in tests)
-COPY ./tmp/mothership /var/www/html/tmp/mothership
-RUN chown -R www-data:www-data /var/www/html/tmp/mothership
-
 # Install Composer (global)
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
