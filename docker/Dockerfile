@@ -14,9 +14,8 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install mysqli zip gd
 
 # Download and unzip Joomla
-ARG JOOMLA_VERSION=5.0.3
 WORKDIR /var/www/html
-RUN curl -sSL https://downloads.joomla.org/cms/joomla-${JOOMLA_VERSION}/Joomla_${JOOMLA_VERSION}-Stable-Full_Package.zip -o joomla.zip \
+RUN curl -sSL https://downloads.joomla.org/cms/joomla5/5-3-0/Joomla_5-3-0-Stable-Full_Package.zip?format=zip -o joomla.zip \
     && unzip joomla.zip \
     && rm joomla.zip
 
