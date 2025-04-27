@@ -58,7 +58,12 @@ jobs:
       - name: Install Mothership via CLI
         run: |
           set -e
-          docker compose exec joomla php /var/www/html/cli/joomla.php extension:install /var/www/html/tmp/mothership
+          OUTPUT=$(docker compose exec joomla php /var/www/html/cli/joomla.php extension:install /var/www/html/tmp/mothership || true)
+          echo "$OUTPUT"
+          if echo "$OUTPUT" | grep -q -e "Install Joomla to run cli commands" -e "error" -e "Error"; then
+            echo "❌ Extension install failed!"
+            exit 1
+          fi
 
       - name: Run Codeception Acceptance Tests
         run: |  
