@@ -18,11 +18,18 @@ jobs:
         run: |
           echo "Waiting for Database..."
           until docker compose exec db mysqladmin ping -h"localhost" --silent; do
-            echo "Still waiting for Database..."
+            echo "Still waiting for MySQL server to start..."
             sleep 5
           done
-          echo "Database is ready."
-
+          echo "MySQL server is up."
+      
+          echo "Waiting for Joomla Database..."
+          until docker compose exec db mysql -uroot -proot -e "USE joomla"; do
+            echo "Still waiting for joomla database to be ready..."
+            sleep 5
+          done
+          echo "Joomla Database is ready."
+      
       - name: Install Joomla
         run: |
           docker compose exec joomla php /var/www/html/cli/joomla.php site:install \
