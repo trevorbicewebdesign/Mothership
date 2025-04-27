@@ -29,10 +29,14 @@ jobs:
             sleep 5
           done
           echo "Joomla Database is ready."
+
+      - name: Copy default configuration.php
+        run: |
+          docker compose exec joomla sh -c "cp /var/www/html/installation/configuration.php-dist /var/www/html/configuration.php"
       
       - name: Install Joomla
         run: |
-          docker compose exec joomla php /var/www/html/cli/joomla.php site:install \
+            docker compose exec joomla sh -c "php /var/www/html/cli/joomla.php site:install \
             --db-user root \
             --db-pass root \
             --db-name joomla \
@@ -40,7 +44,7 @@ jobs:
             --admin-user admin \
             --admin-pass admin123 \
             --admin-email admin@example.com \
-            --site-name "Mothership Test Site"
+            --site-name 'Mothership Test Site'"
 
       - name: Wait for Joomla Web to be ready
         run: |
@@ -51,17 +55,13 @@ jobs:
           done
           echo "Joomla Web is ready."
 
-      - name: Copy Mothership Files into Container
-        run: |
-          docker compose cp . joomla:/var/www/html/tmp/mothership
-
       - name: Install Mothership via CLI
         run: |
-            docker compose exec joomla bash -c 'chmod +x /var/www/html/cli/joomla.php && php /var/www/html/cli/joomla.php extension:install /var/www/html/tmp/mothership'
+            docker compose exec joomla sh -c 'chmod +x /var/www/html/cli/joomla.php && php /var/www/html/cli/joomla.php extension:install /var/www/html/tmp/mothership'
 
       - name: Run Codeception Acceptance Tests
         run: |  
-          docker compose exec --user root joomla /root/.composer/vendor/bin/codecept run acceptance -d -f
+            docker compose exec --user root joomla sh -c "/root/.composer/vendor/bin/codecept run acceptance -d -f"
 
       - name: Teardown
         if: always()
