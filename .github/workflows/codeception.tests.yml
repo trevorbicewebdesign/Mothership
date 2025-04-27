@@ -32,7 +32,7 @@ jobs:
 
       - name: Copy default configuration.php
         run: |
-          docker compose exec joomla sh -c "cp /var/www/html/tests/configuration.php-dist /var/www/html/configuration.php"
+          docker compose exec joomla sh -c "cp /var/www/html/tests/configuration.php /var/www/html/configuration.php"
 
       - name: Remove Installation Directory
         run: |
