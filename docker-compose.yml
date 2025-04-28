@@ -8,8 +8,11 @@ services:
     depends_on:
       - db
     volumes:
-      - ./:/var/www/html/tmp/mothership
       - ./tests:/var/www/html/tests
+      - ./site:/var/www/html/components/com_mothership
+      - ./admin:/var/www/html/administrator/components/com_mothership
+      - ./language:/var/www/html/language
+      - ./plugins:/var/www/html/plugins
 
     restart: always
 
