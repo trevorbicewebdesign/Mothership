@@ -26,7 +26,18 @@ RUN chown -R www-data:www-data /var/www/html
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Install Codeception (global)
-RUN composer require codeception/codeception
+RUN composer require \
+    codeception/codeception:^5.1 \
+    codeception/module-webdriver:* \
+    codeception/module-db:* \
+    codeception/module-asserts:^3.0 \
+    codeception/module-phpbrowser:^3.0 \
+    codeception/module-rest:^3.0 \
+    vlucas/phpdotenv:^5.3 \
+    league/factory-muffin:^3.0 \
+    league/factory-muffin-faker:^2.0 \
+    codeception/module-filesystem:^3.0 \
+    trevorbicewebdesign/codeception-mailpit:*
 
 # Expose Apache port
 EXPOSE 80
