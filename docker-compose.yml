@@ -11,6 +11,7 @@ services:
       - ./tests:/var/www/html/tests
       - ./site:/var/www/html/components/com_mothership
       - ./admin:/var/www/html/administrator/components/com_mothership
+      - ./mothership.xml:/var/www/html/administrator/components/com_mothership/mothership.xml
       - ./admin/language/en-GB/com_mothership.ini:/var/www/html/administrator/language/en-GB/com_mothership.ini
       - ./admin/language/en-GB/com_mothership.ini:/var/www/html/administrator/language/en-GB/com_mothership.sys.ini
       - ./site/language/en-GB/com_mothership.ini:/var/www/html/language/en-GB/com_mothership.ini
