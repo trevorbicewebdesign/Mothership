@@ -17,7 +17,7 @@ class JConfig {
 	public $user = 'root';
 	public $password = 'root';
 	public $db = 'local'; // Will be changed below for tests
-	public $dbprefix = '#__';
+	public $dbprefix = 'jos_';
 	public $dbencryption = 0;
 	public $dbsslverifyservercert = false;
 	public $dbsslkey = '';
