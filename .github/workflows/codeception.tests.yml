@@ -38,18 +38,6 @@ jobs:
         run: |
           docker compose exec joomla sh -c "rm -rf /var/www/html/installation"
       
-      - name: Install Joomla
-        run: |
-            docker compose exec joomla sh -c "php /var/www/html/cli/joomla.php site:install \
-            --db-user root \
-            --db-pass root \
-            --db-name joomla \
-            --db-host db \
-            --admin-user admin \
-            --admin-pass admin123 \
-            --admin-email admin@example.com \
-            --site-name 'Mothership Test Site'"
-
       - name: Wait for Joomla Web to be ready
         run: |
           echo "Waiting for Joomla Web..."
