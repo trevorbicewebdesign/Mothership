@@ -23,11 +23,7 @@
     <updateservers>
         <server type="extension" priority="1" name="Mothership Update Server">https://mothership.trevorbice.com/updates.xml</server>
     </updateservers>
-    <update>
-        <schemas>
-            <schemapath type="mysql">sql</schemapath>
-        </schemas>
-    </update>
+
     <files folder="site">
         <folder>src</folder>
     </files>
