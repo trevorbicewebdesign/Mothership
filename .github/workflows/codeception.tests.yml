@@ -7,64 +7,69 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    # 1) define a matrix over your four suites
+    strategy:
+      matrix:
+        suite: [acceptance, functional, api, integration]
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      # 2) spin up a fresh app+db for this suite
       - name: Start Docker Services
-        run: docker compose up -d --build
+        run: |
+          docker compose -p suite-${{ matrix.suite }} up -d --build
 
+      # 3) (optional) dump DB logs to debug startup
       - name: Dump MySQL logs
-        run: docker compose logs db
+        run: docker compose -p suite-${{ matrix.suite }} logs db
 
+      # 4) wait for MySQL to be healthy
       - name: Wait for Database to be ready
         run: |
-          echo "Waiting for Database..."
-          until docker compose exec db mysqladmin ping -h "localhost" --silent; do
-            echo "Still waiting for MySQL server to start..."
+          until docker compose -p suite-${{ matrix.suite }} exec db \
+                  mysqladmin ping -h "localhost" --silent; do
+            echo "Waiting for MySQL…"
             sleep 5
           done
-          echo "MySQL server is up."
-          
-          echo "Waiting for Joomla Database..."
-          until docker compose exec db mysql -uroot -proot -e "USE local"; do
-            echo "Still waiting for joomla database to be ready..."
-            sleep 5
-          done
-          echo "Joomla Database is ready."
 
+          until docker compose -p suite-${{ matrix.suite }} exec db \
+                  mysql -uroot -proot -e "USE local"; do
+            echo "Waiting for local database…"
+            sleep 5
+          done
+
+      # 5) prep Joomla
       - name: Copy default configuration.php
-        run: |
-          docker compose exec joomla \
-            sh -c "cp /var/www/html/tests/configuration.php /var/www/html/configuration.php"
+        run: docker compose -p suite-${{ matrix.suite }} exec joomla \
+               cp /var/www/html/tests/configuration.php /var/www/html/configuration.php
 
       - name: Remove Installation Directory
-        run: |
-          docker compose exec joomla \
-            sh -c "rm -rf /var/www/html/installation"
+        run: docker compose -p suite-${{ matrix.suite }} exec joomla \
+               rm -rf /var/www/html/installation
 
       - name: Wait for Joomla Web to be ready
         run: |
-          echo "Waiting for Joomla Web..."
           until curl --fail --silent --output /dev/null http://localhost:8080; do
-            echo "Still waiting for Joomla Web..."
+            echo "Waiting for Joomla Web…"
             sleep 5
           done
-          echo "Joomla Web is ready."
 
+      # 6) install Mothership into this container
       - name: Install Mothership via CLI
         run: |
-          docker exec joomla bash -lc "
-            chmod +x /var/www/html/cli/joomla.php && \
-            cd /var/www/html && \
-            php cli/joomla.php extension:install --path tmp/mothership
-          "
+          docker compose -p suite-${{ matrix.suite }} exec joomla \
+            bash -lc "chmod +x cli/joomla.php && \
+                      php cli/joomla.php extension:install --path tmp/mothership"
 
-      - name: Run Codeception Acceptance Tests
+      # 7) run *this* suite
+      - name: Run Codeception ${{ matrix.suite }} Tests
         run: |
-          docker compose exec --user root joomla \
-            sh -c "/root/.composer/vendor/bin/codecept run acceptance -d -f"
+          docker compose -p suite-${{ matrix.suite }} exec --user root joomla \
+            bash -lc "/root/.composer/vendor/bin/codecept run ${{ matrix.suite }} -d -f"
 
+      # 8) tear it down (always)
       - name: Teardown
         if: always()
-        run: docker compose down -v
+        run: docker compose -p suite-${{ matrix.suite }} down -v
