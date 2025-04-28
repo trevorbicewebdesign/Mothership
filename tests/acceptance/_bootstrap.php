@@ -16,3 +16,4 @@
  * `vendor/bin/codecept wp:cli EndToEnd user create alice alice@example.com --role=administrator` to create a new user.
  * `vendor/bin/codecept wp:cli EndToEnd db export tests/Support/Data/dump.sql` to update the dump file.
  */
+require __DIR__ . '/../vendor/autoload.php';
