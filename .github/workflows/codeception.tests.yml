@@ -13,7 +13,7 @@ jobs:
 
       - name: Rename .env.sample to .env
         run: |
-          mv .env.sample .env
+          mv ./tests/.env.sample ./tests/.env
 
       - name: Start Docker Services
         run: docker compose up -d --build
