@@ -1,3 +1,13 @@
+-- disable foreign keys so we can drop/recreate safely
+SET FOREIGN_KEY_CHECKS = 0;
+
+DROP TABLE IF EXISTS `#__mothership_domains`;
+DROP TABLE IF EXISTS `#__mothership_accounts`;
+DROP TABLE IF EXISTS `#__mothership_clients`;
+-- etc for all tables…
+
+SET FOREIGN_KEY_CHECKS = 1;
+
 -- Clients Table
 CREATE TABLE IF NOT EXISTS `#__mothership_clients` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
