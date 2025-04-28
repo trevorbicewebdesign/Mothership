@@ -36,8 +36,7 @@ RUN composer require --ignore-platform-reqs \
     vlucas/phpdotenv:^5.3 \
     league/factory-muffin:^3.0 \
     league/factory-muffin-faker:^2.0 \
-    codeception/module-filesystem:^3.0 \
-    trevorbicewebdesign/codeception-mailpit:*
+    codeception/module-filesystem:^3.0
 
 # Expose Apache port
 EXPOSE 80
