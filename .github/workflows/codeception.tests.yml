@@ -48,3 +48,19 @@ jobs:
             echo "Still waiting for Joomla Web..."
             sleep 5
           done
+          echo "Joomla Web is ready."
+
+      - name: Install Mothership via CLI
+        run: |
+          docker compose exec joomla sh -c '
+            chmod +x /var/www/html/cli/joomla.php && \
+            php /var/www/html/cli/joomla.php extension:install /var/www/html/tmp/mothership
+          '
+
+      - name: Run Codeception Acceptance Tests
+        run: |
+          docker compose exec --user root joomla sh -c "/root/.composer/vendor/bin/codecept run acceptance -d -f"
+
+      - name: Teardown
+        if: always()
+        run: docker compose down -v
