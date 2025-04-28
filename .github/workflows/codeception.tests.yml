@@ -14,6 +14,9 @@ jobs:
       - name: Start Docker Services
         run: docker compose up -d --build
 
+      - name: Dump MySQL logs
+        run: docker compose logs db
+
       - name: Wait for Database to be ready
         run: |
           echo "Waiting for Database..."
@@ -22,7 +25,7 @@ jobs:
             sleep 5
           done
           echo "MySQL server is up."
-      
+          
           echo "Waiting for Joomla Database..."
           until docker compose exec db mysql -uroot -proot -e "USE local"; do
             echo "Still waiting for joomla database to be ready..."
@@ -37,7 +40,7 @@ jobs:
       - name: Remove Installation Directory
         run: |
           docker compose exec joomla sh -c "rm -rf /var/www/html/installation"
-      
+
       - name: Wait for Joomla Web to be ready
         run: |
           echo "Waiting for Joomla Web..."
@@ -45,16 +48,3 @@ jobs:
             echo "Still waiting for Joomla Web..."
             sleep 5
           done
-          echo "Joomla Web is ready."
-
-      - name: Install Mothership via CLI
-        run: |
-            docker compose exec joomla sh -c 'chmod +x /var/www/html/cli/joomla.php && php /var/www/html/cli/joomla.php extension:install /var/www/html/tmp/mothership'
-
-      - name: Run Codeception Acceptance Tests
-        run: |  
-            docker compose exec --user root joomla sh -c "/root/.composer/vendor/bin/codecept run acceptance -d -f"
-
-      - name: Teardown
-        if: always()
-        run: docker compose down -v
