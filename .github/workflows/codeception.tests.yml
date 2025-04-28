@@ -50,10 +50,14 @@ jobs:
           done
           echo "Joomla Web is ready."
 
-      - name: Install Mothership via CLI
+      - name: Discover & Install Mothership via CLI
         run: |
-          docker compose exec joomla  sh -c "php /var/www/html/cli/joomla.php extension:discover -verbose"
-          docker compose exec joomla  sh -c "php /var/www/html/cli/joomla.php extension:discover:install -verbose"
+          docker compose exec joomla bash -lc "\
+            cd /var/www/html && \
+            export HTTP_HOST=localhost:8080 && \
+            php cli/joomla.php extension:discover --verbose && \
+            php cli/joomla.php extension:discover:install --verbose\
+          "
 
       - name: Run Codeception Acceptance Tests
         run: |
