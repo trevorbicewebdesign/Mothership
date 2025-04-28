@@ -11,8 +11,11 @@ services:
       - ./tests:/var/www/html/tests
       - ./site:/var/www/html/components/com_mothership
       - ./admin:/var/www/html/administrator/components/com_mothership
-      - ./language:/var/www/html/language
-      - ./plugins:/var/www/html/plugins
+      - ./admin/language/en-GB/com_mothership.ini:/var/www/html/administrator/language/en-GB/com_mothership.ini
+      - ./admin/language/en-GB/com_mothership.ini:/var/www/html/administrator/language/en-GB/com_mothership.sys.ini
+      - ./site/language/en-GB/com_mothership.ini:/var/www/html/language/en-GB/com_mothership.ini
+      - ./site/language/en-GB/com_mothership.ini:/var/www/html/language/en-GB/com_mothership.sys.ini
+      - ./plugins/mothership-payment:/var/www/html/plugins/mothership-payment
 
     restart: always
 
