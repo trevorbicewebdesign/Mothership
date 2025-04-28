@@ -35,11 +35,13 @@ jobs:
 
       - name: Copy default configuration.php
         run: |
-          docker compose exec joomla sh -c "cp /var/www/html/tests/configuration.php /var/www/html/configuration.php"
+          docker compose exec joomla \
+            sh -c "cp /var/www/html/tests/configuration.php /var/www/html/configuration.php"
 
       - name: Remove Installation Directory
         run: |
-          docker compose exec joomla sh -c "rm -rf /var/www/html/installation"
+          docker compose exec joomla \
+            sh -c "rm -rf /var/www/html/installation"
 
       - name: Wait for Joomla Web to be ready
         run: |
@@ -52,14 +54,14 @@ jobs:
 
       - name: Install Mothership via CLI
         run: |
-          docker compose exec joomla sh -c '
-            chmod +x /var/www/html/cli/joomla.php && \
-            php /var/www/html/cli/joomla.php extension:install /var/www/html/tmp/mothership
-          '
+          docker compose exec joomla \
+            sh -c "chmod +x /var/www/html/cli/joomla.php && \
+                   php /var/www/html/cli/joomla.php extension:install /var/www/html/tmp/mothership"
 
       - name: Run Codeception Acceptance Tests
         run: |
-          docker compose exec --user root joomla sh -c "/root/.composer/vendor/bin/codecept run acceptance -d -f"
+          docker compose exec --user root joomla \
+            sh -c "/root/.composer/vendor/bin/codecept run acceptance -d -f"
 
       - name: Teardown
         if: always()
