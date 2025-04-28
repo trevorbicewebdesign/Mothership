@@ -7,59 +7,62 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    # 1) Define MySQL as a job service
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: local
-          MYSQL_USER: joomla
-          MYSQL_PASSWORD: secret
-        # wait for MySQL to become healthy
-        options: >-
-          --health-cmd="mysqladmin ping --silent"
-          --health-interval=10s
-          --health-retries=5
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # 2) Build only your Joomla/PHP image—no db service here
-      - name: Build Joomla Image
-        run: docker build -t mothership-app .
+      - name: Start Docker Services
+        run: docker compose up -d --build
 
-      # 3) Run the Joomla container on the host network so it can see GitHub's mysql
-      - name: Start Joomla Container
-        run: |
-          docker run -d \
-            --name joomla \
-            --network host \
-            -e DB_HOST=127.0.0.1 \
-            -e DB_NAME=local \
-            -e DB_USER=joomla \
-            -e DB_PASS=secret \
-            -p 8080:80 \
-            mothership-app
+      - name: Dump MySQL logs
+        run: docker compose logs db
 
-      # 4) Wait for Joomla → MySQL connectivity
-      - name: Wait for Database
+      - name: Wait for Database to be ready
         run: |
-          until mysqladmin ping -h127.0.0.1 -uroot -proot --silent; do
-            echo "Waiting for MySQL…"
+          echo "Waiting for Database..."
+          until docker compose exec db mysqladmin ping -h "localhost" --silent; do
+            echo "Still waiting for MySQL server to start..."
             sleep 5
           done
+          echo "MySQL server is up."
+          
+          echo "Waiting for Joomla Database..."
+          until docker compose exec db mysql -uroot -proot -e "USE local"; do
+            echo "Still waiting for joomla database to be ready..."
+            sleep 5
+          done
+          echo "Joomla Database is ready."
 
-      # 5) Install the extension and run your tests
+      - name: Copy default configuration.php
+        run: |
+          docker compose exec joomla \
+            sh -c "cp /var/www/html/tests/configuration.php /var/www/html/configuration.php"
+
+      - name: Remove Installation Directory
+        run: |
+          docker compose exec joomla \
+            sh -c "rm -rf /var/www/html/installation"
+
+      - name: Wait for Joomla Web to be ready
+        run: |
+          echo "Waiting for Joomla Web..."
+          until curl --fail --silent --output /dev/null http://localhost:8080; do
+            echo "Still waiting for Joomla Web..."
+            sleep 5
+          done
+          echo "Joomla Web is ready."
+
       - name: Install Mothership via CLI
-        run: docker exec joomla bash -lc 'php cli/joomla.php extension:install tmp/mothership'
+        run: |
+          docker compose exec joomla \
+            sh -c "chmod +x /var/www/html/cli/joomla.php && \
+                   php /var/www/html/cli/joomla.php extension:install /var/www/html/tmp/mothership"
 
-      - name: Run Codeception Tests
-        run: docker exec joomla bash -lc '/root/.composer/vendor/bin/codecept run acceptance -d -f'
+      - name: Run Codeception Acceptance Tests
+        run: |
+          docker compose exec --user root joomla \
+            sh -c "/root/.composer/vendor/bin/codecept run acceptance -d -f"
 
-      # 6) Tear it all down
       - name: Teardown
         if: always()
-        run: |
-          docker rm -f joomla
+        run: docker compose down -v
