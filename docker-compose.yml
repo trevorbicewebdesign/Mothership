@@ -7,11 +7,6 @@ services:
       dockerfile: docker/Dockerfile
     ports:
       - "8080:80"
-    environment:
-      JOOMLA_DB_HOST: db
-      JOOMLA_DB_USER: root
-      JOOMLA_DB_PASSWORD: root
-      JOOMLA_DB_NAME: local
     depends_on:
       - db
     volumes:
@@ -26,8 +21,6 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: local
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root
     ports:
       - "3306:3306"
     volumes:
