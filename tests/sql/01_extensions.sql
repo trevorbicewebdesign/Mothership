@@ -2,10 +2,10 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
 --
--- Table structure for table `#__banners`
+-- Table structure for table `jos_banners`
 --
 
-CREATE TABLE IF NOT EXISTS `#__banners` (
+CREATE TABLE IF NOT EXISTS `jos_banners` (
   `id` int NOT NULL AUTO_INCREMENT,
   `cid` int NOT NULL DEFAULT 0,
   `type` int NOT NULL DEFAULT 0,
@@ -51,10 +51,10 @@ CREATE TABLE IF NOT EXISTS `#__banners` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__banner_clients`
+-- Table structure for table `jos_banner_clients`
 --
 
-CREATE TABLE IF NOT EXISTS `#__banner_clients` (
+CREATE TABLE IF NOT EXISTS `jos_banner_clients` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL DEFAULT '',
   `contact` varchar(255) NOT NULL DEFAULT '',
@@ -77,10 +77,10 @@ CREATE TABLE IF NOT EXISTS `#__banner_clients` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__banner_tracks`
+-- Table structure for table `jos_banner_tracks`
 --
 
-CREATE TABLE IF NOT EXISTS `#__banner_tracks` (
+CREATE TABLE IF NOT EXISTS `jos_banner_tracks` (
   `track_date` datetime NOT NULL,
   `track_type` int unsigned NOT NULL,
   `banner_id` int unsigned NOT NULL,
@@ -94,10 +94,10 @@ CREATE TABLE IF NOT EXISTS `#__banner_tracks` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__contact_details`
+-- Table structure for table `jos_contact_details`
 --
 
-CREATE TABLE IF NOT EXISTS `#__contact_details` (
+CREATE TABLE IF NOT EXISTS `jos_contact_details` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `alias` varchar(400) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
@@ -153,12 +153,12 @@ CREATE TABLE IF NOT EXISTS `#__contact_details` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__content`
+-- Table structure for table `jos_content`
 --
 
-CREATE TABLE IF NOT EXISTS `#__content` (
+CREATE TABLE IF NOT EXISTS `jos_content` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `asset_id` int unsigned NOT NULL DEFAULT 0 COMMENT 'FK to the #__assets table.',
+  `asset_id` int unsigned NOT NULL DEFAULT 0 COMMENT 'FK to the jos_assets table.',
   `title` varchar(255) NOT NULL DEFAULT '',
   `alias` varchar(400) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '',
   `introtext` mediumtext NOT NULL,
@@ -201,10 +201,10 @@ CREATE TABLE IF NOT EXISTS `#__content` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__content_frontpage`
+-- Table structure for table `jos_content_frontpage`
 --
 
-CREATE TABLE IF NOT EXISTS `#__content_frontpage` (
+CREATE TABLE IF NOT EXISTS `jos_content_frontpage` (
   `content_id` int NOT NULL DEFAULT 0,
   `ordering` int NOT NULL DEFAULT 0,
   `featured_up` datetime,
@@ -215,10 +215,10 @@ CREATE TABLE IF NOT EXISTS `#__content_frontpage` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__content_rating`
+-- Table structure for table `jos_content_rating`
 --
 
-CREATE TABLE IF NOT EXISTS `#__content_rating` (
+CREATE TABLE IF NOT EXISTS `jos_content_rating` (
   `content_id` int NOT NULL DEFAULT 0,
   `rating_sum` int unsigned NOT NULL DEFAULT 0,
   `rating_count` int unsigned NOT NULL DEFAULT 0,
@@ -229,10 +229,10 @@ CREATE TABLE IF NOT EXISTS `#__content_rating` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__finder_filters`
+-- Table structure for table `jos_finder_filters`
 --
 
-CREATE TABLE IF NOT EXISTS `#__finder_filters` (
+CREATE TABLE IF NOT EXISTS `jos_finder_filters` (
   `filter_id` int unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   `alias` varchar(255) NOT NULL,
@@ -253,10 +253,10 @@ CREATE TABLE IF NOT EXISTS `#__finder_filters` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__finder_links`
+-- Table structure for table `jos_finder_links`
 --
 
-CREATE TABLE IF NOT EXISTS `#__finder_links` (
+CREATE TABLE IF NOT EXISTS `jos_finder_links` (
   `link_id` int unsigned NOT NULL AUTO_INCREMENT,
   `url` varchar(255) NOT NULL,
   `route` varchar(400) NOT NULL,
@@ -289,10 +289,10 @@ CREATE TABLE IF NOT EXISTS `#__finder_links` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__finder_links_terms`
+-- Table structure for table `jos_finder_links_terms`
 --
 
-CREATE TABLE IF NOT EXISTS `#__finder_links_terms` (
+CREATE TABLE IF NOT EXISTS `jos_finder_links_terms` (
   `link_id` int unsigned NOT NULL,
   `term_id` int unsigned NOT NULL,
   `weight` float unsigned NOT NULL DEFAULT 0,
@@ -304,10 +304,10 @@ CREATE TABLE IF NOT EXISTS `#__finder_links_terms` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__finder_logging`
+-- Table structure for table `jos_finder_logging`
 --
 
-CREATE TABLE IF NOT EXISTS `#__finder_logging` (
+CREATE TABLE IF NOT EXISTS `jos_finder_logging` (
   `searchterm` VARCHAR(255) NOT NULL DEFAULT '',
   `md5sum` VARCHAR(32) NOT NULL DEFAULT '',
   `query` BLOB NOT NULL,
@@ -320,10 +320,10 @@ CREATE TABLE IF NOT EXISTS `#__finder_logging` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__finder_taxonomy`
+-- Table structure for table `jos_finder_taxonomy`
 --
 
-CREATE TABLE IF NOT EXISTS `#__finder_taxonomy` (
+CREATE TABLE IF NOT EXISTS `jos_finder_taxonomy` (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
   `parent_id` int UNSIGNED NOT NULL DEFAULT '0',
   `lft` int NOT NULL DEFAULT '0',
@@ -347,19 +347,19 @@ CREATE TABLE IF NOT EXISTS `#__finder_taxonomy` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `#__finder_taxonomy`
+-- Dumping data for table `jos_finder_taxonomy`
 --
 
-INSERT INTO `#__finder_taxonomy` (`id`, `parent_id`, `lft`, `rgt`, `level`, `path`, `title`, `alias`, `state`, `access`, `language`) VALUES
+INSERT INTO `jos_finder_taxonomy` (`id`, `parent_id`, `lft`, `rgt`, `level`, `path`, `title`, `alias`, `state`, `access`, `language`) VALUES
 (1, 0, 0, 1, 0, '', 'ROOT', 'root', 1, 1, '*');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__finder_taxonomy_map`
+-- Table structure for table `jos_finder_taxonomy_map`
 --
 
-CREATE TABLE IF NOT EXISTS `#__finder_taxonomy_map` (
+CREATE TABLE IF NOT EXISTS `jos_finder_taxonomy_map` (
   `link_id` int unsigned NOT NULL,
   `node_id` int unsigned NOT NULL,
   PRIMARY KEY (`link_id`,`node_id`),
@@ -370,10 +370,10 @@ CREATE TABLE IF NOT EXISTS `#__finder_taxonomy_map` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__finder_terms`
+-- Table structure for table `jos_finder_terms`
 --
 
-CREATE TABLE IF NOT EXISTS `#__finder_terms` (
+CREATE TABLE IF NOT EXISTS `jos_finder_terms` (
   `term_id` int unsigned NOT NULL AUTO_INCREMENT,
   `term` varchar(75) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `stem` varchar(75) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '',
@@ -395,10 +395,10 @@ CREATE TABLE IF NOT EXISTS `#__finder_terms` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__finder_terms_common`
+-- Table structure for table `jos_finder_terms_common`
 --
 
-CREATE TABLE IF NOT EXISTS `#__finder_terms_common` (
+CREATE TABLE IF NOT EXISTS `jos_finder_terms_common` (
   `term` varchar(75) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '',
   `language` char(7) NOT NULL DEFAULT '',
   `custom` int NOT NULL DEFAULT '0',
@@ -407,10 +407,10 @@ CREATE TABLE IF NOT EXISTS `#__finder_terms_common` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `#__finder_terms_common`
+-- Dumping data for table `jos_finder_terms_common`
 --
 
-INSERT INTO `#__finder_terms_common` (`term`, `language`, `custom`) VALUES
+INSERT INTO `jos_finder_terms_common` (`term`, `language`, `custom`) VALUES
 ('i', 'en', 0),
 ('me', 'en', 0),
 ('my', 'en', 0),
@@ -589,10 +589,10 @@ INSERT INTO `#__finder_terms_common` (`term`, `language`, `custom`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__finder_tokens`
+-- Table structure for table `jos_finder_tokens`
 --
 
-CREATE TABLE IF NOT EXISTS `#__finder_tokens` (
+CREATE TABLE IF NOT EXISTS `jos_finder_tokens` (
   `term` varchar(75) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `stem` varchar(75) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '',
   `common` tinyint unsigned NOT NULL DEFAULT 0,
@@ -609,10 +609,10 @@ CREATE TABLE IF NOT EXISTS `#__finder_tokens` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__finder_tokens_aggregate`
+-- Table structure for table `jos_finder_tokens_aggregate`
 --
 
-CREATE TABLE IF NOT EXISTS `#__finder_tokens_aggregate` (
+CREATE TABLE IF NOT EXISTS `jos_finder_tokens_aggregate` (
   `term_id` int unsigned NOT NULL,
   `term` varchar(75) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `stem` varchar(75) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '',
@@ -630,10 +630,10 @@ CREATE TABLE IF NOT EXISTS `#__finder_tokens_aggregate` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__finder_types`
+-- Table structure for table `jos_finder_types`
 --
 
-CREATE TABLE IF NOT EXISTS `#__finder_types` (
+CREATE TABLE IF NOT EXISTS `jos_finder_types` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(100) NOT NULL,
   `mime` varchar(100) NOT NULL DEFAULT '',
@@ -644,10 +644,10 @@ CREATE TABLE IF NOT EXISTS `#__finder_types` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__messages`
+-- Table structure for table `jos_messages`
 --
 
-CREATE TABLE IF NOT EXISTS `#__messages` (
+CREATE TABLE IF NOT EXISTS `jos_messages` (
   `message_id` int unsigned NOT NULL AUTO_INCREMENT,
   `user_id_from` int unsigned NOT NULL DEFAULT 0,
   `user_id_to` int unsigned NOT NULL DEFAULT 0,
@@ -664,10 +664,10 @@ CREATE TABLE IF NOT EXISTS `#__messages` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__messages_cfg`
+-- Table structure for table `jos_messages_cfg`
 --
 
-CREATE TABLE IF NOT EXISTS `#__messages_cfg` (
+CREATE TABLE IF NOT EXISTS `jos_messages_cfg` (
   `user_id` int unsigned NOT NULL DEFAULT 0,
   `cfg_name` varchar(100) NOT NULL DEFAULT '',
   `cfg_value` varchar(255) NOT NULL DEFAULT '',
@@ -677,10 +677,10 @@ CREATE TABLE IF NOT EXISTS `#__messages_cfg` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__newsfeeds`
+-- Table structure for table `jos_newsfeeds`
 --
 
-CREATE TABLE IF NOT EXISTS `#__newsfeeds` (
+CREATE TABLE IF NOT EXISTS `jos_newsfeeds` (
   `catid` int NOT NULL DEFAULT 0,
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL DEFAULT '',
@@ -722,10 +722,10 @@ CREATE TABLE IF NOT EXISTS `#__newsfeeds` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__privacy_requests`
+-- Table structure for table `jos_privacy_requests`
 --
 
-CREATE TABLE IF NOT EXISTS `#__privacy_requests` (
+CREATE TABLE IF NOT EXISTS `jos_privacy_requests` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `email` varchar(100) NOT NULL DEFAULT '',
   `requested_at` datetime NOT NULL,
@@ -739,10 +739,10 @@ CREATE TABLE IF NOT EXISTS `#__privacy_requests` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__privacy_consents`
+-- Table structure for table `jos_privacy_consents`
 --
 
-CREATE TABLE IF NOT EXISTS `#__privacy_consents` (
+CREATE TABLE IF NOT EXISTS `jos_privacy_consents` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `user_id` int unsigned NOT NULL DEFAULT 0,
   `state` int NOT NULL DEFAULT 1,
@@ -758,10 +758,10 @@ CREATE TABLE IF NOT EXISTS `#__privacy_consents` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__redirect_links`
+-- Table structure for table `jos_redirect_links`
 --
 
-CREATE TABLE IF NOT EXISTS `#__redirect_links` (
+CREATE TABLE IF NOT EXISTS `jos_redirect_links` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `old_url` varchar(2048) NOT NULL,
   `new_url` varchar(2048),
@@ -780,10 +780,10 @@ CREATE TABLE IF NOT EXISTS `#__redirect_links` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__action_logs`
+-- Table structure for table `jos_action_logs`
 --
 
-CREATE TABLE IF NOT EXISTS `#__action_logs` (
+CREATE TABLE IF NOT EXISTS `jos_action_logs` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `message_language_key` varchar(255) NOT NULL DEFAULT '',
   `message` text NOT NULL,
@@ -802,16 +802,16 @@ CREATE TABLE IF NOT EXISTS `#__action_logs` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__action_logs_extensions`
+-- Table structure for table `jos_action_logs_extensions`
 --
 
-CREATE TABLE IF NOT EXISTS `#__action_logs_extensions` (
+CREATE TABLE IF NOT EXISTS `jos_action_logs_extensions` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `extension` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO `#__action_logs_extensions` (`id`, `extension`) VALUES
+INSERT INTO `jos_action_logs_extensions` (`id`, `extension`) VALUES
 (1, 'com_banners'),
 (2, 'com_cache'),
 (3, 'com_categories'),
@@ -837,10 +837,10 @@ INSERT INTO `#__action_logs_extensions` (`id`, `extension`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__action_log_config`
+-- Table structure for table `jos_action_log_config`
 --
 
-CREATE TABLE IF NOT EXISTS `#__action_log_config` (
+CREATE TABLE IF NOT EXISTS `jos_action_log_config` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `type_title` varchar(255) NOT NULL DEFAULT '',
   `type_alias` varchar(255) NOT NULL DEFAULT '',
@@ -851,38 +851,38 @@ CREATE TABLE IF NOT EXISTS `#__action_log_config` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO `#__action_log_config` (`id`, `type_title`, `type_alias`, `id_holder`, `title_holder`, `table_name`, `text_prefix`) VALUES
-(1, 'article', 'com_content.article', 'id' ,'title' , '#__content', 'PLG_ACTIONLOG_JOOMLA'),
-(2, 'article', 'com_content.form', 'id', 'title' , '#__content', 'PLG_ACTIONLOG_JOOMLA'),
-(3, 'banner', 'com_banners.banner', 'id' ,'name' , '#__banners', 'PLG_ACTIONLOG_JOOMLA'),
-(4, 'user_note', 'com_users.note', 'id', 'subject' ,'#__user_notes', 'PLG_ACTIONLOG_JOOMLA'),
+INSERT INTO `jos_action_log_config` (`id`, `type_title`, `type_alias`, `id_holder`, `title_holder`, `table_name`, `text_prefix`) VALUES
+(1, 'article', 'com_content.article', 'id' ,'title' , 'jos_content', 'PLG_ACTIONLOG_JOOMLA'),
+(2, 'article', 'com_content.form', 'id', 'title' , 'jos_content', 'PLG_ACTIONLOG_JOOMLA'),
+(3, 'banner', 'com_banners.banner', 'id' ,'name' , 'jos_banners', 'PLG_ACTIONLOG_JOOMLA'),
+(4, 'user_note', 'com_users.note', 'id', 'subject' ,'jos_user_notes', 'PLG_ACTIONLOG_JOOMLA'),
 (5, 'media', 'com_media.file', '' , 'name' , '',  'PLG_ACTIONLOG_JOOMLA'),
-(6, 'category', 'com_categories.category', 'id' , 'title' , '#__categories', 'PLG_ACTIONLOG_JOOMLA'),
-(7, 'menu', 'com_menus.menu', 'id' ,'title' , '#__menu_types', 'PLG_ACTIONLOG_JOOMLA'),
-(8, 'menu_item', 'com_menus.item', 'id' , 'title' , '#__menu', 'PLG_ACTIONLOG_JOOMLA'),
-(9, 'newsfeed', 'com_newsfeeds.newsfeed', 'id' ,'name' , '#__newsfeeds', 'PLG_ACTIONLOG_JOOMLA'),
-(10, 'link', 'com_redirect.link', 'id', 'old_url' , '#__redirect_links', 'PLG_ACTIONLOG_JOOMLA'),
-(11, 'tag', 'com_tags.tag', 'id', 'title' , '#__tags', 'PLG_ACTIONLOG_JOOMLA'),
-(12, 'style', 'com_templates.style', 'id' , 'title' , '#__template_styles', 'PLG_ACTIONLOG_JOOMLA'),
-(13, 'plugin', 'com_plugins.plugin', 'extension_id' , 'name' , '#__extensions', 'PLG_ACTIONLOG_JOOMLA'),
+(6, 'category', 'com_categories.category', 'id' , 'title' , 'jos_categories', 'PLG_ACTIONLOG_JOOMLA'),
+(7, 'menu', 'com_menus.menu', 'id' ,'title' , 'jos_menu_types', 'PLG_ACTIONLOG_JOOMLA'),
+(8, 'menu_item', 'com_menus.item', 'id' , 'title' , 'jos_menu', 'PLG_ACTIONLOG_JOOMLA'),
+(9, 'newsfeed', 'com_newsfeeds.newsfeed', 'id' ,'name' , 'jos_newsfeeds', 'PLG_ACTIONLOG_JOOMLA'),
+(10, 'link', 'com_redirect.link', 'id', 'old_url' , 'jos_redirect_links', 'PLG_ACTIONLOG_JOOMLA'),
+(11, 'tag', 'com_tags.tag', 'id', 'title' , 'jos_tags', 'PLG_ACTIONLOG_JOOMLA'),
+(12, 'style', 'com_templates.style', 'id' , 'title' , 'jos_template_styles', 'PLG_ACTIONLOG_JOOMLA'),
+(13, 'plugin', 'com_plugins.plugin', 'extension_id' , 'name' , 'jos_extensions', 'PLG_ACTIONLOG_JOOMLA'),
 (14, 'component_config', 'com_config.component', 'extension_id' , 'name', '', 'PLG_ACTIONLOG_JOOMLA'),
-(15, 'contact', 'com_contact.contact', 'id', 'name', '#__contact_details', 'PLG_ACTIONLOG_JOOMLA'),
-(16, 'module', 'com_modules.module', 'id' ,'title', '#__modules', 'PLG_ACTIONLOG_JOOMLA'),
-(17, 'access_level', 'com_users.level', 'id' , 'title', '#__viewlevels', 'PLG_ACTIONLOG_JOOMLA'),
-(18, 'banner_client', 'com_banners.client', 'id', 'name', '#__banner_clients', 'PLG_ACTIONLOG_JOOMLA'),
+(15, 'contact', 'com_contact.contact', 'id', 'name', 'jos_contact_details', 'PLG_ACTIONLOG_JOOMLA'),
+(16, 'module', 'com_modules.module', 'id' ,'title', 'jos_modules', 'PLG_ACTIONLOG_JOOMLA'),
+(17, 'access_level', 'com_users.level', 'id' , 'title', 'jos_viewlevels', 'PLG_ACTIONLOG_JOOMLA'),
+(18, 'banner_client', 'com_banners.client', 'id', 'name', 'jos_banner_clients', 'PLG_ACTIONLOG_JOOMLA'),
 (19, 'application_config', 'com_config.application', '', 'name', '', 'PLG_ACTIONLOG_JOOMLA'),
-(20, 'task', 'com_scheduler.task', 'id', 'title', '#__scheduler_tasks', 'PLG_ACTIONLOG_JOOMLA'),
-(21, 'field', 'com_fields.field', 'id', 'title', '#__fields', 'PLG_ACTIONLOG_JOOMLA'),
-(22, 'guidedtour', 'com_guidedtours.state', 'id', 'title', '#__guidedtours', 'PLG_ACTIONLOG_JOOMLA');
+(20, 'task', 'com_scheduler.task', 'id', 'title', 'jos_scheduler_tasks', 'PLG_ACTIONLOG_JOOMLA'),
+(21, 'field', 'com_fields.field', 'id', 'title', 'jos_fields', 'PLG_ACTIONLOG_JOOMLA'),
+(22, 'guidedtour', 'com_guidedtours.state', 'id', 'title', 'jos_guidedtours', 'PLG_ACTIONLOG_JOOMLA');
 
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__action_logs_users`
+-- Table structure for table `jos_action_logs_users`
 --
 
-CREATE TABLE IF NOT EXISTS `#__action_logs_users` (
+CREATE TABLE IF NOT EXISTS `jos_action_logs_users` (
   `user_id` int UNSIGNED NOT NULL,
   `notify` tinyint UNSIGNED NOT NULL,
   `extensions` text NOT NULL,
@@ -893,12 +893,12 @@ CREATE TABLE IF NOT EXISTS `#__action_logs_users` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__scheduler_tasks`
+-- Table structure for table `jos_scheduler_tasks`
 --
 
-CREATE TABLE IF NOT EXISTS `#__scheduler_tasks` (
+CREATE TABLE IF NOT EXISTS `jos_scheduler_tasks` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `asset_id` int unsigned NOT NULL DEFAULT 0 COMMENT 'FK to the #__assets table.',
+  `asset_id` int unsigned NOT NULL DEFAULT 0 COMMENT 'FK to the jos_assets table.',
   `title` varchar(255) NOT NULL DEFAULT '',
   `type` varchar(128) NOT NULL COMMENT 'unique identifier for job defined by plugin',
   `execution_rules` text COMMENT 'Execution Rules, Unprocessed',
@@ -930,7 +930,7 @@ CREATE TABLE IF NOT EXISTS `#__scheduler_tasks` (
   KEY `idx_checked_out` (`checked_out`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
 
-INSERT INTO `#__scheduler_tasks` (`id`, `asset_id`, `title`, `type`, `execution_rules`, `cron_rules`, `state`, `last_execution`, `next_execution`, `locked`, `params`, `created`, `created_by`) VALUES
+INSERT INTO `jos_scheduler_tasks` (`id`, `asset_id`, `title`, `type`, `execution_rules`, `cron_rules`, `state`, `last_execution`, `next_execution`, `locked`, `params`, `created`, `created_by`) VALUES
 (1, 97, 'Rotate Logs', 'rotation.logs', CONCAT('{"rule-type":"interval-days","interval-days":"30","exec-day":"', DATE_FORMAT(NOW(), '%e'), '","exec-time":"', TIME_FORMAT(NOW(), '%H:00'), '"}'), '{"type":"interval","exp":"P30D"}', 1, NULL, DATE_FORMAT(NOW() + INTERVAL 30 DAY, '%Y-%m-%d %H:00:00'), NULL, '{"individual_log":false,"log_file":"","notifications":{"success_mail":"0","failure_mail":"1","fatal_failure_mail":"1","orphan_mail":"1"},"logstokeep":1}', NOW(), 42),
 (2, 98, 'Session GC', 'session.gc', CONCAT('{"rule-type":"interval-hours","interval-hours":"24","exec-day":"01","exec-time":"', TIME_FORMAT(NOW(), '%H:00'), '"}'), '{"type":"interval","exp":"PT24H"}', 1, NULL, DATE_FORMAT(NOW() + INTERVAL 24 HOUR, '%Y-%m-%d %H:00:00'), NULL, '{"individual_log":false,"log_file":"","notifications":{"success_mail":"0","failure_mail":"1","fatal_failure_mail":"1","orphan_mail":"1"},"enable_session_gc":1,"enable_session_metadata_gc":1}', NOW(), 42),
 (3, 99, 'Update Notification', 'update.notification', CONCAT('{"rule-type":"interval-hours","interval-hours":"24","exec-day":"01","exec-time":"', TIME_FORMAT(NOW(), '%H:00'), '"}'), '{"type":"interval","exp":"PT24H"}', 1, NULL, DATE_FORMAT(NOW() + INTERVAL 24 HOUR, '%Y-%m-%d %H:00:00'), NULL, '{"individual_log":false,"log_file":"","notifications":{"success_mail":"0","failure_mail":"1","fatal_failure_mail":"1","orphan_mail":"1"},"email":"","language_override":""}', NOW(), 42);
@@ -938,10 +938,10 @@ INSERT INTO `#__scheduler_tasks` (`id`, `asset_id`, `title`, `type`, `execution_
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__schemaorg`
+-- Table structure for table `jos_schemaorg`
 --
 
-CREATE TABLE IF NOT EXISTS `#__schemaorg` (
+CREATE TABLE IF NOT EXISTS `jos_schemaorg` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `itemId` int unsigned,
   `context` varchar(100),
@@ -953,10 +953,10 @@ CREATE TABLE IF NOT EXISTS `#__schemaorg` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__guidedtours`
+-- Table structure for table `jos_guidedtours`
 --
 
-CREATE TABLE IF NOT EXISTS `#__guidedtours` (
+CREATE TABLE IF NOT EXISTS `jos_guidedtours` (
   `id` int NOT NULL AUTO_INCREMENT,
   `title` varchar(255) DEFAULT '' NOT NULL,
   `uid` varchar(400) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
@@ -983,10 +983,10 @@ CREATE TABLE IF NOT EXISTS `#__guidedtours` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `#__guidedtours`
+-- Dumping data for table `jos_guidedtours`
 --
 
-INSERT INTO `#__guidedtours` (`id`, `title`, `uid`, `description`, `ordering`, `extensions`, `url`, `created`, `created_by`, `modified`, `modified_by`, `checked_out_time`, `checked_out`, `published`, `language`, `access`, `autostart`) VALUES
+INSERT INTO `jos_guidedtours` (`id`, `title`, `uid`, `description`, `ordering`, `extensions`, `url`, `created`, `created_by`, `modified`, `modified_by`, `checked_out_time`, `checked_out`, `published`, `language`, `access`, `autostart`) VALUES
 (1, 'COM_GUIDEDTOURS_TOUR_GUIDEDTOURS_TITLE', 'joomla-guidedtours', 'COM_GUIDEDTOURS_TOUR_GUIDEDTOURS_DESCRIPTION', 1, '["com_guidedtours"]', 'administrator/index.php?option=com_guidedtours&view=tours', CURRENT_TIMESTAMP(), 42, CURRENT_TIMESTAMP(), 42, NULL, NULL, 1, '*', 1, 0),
 (2, 'COM_GUIDEDTOURS_TOUR_GUIDEDTOURSTEPS_TITLE', 'joomla-guidedtoursteps', 'COM_GUIDEDTOURS_TOUR_GUIDEDTOURSTEPS_DESCRIPTION', 2, '["com_guidedtours"]', 'administrator/index.php?option=com_guidedtours&view=tours', CURRENT_TIMESTAMP(), 42, CURRENT_TIMESTAMP(), 42, NULL, NULL, 1, '*', 1, 0),
 (3, 'COM_GUIDEDTOURS_TOUR_ARTICLES_TITLE', 'joomla-articles', 'COM_GUIDEDTOURS_TOUR_ARTICLES_DESCRIPTION', 3, '["com_content","com_categories"]', 'administrator/index.php?option=com_content&view=articles', CURRENT_TIMESTAMP(), 42, CURRENT_TIMESTAMP(), 42, NULL, NULL, 1, '*', 1, 0),
@@ -1003,10 +1003,10 @@ INSERT INTO `#__guidedtours` (`id`, `title`, `uid`, `description`, `ordering`, `
 -- --------------------------------------------------------
 
 --
--- Table structure for table `#__guidedtour_steps`
+-- Table structure for table `jos_guidedtour_steps`
 --
 
-CREATE TABLE IF NOT EXISTS `#__guidedtour_steps` (
+CREATE TABLE IF NOT EXISTS `jos_guidedtour_steps` (
   `id` int NOT NULL AUTO_INCREMENT,
   `tour_id` int NOT NULL DEFAULT 0,
   `title` varchar(255) NOT NULL,
@@ -1034,10 +1034,10 @@ CREATE TABLE IF NOT EXISTS `#__guidedtour_steps` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `#__guidedtour_steps`
+-- Dumping data for table `jos_guidedtour_steps`
 --
 
-INSERT INTO `#__guidedtour_steps` (`id`, `tour_id`, `title`, `published`, `description`, `ordering`, `position`, `target`, `type`, `interactive_type`, `url`, `created`, `created_by`, `modified`, `modified_by`, `language`) VALUES
+INSERT INTO `jos_guidedtour_steps` (`id`, `tour_id`, `title`, `published`, `description`, `ordering`, `position`, `target`, `type`, `interactive_type`, `url`, `created`, `created_by`, `modified`, `modified_by`, `language`) VALUES
 (1, 1, 'COM_GUIDEDTOURS_TOUR_GUIDEDTOURS_STEP_NEW_TITLE', 1, 'COM_GUIDEDTOURS_TOUR_GUIDEDTOURS_STEP_NEW_DESCRIPTION', 1, 'bottom', '.button-new', 2, 1, 'administrator/index.php?option=com_guidedtours&view=tours', CURRENT_TIMESTAMP(), 42, CURRENT_TIMESTAMP(), 42, '*'),
 (2, 1, 'COM_GUIDEDTOURS_TOUR_GUIDEDTOURS_STEP_TITLE_TITLE', 1, 'COM_GUIDEDTOURS_TOUR_GUIDEDTOURS_STEP_TITLE_DESCRIPTION', 2, 'bottom', '#jform_title', 2, 2, 'administrator/index.php?option=com_guidedtours&view=tour&layout=edit', CURRENT_TIMESTAMP(), 42, CURRENT_TIMESTAMP(), 42, '*'),
 (3, 1, 'COM_GUIDEDTOURS_TOUR_GUIDEDTOURS_STEP_URL_TITLE', 1, 'COM_GUIDEDTOURS_TOUR_GUIDEDTOURS_STEP_URL_DESCRIPTION', 3, 'top', '#jform_url', 2, 2, 'administrator/index.php?option=com_guidedtours&view=tour&layout=edit', CURRENT_TIMESTAMP(), 42, CURRENT_TIMESTAMP(), 42, '*'),
