@@ -53,14 +53,11 @@ jobs:
 
       - name: Install Mothership via CLI
         run: |
-          docker compose exec joomla \
-            sh -c "chmod +x /var/www/html/cli/joomla.php && \
-                   php /var/www/html/cli/joomla.php extension:discover:intall"
+          docker compose exec joomla  sh -c "php /var/www/html/cli/joomla.php extension:discover:intall"
 
       - name: Run Codeception Acceptance Tests
         run: |
-          docker compose exec --user root joomla \
-            sh -c "/root/.composer/vendor/bin/codecept run acceptance -d -f"
+          docker compose exec --user root joomla sh -c "/root/.composer/vendor/bin/codecept run acceptance -d -f"
 
       - name: Teardown
         if: always()
