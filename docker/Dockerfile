@@ -25,7 +25,7 @@ RUN chown -R www-data:www-data /var/www/html
 # Install Composer (global)
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-RUN composer install --dev --prefer-dist
+RUN composer install
 
 # Expose Apache port
 EXPOSE 80
