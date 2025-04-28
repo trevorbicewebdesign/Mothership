@@ -26,7 +26,7 @@ RUN chown -R www-data:www-data /var/www/html
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Install Codeception (global)
-RUN composer require \
+RUN composer require --ignore-platform-reqs \
     codeception/codeception:^5.1 \
     codeception/module-webdriver:* \
     codeception/module-db:* \
