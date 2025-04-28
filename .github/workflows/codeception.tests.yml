@@ -52,8 +52,8 @@ jobs:
 
       - name: Install Mothership via CLI
         run: |
-          docker compose exec joomla  sh -c "php /var/www/html/cli/joomla.php extension:discover"
-          docker compose exec joomla  sh -c "php /var/www/html/cli/joomla.php extension:discover:install"
+          docker compose exec joomla  sh -c "php /var/www/html/cli/joomla.php extension:discover -verbose"
+          docker compose exec joomla  sh -c "php /var/www/html/cli/joomla.php extension:discover:install -verbose"
 
       - name: Run Codeception Acceptance Tests
         run: |
