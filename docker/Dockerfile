@@ -26,7 +26,7 @@ RUN chown -R www-data:www-data /var/www/html
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Install Codeception (global)
-RUN composer global require codeception/codeception
+RUN composer require codeception/codeception
 
 # Expose Apache port
 EXPOSE 80
