@@ -17,7 +17,7 @@ jobs:
       - name: Wait for Database to be ready
         run: |
           echo "Waiting for Database..."
-          until docker compose exec db mysqladmin ping -h"localhost" --silent; do
+          until docker compose exec db mysqladmin ping -h "localhost" --silent; do
             echo "Still waiting for MySQL server to start..."
             sleep 5
           done
