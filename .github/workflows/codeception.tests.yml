@@ -55,7 +55,7 @@ jobs:
         run: |
           docker compose exec joomla \
             sh -c "chmod +x /var/www/html/cli/joomla.php && \
-                   php /var/www/html/cli/joomla.php extension:install /var/www/html/tmp/mothership"
+                   php /var/www/html/cli/joomla.php extension:discover:intall"
 
       - name: Run Codeception Acceptance Tests
         run: |
