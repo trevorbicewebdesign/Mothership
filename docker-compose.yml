@@ -18,6 +18,8 @@ services:
       - ./site/language/en-GB/com_mothership.ini:/var/www/html/language/en-GB/com_mothership.sys.ini
       - ./plugins/mothership-payment:/var/www/html/plugins/mothership-payment
       - ./codeception.yml:/var/www/html/codeception.yml
+      - ./tests/composer.json:/var/www/html/composer.json
+      - ./tests/composer.lock:/var/www/html/composer.lock
 
     restart: always
 
