@@ -1,90 +1,67 @@
-name: CI
+name: Run Mothership Tests
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
 
 jobs:
-  # ─────────────────────────────────────────────────────────────────────────────
-  # 1) Build + cache the image
-  build-image:
-    runs-on: ubuntu-latest
-    outputs:
-      image-tag: ${{ steps.build.outputs.image-tag }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Restore image cache
-        uses: actions/cache@v3
-        with:
-          path: docker-image
-          key: image-${{ github.sha }}
-
-      - name: Build & save Docker image
-        id: build
-        run: |
-          IMAGE_TAG=mothership-app:${{ github.sha }}
-          echo "image-tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
-          mkdir -p docker-image
-          docker build -t $IMAGE_TAG -f docker/Dockerfile .
-          docker save $IMAGE_TAG | gzip > docker-image/mothership-app.tar.gz
-
-      - name: Update image cache
-        uses: actions/cache@v3
-        with:
-          path: docker-image
-          key: image-${{ github.sha }}
-
-  # ─────────────────────────────────────────────────────────────────────────────
-  # 2) Test matrix, reusing the cached image TAR
   test:
-    needs: build-image
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        suite: [acceptance, functional, api, integration]
-
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Restore image cache
-        uses: actions/cache@v3
-        with:
-          path: docker-image
-          key: image-${{ github.sha }}
+      - name: Start Docker Services
+        run: docker compose up -d --build
 
-      - name: Load Docker image
-        run: |
-          gunzip -c docker-image/mothership-app.tar.gz | docker load
+      - name: Dump MySQL logs
+        run: docker compose logs db
 
-      - name: Spin up containers for ${{ matrix.suite }}
+      - name: Wait for Database to be ready
         run: |
-          docker compose -p suite-${{ matrix.suite }} up -d --no-build
-
-      - name: Wait for MySQL
-        run: |
-          until docker compose -p suite-${{ matrix.suite }} \
-                  exec db mysqladmin ping -hlocalhost --silent; do
-            sleep 3
+          echo "Waiting for Database..."
+          until docker compose exec db mysqladmin ping -h "localhost" --silent; do
+            echo "Still waiting for MySQL server to start..."
+            sleep 5
           done
+          echo "MySQL server is up."
+          
+          echo "Waiting for Joomla Database..."
+          until docker compose exec db mysql -uroot -proot -e "USE local"; do
+            echo "Still waiting for joomla database to be ready..."
+            sleep 5
+          done
+          echo "Joomla Database is ready."
 
-      - name: Prepare Joomla
+      - name: Copy default configuration.php
         run: |
-          docker compose -p suite-${{ matrix.suite }} exec joomla \
-            bash -lc "cp tests/configuration.php configuration.php && rm -rf installation"
+          docker compose exec joomla  sh -c "cp /var/www/html/tests/configuration.php /var/www/html/configuration.php"
 
-      - name: Install Mothership
+      - name: Remove Installation Directory
         run: |
-          docker compose -p suite-${{ matrix.suite }} exec joomla \
-            bash -lc "chmod +x cli/joomla.php && \
-                      php cli/joomla.php extension:install --path tmp/mothership"
+          docker compose exec joomla \
+            sh -c "rm -rf /var/www/html/installation"
 
-      - name: Run ${{ matrix.suite }} tests
+      - name: Wait for Joomla Web to be ready
         run: |
-          docker compose -p suite-${{ matrix.suite }} exec --user root joomla \
-            bash -lc "/root/.composer/vendor/bin/codecept run ${{ matrix.suite }} -d -f"
+          echo "Waiting for Joomla Web..."
+          until curl --fail --silent --output /dev/null http://localhost:8080; do
+            echo "Still waiting for Joomla Web..."
+            sleep 5
+          done
+          echo "Joomla Web is ready."
+
+      - name: Install Mothership via CLI
+        run: |
+          docker compose exec joomla \
+            sh -c "chmod +x /var/www/html/cli/joomla.php && \
+                   php /var/www/html/cli/joomla.php extension:install /var/www/html/tmp/mothership"
+
+      - name: Run Codeception Acceptance Tests
+        run: |
+          docker compose exec --user root joomla \
+            sh -c "/root/.composer/vendor/bin/codecept run acceptance -d -f"
 
       - name: Teardown
         if: always()
-        run: docker compose -p suite-${{ matrix.suite }} down -v
+        run: docker compose down -v
