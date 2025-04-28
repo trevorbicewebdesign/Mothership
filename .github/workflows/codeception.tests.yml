@@ -41,6 +41,11 @@ jobs:
         run: |
           docker compose exec joomla  sh -c "cp /var/www/html/tests/configuration.php /var/www/html/configuration.php"
 
+      - name: Copy Composer
+        run: |
+          docker compose exec joomla  sh -c "cp /var/www/html/tests/composer.json /var/www/html/composer.json"
+          docker compose exec joomla  sh -c "cp /var/www/html/tests/composer.lock /var/www/html/composer.lock"          
+
       - name: Remove Installation Directory
         run: |
           docker compose exec joomla sh -c "rm -rf /var/www/html/installation"
