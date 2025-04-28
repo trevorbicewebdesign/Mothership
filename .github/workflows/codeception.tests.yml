@@ -11,6 +11,10 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      - name: Rename .env.sample to .env
+        run: |
+          mv .env.sample .env
+
       - name: Start Docker Services
         run: docker compose up -d --build
 
@@ -57,7 +61,7 @@ jobs:
             export HTTP_HOST=localhost:8080 && \
             php cli/joomla.php extension:discover --verbose && \
             php cli/joomla.php extension:discover:install --verbose\
-          "
+          "          
       - name: Export Datbase
         run: |
             docker compose exec db sh -c "mysqldump -uroot -proot --no-tablespaces --skip-comments --skip-extended-insert --compact local" | docker compose exec -T joomla sh -c "cat > /var/www/html/tests/_support/Data/db/dump.sql"
