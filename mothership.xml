@@ -8,6 +8,7 @@
     <authorEmail>trevorbicewebdesign@gmail.com</authorEmail>
     <authorUrl>https://webdesign.trevorbice.com</authorUrl>
     <version>0.0.15</version>
+    <version_id>50300</version_id>
     <description>COM_MOTHERSHIP_XML_DESCRIPTION</description>
     <namespace path="src">TrevorBice\Component\Mothership</namespace>
     <install>
