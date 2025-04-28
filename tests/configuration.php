@@ -16,7 +16,7 @@ class JConfig {
 	public $host = 'db'; // Docker service name
 	public $user = 'root';
 	public $password = 'root';
-	public $db = 'joomla'; // Will be changed below for tests
+	public $db = 'local'; // Will be changed below for tests
 	public $dbprefix = 'jos_';
 	public $dbencryption = 0;
 	public $dbsslverifyservercert = false;
