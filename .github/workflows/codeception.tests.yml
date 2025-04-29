@@ -50,8 +50,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix:
-        suite: [acceptance, functional, api, integration]
+      suite: [functional, api, integration]
+        include:
+          - suite: acceptance
+            group: backend
+          - suite: acceptance
+            group: frontend
 
     steps:
       - name: Checkout Code
@@ -121,7 +125,11 @@ jobs:
 
       - name: Run Codeception Tests for ${{ matrix.suite }}
         run: |
-          docker compose exec joomla sh -c "/var/www/html/vendor/bin/codecept run ${{ matrix.suite }} -d -f"
+          if [ "${{ matrix.group }}" != "" ]; then
+            docker compose exec joomla sh -c "/var/www/html/vendor/bin/codecept run ${{ matrix.suite }} --group ${{ matrix.group }} -d -f"
+          else
+            docker compose exec joomla sh -c "/var/www/html/vendor/bin/codecept run ${{ matrix.suite }} -d -f"
+          fi
 
       # Upload artifacts if any tests fail
       - name: Upload Artifacts on Failure
