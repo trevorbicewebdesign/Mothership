@@ -39,9 +39,9 @@ class JConfig {
 	public $smtpauth = false;
 	public $smtpuser = '';
 	public $smtppass = '';
-	public $smtphost = 'localhost';
+	public $smtphost = 'mailpit';
 	public $smtpsecure = 'none';
-	public $smtpport = 25;
+	public $smtpport = 1025;
 	public $caching = 0;
 	public $cache_handler = 'file';
 	public $cachetime = 15;
