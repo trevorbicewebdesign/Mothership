@@ -74,7 +74,22 @@ class ClientHelper extends ContentHelper
 
         $query = $db->getQuery(true)
             ->select($db->quoteName([
-                '*'
+                'id',
+                'name',
+                'email',
+                'phone',
+                'address_1',
+                'address_2',
+                'city',
+                'state',
+                'zip',
+                'tax_id',
+                'default_rate',
+                'owner_user_id',
+                'created',
+                'created_by',
+                'checked_out_time',
+                'checked_out'
             ]))
             ->from($db->quoteName('#__mothership_clients'))
             ->where($db->quoteName('id') . ' = ' . $db->quote($client_id));
