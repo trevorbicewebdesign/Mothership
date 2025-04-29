@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Start Docker Services
-        run: docker compose --build
+        run: docker compose up -d --build
 
   test:
     needs: build
