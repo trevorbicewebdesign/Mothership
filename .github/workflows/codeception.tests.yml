@@ -118,6 +118,15 @@ jobs:
           "
           docker compose exec db mysql -uroot -proot -e "UPDATE local.jos_extensions SET enabled = 1 WHERE type = 'plugin' AND folder = 'mothership-payment' AND element = 'zelle';"
           docker compose exec db mysql -uroot -proot -e "UPDATE local.jos_extensions SET enabled = 1 WHERE type = 'plugin' AND folder = 'mothership-payment' AND element = 'paybycheck';"
+      
+      - name: Add Joomla User
+        run: |
+            docker compose exec joomla sh -c "php /var/www/html/cli/joomla.php user:add \
+              --username=admin \
+              --name='Site Admin' \
+              --password='password123!test' \
+              --email='admin@example.com' \
+              --usergroup='Super Users'"
 
       - name: Export Database
         run: |

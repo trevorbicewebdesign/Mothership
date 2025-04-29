@@ -91,8 +91,8 @@ class MothershipAdminInvoicesCest
         $I->amOnPage("/administrator/");
 
         // Log in with valid credentials
-        $I->fillField("input[name=username]", "trevorbice");
-        $I->fillField("input[name=passwd]", "4&GoH#7FvPsY");
+        $I->fillField("input[name=username]", "adminuser");
+        $I->fillField("input[name=passwd]", "password123!test");
         $I->click("Log in");
         $I->wait(3);
     }
