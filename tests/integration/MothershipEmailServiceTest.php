@@ -38,7 +38,8 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
             'company_state' => 'TC',
             'company_zip' => '12345',
             'company_phone' => '123 456-7890',
-            'company_email' => 'test.company.email@malinator.com'
+            'company_email' => 'test.company.email@malinator.com',
+            'company_default_rate' => 100.00,
         ];
 
         $results = EmailService::generateBody($template, $data);
