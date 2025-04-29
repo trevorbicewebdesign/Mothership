@@ -72,7 +72,11 @@ jobs:
 
       - name: Run Codeception Tests for ${{ matrix.suite }}
         run: |
-          docker compose exec joomla sh -c "/var/www/html/vendor/bin/codecept run ${{ matrix.suite }} -d -f"
+          if [ "${{ matrix.suite }}" = "integration" ]; then
+        docker compose exec joomla sh -c "/var/www/html/vendor/bin/codecept run ${{ matrix.suite }} -d"
+          else
+        docker compose exec joomla sh -c "/var/www/html/vendor/bin/codecept run ${{ matrix.suite }} -d -f"
+          fi
 
       - name: Teardown
         if: always()
