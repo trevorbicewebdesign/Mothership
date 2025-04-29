@@ -110,8 +110,8 @@ jobs:
 
       - name: Discover & Install Mothership via CLI
         run: |
-          docker compose exec joomla bash sh -c "php /var/www/html/cli/joomla.php extension:discover"
-          docker compose exec joomla bash sh -c "php /var/www/html/cli/joomla.php extension:discover:install"
+          docker compose exec joomla sh -c "php /var/www/html/cli/joomla.php extension:discover"
+          docker compose exec joomla sh -c "php /var/www/html/cli/joomla.php extension:discover:install"
           docker compose exec db mysql -uroot -proot -e "UPDATE local.jos_extensions SET enabled = 1 WHERE type = 'plugin' AND folder = 'mothership-payment' AND element = 'zelle';"
           docker compose exec db mysql -uroot -proot -e "UPDATE local.jos_extensions SET enabled = 1 WHERE type = 'plugin' AND folder = 'mothership-payment' AND element = 'paybycheck';"
       
