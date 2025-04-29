@@ -6,7 +6,10 @@ modules:
     - Tests\Support\Helper\Acceptance
     - Asserts
     - Filesystem
+    - Mailpit
   config:
+      Mailpit:
+          base_uri: http://localhost:8025
       WebDriver:
         url: '%LIVE_SITE%'
         browser: chrome
