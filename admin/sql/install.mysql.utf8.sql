@@ -152,6 +152,7 @@ CREATE TABLE IF NOT EXISTS `#__mothership_projects` (
   `description` TEXT DEFAULT NULL,
   `type` VARCHAR(255) DEFAULT NULL,
   `status` ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
+  `metadata` JSON DEFAULT NULL,
   `created` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `created_by` INT(11) DEFAULT NULL,
   `checked_out_time` DATETIME DEFAULT NULL,
