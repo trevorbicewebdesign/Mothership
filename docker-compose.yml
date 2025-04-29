@@ -7,6 +7,7 @@ services:
       - "8080:80"
     depends_on:
       - db
+      - selenium
     volumes:
       - ./tests:/var/www/html/tests
       - ./site:/var/www/html/components/com_mothership
@@ -31,6 +32,12 @@ services:
     volumes:
       - ./tests/sql:/docker-entrypoint-initdb.d
       - db_data:/var/lib/mysql
+
+  selenium:
+    image: selenium/standalone-chrome:latest
+    ports:
+      - "4444:4444"
+    shm_size: 2gb
 
 volumes:
   db_data:
