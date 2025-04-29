@@ -13,19 +13,25 @@ RUN apt-get update && apt-get install -y \
     mariadb-client \
     && docker-php-ext-install mysqli zip gd
 
+# Install Composer (global)
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
 # Download and unzip Joomla
 WORKDIR /var/www/html
 RUN curl -sSL https://downloads.joomla.org/cms/joomla5/5-3-0/Joomla_5-3-0-Stable-Full_Package.zip?format=zip -o joomla.zip \
     && unzip joomla.zip \
     && rm joomla.zip
 
-# Fix permissions
+# Copy *your* composer.json and composer.lock INTO Joomla root
+# Ensure composer.json and composer.lock exist in the build context
+COPY /docker/composer.json ./composer.json
+COPY /docker/composer.lock ./composer.lock
+
+# Install the dev dependencies (e.g., Codeception, Helper\DbHelper)
+RUN composer install --no-interaction --no-scripts --prefer-dist
+
+# Fix permissions AFTER
 RUN chown -R www-data:www-data /var/www/html
-
-# Install Composer (global)
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-
-RUN composer install
 
 # Expose Apache port
 EXPOSE 80
