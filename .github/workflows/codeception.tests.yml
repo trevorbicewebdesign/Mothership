@@ -123,6 +123,18 @@ jobs:
         run: |
           docker compose exec joomla sh -c "/var/www/html/vendor/bin/codecept run ${{ matrix.suite }} -d -f"
 
+      # Upload artifacts if any tests fail
+      - name: Upload Artifacts on Failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.suite }}-test-artifacts-${{ github.sha }}
+          path: |
+            tests/_output/*.html
+            tests/_output/*.png
+            wp-content/debug.log
+            /var/log/php_errors.log
+
       - name: Teardown
         if: always()
         run: docker compose down -v
