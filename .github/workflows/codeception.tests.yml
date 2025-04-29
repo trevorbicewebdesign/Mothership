@@ -86,14 +86,6 @@ jobs:
           done
           echo "Joomla Database is ready."
 
-      - name: Copy default configuration.php
-        run: |
-          docker compose exec joomla sh -c "cp /var/www/html/tests/configuration.php /var/www/html/configuration.php"
-
-      - name: Remove Installation Directory
-        run: |
-          docker compose exec joomla sh -c "rm -rf /var/www/html/installation"
-
       - name: Wait for Joomla Web to be ready
         run: |
           echo "Waiting for Joomla Web..."
