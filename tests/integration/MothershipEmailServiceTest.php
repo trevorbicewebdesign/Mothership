@@ -20,11 +20,25 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
     public function testGenerateBodySuccess()
     {
         $body = "Test Template";
-        $template = 'invoice';
+        $template = 'invoice.opened';
         $data = [
             'name' => 'Test User',
             'account_id' => 12345,
+            'account_name' => 'Test Account',
             'client_id' => 67890,
+            'client_name' => 'Test Client',
+            'invoice_number' => 123456,
+            'fname' => 'John',
+            'invoice_due_date' => '2023-12-31',
+            'company_name' => 'Test Company',
+            'company_address' => '123 Test St, Test City, TC 12345',
+            'company_address_1' => '123 Test St',
+            'company_address_2' => '',
+            'company_city' => 'Test City',
+            'company_state' => 'TC',
+            'company_zip' => '12345',
+            'company_phone' => '123 456-7890',
+            'company_email' => 'test.company.email@malinator.com'
         ];
 
         $results = EmailService::generateBody($template, $data);
@@ -47,6 +61,7 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
             'name' => 'Test User',
             'account_id' => 12345,
             'client_id' => 67890,
+            
         ];
 
         $results = EmailService::generateBody($template, $data);
