@@ -647,6 +647,7 @@ class DbHelper extends Db
             'company_state',
             'company_zip',
             'company_phone',
+            'company_default_rate',
             'testmode',
             'company_email',
             'company_address_2',
