@@ -12,31 +12,38 @@ jobs:
   build:
     runs-on: ubuntu-latest
     outputs:
-      image-tag: ${{ steps.meta.outputs.image-tag }}
+      image-tag: mothership-php8.2-joomla5.3.0
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Generate Image Tag
-        id: meta
-        run: |
-          echo "image-tag=mothership-joomla-build-${{ github.sha }}" >> $GITHUB_OUTPUT
+      - name: Restore Cached Joomla Image
+        uses: actions/cache@v4
+        id: docker-cache
+        with:
+          path: /tmp/docker-cache
+          key: docker-php8.2-joomla5.3.0
+          restore-keys: docker-
 
-      - name: Build Base Docker Image (Joomla + Composer)
+      - name: Build or Load Joomla Image
         run: |
-          docker build -t ${{ steps.meta.outputs.image-tag }} -f docker/Dockerfile .
+          if [ -f /tmp/docker-cache/mothership-joomla.tar.gz ]; then
+            echo "Cached image found, loading..."
+            gunzip -c /tmp/docker-cache/mothership-joomla.tar.gz | docker load
+          else
+            echo "No cached image, building Joomla..."
+            docker build -t mothership-php8.2-joomla5.3.0 -f docker/Dockerfile .
+            mkdir -p /tmp/docker-cache
+            docker save mothership-php8.2-joomla5.3.0 | gzip > /tmp/docker-cache/mothership-joomla.tar.gz
+          fi
 
-      - name: Save Docker Image to Cache
+      - name: Save Joomla Image to Cache
         uses: actions/cache@v4
         with:
           path: /tmp/docker-cache
-          key: docker-${{ steps.meta.outputs.image-tag }}
+          key: docker-php8.2-joomla5.3.0
           restore-keys: docker-
 
-      - name: Save image to /tmp
-        run: |
-          mkdir -p /tmp/docker-cache
-          docker save ${{ steps.meta.outputs.image-tag }} | gzip > /tmp/docker-cache/mothership-joomla.tar.gz
 
   test:
     needs: build
