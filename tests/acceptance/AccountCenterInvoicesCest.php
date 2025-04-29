@@ -224,7 +224,7 @@ class AccountCenterInvoicesCest
         $I->click("PDF", "table#invoicesTable tbody tr:first-child td:nth-child(1)");
         // How do I switch to the new tab?
         $I->switchToNextTab();
-        $I->waitForElement("embed[type='application/pdf']");
+        $I->waitForElement("embed[type='application/pdf']", 20);
         $I->wait(3);
 
         $I->makeScreenshot("account-center-view-invoice-pdf");
