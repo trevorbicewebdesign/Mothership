@@ -28,11 +28,9 @@
         <folder>src</folder>
         <folder>tmpl</folder>
     </files>
-    <languages>
-        <language tag="en-GB" type="site">/site/language/en-GB/com_mothership.ini</language>
-        <language tag="en-GB" type="site">/site/language/en-GB/com_mothership.sys.ini</language>
-        <language tag="en-GB" type="admin">/admin/language/en-GB/com_mothership.ini</language>
-        <language tag="en-GB" type="admin">/admin/language/en-GB/com_mothership.sys.ini</language>
+    <languages folder="site">
+        <language tag="en-GB">/site/language/en-GB/com_mothership.ini</language>
+        <language tag="en-GB">/site/language/en-GB/com_mothership.sys.ini</language>
     </languages>
     <administration>
         <menu>com_mothership</menu>
@@ -60,6 +58,11 @@
             <folder>tmpl</folder>
             <folder>vendor</folder>
         </files>
+
+        <languages folder="admin">
+            <language tag="en-GB">language/en-GB/com_mothership.ini</language>
+            <language tag="en-GB">language/en-GB/com_mothership.sys.ini</language>
+        </languages>
     </administration>
     <install>
         <plugins>
