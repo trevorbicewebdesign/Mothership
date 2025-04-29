@@ -14,10 +14,17 @@ services:
       - ./site:/var/www/html/components/com_mothership
       - ./admin:/var/www/html/administrator/components/com_mothership
       - ./mothership.xml:/var/www/html/administrator/components/com_mothership/mothership.xml
+      
       - ./admin/language/en-GB/com_mothership.ini:/var/www/html/administrator/language/en-GB/com_mothership.ini
       - ./admin/language/en-GB/com_mothership.sys.ini:/var/www/html/administrator/language/en-GB/com_mothership.sys.ini
       - ./site/language/en-GB/com_mothership.ini:/var/www/html/language/en-GB/com_mothership.ini
       - ./site/language/en-GB/com_mothership.sys.ini:/var/www/html/language/en-GB/com_mothership.sys.ini
+
+      - ./plugins/mothership-payment/paybycheck/language/en-GB/en-GB.plg_mothership-payment_paybycheck.ini:/var/www/html/administrator/language/en-GB/plg_mothership-payment_paybycheck.ini
+      - ./plugins/mothership-payment/paybycheck/language/en-GB/en-GB.plg_mothership-payment_paybycheck.sys.ini:/var/www/html/administrator/language/en-GB/plg_mothership-payment_paybycheck.sys.ini
+      - ./plugins/mothership-payment/zelle/language/en-GB/en-GB.plg_mothership-payment_zelle.ini:/var/www/html/administrator/language/en-GB/plg_mothership-payment_zelle.ini
+      - ./plugins/mothership-payment/zelle/language/en-GB/en-GB.plg_mothership-payment_zelle.sys.ini:/var/www/html/administrator/language/en-GB/plg_mothership-payment_zelle.sys.ini
+
       - ./plugins/mothership-payment:/var/www/html/plugins/mothership-payment
       - ./codeception.yml:/var/www/html/codeception.yml
       - ./tests/configuration.php:/var/www/html/configuration.php

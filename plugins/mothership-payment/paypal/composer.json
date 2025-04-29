@@ -1,9 +1,0 @@
-{
-    "config": {
-        "vendor-dir": "assets/vendor"
-    },
-    "require": {
-        "angelleye/paypal-php-library": "*",
-        "guzzlehttp/guzzle": "^7.0"
-    }
-}
