@@ -40,13 +40,9 @@
             <menu link="option=com_mothership&amp;view=clients" view="clients">com_mothership_clients</menu>
 			<menu link="option=com_mothership&amp;view=accounts" view="accounts">com_mothership_accounts</menu>
 			<menu link="option=com_mothership&amp;view=projects" view="projects">com_mothership_projects</menu>
+            <menu link="option=com_mothership&amp;view=domains" view="domains">com_mothership_domains</menu>
 			<menu link="option=com_mothership&amp;view=invoices" view="invoices">com_mothership_invoices</menu>
-			<menu link="option=com_mothership&amp;view=quotes" view="quotes">com_mothership_quotes</menu>
 			<menu link="option=com_mothership&amp;view=payments" view="payments">com_mothership_payments</menu>
-			<menu link="option=com_mothership&amp;view=expenses" view="expenses">com_mothership_expenses</menu>
-			<menu link="option=com_mothership&amp;view=tickets" view="tickets">com_mothership_tickets</menu>
-			<menu link="option=com_mothership&amp;view=templates" view="templates">com_mothership_templates</menu>
-			<menu link="option=com_mothership&amp;view=subscriptions" view="subscriptions">com_mothership_subscriptions</menu>
         </submenu>
 
         <files>
@@ -66,11 +62,4 @@
             <language tag="en-GB">language/en-GB/com_mothership.sys.ini</language>
         </languages>
     </administration>
-    <install>
-        <plugins>
-            <plugin group="mothership-payment" folder="mothership-payment" element="manual" method="manual">
-                <filename plugin="paypal">paypal.xml</filename>
-            </plugin>
-        </plugins>
-    </install>
 </extension>
