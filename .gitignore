@@ -1,3 +1,4 @@
 /vendor/
-admin/mothership.xml
-tests/.env
+/admin/mothership.xml
+/tests/.env
+/tests/_output/
