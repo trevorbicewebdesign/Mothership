@@ -66,7 +66,16 @@ class AccountHelper extends ContentHelper
         $db = Factory::getContainer()->get(\Joomla\Database\DatabaseInterface::class);
 
         $query = $db->getQuery(true)
-            ->select($db->quoteName('*', false))
+            ->select([
+                $db->quoteName('id'),
+                $db->quoteName('client_id'),
+                $db->quoteName('name'),
+                $db->quoteName('rate'),
+                $db->quoteName('created'),
+                $db->quoteName('created_by'),
+                $db->quoteName('checked_out_time'),
+                $db->quoteName('checked_out')
+            ])
             ->from($db->quoteName('#__mothership_accounts'))
             ->where($db->quoteName('id') . ' = ' . $db->quote($account_id));
 
