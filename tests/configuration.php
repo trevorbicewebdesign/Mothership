@@ -32,8 +32,8 @@ class JConfig {
 	public $helpurl = 'https://help.joomla.org/proxy?keyref=Help{major}{minor}:{keyref}&lang={langcode}';
 	public $offset = 'UTC';
 	public $mailonline = true;
-	public $mailer = 'mail';
-	public $mailfrom = 'admin@example.com';
+	public $mailer = 'smtp';
+	public $mailfrom = 'ci@localhost.test';
 	public $fromname = 'Mothership CI';
 	public $sendmail = '/usr/sbin/sendmail';
 	public $smtpauth = false;
