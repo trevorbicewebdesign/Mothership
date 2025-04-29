@@ -31,7 +31,21 @@ class PaymentHelper
     {
         $db = Factory::getContainer()->get(DatabaseDriver::class);
         $query = $db->getQuery(true)
-            ->select('*')
+            ->select([
+                $db->quoteName('id'),
+                $db->quoteName('client_id'),
+                $db->quoteName('account_id'),
+                $db->quoteName('amount'),
+                $db->quoteName('payment_date'),
+                $db->quoteName('fee_amount'),
+                $db->quoteName('fee_passed_on'),
+                $db->quoteName('payment_method'),
+                $db->quoteName('transaction_id'),
+                $db->quoteName('status'),
+                $db->quoteName('processed_date'),
+                $db->quoteName('created_at'),
+                $db->quoteName('updated_at')
+            ])
             ->from($db->quoteName('#__mothership_payments'))
             ->where($db->quoteName('id') . ' = ' . (int) $paymentId);
         $db->setQuery($query);
