@@ -87,7 +87,7 @@ class AccountCenterInvoicesCest
             'subtotal' => '70.00',
         ]);
 
-        $I->amOnPage("/");
+        $I->amOnPage("/administrator/");
         $I->fillField(".mod-login input[name=username]", strtolower($this->joomlaUserData['username']));
         $I->fillField(".mod-login input[name=password]", '4&GoH#7FvPsY');
         $I->click(".mod-login button[type=submit]");
