@@ -195,8 +195,8 @@ class AccountCenterInvoicesCest
 
         $I->makeScreenshot("account-center-pay-invoice");
 
-        $I->see("Pay", "table#invoicesTable tbody tr td:nth-child(7)");
-        $I->click("Pay", "table#invoicesTable tbody tr td:nth-child(7)");
+        $I->see("Pay", "table#invoicesTable tbody tr td:nth-child(8)");
+        $I->click("Pay", "table#invoicesTable tbody tr td:nth-child(8)");
         $I->waitForText("Pay Invoice", 10, "h1");
         $I->amOnPage(sprintf(self::INVOICE_PAY_URL, $this->invoiceData['id']));
         $I->waitForText("Pay Invoice #{$this->invoiceData['number']}", 10, "h1");
