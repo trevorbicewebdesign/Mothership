@@ -6,6 +6,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        suite: [acceptance, functional, api, integration]
 
     steps:
       - name: Checkout Code
@@ -29,17 +32,17 @@ jobs:
             sleep 5
           done
           echo "MySQL server is up."
-          
+
           echo "Waiting for Joomla Database..."
           until docker compose exec db mysql -uroot -proot -e "USE local"; do
-            echo "Still waiting for joomla database to be ready..."
+            echo "Still waiting for Joomla database to be ready..."
             sleep 5
           done
           echo "Joomla Database is ready."
 
       - name: Copy default configuration.php
         run: |
-          docker compose exec joomla  sh -c "cp /var/www/html/tests/configuration.php /var/www/html/configuration.php"
+          docker compose exec joomla sh -c "cp /var/www/html/tests/configuration.php /var/www/html/configuration.php"
 
       - name: Remove Installation Directory
         run: |
@@ -61,14 +64,15 @@ jobs:
             export HTTP_HOST=localhost:8080 && \
             php cli/joomla.php extension:discover --verbose && \
             php cli/joomla.php extension:discover:install --verbose\
-          "          
-      - name: Export Datbase
-        run: |
-            docker compose exec db sh -c "mysqldump -uroot -proot --no-tablespaces --skip-comments --extended-insert=false local" | docker compose exec -T joomla sh -c "cat > /var/www/html/tests/_support/Data/db/dump.sql"
+          "
 
-      - name: Run Codeception Acceptance Tests
+      - name: Export Database
         run: |
-          docker compose exec joomla sh -c "/var/www/html/vendor/bin/codecept run acceptance -d -f"
+          docker compose exec db sh -c "mysqldump -uroot -proot --no-tablespaces --skip-comments --extended-insert=false local" | docker compose exec -T joomla sh -c "cat > /var/www/html/tests/_support/Data/db/dump.sql"
+
+      - name: Run Codeception Tests for ${{ matrix.suite }}
+        run: |
+          docker compose exec joomla sh -c "/var/www/html/vendor/bin/codecept run ${{ matrix.suite }} -d -f"
 
       - name: Teardown
         if: always()
