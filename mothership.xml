@@ -23,43 +23,51 @@
     <updateservers>
         <server type="extension" priority="1" name="Mothership Update Server">https://mothership.trevorbice.com/updates.xml</server>
     </updateservers>
-
     <files folder="site">
+        <folder>layouts</folder>
         <folder>src</folder>
+        <folder>tmpl</folder>
     </files>
     <languages folder="site">
         <language tag="en-GB">language/en-GB/com_mothership.ini</language>
+        <language tag="en-GB">language/en-GB/com_mothership.sys.ini</language>
     </languages>
-    <media destination="com_mothership" folder="media">
-        <folder>js</folder>
-    </media>
+    <languages folder="admin">
+        <language tag="en-GB">language/en-GB/com_mothership.ini</language>
+        <language tag="en-GB">language/en-GB/com_mothership.sys.ini</language>
+    </languages>
     <administration>
         <menu>com_mothership</menu>
         <submenu>
-            <menu link="option=com_mothership" view="mothership">com_mothership</menu>
             <menu link="option=com_mothership&amp;view=clients" view="clients">com_mothership_clients</menu>
 			<menu link="option=com_mothership&amp;view=accounts" view="accounts">com_mothership_accounts</menu>
 			<menu link="option=com_mothership&amp;view=projects" view="projects">com_mothership_projects</menu>
             <menu link="option=com_mothership&amp;view=domains" view="domains">com_mothership_domains</menu>
 			<menu link="option=com_mothership&amp;view=invoices" view="invoices">com_mothership_invoices</menu>
 			<menu link="option=com_mothership&amp;view=payments" view="payments">com_mothership_payments</menu>
+            <menu link="option=com_mothership&amp;view=payments" view="payments">com_mothership_payments</menu>
+            <menu link="option=com_mothership&amp;view=payments" view="payments">com_mothership_logs</menu>
         </submenu>
 
-        <files>
+        <files folder="admin">
             <filename>access.xml</filename>
-            <filename>mothership.xml</filename>
             <filename>config.xml</filename>
+            <folder>assets</folder>
+            <folder>config</folder>
             <folder>forms</folder>
-            <folder>helpers</folder>
+            <folder>layouts</folder>
             <folder>services</folder>
             <folder>sql</folder>
             <folder>src</folder>
             <folder>tmpl</folder>
+            <folder>vendor</folder>
         </files>
-
-        <languages>
-            <language tag="en-GB">language/en-GB/com_mothership.ini</language>
-            <language tag="en-GB">language/en-GB/com_mothership.sys.ini</language>
-        </languages>
     </administration>
+    <install>
+        <plugins>
+            <plugin group="mothership-payment" folder="mothership-payment" element="manual" method="manual">
+                <filename plugin="paybycheck">paybycheck.xml</filename>
+            </plugin>
+        </plugins>
+    </install>
 </extension>
