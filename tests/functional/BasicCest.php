@@ -11,6 +11,6 @@ class BasicCest
     public function homepageIsVisible(FunctionalTester $I)
     {
         $I->amOnPage("/");
-        $I->see("Joomla Website Design & Development ");
+        $I->see("Login Form", "h3");
     }
 }
