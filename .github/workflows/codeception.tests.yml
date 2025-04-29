@@ -2,9 +2,21 @@ name: Run Mothership Tests
 
 on:
   workflow_dispatch:
-
+  pull_request:
+    types: [opened, synchronize]
+    
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Start Docker Services
+        run: docker compose --build
+
   test:
+    needs: build
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -21,9 +33,6 @@ jobs:
       - name: Start Docker Services
         run: docker compose up -d --build
 
-      - name: Dump MySQL logs
-        run: docker compose logs db
-
       - name: Wait for Database to be ready
         run: |
           echo "Waiting for Database..."
@@ -39,14 +48,6 @@ jobs:
             sleep 5
           done
           echo "Joomla Database is ready."
-
-      - name: Copy default configuration.php
-        run: |
-          docker compose exec joomla sh -c "cp /var/www/html/tests/configuration.php /var/www/html/configuration.php"
-
-      - name: Remove Installation Directory
-        run: |
-          docker compose exec joomla sh -c "rm -rf /var/www/html/installation"
 
       - name: Wait for Joomla Web to be ready
         run: |
