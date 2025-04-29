@@ -4,8 +4,8 @@
         <filename plugin="paybycheck">paybycheck.php</filename>
     </files>
     <languages>
-        <language tag="en-GB">en-GB.plg_mothership-payment_paybycheck.ini</language>
-        <language tag="en-GB">en-GB.plg_mothership-payment_paybycheck.sys.ini</language>
+        <language tag="en-GB">language/en-GB/plg_mothership-payment_paybycheck.ini</language>
+        <language tag="en-GB">language/en-GB/plg_mothership-payment_paybycheck.sys.ini</language>
     </languages>
     <config>
         <fields name="params">
