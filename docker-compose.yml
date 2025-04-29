@@ -47,6 +47,13 @@ services:
     ports:
       - "4444:4444"
     shm_size: 2gb
+  
+  mailpit:
+    image: axllent/mailpit
+    ports:
+      - "8025:8025"   # Web UI
+      - "1025:1025"   # SMTP port
+    restart: always
 
 volumes:
   db_data:
