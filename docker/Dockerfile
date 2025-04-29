@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     git \
     curl \
     mariadb-client \
-    && docker-php-ext-install mysqli zip gd
+    && docker-php-ext-install mysqli pdo pdo_mysql zip gd
 
 # Install Composer (global)
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
