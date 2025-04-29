@@ -29,7 +29,7 @@ class MothershipAdminLogsCest
         ]);
 
         $I->amOnPage("/administrator/");
-        $I->fillField("input[name=username]", "adminuser");
+        $I->fillField("input[name=username]", "admin");
         $I->fillField("input[name=passwd]", "password123!test");
         $I->click("Log in");
         $I->wait(3);
