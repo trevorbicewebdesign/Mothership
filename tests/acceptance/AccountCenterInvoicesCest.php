@@ -110,11 +110,18 @@ class AccountCenterInvoicesCest
         // Confirm the correct number of records
         $I->seeNumberOfElements("table#invoicesTable tbody tr", 1);
 
-        $I->see("Invoice Status Legend", ".mt-4");
+        $I->see("Invoice Status Legend", ".mt-4 .card-header:nth-child(1)");
         $I->see("Opened", ".mt-4 ul.mb-0 li:nth-child(1)");
-        $I->see("Late", ".mt-4 ul.mb-0 li:nth-child(2)");
-        $I->see("Paid", ".mt-4 ul.mb-0 li:nth-child(3)");
-        $I->seeNumberOfElements(".mt-4 ul.mb-0 li", 3);
+        $I->see("Cancelled", ".mt-4 ul.mb-0 li:nth-child(2)");
+        $I->see("Closed", ".mt-4 ul.mb-0 li:nth-child(3)");
+        $I->seeNumberOfElements(".mt-4 .col-md-6:nth-child(1) ul.mb-0 li", 3);
+
+        $I->see("Payment Status Legend", ".mt-4 .col-md-6:nth-child(2) .card-header");
+        $I->see("Unpaid", ".mt-4 ul.mb-0 li:nth-child(1)");
+        $I->see("Paid", ".mt-4 ul.mb-0 li:nth-child(2)");
+        $I->see("Partially Paid", ".mt-4 ul.mb-0 li:nth-child(3)");
+        $I->see("Pending Confirmation", ".mt-4 ul.mb-0 li:nth-child(4)");
+        $I->seeNumberOfElements(".mt-4 .col-md-6:nth-child(2) ul.mb-0 li", 4);
 
         // Confirm the table headers
         $I->see("PDF", "table#invoicesTable thead tr th:nth-child(1)");
@@ -131,13 +138,25 @@ class AccountCenterInvoicesCest
         $I->see($this->accountData['name'], "table#invoicesTable tbody tr td:nth-child(3)");
         $I->see("$100.00", "table#invoicesTable tbody tr td:nth-child(4)");
         $I->see("Opened", "table#invoicesTable tbody tr td:nth-child(5)");
-        $I->see("Unpaid", "table#invoicesTable thead tr th:nth-child(6)");
+        $I->see("Unpaid", "table#invoicesTable tbody tr td:nth-child(6)");
         $I->see("Due in 30 days", "table#invoicesTable tbody tr td:nth-child(7)");
         $I->see("View", "table#invoicesTable tbody tr td:nth-child(8) ul li");
         $I->see("Pay", "table#invoicesTable tbody tr td:nth-child(8) ul li");
 
         // change the invoice status to 'paid'
         $I->setInvoiceStatus($this->invoiceData['id'], 4);
+        $paymentData = $I->createMothershipPayment([
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'amount' => $this->invoiceData['total'],
+            'status' => 2,
+        ]);
+        $I->createMothershipInvoicePayment([
+            'invoice_id' => $this->invoiceData['id'],
+            'payment_id' => $paymentData['id'],
+            'amount' => $this->invoiceData['total'],
+        ]);
+
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
         $I->waitForText("Invoices", 10, "h1");
 
