@@ -110,6 +110,9 @@ jobs:
             php cli/joomla.php extension:discover --verbose && \
             php cli/joomla.php extension:discover:install --verbose\
           "
+          docker compose exec db mysql -uroot -proot -e "UPDATE local.jos_extensions SET enabled = 1 WHERE type = 'plugin' AND folder = 'mothership-payment' AND element = 'zelle';"
+          docker compose exec db mysql -uroot -proot -e "UPDATE local.jos_extensions SET enabled = 1 WHERE type = 'plugin' AND folder = 'mothership-payment' AND element = 'paybycheck';"
+
 
       - name: Export Database
         run: |
