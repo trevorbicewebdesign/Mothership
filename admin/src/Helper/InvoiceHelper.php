@@ -190,9 +190,7 @@ class InvoiceHelper
         $db = Factory::getContainer()->get(\Joomla\Database\DatabaseInterface::class);
 
         $query = $db->getQuery(true)
-            ->select($db->quoteName([
-                '*',
-            ]))
+            ->select('*')
             ->from($db->quoteName('#__mothership_invoices'))
             ->where($db->quoteName('id') . ' = ' . $db->quote($invoice_id));
 
