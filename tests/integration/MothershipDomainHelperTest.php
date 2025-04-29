@@ -24,10 +24,36 @@ class MothershipDomainHelperTest extends \Codeception\Test\Unit
 
     public function testScanDonain()
     {
-        $domain = "trevorbice.com";
+        $domain = "google.com";
         $results = DomainHelper::scanDomain($domain);
 
         codecept_debug($results);
         
+        $this->assertArrayHasKey('domain', $results);
+        $this->assertArrayHasKey('creation_date', $results);
+        $this->assertArrayHasKey('expiration_date', $results);
+        $this->assertArrayHasKey('updated_date', $results);
+        $this->assertArrayHasKey('registrar', $results);
+        $this->assertArrayHasKey('reseller', $results);
+        $this->assertArrayHasKey('epp_status', $results);
+        $this->assertArrayHasKey('name_servers', $results);
+        $this->assertArrayHasKey('dns_provider', $results);
+        $this->assertArrayHasKey('data', $results);
+        $this->assertArrayHasKey('extra', $results);
+        $this->assertArrayHasKey('rawText', $results);
+
+        $this->assertEquals($domain, $results['domain']);
+        $this->assertEquals('874306800', $results['creation_date']);
+        $this->assertEquals('1852441200', $results['expiration_date']);
+        $this->assertEquals('1722565053', $results['updated_date']);
+        $this->assertEquals('MarkMonitor, Inc.', $results['registrar']);
+        $this->assertEquals(NULL, $results['reseller']);
+        
+        $this->assertContains('ns1.google.com', $results['name_servers']);
+        $this->assertContains('ns2.google.com', $results['name_servers']);
+        $this->assertContains('ns3.google.com', $results['name_servers']);
+        $this->assertContains('ns4.google.com', $results['name_servers']);
+        
+        $this->assertEquals('google', $results['dns_provider']);
     }
 }
