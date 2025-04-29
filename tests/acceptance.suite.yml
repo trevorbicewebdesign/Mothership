@@ -36,7 +36,7 @@ modules:
       Helper\DbHelper:
         dsn: '%DSN%'
         dbname: '%DBNAME%'
-        host: '%DBHOST%'
+        host: selenium
         port: '%DBPORT%'
         user: '%DBUSER%'
         password: '%DBPASS%'
