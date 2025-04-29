@@ -11,12 +11,32 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      image-tag: ${{ steps.meta.outputs.image-tag }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Start Docker Services
-        run: docker compose up -d --build
+      - name: Generate Image Tag
+        id: meta
+        run: |
+          echo "image-tag=mothership-joomla-build-${{ github.sha }}" >> $GITHUB_OUTPUT
+
+      - name: Build Base Docker Image (Joomla + Composer)
+        run: |
+          docker build -t ${{ steps.meta.outputs.image-tag }} -f docker/Dockerfile .
+
+      - name: Save Docker Image to Cache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/docker-cache
+          key: docker-${{ steps.meta.outputs.image-tag }}
+          restore-keys: docker-
+
+      - name: Save image to /tmp
+        run: |
+          mkdir -p /tmp/docker-cache
+          docker save ${{ steps.meta.outputs.image-tag }} | gzip > /tmp/docker-cache/mothership-joomla.tar.gz
 
   test:
     needs: build
@@ -29,12 +49,26 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      - name: Load Cached Docker Image
+        uses: actions/cache@v4
+        with:
+          path: /tmp/docker-cache
+          key: docker-${{ needs.build.outputs.image-tag }}
+          restore-keys: docker-
+
+      - name: Load Docker Image into Daemon
+        run: |
+          gunzip -c /tmp/docker-cache/mothership-joomla.tar.gz | docker load
+
       - name: Rename .env.sample to .env
         run: |
           mv ./tests/.env.sample ./tests/.env
 
       - name: Start Docker Services
-        run: docker compose up -d --build
+        run: docker compose up -d
+
+      - name: Dump MySQL logs
+        run: docker compose logs db
 
       - name: Wait for Database to be ready
         run: |
@@ -51,6 +85,14 @@ jobs:
             sleep 5
           done
           echo "Joomla Database is ready."
+
+      - name: Copy default configuration.php
+        run: |
+          docker compose exec joomla sh -c "cp /var/www/html/tests/configuration.php /var/www/html/configuration.php"
+
+      - name: Remove Installation Directory
+        run: |
+          docker compose exec joomla sh -c "rm -rf /var/www/html/installation"
 
       - name: Wait for Joomla Web to be ready
         run: |
