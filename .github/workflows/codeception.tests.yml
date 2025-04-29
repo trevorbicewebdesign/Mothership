@@ -4,73 +4,72 @@ on:
   workflow_dispatch:
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      image-tag: ${{ steps.meta.outputs.image-tag }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set Image Tag
+        id: meta
+        run: echo "image-tag=mothership-joomla-base-5.3.0" >> $GITHUB_OUTPUT
+
+      - name: Cache Joomla Base Image
+        uses: actions/cache@v4
+        with:
+          path: /tmp/docker-cache
+          key: ${{ steps.meta.outputs.image-tag }}
+          restore-keys: mothership-joomla-base-
+
+      - name: Build Joomla Base if Cache Miss
+        run: |
+          mkdir -p /tmp/docker-cache
+          if [ ! -f /tmp/docker-cache/mothership-joomla.tar.gz ]; then
+            docker build -t ${{ steps.meta.outputs.image-tag }} -f docker/Dockerfile .
+            docker save ${{ steps.meta.outputs.image-tag }} | gzip > /tmp/docker-cache/mothership-joomla.tar.gz
+          else
+            gunzip -c /tmp/docker-cache/mothership-joomla.tar.gz | docker load
+          fi
+
   test:
+    needs: build
     runs-on: ubuntu-latest
     strategy:
       matrix:
         suite: [acceptance, functional, api, integration]
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
       - name: Rename .env.sample to .env
-        run: |
-          mv ./tests/.env.sample ./tests/.env
+        run: mv ./tests/.env.sample ./tests/.env
 
-      - name: Start Docker Services
-        run: docker compose up -d --build
+      - name: Start Docker
+        run: docker compose up -d
 
-      - name: Dump MySQL logs
-        run: docker compose logs db
-
-      - name: Wait for Database to be ready
+      - name: Wait for Database
         run: |
           echo "Waiting for Database..."
           until docker compose exec db mysqladmin ping -h "localhost" --silent; do
             echo "Still waiting for MySQL server to start..."
             sleep 5
           done
-          echo "MySQL server is up."
 
-          echo "Waiting for Joomla Database..."
-          until docker compose exec db mysql -uroot -proot -e "USE local"; do
-            echo "Still waiting for Joomla database to be ready..."
-            sleep 5
-          done
-          echo "Joomla Database is ready."
-
-      - name: Copy default configuration.php
-        run: |
-          docker compose exec joomla sh -c "cp /var/www/html/tests/configuration.php /var/www/html/configuration.php"
-
-      - name: Remove Installation Directory
-        run: |
-          docker compose exec joomla sh -c "rm -rf /var/www/html/installation"
-
-      - name: Wait for Joomla Web to be ready
-        run: |
-          echo "Waiting for Joomla Web..."
-          until curl --fail --silent --output /dev/null http://localhost:8080; do
-            echo "Still waiting for Joomla Web..."
-            sleep 5
-          done
-          echo "Joomla Web is ready."
-
-      - name: Discover & Install Mothership via CLI
+      - name: Discover & Install Mothership
         run: |
           docker compose exec joomla bash -lc "\
             cd /var/www/html && \
             export HTTP_HOST=localhost:8080 && \
             php cli/joomla.php extension:discover --verbose && \
-            php cli/joomla.php extension:discover:install --verbose\
-          "
+            php cli/joomla.php extension:discover:install --verbose"
 
       - name: Export Database
         run: |
           docker compose exec db sh -c "mysqldump -uroot -proot --no-tablespaces --skip-comments --extended-insert=false local" | docker compose exec -T joomla sh -c "cat > /var/www/html/tests/_support/Data/db/dump.sql"
 
-      - name: Run Codeception Tests for ${{ matrix.suite }}
+      - name: Run Codeception Tests (${{ matrix.suite }})
         run: |
           docker compose exec joomla sh -c "/var/www/html/vendor/bin/codecept run ${{ matrix.suite }} -d -f"
 
