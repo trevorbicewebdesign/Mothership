@@ -64,7 +64,7 @@ jobs:
           "          
       - name: Export Datbase
         run: |
-            docker compose exec db sh -c "mysqldump -uroot -proot --no-tablespaces --skip-comments --skip-extended-insert --compact local" | docker compose exec -T joomla sh -c "cat > /var/www/html/tests/_support/Data/db/dump.sql"
+            docker compose exec db sh -c "mysqldump -uroot -proot --no-tablespaces --skip-comments --extended-insert=false local" | docker compose exec -T joomla sh -c "cat > /var/www/html/tests/_support/Data/db/dump.sql"
 
       - name: Run Codeception Acceptance Tests
         run: |
