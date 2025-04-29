@@ -49,14 +49,19 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
       matrix:
-        suite: [functional, api, integration]
         include:
+          - suite: functional
+          - suite: api
+          - suite: integration
           - suite: acceptance
-            group: backend
+            group: login
           - suite: acceptance
-            group: frontend
+            group: dashboard
+          - suite: acceptance
+            group: invoices
+          - suite: acceptance
+            group: payments
 
     steps:
       - name: Checkout Code
@@ -115,14 +120,20 @@ jobs:
           docker compose exec db mysql -uroot -proot -e "UPDATE local.jos_extensions SET enabled = 1 WHERE type = 'plugin' AND folder = 'mothership-payment' AND element = 'zelle';"
           docker compose exec db mysql -uroot -proot -e "UPDATE local.jos_extensions SET enabled = 1 WHERE type = 'plugin' AND folder = 'mothership-payment' AND element = 'paybycheck';"
       
-      - name: Add Joomla User
+      - name: Add Joomla User & Suppress Popup
         run: |
-            docker compose exec joomla sh -c "php /var/www/html/cli/joomla.php user:add \
-              --username=admin \
-              --name='Site Admin' \
-              --password='password123!test' \
-              --email='admin@example.com' \
-              --usergroup='Super Users'"
+          docker compose exec joomla sh -c "php /var/www/html/cli/joomla.php user:add \
+            --username=admin \
+            --name='Site Admin' \
+            --password='password123!test' \
+            --email='admin@example.com' \
+            --usergroup='Super Users'"
+            
+          docker compose exec db mysql -uroot -proot -e "
+          INSERT INTO local.jos_postinstall_messages_read (message_id, user_id)
+          SELECT id, u.id FROM local.jos_postinstall_messages, local.jos_users u
+          WHERE u.username = 'admin';
+          "
 
       - name: Export Database
         run: |
