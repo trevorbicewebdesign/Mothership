@@ -22,7 +22,7 @@ class MothershipDomainHelperTest extends \Codeception\Test\Unit
 
     }
 
-    public function testScanDonain()
+    public function testScanDomain()
     {
         $domain = "google.com";
         $results = DomainHelper::scanDomain($domain);
