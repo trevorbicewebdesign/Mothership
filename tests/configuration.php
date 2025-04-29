@@ -25,7 +25,7 @@ class JConfig {
 	public $dbsslca = '';
 	public $dbsslcipher = '';
 	public $force_ssl = 0;
-	public $live_site = 'http://localhost:8080';
+	public $live_site = 'http://joomla';
 	public $secret = 'RANDOM_SECRET'; // Can be anything random
 	public $gzip = false;
 	public $error_reporting = 'none';
