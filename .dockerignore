@@ -3,7 +3,4 @@
 /node_modules/
 /vendor/
 /media/
-/dist/
-*.zip
-*.tar.gz
-.env
+/dist
