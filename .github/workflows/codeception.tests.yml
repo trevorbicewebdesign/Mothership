@@ -50,7 +50,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      suite: [functional, api, integration]
+      matrix:
+        suite: [functional, api, integration]
         include:
           - suite: acceptance
             group: backend
@@ -117,7 +118,6 @@ jobs:
           "
           docker compose exec db mysql -uroot -proot -e "UPDATE local.jos_extensions SET enabled = 1 WHERE type = 'plugin' AND folder = 'mothership-payment' AND element = 'zelle';"
           docker compose exec db mysql -uroot -proot -e "UPDATE local.jos_extensions SET enabled = 1 WHERE type = 'plugin' AND folder = 'mothership-payment' AND element = 'paybycheck';"
-
 
       - name: Export Database
         run: |
