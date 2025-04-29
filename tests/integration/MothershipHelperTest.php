@@ -23,7 +23,7 @@ class MothershipHelperTest extends \Codeception\Test\Unit
             'company_state' => 'California',
             'company_zip' => '99999',
             'company_phone' => '555-555-5555',
-            'company_default_rate' => '100.00',
+            'company_default_rate' => 100.00,
             'testmode' => 1,
         ]);
 
