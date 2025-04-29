@@ -35,7 +35,5 @@ RUN chown -R www-data:www-data /var/www/html
 
 RUN rm -r /var/www/html/installation
 
-COPY /tests/configuration.php ./configuration.php
-
 # Expose Apache port
 EXPOSE 80
