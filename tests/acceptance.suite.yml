@@ -10,7 +10,7 @@ modules:
       WebDriver:
         url: '%LIVE_SITE%'
         browser: chrome
-        host: 'localhost'
+        host: selenium
         port: '4444'
         path: '/'
         restart: true
@@ -36,7 +36,7 @@ modules:
       Helper\DbHelper:
         dsn: '%DSN%'
         dbname: '%DBNAME%'
-        host: selenium
+        host: '%DBHOST%'
         port: '%DBPORT%'
         user: '%DBUSER%'
         password: '%DBPASS%'
