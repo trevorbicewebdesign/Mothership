@@ -1,5 +1,6 @@
 services:
   joomla:
+    image: mothership-php8.2-joomla5.3.0
     build:
       context: .
       dockerfile: docker/Dockerfile
