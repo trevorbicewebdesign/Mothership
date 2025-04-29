@@ -70,18 +70,5 @@ class JConfig {
 		if (preg_match('#HeadlessChrome#', $HTTP_USER_AGENT)) {
 			$HTTP_USER_AGENT = 'HeadlessChrome';
 		}
-
-		switch ($HTTP_USER_AGENT) {
-			case 'Symfony BrowserKit':
-			case 'HeadlessChrome':
-				$this->debug = 0;
-				$this->db = 'test';
-				break;
-		}
-
-		if (getenv('APPLICATION_ENV') === 'test') {
-			$this->debug = 0;
-			$this->db = 'test';
-		}
 	}
 }
