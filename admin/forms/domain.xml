@@ -5,7 +5,7 @@
 	<field name="client_id" type="clientlist" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_CLIENT_ID_LABEL" description="COM_MOTHERSHIP_FIELD_CLIENT_NAME_DESC" required="true"/>
 	<field name="account_id" type="accountlist" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_ACCOUNT_ID_LABEL" description="COM_MOTHERSHIP_FIELD_ACCOUNT_NAME_DESC" />
 	<field name="status" type="domainstatus" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_DOMAIN_STATUS_LABEL" description="COM_MOTHERSHIP_FIELD_DOMAIN_STATUS_DESC" />
-	<field name="epp_status" type="text" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_DOMAIN_STATUS_LABEL" description="COM_MOTHERSHIP_FIELD_DOMAIN_STATUS_DESC" />
+	<field name="epp_status" type="text" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_EPP_DOMAIN_STATUS_LABEL" description="COM_MOTHERSHIP_FIELD_DOMAIN_EPP_STATUS_DESC" />
 	<field name="registrar" type="registrar" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_DOMAIN_REGISTRAR_LABEL" description="COM_MOTHERSHIP_FIELD_DOMAIN_REGISTRAR_DESC" />
 	<field name="dns_provider" type="dns" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_DOMAIN_DNS_PROVIDER_LABEL" description="COM_MOTHERSHIP_FIELD_DOMAIN_DNS_PROVIDER_DESC" />
 	<field name="ns1" type="text" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_DOMAIN_NS1_LABEL" description="COM_MOTHERSHIP_FIELD_DOMAIN_NS1_DESC" />
