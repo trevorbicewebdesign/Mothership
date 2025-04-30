@@ -101,7 +101,7 @@ class MothershipAdminInvoicesCest
     /**
      * @group backend
      * @group client
-     * @group invoice
+     * @group backend-invoice
      */
     public function MothershipCancelClientEdit(AcceptanceTester $I)
     {
@@ -118,6 +118,7 @@ class MothershipAdminInvoicesCest
      * @group backend
      * @group account
      * @group invoice
+     * @group backend-invoice
      */
     public function MothershipCancelAccountEdit(AcceptanceTester $I)
     {
@@ -135,6 +136,7 @@ class MothershipAdminInvoicesCest
      * @group backend
      * @group payment
      * @group invoice
+     * @group backend-invoice
      */
     public function MothershipCancelPaymentEdit(AcceptanceTester $I)
     {
@@ -165,6 +167,7 @@ class MothershipAdminInvoicesCest
     /**
      * @group backend
      * @group invoice
+     * @group backend-invoice
      */
     public function MothershipViewInvoices(AcceptanceTester $I)
     {
@@ -295,6 +298,7 @@ class MothershipAdminInvoicesCest
      * @group backend
      * @group invoice
      * @group delete
+     * @group backend-invoice
      */
     public function MothershipDeleteInvoiceSuccess(AcceptanceTester $I)
     {
@@ -330,6 +334,7 @@ class MothershipAdminInvoicesCest
      * @group backend
      * @group invoice
      * @group delete
+     * @group backend-invoice
      */
     public function MothershipPreventDeleteClosedInvoice(AcceptanceTester $I)
     {
@@ -432,6 +437,7 @@ class MothershipAdminInvoicesCest
      * @group backend
      * @group invoice
      * @group delete
+     * @group backend-invoice
      * @dataProvider invoiceStatusProvider
      */
     public function MothershipCannotDeleteNonDraftInvoices(AcceptanceTester $I, \Codeception\Example $example)
@@ -471,6 +477,7 @@ class MothershipAdminInvoicesCest
     /**
      * @group backend
      * @group invoice
+     * @group backend-invoice
      */
     public function MothershipAddInvoice(AcceptanceTester $I)
     {
@@ -669,6 +676,7 @@ class MothershipAdminInvoicesCest
     /**
      * @group backend
      * @group invoice
+     * @group backend-invoice
      */
     public function SetInvoiceOpened(AcceptanceTester $I)
     {
@@ -708,6 +716,7 @@ class MothershipAdminInvoicesCest
     /**
      * @group backend
      * @group invoice
+     * @group backend-invoice
      */
     public function LockedInvoiceCannotBeEdited(AcceptanceTester $I)
     {
@@ -828,6 +837,7 @@ class MothershipAdminInvoicesCest
     /**
      * @group backend
      * @group invoice
+     * @group backend-invoice
      */
     public function invoiceViewPdf(AcceptanceTester $I)
     {
@@ -849,6 +859,7 @@ class MothershipAdminInvoicesCest
     /**
      * @group backend
      * @group invoice
+     * @group backend-invoice
      */
     public function invoiceViewPdfTemplate(AcceptanceTester $I)
     {

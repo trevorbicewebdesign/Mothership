@@ -61,6 +61,7 @@ class MothershipAdminAccountsCest
     /**
      * @group backend
      * @group account
+     * @group backend-account
      */
     public function MothershipCancelClientEdit(AcceptanceTester $I)
     {   
@@ -77,6 +78,7 @@ class MothershipAdminAccountsCest
     /**
      * @group backend
      * @group account
+     * @group backend-account
      */
     public function MothershipViewAccounts(AcceptanceTester $I)
     {
@@ -109,6 +111,7 @@ class MothershipAdminAccountsCest
     /**
      * @group backend
      * @group account
+     * @group backend-account
      */
     public function MothershipAddAccount(AcceptanceTester $I)
     {
@@ -165,6 +168,7 @@ class MothershipAdminAccountsCest
      * @group backend
      * @group account
      * @group delete
+     * @group backend-account
      */
     public function MothershipDeleteAccount(AcceptanceTester $I)
     {
@@ -207,6 +211,7 @@ class MothershipAdminAccountsCest
      * @group backend
      * @group account
      * @group delete
+     * @group backend-account
      */
     public function MothershipDeleteAccountFailure(AcceptanceTester $I)
     {
@@ -240,6 +245,7 @@ class MothershipAdminAccountsCest
      * @group backend
      * @group account
      * @group delete
+     * @group backend-account
      */
     public function MothershipDeleteAccountWithPaymentUnlinksPayment(AcceptanceTester $I)
     {

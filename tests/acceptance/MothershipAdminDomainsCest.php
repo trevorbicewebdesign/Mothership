@@ -60,7 +60,8 @@ class MothershipAdminDomainsCest
 
     /**
      * @group backend
-     * @group account
+     * @group domain
+     * @group backend-domain
      */
     public function MothershipViewDomains(AcceptanceTester $I)
     {
@@ -102,6 +103,7 @@ class MothershipAdminDomainsCest
     /**
      * @group backend
      * @group domain
+     * @group backend-domain
      */
     public function MothershipAddDomain(AcceptanceTester $I)
     {
@@ -158,6 +160,7 @@ class MothershipAdminDomainsCest
      * @group backend
      * @group domain
      * @group delete
+     * @group backend-domain
      */
     public function MothershipDeleteDomain(AcceptanceTester $I)
     {
@@ -208,6 +211,7 @@ class MothershipAdminDomainsCest
      * @group backend
      * @group domain
      * @group delete
+     * @group backend-domain
      */
     public function MothershipScanDomain(AcceptanceTester $I)
     {

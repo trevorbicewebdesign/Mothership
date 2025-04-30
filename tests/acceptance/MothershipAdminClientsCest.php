@@ -201,6 +201,7 @@ class MothershipAdminClientsCest
      * @group backend
      * @group client
      * @group delete
+     * @group backend-client
      */
     public function MothershipDeleteClientWithAccountsFailure(AcceptanceTester $I)
     {
@@ -242,6 +243,7 @@ class MothershipAdminClientsCest
      * @group backend
      * @group client
      * @group delete
+     * @group backend-client
      */
     public function MothershipDeleteClientSuccess(AcceptanceTester $I)
     {
