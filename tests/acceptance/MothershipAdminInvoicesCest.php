@@ -137,7 +137,7 @@ class MothershipAdminInvoicesCest
 
     /**
      * @group backend
-     * @group account
+     * @group payment
      * @group invoice
      */
     public function MothershipCancelPaymentEdit(AcceptanceTester $I)
