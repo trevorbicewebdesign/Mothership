@@ -9,6 +9,7 @@ on:
       - main
     
 jobs:
+  
   build:
     runs-on: ubuntu-latest
     outputs:
@@ -49,6 +50,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         include:
           - suite: functional
