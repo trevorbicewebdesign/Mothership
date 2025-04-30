@@ -883,6 +883,64 @@ class DbHelper extends Db
         return $ticketData;
     }
 
+    public function grabDomainFromDatabase($ticketId)
+    {
+        $fields = [
+            'id',
+            'name',
+            'client_id',
+            'account_id',
+            'status',
+            'registrar',
+            'reseller',
+            'dns_provider',
+            'ns1',
+            'ns2',
+            'ns3',
+            'ns4',
+            'purchase_date',
+            'expiration_date',
+            'notes',
+            'created',
+            'modified'
+        ];
+
+        $ticketData = [];
+        foreach ($fields as $field) {
+            $ticketData[$field] = $this->Db->grabFromDatabase("{$this->prefix}mothership_domains", $field, ["id" => $ticketId]);
+        }
+
+        return $ticketData;
+    }
+
+    public function grabProjectFromDatabase($ticketId)
+    {
+        $fields = [
+            'id',
+            'name',
+            'description',
+            'client_id',
+            'account_id',
+            'type',
+            'status',
+            'metadata',
+            'created',
+            'created_by',
+            'checked_out_time',
+            'checked_out',
+        ];
+
+        $ticketData = [];
+        foreach ($fields as $field) {
+            if($field == 'metadata') {
+                $ticketData[$field] = json_decode($this->Db->grabFromDatabase("{$this->prefix}mothership_projects", $field, ["id" => $ticketId]), true);
+            } else {
+                $ticketData[$field] = $this->Db->grabFromDatabase("{$this->prefix}mothership_projects", $field, ["id" => $ticketId]);
+            }
+        }
+
+        return $ticketData;
+    }
 
     public function getClientIdByName($clientName)
     {
