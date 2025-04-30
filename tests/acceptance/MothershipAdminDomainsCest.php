@@ -137,6 +137,7 @@ class MothershipAdminDomainsCest
         $I->selectOption("select#jform_client_id", "Test Client");
         $I->selectOption("select#jform_account_id", "Test Account");
         $I->fillField("input#jform_name", "example.com");
+        $I->fillField("input#jform_purchase_date", date("Y-m-d"));
 
         $I->click("Save", "#toolbar");
         $I->waitForText("Mothership: Edit Domain", 10, "h1.page-title");
