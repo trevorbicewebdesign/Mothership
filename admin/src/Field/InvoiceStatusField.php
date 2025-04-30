@@ -16,7 +16,12 @@ class InvoicestatusField extends ListField
     {
         $options = [];
 
-        $statuses = ['draft'=>1, 'opened'=>2, 'late'=>3, 'paid'=>4];
+        $statuses = [
+            'draft'=>1, 
+            'opened'=>2, 
+            'canceled'=>3, 
+            'closed'=>4
+        ];
         foreach ($statuses as $key=>$status) {
             $options[] = (object) [
             'value' => $status,
