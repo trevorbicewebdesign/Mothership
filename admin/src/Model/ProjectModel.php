@@ -151,7 +151,7 @@ class ProjectModel extends AdminModel
         parent::preprocessForm($form, $data, $group);
 
         // Merge in additional metadata fields
-        \Joomla\CMS\Form\Form::addFormPath(JPATH_COMPONENT_ADMINISTRATOR . '/models/forms');
+        \Joomla\CMS\Form\Form::addFormPath(JPATH_ROOT . '/administrator/component/com_mothership/src/models/forms');
         $form->loadFile('project-website', false);
     }
 
