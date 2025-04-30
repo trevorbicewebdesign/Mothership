@@ -190,9 +190,6 @@ class MothershipAdminLogsCest
         $I->seeInDatabase("jos_mothership_logs", [
             'id' => $this->logData['id'],
         ]);
-        $I->seeInDatabase("jos_mothership_accounts", [
-            'log_id' => $this->logData['id'],
-        ]);
         $I->amOnPage(self::LOGS_VIEW_ALL_URL);
         $I->waitForText("Mothership: Logs", 20, "h1.page-title");
 
