@@ -96,20 +96,8 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Log in to GHCR
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ secrets.GHCR_USERNAME }}
-          password: ${{ secrets.GHCR_PAT }}
-
       - name: Pull Joomla Docker Image from GHCR
         run: docker pull ghcr.io/trevorbicewebdesign/mothership:php8.2-joomla5.3.0
-
-      - name: Patch docker-compose.yml with GHCR image
-        run: |
-          IMAGE="${{ needs.build.outputs.image-tag }}"
-          sed -i "s|image:.*|image: $IMAGE|" docker-compose.yml
 
       - name: Rename .env.sample to .env
         run: mv ./tests/.env.sample ./tests/.env
