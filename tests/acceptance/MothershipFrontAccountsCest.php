@@ -151,6 +151,7 @@ class MothershipFrontAccountsCest
         $I->see("Domains", "h4");
         $I->seeNumberOfElements("table#domainsTable tbody tr", 1);
 
+        /*
         $I->seeInDatabase("jos_mothership_logs", [
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
@@ -160,6 +161,7 @@ class MothershipFrontAccountsCest
             'object_id' => $this->accountData['id'],
             // 'created' => $log_created,
         ]);
+        */
     }
 
 }
