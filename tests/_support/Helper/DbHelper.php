@@ -1033,4 +1033,24 @@ class DbHelper extends Db
         $this->Db->updateInDatabase("{$this->prefix}mothership_payments", ['status' => $status], ['id' => $paymentId]);
     }
 
+    public function setPaymentLocked($paymentId)
+    {
+        $this->Db->updateInDatabase("{$this->prefix}mothership_payments", ['locked' => 1], ['id' => $paymentId]);
+    }
+
+    public function setPaymentUnlocked($paymentId)
+    {
+        $this->Db->updateInDatabase("{$this->prefix}mothership_payments", ['locked' => 0], ['id' => $paymentId]);
+    }
+
+    public function setInvoiceLocked($invoiceId)
+    {
+        $this->Db->updateInDatabase("{$this->prefix}mothership_invoices", ['locked' => 1], ['id' => $invoiceId]);
+    }
+
+    public function setInvoiceUnlocked($invoiceId)
+    {
+        $this->Db->updateInDatabase("{$this->prefix}mothership_invoices", ['locked' => 0], ['id' => $invoiceId]);
+    }
+
 }
