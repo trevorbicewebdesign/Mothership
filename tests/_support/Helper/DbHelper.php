@@ -559,6 +559,44 @@ class DbHelper extends Db
         return $data;
     }
 
+    public function createMothershipDomainData(array $data)
+    {
+
+        $defaultData = [
+            "name" => isset($data['name']) ? $data['name'] : 'example.com',
+            "client_id" => isset($data['client_id']) ? $data['client_id'] : 0,
+            'status' => isset($data['status']) ? $data['status'] : 1,
+            'registrar' => isset($data['registrar']) ? $data['registrar'] : 'GoDaddy',
+            'reseller' => isset($data['reseller']) ? $data['reseller'] : 'GoDaddy',
+            'dns_provider' => isset($data['dns_provider']) ? $data['dns_provider'] : 'Cloudflare',
+            'purchase_date' => isset($data['purchase_date']) ? $data['purchase_date'] : date('Y-m-d H:i:s'),
+            'expiration_date' => isset($data['expiration_date']) ? $data['expiration_date'] : date('Y-m-d H:i:s', strtotime('+1 year')),
+            'auto_renew' => isset($data['auto_renew']) ? $data['auto_renew'] : 1,
+            'notes' => isset($data['notes']) ? $data['notes'] : '',
+            'created' => isset($data['created']) ? $data['created'] : date('Y-m-d H:i:s'),
+        ];
+
+        // Merge provided data with defaults
+        $finalData = array_merge($defaultData, $data);
+        return $finalData;
+    }
+
+    public function createMothershipDomain(array $data)
+    {
+        $data = $this->createMothershipDomainData($data);
+        // Debugging output for visibility
+        codecept_debug("Creating Mothership Domain with the following data:");
+        codecept_debug($data);
+
+        // Insert into the database
+        $id = $this->Db->haveInDatabase("{$this->prefix}mothership_domains", $data);
+        $data['id'] = $id;
+
+        // Return the ID of the newly created invoice
+        return $data;
+    }
+
+
     public function setInvoiceStatus($invoiceId, $status)
     {
         // Status levels are 1-5
