@@ -7,44 +7,55 @@ on:
   push:
     branches:
       - main
-    
+
 jobs:
-  
+
   build:
-    name: Build PHP 8.2 Joomla 5.3.0 Image
+    name: Build & Push Joomla Docker Image (if needed)
     runs-on: ubuntu-latest
     outputs:
-      image-tag: mothership-php8.2-joomla5.3.0
+      image-tag: ghcr.io/${{ github.repository_owner }}/mothership:php8.2-joomla5.3.0
     steps:
-      - name: Checkout Code
+      - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Restore Cached Joomla Image
-        uses: actions/cache@v4
-        id: docker-cache
+      - name: Log in to GHCR
+        uses: docker/login-action@v2
         with:
-          path: /tmp/docker-cache
-          key: docker-php8.2-joomla5.3.0
-          restore-keys: docker-
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build or Load Joomla Image
+      - name: Check if GHCR image already exists
+        id: image-check
         run: |
-          if [ -f /tmp/docker-cache/mothership-joomla.tar.gz ]; then
-            echo "Cached image found, loading..."
-            gunzip -c /tmp/docker-cache/mothership-joomla.tar.gz | docker load
+          IMAGE="ghcr.io/${{ github.repository_owner }}/mothership"
+          TAG="php8.2-joomla5.3.0"
+          REPO_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+
+          echo "Checking GHCR for image $IMAGE:$TAG"
+          TOKEN=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            https://ghcr.io/token\?scope\=repository:$REPO_LOWER/mothership:pull | jq -r .token)
+
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Authorization: Bearer $TOKEN" \
+            -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
+            https://ghcr.io/v2/$REPO_LOWER/mothership/manifests/$TAG)
+
+          echo "GHCR check status: $STATUS"
+          if [ "$STATUS" = "200" ]; then
+            echo "Image already exists. Skipping build."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
           else
-            echo "No cached image, building Joomla..."
-            docker build -t mothership-php8.2-joomla5.3.0 -f docker/Dockerfile .
-            mkdir -p /tmp/docker-cache
-            docker save mothership-php8.2-joomla5.3.0 | gzip > /tmp/docker-cache/mothership-joomla.tar.gz
+            echo "Image does not exist. Proceeding with build."
+            echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Save Joomla Image to Cache
-        uses: actions/cache@v4
-        with:
-          path: /tmp/docker-cache
-          key: docker-php8.2-joomla5.3.0
-          restore-keys: docker-
+      - name: Build and Push Docker Image
+        if: steps.image-check.outputs.skip != 'true'
+        run: |
+          docker build -t ghcr.io/${{ github.repository_owner }}/mothership:php8.2-joomla5.3.0 -f docker/Dockerfile .
+          docker push ghcr.io/${{ github.repository_owner }}/mothership:php8.2-joomla5.3.0
 
 
   test:
@@ -75,20 +86,24 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Load Cached Docker Image
-        uses: actions/cache@v4
+      - name: Log in to GHCR
+        uses: docker/login-action@v2
         with:
-          path: /tmp/docker-cache
-          key: docker-${{ needs.build.outputs.image-tag }}
-          restore-keys: docker-
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Load Docker Image into Daemon
+      - name: Pull Joomla Docker Image from GHCR
         run: |
-          gunzip -c /tmp/docker-cache/mothership-joomla.tar.gz | docker load
+          docker pull ${{ needs.build.outputs.image-tag }}
+
+      - name: Patch docker-compose.yml with GHCR image
+        run: |
+          IMAGE="${{ needs.build.outputs.image-tag }}"
+          sed -i "s|image:.*|image: $IMAGE|" docker-compose.yml
 
       - name: Rename .env.sample to .env
-        run: |
-          mv ./tests/.env.sample ./tests/.env
+        run: mv ./tests/.env.sample ./tests/.env
 
       - name: Start Docker Services
         run: docker compose up -d
@@ -127,15 +142,15 @@ jobs:
           docker compose exec joomla sh -c "php /var/www/html/cli/joomla.php extension:discover:install"
           docker compose exec db mysql -uroot -proot -e "UPDATE local.jos_extensions SET enabled = 1 WHERE type = 'plugin' AND folder = 'mothership-payment' AND element = 'zelle';"
           docker compose exec db mysql -uroot -proot -e "UPDATE local.jos_extensions SET enabled = 1 WHERE type = 'plugin' AND folder = 'mothership-payment' AND element = 'paybycheck';"
-      
+
       - name: Add Joomla User & Suppress Popup
         run: |
-            docker compose exec joomla sh -c "php /var/www/html/cli/joomla.php user:add \
-            --username=admin \
-            --name='Site Admin' \
-            --password='password123!test' \
-            --email='admin@example.com' \
-            --usergroup='Super Users' --quiet"
+          docker compose exec joomla sh -c "php /var/www/html/cli/joomla.php user:add \
+          --username=admin \
+          --name='Site Admin' \
+          --password='password123!test' \
+          --email='admin@example.com' \
+          --usergroup='Super Users' --quiet"
 
       - name: Export Database
         run: |
@@ -164,7 +179,7 @@ jobs:
         with:
           name: ${{ matrix.suite }}-${{ matrix.group || 'default' }}-output-${{ github.sha }}
           path: test-artifacts/${{ matrix.suite }}-${{ matrix.group || 'default' }}/
-  
+
       - name: Teardown
         if: always()
         run: docker compose down -v
