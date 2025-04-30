@@ -94,7 +94,8 @@ class MothershipAdminInvoicesCest
         $I->fillField("input[name=username]", "admin");
         $I->fillField("input[name=passwd]", "password123!test");
         $I->click("Log in");
-        $I->wait(3);
+        $I->waitForText("Hide Forever");
+        $I->click("Hide Forever");
     }
 
     /**
@@ -108,7 +109,6 @@ class MothershipAdminInvoicesCest
         $I->waitForText("Mothership: Invoices", 10, "h1.page-title");
 
         $I->click("Test Client");
-        $I->wait(1);
         $I->waitForText("Mothership: Edit Client", 10, "h1.page-title");
         $I->click("Close", "#toolbar");
         $I->wait(1);
