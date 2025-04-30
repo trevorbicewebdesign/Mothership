@@ -110,11 +110,18 @@ class MothershipFrontInvoicesCest
         // Confirm the correct number of records
         $I->seeNumberOfElements("table#invoicesTable tbody tr", 1);
 
-        $I->see("Invoice Status Legend", ".mt-4");
-        $I->see("Opened", ".mt-4 ul.mb-0 li:nth-child(1)");
-        $I->see("Late", ".mt-4 ul.mb-0 li:nth-child(2)");
-        $I->see("Paid", ".mt-4 ul.mb-0 li:nth-child(3)");
-        $I->seeNumberOfElements(".mt-4 ul.mb-0 li", 3);
+        $I->see("Invoice Status Legend", ".mt-4 .col-md-6:nth-child(1)");
+        $I->see("Opened", ".mt-4 .col-md-6:nth-child(1) ul.mb-0 li:nth-child(1)");
+        $I->see("Cancelled", ".mt-4 .col-md-6:nth-child(1) ul.mb-0 li:nth-child(2)");
+        $I->see("Closed", ".mt-4 .col-md-6:nth-child(1) ul.mb-0 li:nth-child(3)");
+        $I->seeNumberOfElements(".mt-4 .col-md-6:nth-child(1) ul.mb-0 li", 3);
+
+        $I->see("Payment Status Legend", ".mt-4 .col-md-6:nth-child(2)");
+        $I->see("Unpaid", ".mt-4 .col-md-6:nth-child(2) ul.mb-0 li:nth-child(1)");
+        $I->see("Paid", ".mt-4 .col-md-6:nth-child(2) ul.mb-0 li:nth-child(2)");
+        $I->see("Partially Paid", ".mt-4 .col-md-6:nth-child(2) ul.mb-0 li:nth-child(3)");
+        $I->see("Pending Confirmation", ".mt-4 .col-md-6:nth-child(2) ul.mb-0 li:nth-child(4)");
+        $I->seeNumberOfElements(".mt-4 .col-md-6:nth-child(2) ul.mb-0 li", 3);
 
         // Confirm the table headers
         $I->see("PDF", "table#invoicesTable thead tr th:nth-child(1)");
