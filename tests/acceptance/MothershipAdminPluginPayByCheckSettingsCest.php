@@ -20,7 +20,8 @@ class MothershipAdminPluginPayByCheckSettingsCest
         $I->fillField("input[name=username]", "admin");
         $I->fillField("input[name=passwd]", "password123!test");
         $I->click("Log in");
-        $I->wait(3);
+        $I->waitForText("Hide Forever");
+        $I->click("Hide Forever");
     }
 
     /**
