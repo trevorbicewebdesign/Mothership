@@ -596,6 +596,39 @@ class DbHelper extends Db
         return $data;
     }
 
+    public function createMothershipLogData(array $data)
+    {
+        $defaultData = [
+            "client_id" => $data['client_id'] ?? 0,
+            "account_id" => $data['account_id'] ?? 0,
+            "object_type" => $data['object_type'] ?? 'Test Object Type',
+            "object_id" => $data['object_id'] ?? 0,
+            "action" => $data['action'] ?? 'Test Action',
+            "meta" => isset($data['meta']) ? json_encode($data['meta']) : json_encode(['default' => 'Test Meta']),
+            "description" => $data['description'] ?? 'Test Description',
+            "user_id" => $data['user_id'] ?? 0,
+            "created" => date('Y-m-d H:i:s'),
+            "notes" => $data['notes'] ?? '',
+        ];
+
+        // Merge provided data with defaults
+        $finalData = array_merge($defaultData, $data);
+        return $finalData;
+    }
+    public function createMothershipLog(array $data)
+    {
+        $data = $this->createMothershipLogData($data);
+        // Debugging output for visibility
+        codecept_debug("Creating Mothership Log with the following data:");
+        codecept_debug($data);
+
+        // Insert into the database
+        $id = $this->Db->haveInDatabase("{$this->prefix}mothership_logs", $data);
+        $data['id'] = $id;
+
+        // Return the ID of the newly created invoice
+        return $data;
+    }
 
     public function setInvoiceStatus($invoiceId, $status)
     {
