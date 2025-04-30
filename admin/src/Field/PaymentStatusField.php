@@ -5,7 +5,7 @@ namespace TrevorBice\Component\Mothership\Administrator\Field;
 use Joomla\CMS\Form\Field\ListField;
 use Joomla\CMS\Language\Text;
 
-defined('_JEXEC') or die;
+\defined('_JEXEC') or die;
 
 class PaymentStatusField extends ListField
 {
