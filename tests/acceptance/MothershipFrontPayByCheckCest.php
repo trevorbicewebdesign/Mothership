@@ -118,7 +118,7 @@ class MothershipFrontPayByCheckCest
 
         $I->see("Total Due: \${$this->invoiceData['total']}");
 
-        $I->click("#payment_method_2");
+        $I->click("#payment_method_0");
         $I->click("Pay Now");
         $I->wait(2);
         $I->see("Pay By Check Payment Instructions", "h1");
