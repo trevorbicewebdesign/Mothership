@@ -139,18 +139,23 @@ jobs:
             docker compose exec joomla sh -c "/var/www/html/vendor/bin/codecept run ${{ matrix.suite }} -d -f"
           fi
 
-      # Upload artifacts if any tests fail
-      - name: Upload Artifacts on Failure
+      - name: Package Output Files
+        if: failure()
+        run: |
+          mkdir -p test-artifacts
+          cp -v tests/_output/* test-artifacts/ || true
+          cp -v wp-content/debug.log test-artifacts/ || true
+          cp -v /var/log/php_errors.log test-artifacts/ || true
+          tar -czf ${{ matrix.suite }}-${{ matrix.group || 'default' }}-output.tar.gz -C test-artifacts .
+          rm -rf test-artifacts
+
+      - name: Upload Single Artifact File
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.suite }}-test-artifacts-${{ github.sha }}
-          path: |
-            tests/_output/*.html
-            tests/_output/*.png
-            wp-content/debug.log
-            /var/log/php_errors.log
-
+          name: ${{ matrix.suite }}-${{ matrix.group || 'default' }}-output-${{ github.sha }}
+          path: ${{ matrix.suite }}-${{ matrix.group || 'default' }}-output.tar.gz
+  
       - name: Teardown
         if: always()
         run: docker compose down -v
