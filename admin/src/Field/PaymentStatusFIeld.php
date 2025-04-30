@@ -4,13 +4,12 @@ namespace TrevorBice\Component\Mothership\Administrator\Field;
 
 use Joomla\CMS\Form\Field\ListField;
 use Joomla\CMS\Language\Text;
-use TrevorBice\Component\Mothership\Administrator\Enum\Paymentstatus;
 
 defined('_JEXEC') or die;
 
-class PaymentstatusField extends ListField
+class PaymentStatusField extends ListField
 {
-    protected $type = 'Paymentstatus';
+    protected $type = 'PaymentStatus';
 
     protected function getOptions()
     {
