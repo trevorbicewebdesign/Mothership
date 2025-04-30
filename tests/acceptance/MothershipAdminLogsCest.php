@@ -227,7 +227,8 @@ class MothershipAdminLogsCest
     public function MothershipDeleteLogSuccess(AcceptanceTester $I)
     {
         $noAccountsLog = $I->createMothershipLog([
-            'name' => 'No Accounts Log',
+            'description' => 'No Accounts Log',
+            'details' => 'No Accounts Log Details',
         ]);
 
         $I->amOnPage(self::LOGS_VIEW_ALL_URL);
@@ -257,9 +258,6 @@ class MothershipAdminLogsCest
 
         $I->seeInDatabase("jos_mothership_logs", [
             'id' => $this->logData['id'],
-        ]);
-        $I->seeInDatabase("jos_mothership_accounts", [
-            'log_id' => $this->logData['id'],
         ]);
         $I->dontSeeInDatabase('jos_mothership_logs', [
             'id' => $noAccountsLog['id'],
