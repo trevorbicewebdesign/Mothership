@@ -44,7 +44,8 @@ class MothershipAdminPluginZelleSettingsCest
         $I->makeScreenshot("mothership-payments-zelle-settings");
 
         $I->see("Payment Display Label", "label");
-        $I->see("Zelle Email or Phone Number", "label");
-        $I->see("Instructions", "label");
+        $I->see("Zelle Email Address", "label");
+        $I->see("Zelle Phone Number", "label");
+        $I->see("Instructions", "label");        
     }
 }
