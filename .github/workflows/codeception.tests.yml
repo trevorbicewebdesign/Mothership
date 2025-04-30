@@ -55,13 +55,9 @@ jobs:
           - suite: api
           - suite: integration
           - suite: acceptance
-            group: login
+            group: backend
           - suite: acceptance
-            group: dashboard
-          - suite: acceptance
-            group: invoices
-          - suite: acceptance
-            group: payments
+            group: frontend
 
     steps:
       - name: Checkout Code
