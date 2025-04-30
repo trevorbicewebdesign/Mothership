@@ -33,25 +33,19 @@ jobs:
           TAG="php8.2-joomla5.3.0"
           FULL_IMAGE="$IMAGE:$TAG"
           REPO_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-
-          echo "Checking GHCR for image $FULL_IMAGE"
-          TOKEN=$(curl -s -H "Authorization: Bearer ${{ secrets.GHCR_PAT }}" \
-            "https://ghcr.io/token?scope=repository:$REPO_LOWER/mothership:pull" | jq -r .token)
-
+      
+          echo "Checking GHCR for public image: $FULL_IMAGE"
+      
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-            -H "Authorization: Bearer $TOKEN" \
-            -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
+            -H "Accept: application/vnd.docker.distribution.manifest.v2+json, application/vnd.docker.distribution.manifest.list.v2+json" \
             https://ghcr.io/v2/$REPO_LOWER/mothership/manifests/$TAG)
-
+      
           echo "Image status: $STATUS"
-
           echo "image-tag=$FULL_IMAGE" >> $GITHUB_OUTPUT
-
+      
           if [ "$STATUS" = "200" ]; then
-            echo "Image exists. Skipping build."
             echo "skip=true" >> $GITHUB_OUTPUT
           else
-            echo "Image missing. Proceeding with build."
             echo "skip=false" >> $GITHUB_OUTPUT
           fi
 
