@@ -45,7 +45,7 @@ jobs:
           echo "GHCR check status: $STATUS"
           if [ "$STATUS" = "200" ]; then
             echo "Image already exists. Skipping build."
-            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "skip=true" >> "$GITHUB_OUTPUT"fPull Joomla Docker Image from GHCR
           else
             echo "Image does not exist. Proceeding with build."
             echo "skip=false" >> "$GITHUB_OUTPUT"
@@ -95,8 +95,8 @@ jobs:
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ secrets.GHCR_USERNAME }}
+          password: ${{ secrets.GHCR_PAT }}
 
       - name: Pull Joomla Docker Image from GHCR
         run: |
