@@ -123,7 +123,7 @@ class MothershipFrontPayByZelleCest
         $I->click("Pay Now");
         $I->waitForText("Zelle Payment Instructions", 10);
 
-        $I->see("Please send payment via Zelle to 707 880-0156.");
+        $I->see("Please send payment via Zelle to 555 555-5555.");
 
         $I->seeInDatabase("jos_mothership_payments", [
             'client_id' => $this->clientData['id'],
