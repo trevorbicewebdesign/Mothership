@@ -10,7 +10,7 @@ on:
 
 jobs:
   test:
-    name: Run Codeception Tests
+    name: Test Mothership - ${{ matrix.suite }}-${{ matrix.group || 'default' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
