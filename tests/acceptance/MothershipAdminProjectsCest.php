@@ -181,7 +181,7 @@ class MothershipAdminProjectsCest
         $I->waitForText("Mothership: Edit Project", 5, "h1.page-title");
         $I->seeInCurrentUrl( sprintf(self::PROJECT_EDIT_URL, ($this->projectData['id']+1)) );
 
-        $metadata = $I->grabFromDatabase("jos_mothership_projects", "metadata", ['id' => ($this->projectData['id']+1)]);
+        $metadata = json_decode($I->grabFromDatabase("jos_mothership_projects", "metadata", ['id' => ($this->projectData['id']+1)]));
         codecept_debug($metadata);
 
         
@@ -193,7 +193,7 @@ class MothershipAdminProjectsCest
             'type' => 'website',
         ]);
 
-        if($metadata!== null) {
+        if($metadata!== null && is_array($metadata)) {
             $I->assertArrayHasKey('primary_url', $metadata);
             $I->assertArrayHasKey('primary_domain', $metadata);
             $I->assertArrayHasKey('cms_type', $metadata);
