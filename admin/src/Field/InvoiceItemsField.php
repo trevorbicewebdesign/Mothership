@@ -19,13 +19,13 @@ class InvoiceItemsField extends SubformField
      */
     protected function getInput()
     {
-        $layoutPath = JPATH_COMPONENT_ADMINISTRATOR . '/tmpl/fields/invoiceitems.php';
+        $layoutPath = JPATH_ROOT . '/administrator/components/com_mothership/tmpl/fields/invoiceitems.php';
 
         if (!file_exists($layoutPath)) {
             return parent::getInput(); // Fallback to default Joomla subform
         }
 
-        $layout = new \Joomla\CMS\Layout\FileLayout('invoiceitems', JPATH_COMPONENT_ADMINISTRATOR . '/tmpl/fields');
+        $layout = new \Joomla\CMS\Layout\FileLayout('invoiceitems',JPATH_ROOT . '/administrator/components/com_mothership/tmpl/fields');
 
         return $layout->render(['field' => $this]);
     }
