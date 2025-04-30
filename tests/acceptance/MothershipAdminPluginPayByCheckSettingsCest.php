@@ -44,7 +44,7 @@ class MothershipAdminPluginPayByCheckSettingsCest
         $I->makeScreenshot("mothership-payments-paybycheck-settings");
 
         $I->see("Payment Display Label", "label");
-        $I->see("Check Payee", "label");
+        $I->see("Payee Name", "label");
         $I->see("Instructions", "label");
     }
 }
