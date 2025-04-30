@@ -44,11 +44,11 @@ $items = $field->value ?? [];
                     <td class="drag-handle"><?php if (!$isLocked) : ?>☰<?php endif; ?></td>
                     <td>
                         <div class="form-group">
-                        <input type="text" name="jform[items][<?php echo $index; ?>][name]" required="required" class="form-control" value="<?php echo htmlspecialchars((string)($item['name'] ?? '')); ?>" <?php if($isLocked): ?>disabled="true"<?php endif; ?>>
+                        <input type="text" name="jform[items][<?php echo $index; ?>][name]" required="required" class="form-control" value="<?php echo is_string($item['name'])?htmlspecialchars($item['name']):''; ?>" <?php if($isLocked): ?>disabled="true"<?php endif; ?>>
                             <div class="invalid-feedback">Please provide an item name.</div>
                         </div>
                     </td>
-                    <td><input type="text" name="jform[items][<?php echo $index; ?>][description]" class="form-control" value="<?php echo htmlspecialchars($item['description'] ?? ''); ?>" <?php if($isLocked): ?>disabled="true"<?php endif; ?>></td>
+                    <td><input type="text" name="jform[items][<?php echo $index; ?>][description]" class="form-control" value="<?php echo is_string($item['description'])?htmlspecialchars($item['description']):''; ?>" <?php if($isLocked): ?>disabled="true"<?php endif; ?>></td>
                     <td><input type="number" name="jform[items][<?php echo $index; ?>][hours]" class="form-control" value="<?php echo (float)($item['hours'] ?? 0); ?>" <?php if($isLocked): ?>disabled="true"<?php endif; ?>></td>
                     <td><input type="number" name="jform[items][<?php echo $index; ?>][minutes]" class="form-control" value="<?php echo (float)($item['minutes'] ?? 0); ?>" <?php if($isLocked): ?>disabled="true"<?php endif; ?>></td>
                     <td><input type="number" step="0.01" name="jform[items][<?php echo $index; ?>][quantity]" class="form-control" value="<?php echo (float)($item['quantity'] ?? 1); ?>" <?php if($isLocked): ?>disabled="true"<?php endif; ?>></td>
