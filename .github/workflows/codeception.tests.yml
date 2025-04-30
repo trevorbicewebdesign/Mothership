@@ -29,10 +29,10 @@ jobs:
       - name: Check if GHCR image already exists and set outputs
         id: image-check
         run: |
-          IMAGE="ghcr.io/${{ github.repository_owner }}/mothership"
+          IMAGE="ghcr.io/trevorbicewebdesign/mothership"
           TAG="php8.2-joomla5.3.0"
           FULL_IMAGE="$IMAGE:$TAG"
-          REPO_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          REPO_LOWER=$(echo "trevorbicewebdesign" | tr '[:upper:]' '[:lower:]')
       
           echo "Checking GHCR for image: $FULL_IMAGE"
       
