@@ -68,12 +68,10 @@ class MothershipAdminAccountsCest
         $I->waitForText("Mothership: Accounts", 20, "h1.page-title");
 
         $I->click("Test Client");
-        $I->wait(1);
-        $I->see("Mothership: Edit Client", "h1.page-title");
+        $I->waitForText("Mothership: Edit Client", 20, "h1.page-title");
         $I->click("Close", "#toolbar");
-        $I->wait(1);
+        $I->waitForText("Mothership: Accounts", 20, "h1.page-title");
         $I->seeCurrentUrlEquals(self::ACCOUNTS_VIEW_ALL_URL);
-        $I->see("Mothership: Accounts", "h1.page-title");
     }
 
     /**
