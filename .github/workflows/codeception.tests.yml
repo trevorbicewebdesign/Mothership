@@ -136,9 +136,9 @@ jobs:
       - name: Run Codeception Tests for ${{ matrix.suite }}
         run: |
           if [ "${{ matrix.group }}" != "" ]; then
-            docker compose exec joomla sh -c "/var/www/html/vendor/bin/codecept run ${{ matrix.suite }} --group ${{ matrix.group }} -d -f"
+            docker compose exec joomla sh -c "/var/www/html/vendor/bin/codecept run ${{ matrix.suite }} --group ${{ matrix.group }}"
           else
-            docker compose exec joomla sh -c "/var/www/html/vendor/bin/codecept run ${{ matrix.suite }} -d -f"
+            docker compose exec joomla sh -c "/var/www/html/vendor/bin/codecept run ${{ matrix.suite }}"
           fi
 
       - name: Copy Test Artifacts (always)
