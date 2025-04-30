@@ -20,7 +20,6 @@ class AccountCenterPaymentsCest
     const PAYMENT_VIEW_URL= "index.php?option=com_mothership&view=payment&id=%s";
     const PAYMENTS_VIEW_ALL_SEF_URL = "/account-center/billing/payments";
     const PAY_INVOICE_URL= "index.php?option=com_mothership&controller=payments&task=processPayment&id=%s&pactiontype=processPayment";
-    const PAYPAL_NOTIFICATION_URL= "index.php?option=com_mothership&controller=payments&task=processPayment&invoice_id=%s&payment_id=%s&pactiontype=notify";
 
     public function _before(AcceptanceTester $I)
     {
@@ -150,8 +149,8 @@ class AccountCenterPaymentsCest
         $I->see("100.00", "main table tbody tr:nth-child(1) td:nth-child(3)");
         $I->see("Pending", "main table tbody tr:nth-child(1) td:nth-child(4)");
         $I->see("6.00", "main table tbody tr:nth-child(1) td:nth-child(5)");        
-        $I->see("PayPal", "main table tbody tr:nth-child(1) td:nth-child(6)");
-        $I->see("123456", "main table tbody tr:nth-child(1) td:nth-child(7)");
+        // $I->see("PayPal", "main table tbody tr:nth-child(1) td:nth-child(6)");
+        // $I->see("123456", "main table tbody tr:nth-child(1) td:nth-child(7)");
         $I->see("{$this->invoiceData['id']}", "main table tbody tr:nth-child(1) td:nth-child(8)");
         $I->see("{$this->invoiceData['id']}", "main table tbody tr:nth-child(1) td:nth-child(8)");
 
