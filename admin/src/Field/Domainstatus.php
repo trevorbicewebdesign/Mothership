@@ -9,9 +9,9 @@ use Joomla\CMS\Language\Text;
 
 \defined('_JEXEC') or die;
 
-class DomainstatusField extends ListField
+class DomainStatusField extends ListField
 {
-    protected $type = 'Domainstatus';
+    protected $type = 'DomainStatus';
 
     public function getOptions()
     {

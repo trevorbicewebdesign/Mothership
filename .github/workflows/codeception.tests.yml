@@ -45,9 +45,6 @@ jobs:
       - name: Start Docker Services
         run: docker compose up -d
 
-      - name: Dump MySQL logs
-        run: docker compose logs db
-
       - name: Wait for Database to be ready
         run: |
           echo "Waiting for Database..."
