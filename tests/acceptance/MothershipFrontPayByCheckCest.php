@@ -91,6 +91,16 @@ class MothershipFrontPayByCheckCest
      */
     public function PayInvoiceWithPayByCheck(AcceptanceTester $I)
     {
+        $I->updateInDatabase("jos_extensions", [
+            'params' => '{"display_name":"Zelle","zelle_email":"test.smith@mailinator.com","zelle_phone":"555 555-5555","instructions":""}',
+        ], [
+            'name' => 'COM_MOTHERSHIP_ZELLE_PLUGIN',
+        ]);
+        $I->updateInDatabase("jos_extensions", [
+            'params' => '{"display_name":"Pay By Check","checkpayee":"Your Company Name"}',
+        ], [
+            'name' => 'COM_MOTHERSHIP_PAYBYCHECK_PLUGIN',
+        ]);
         // Verify redirection to account center
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
         $I->waitForText("Invoices", 10, "h1");
