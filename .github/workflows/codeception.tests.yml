@@ -9,6 +9,7 @@ on:
       - main
 
 jobs:
+
   build:
     name: Build & Push Joomla Docker Image (if needed)
     runs-on: ubuntu-latest
@@ -38,7 +39,7 @@ jobs:
           REPO_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
 
           echo "Checking GHCR for image $IMAGE:$TAG"
-          TOKEN=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+          TOKEN=$(curl -s -H "Authorization: Bearer ${{ secrets.GHCR_PAT }}" \
             https://ghcr.io/token\?scope\=repository:$REPO_LOWER/mothership:pull | jq -r .token)
 
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
@@ -70,6 +71,7 @@ jobs:
   test:
     name: Run Codeception Tests
     needs: build
+    if: needs.build.outputs.skip-build != 'true'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
