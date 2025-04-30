@@ -11,6 +11,7 @@ on:
 jobs:
   
   build:
+    name: Build PHP 8.2 Joomla 5.3.0 Image
     runs-on: ubuntu-latest
     outputs:
       image-tag: mothership-php8.2-joomla5.3.0
@@ -47,6 +48,7 @@ jobs:
 
 
   test:
+    name: Run Codeception Tests
     needs: build
     runs-on: ubuntu-latest
     strategy:
