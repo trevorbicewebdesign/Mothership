@@ -27,6 +27,7 @@ class MothershipAdminPluginPayByCheckSettingsCest
     /**
      * @group backend
      * @group payment
+     * @group backend-payment
      */
     public function MothershipViewPluginPayByCheckSettings(AcceptanceTester $I)
     {

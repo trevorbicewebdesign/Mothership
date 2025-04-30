@@ -59,7 +59,17 @@ jobs:
           - suite: api
           - suite: integration
           - suite: acceptance
-            group: backend
+            group: backend-client
+          - suite: acceptance
+            group: backend-account
+          - suite: acceptance
+            group: backend-project
+          - suite: acceptance
+            group: backend-domain
+          - suite: acceptance
+            group: backend-payment
+          - suite: acceptance
+            group: backend-log
           - suite: acceptance
             group: frontend
 

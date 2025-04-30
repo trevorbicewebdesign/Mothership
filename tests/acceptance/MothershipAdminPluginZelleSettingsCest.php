@@ -27,6 +27,7 @@ class MothershipAdminPluginZelleSettingsCest
     /**
      * @group backend
      * @group payment
+     * @group backend-payment
      */
     public function MothershipViewPluginZelleSettings(AcceptanceTester $I)
     {

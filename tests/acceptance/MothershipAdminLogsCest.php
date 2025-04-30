@@ -39,6 +39,7 @@ class MothershipAdminLogsCest
     /**
      * @group backend
      * @group log
+     * @group backend-log
      */
     public function MothershipViewLogs(AcceptanceTester $I)
     {
@@ -78,6 +79,7 @@ class MothershipAdminLogsCest
     /**
      * @group backend
      * @group log
+     * @group backend-log
      */
     public function MothershipAddLog(AcceptanceTester $I)
     {
@@ -181,6 +183,7 @@ class MothershipAdminLogsCest
      * @group backend
      * @group log
      * @group delete
+     * @group backend-log
      */
     public function MothershipDeleteLogWithAccountsFailure(AcceptanceTester $I)
     {
@@ -222,6 +225,7 @@ class MothershipAdminLogsCest
      * @group backend
      * @group log
      * @group delete
+     * @group backend-log
      */
     public function MothershipDeleteLogSuccess(AcceptanceTester $I)
     {

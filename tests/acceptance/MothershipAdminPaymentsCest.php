@@ -105,6 +105,7 @@ class MothershipAdminPaymentsCest
      * @group backend
      * @group payment
      * @group account
+     * @group backend-payment
      */
     public function MothershipCancelClientEdit(AcceptanceTester $I)
     {
@@ -122,6 +123,7 @@ class MothershipAdminPaymentsCest
      * @group backend
      * @group payment
      * @group account
+     * @group backend-payment
      */
     public function MothershipCancelAccountEdit(AcceptanceTester $I)
     {
@@ -139,6 +141,7 @@ class MothershipAdminPaymentsCest
      * @group backend
      * @group payment
      * @group account
+     * @group backend-payment
      */
     public function MothershipCancelInvoiceEdit(AcceptanceTester $I)
     {
@@ -175,6 +178,7 @@ class MothershipAdminPaymentsCest
     /**
      * @group backend
      * @group payment
+     * @group backend-payment
      */
     public function MothershipViewPayments(AcceptanceTester $I)
     {
@@ -239,6 +243,7 @@ class MothershipAdminPaymentsCest
      * @group backend
      * @group payment
      * @group delete
+     * @group backend-payment
      */
     public function MothershipDeletePaymentSuccess(AcceptanceTester $I)
     {
@@ -284,6 +289,7 @@ class MothershipAdminPaymentsCest
      * @group backend
      * @group payment
      * @group delete
+     * @group backend-payment
      */
     public function MothershipDeletePaymentNoInvoicePayment(AcceptanceTester $I)
     {
@@ -316,6 +322,7 @@ class MothershipAdminPaymentsCest
      * @group backend
      * @group payment
      * @group delete
+     * @group backend-payment
      */
     public function MothershipDeleteMultiplePayments(AcceptanceTester $I)
     {
@@ -351,6 +358,7 @@ class MothershipAdminPaymentsCest
     /**
      * @group backend
      * @group payment
+     * @group backend-payment
      */
     public function MothershipAddPayment(AcceptanceTester $I)
     {
@@ -430,9 +438,10 @@ class MothershipAdminPaymentsCest
         $I->seeOptionIsSelected("select#jform_account_id", "Test Account");
     }
 
-        /**
+    /**
      * @group backend
      * @group invoice
+     * @group backend-payment
      */
     public function LockedPaymentCannotBeEdited(AcceptanceTester $I)
     {

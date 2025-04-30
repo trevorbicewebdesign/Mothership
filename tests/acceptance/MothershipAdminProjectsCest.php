@@ -78,6 +78,7 @@ class MothershipAdminProjectsCest
     /**
      * @group backend
      * @group project
+     * @group backend-project
      */
     public function MothershipViewProjects(AcceptanceTester $I)
     {
@@ -117,6 +118,7 @@ class MothershipAdminProjectsCest
     /**
      * @group backend
      * @group project
+     * @group backend-project
      */
     public function MothershipAddProject(AcceptanceTester $I)
     {
@@ -214,6 +216,7 @@ class MothershipAdminProjectsCest
      * @group backend
      * @group project
      * @group scan
+     * @group backend-project
      */
     public function MothershipScanProject(AcceptanceTester $I)
     {
