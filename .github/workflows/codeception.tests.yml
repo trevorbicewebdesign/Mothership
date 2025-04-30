@@ -141,22 +141,21 @@ jobs:
             docker compose exec joomla sh -c "/var/www/html/vendor/bin/codecept run ${{ matrix.suite }} -d -f"
           fi
 
-      - name: Package Output Files
-        if: failure()
+      - name: Copy Test Artifacts (always)
+        if: always()
         run: |
-          mkdir -p test-artifacts
-          cp -v tests/_output/* test-artifacts/ || true
-          cp -v wp-content/debug.log test-artifacts/ || true
-          cp -v /var/log/php_errors.log test-artifacts/ || true
-          tar -czf ${{ matrix.suite }}-${{ matrix.group || 'default' }}-output.tar.gz -C test-artifacts .
-          rm -rf test-artifacts
+          mkdir -p test-artifacts/${{ matrix.suite }}-${{ matrix.group || 'default' }}
+          cp -v tests/_output/* test-artifacts/${{ matrix.suite }}-${{ matrix.group || 'default' }}/ || true
+          cp -v tests/_output/debug/* test-artifacts/${{ matrix.suite }}-${{ matrix.group || 'default' }}/ || true
+          cp -v wp-content/debug.log test-artifacts/${{ matrix.suite }}-${{ matrix.group || 'default' }}/ || true
+          cp -v /var/log/php_errors.log test-artifacts/${{ matrix.suite }}-${{ matrix.group || 'default' }}/ || true
 
-      - name: Upload Single Artifact File
-        if: failure()
+      - name: Upload Artifacts for Suite
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.suite }}-${{ matrix.group || 'default' }}-output-${{ github.sha }}
-          path: ${{ matrix.suite }}-${{ matrix.group || 'default' }}-output.tar.gz
+          path: test-artifacts/${{ matrix.suite }}-${{ matrix.group || 'default' }}/
   
       - name: Teardown
         if: always()
