@@ -69,8 +69,6 @@ jobs:
           - suite: acceptance
             group: backend-payment
           - suite: acceptance
-            group: backend-log
-          - suite: acceptance
             group: frontend
 
     steps:
