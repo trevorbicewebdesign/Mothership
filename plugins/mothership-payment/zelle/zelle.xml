@@ -10,7 +10,7 @@
     <config>
         <fields name="params">
             <fieldset name="basic">
-                <field name="display_name" type="text" label="COM_MOTHERSHIP_ZELLE_DISPLAY_NAME_LABEL" description="COM_MOTHERSHIP_ZELLE_DISPLAY_NAME_DESC" default="Zelle" />
+                <field name="display_name" type="text" label="COM_MOTHERSHIP_ZELLE_DISPLAY_NAME_LABEL" description="COM_MOTHERSHIP_ZELLE_DISPLAY_NAME_DESC" default="Zelle" required="true" />
                 <field name="zelle_email" type="email" label="COM_MOTHERSHIP_ZELLE_EMAIL_LABEL" description="COM_MOTHERSHIP_ZELLE_EMAIL_DESC" required="true" />
                 <field name="zelle_phone" type="phone" label="COM_MOTHERSHIP_ZELLE_PHONE_LABEL" description="COM_MOTHERSHIP_ZELLE_PHONE_DESC" required="true" />
                 <field name="instructions" type="textarea" label="COM_MOTHERSHIP_ZELLE_INSTRUCTIONS_LABEL" description="COM_MOTHERSHIP_ZELLE_INSTRUCTIONS_DESC" />
