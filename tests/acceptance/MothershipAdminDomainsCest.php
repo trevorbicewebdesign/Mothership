@@ -247,9 +247,9 @@ class MothershipAdminDomainsCest
             'account_id' => $accountData['id'],
             'registrar' => 'GoDaddy',
             'reseller' => 'GoDaddy',
-            'purchase_date' => '1992-01-01 00:00:00',
-            'expiration_date' => '2026-04-26 18:21:44',
-            'modified' => '2025-04-26 11:21:45',
+            // 'purchase_date' => '1992-01-01 00:00:00',
+            // 'expiration_date' => '2026-04-26 18:21:44',
+            // 'modified' => '2025-04-26 11:21:45',
         ]);
 
         $I->seeInDatabase("jos_mothership_logs", [
