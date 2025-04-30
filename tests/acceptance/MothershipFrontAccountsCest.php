@@ -158,7 +158,7 @@ class MothershipFrontAccountsCest
             'action' => 'viewed',
             'object_type' => 'account',
             'object_id' => $this->accountData['id'],
-            'created' => $log_created,
+            // 'created' => $log_created,
         ]);
     }
 
