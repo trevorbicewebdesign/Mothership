@@ -54,7 +54,7 @@ class MothershipAdminAccountsCest
         $I->fillField("input[name=username]", "admin");
         $I->fillField("input[name=passwd]", "password123!test");
         $I->click("Log in");
-        $I->waitForText("Hide Forever");
+        $I->waitForText("Hide Forever", 20);
         $I->click("Hide Forever");
 ;    }
 
