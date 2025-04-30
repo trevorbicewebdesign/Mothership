@@ -391,6 +391,7 @@ class MothershipAdminInvoicesCest
 
         // Select both invoices
         $I->click("input[name=checkall-toggle]");
+        $I->wait(1);
         $I->click("Actions");
         $I->click("Delete");
         $I->wait(1);
