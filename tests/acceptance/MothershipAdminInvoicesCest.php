@@ -567,6 +567,7 @@ class MothershipAdminInvoicesCest
 
         $I->seeInFIeld("input#jform_total", "140.00");
 
+        $I->scrollTo("#add-invoice-item");
         $I->click("#add-invoice-item");
 
         $I->dontSee("#invoice-items-table input[name='jform[items][2][name]']");
