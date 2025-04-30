@@ -51,11 +51,16 @@ jobs:
             echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Build and Push Docker Image
-        if: steps.image-check.outputs.skip != 'true'
-        run: |
-          docker build -t ghcr.io/${{ github.repository_owner }}/mothership:php8.2-joomla5.3.0 -f docker/Dockerfile .
-          docker push ghcr.io/${{ github.repository_owner }}/mothership:php8.2-joomla5.3.0
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Build & Push Image to GHCR
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/mothership:php8.2-joomla5.3.0
 
 
   test:
