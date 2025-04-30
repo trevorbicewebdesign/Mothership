@@ -63,7 +63,7 @@ class MothershipAdminAccountsCest
      * @group account
      */
     public function MothershipCancelClientEdit(AcceptanceTester $I)
-    {
+    {   
         $I->amOnPage( self::ACCOUNTS_VIEW_ALL_URL);
         $I->waitForText("Mothership: Accounts", 20, "h1.page-title");
 
