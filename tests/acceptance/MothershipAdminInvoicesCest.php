@@ -111,9 +111,7 @@ class MothershipAdminInvoicesCest
         $I->click("Test Client");
         $I->waitForText("Mothership: Edit Client", 10, "h1.page-title");
         $I->click("Close", "#toolbar");
-        $I->wait(1);
-        $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
-        $I->see("Mothership: Invoices", "h1.page-title");
+        $I->waitForText("Mothership: Invoices", 20, "h1.page-title");
     }
 
     /**
@@ -128,11 +126,9 @@ class MothershipAdminInvoicesCest
 
         $I->click("Test Account");
         $I->wait(1);
-        $I->see("Mothership: Edit Account", "h1.page-title");
+         $I->waitForText("Mothership: Edit Account", 10, "h1.page-title");
         $I->click("Close", "#toolbar");
-        $I->wait(1);
-        $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
-        $I->see("Mothership: Invoices", "h1.page-title");
+        $I->waitForText("Mothership: Invoices", 20, "h1.page-title");
     }
 
     /**
