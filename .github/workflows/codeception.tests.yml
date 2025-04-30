@@ -10,7 +10,7 @@ on:
 
 jobs:
   test:
-    name: Test Mothership - ${{ matrix.suite }}-${{ matrix.group || 'default' }}
+    name: Testing ${{ matrix.suite}}  ${{ matrix.group || '' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
