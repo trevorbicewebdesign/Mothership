@@ -34,9 +34,13 @@ jobs:
           FULL_IMAGE="$IMAGE:$TAG"
           REPO_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
       
-          echo "Checking GHCR for public image: $FULL_IMAGE"
+          echo "Checking GHCR for image: $FULL_IMAGE"
+      
+          TOKEN=$(curl -s -H "Authorization: Bearer ${{ secrets.GHCR_PAT }}" \
+            "https://ghcr.io/token?scope=repository:$REPO_LOWER/mothership:pull" | jq -r .token)
       
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Authorization: Bearer $TOKEN" \
             -H "Accept: application/vnd.docker.distribution.manifest.v2+json, application/vnd.docker.distribution.manifest.list.v2+json" \
             https://ghcr.io/v2/$REPO_LOWER/mothership/manifests/$TAG)
       
@@ -48,6 +52,7 @@ jobs:
           else
             echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
+        
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
