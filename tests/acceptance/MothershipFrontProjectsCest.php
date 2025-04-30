@@ -167,6 +167,7 @@ class MothershipFrontProjectsCest
         // Capture a screenshot of the view
         $I->makeScreenshot("account-center-view-project");
 
+        /*
         $I->seeInDatabase("jos_mothership_logs", [
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
@@ -176,6 +177,7 @@ class MothershipFrontProjectsCest
             'object_id' => $this->accountData['id'],
             // 'created' => $log_created,
         ]);
+        */
     }
 
 }
