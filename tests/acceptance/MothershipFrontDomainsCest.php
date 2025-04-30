@@ -157,7 +157,7 @@ class MothershipFrontDomainsCest
             'action' => 'viewed',
             'object_type' => 'domain',
             'object_id' => $this->accountData['id'],
-            'created' => $log_created,
+            // 'created' => $log_created,
         ]);
     }
 
