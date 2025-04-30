@@ -7,9 +7,9 @@ use Joomla\CMS\Language\Text;
 
 \defined('_JEXEC') or die;
 
-class PaymentStatusField extends ListField
+class paymentstatusfield extends ListField
 {
-    protected $type = 'PaymentStatus';
+    protected $type = 'paymentstatus';
 
     protected function getOptions()
     {
