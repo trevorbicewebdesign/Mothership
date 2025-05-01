@@ -8,9 +8,9 @@ use TrevorBice\Component\Mothership\Administrator\Enum\InvoiceStatus;
 
 defined('_JEXEC') or die;
 
-class InvoiceStatusField extends ListField
+class invoicestatusfield extends ListField
 {
-    protected $type = 'Invoicestatus';
+    protected $type = 'invoicestatus';
 
     protected function getOptions()
     {

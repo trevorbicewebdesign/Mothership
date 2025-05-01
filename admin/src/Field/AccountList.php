@@ -7,9 +7,9 @@ use TrevorBice\Component\Mothership\Administrator\Helper\AccountHelper;
 
 \defined('_JEXEC') or die;
 
-class AccountListField extends ListField
+class accountlistfield extends ListField
 {
-    protected $type = 'AccountList';
+    protected $type = 'accountlist';
 
     public function getOptions()
     {

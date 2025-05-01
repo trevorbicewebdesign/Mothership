@@ -10,9 +10,9 @@ use Joomla\CMS\Factory;
 /**
  * Custom field to display invoice items in a table layout.
  */
-class InvoiceItemsField extends SubformField
+class invoiceitemsfield extends SubformField
 {
-    protected $type = 'InvoiceItems';
+    protected $type = 'invoiceitems';
 
     /**
      * Override the getInput method to include a custom layout.

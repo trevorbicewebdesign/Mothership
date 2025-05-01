@@ -9,9 +9,9 @@ use Joomla\CMS\Language\Text;
 
 \defined('_JEXEC') or die;
 
-class DnsField extends ListField
+class dnsfield extends ListField
 {
-    protected $type = 'Dns';
+    protected $type = 'dns';
 
     public function getOptions()
     {
