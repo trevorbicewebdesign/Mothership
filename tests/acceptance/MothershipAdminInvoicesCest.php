@@ -708,15 +708,10 @@ class MothershipAdminInvoicesCest
             'object_id' => $this->invoiceData['id'],
             'object_type' => 'invoice',
         ]);
-        $emailobject = null;
-        try{
-            $email_id = $I->getLastEmailId();
-            $emailobject = $I->getEmailById($email_id);
-        }
-        catch (\Exception $e) {
-        }
-        codecept_debug($emailobject);
-        // $I->assertEmailSubjectEquals($email_id, "New Invoice Opened");
+
+        $email_id = $I->getLastEmailId(); 
+        codecept_debug($email_id);
+        $I->assertEmailSubjectEquals($email_id, "New Invoice Opened");
     }
 
     /**
