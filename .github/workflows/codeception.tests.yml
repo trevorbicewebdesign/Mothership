@@ -109,7 +109,9 @@ jobs:
         run: |
           mkdir -p test-artifacts/${{ matrix.suite }}-${{ matrix.group || 'default' }}
           cp -v tests/_output/* test-artifacts/${{ matrix.suite }}-${{ matrix.group || 'default' }}/ || true
-          cp -v tests/_output/debug/* test-artifacts/${{ matrix.suite }}-${{ matrix.group || 'default' }}/ || true
+            if [ "${{ github.ref_name }}" = "main" ]; then
+            cp -v tests/_output/debug/* test-artifacts/${{ matrix.suite }}-${{ matrix.group || 'default' }}/ || true
+            fi
           cp -v wp-content/debug.log test-artifacts/${{ matrix.suite }}-${{ matrix.group || 'default' }}/ || true
           cp -v /var/log/php_errors.log test-artifacts/${{ matrix.suite }}-${{ matrix.group || 'default' }}/ || true
 
