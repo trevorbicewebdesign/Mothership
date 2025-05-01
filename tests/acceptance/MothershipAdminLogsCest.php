@@ -109,7 +109,7 @@ class MothershipAdminLogsCest
             'created'     => '2025-04-21 21:34:08',
         ]);
 
-        $this->logTextDescription[$this->logData[4]['id']] = "Domain ID 1 was viewed.";
+        $this->logTextDescription[$this->logData[4]['id']] = "Domain 1 was viewed.";
         $this->logTextDetails[$this->logData[4]['id']] = "Domain ID 1 was viewed by user ID 548.";
         
 
@@ -159,8 +159,8 @@ class MothershipAdminLogsCest
             $I->see("{$log['id']}", "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(2)");
             $I->see("{$this->clientData['name']}", "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(3)");
             $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(4)");
-            $I->see($this->logTextDescription[$log['id']], "#j-main-container table thead tr th:nth-child(5)");
-            $I->see($this->logTextDetails[$log['id']], "#j-main-container table thead tr th:nth-child(6)");
+            $I->see($this->logTextDescription[$log['id']], "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(5)");
+            $I->see($this->logTextDetails[$log['id']], "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(6)");
             $I->see("{$log['object_type']}", "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(7)");
             $I->see("{$log['object_id']}", "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(8)");
             $I->see("{$log['action']}", "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(9)");
