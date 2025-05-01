@@ -16,6 +16,8 @@ class MothershipAdminLogsCest
     private $invoiceData;
     private $paymentData;
     private $joomlaUserData;
+    private $logTextDescription = [];
+    private $logTextDetails = [];
 
     const LOGS_VIEW_ALL_URL = "/administrator/index.php?option=com_mothership&view=logs";
     const LOG_EDIT_URL = "/administrator/index.php?option=com_mothership&view=log&layout=edit&id=%s";
@@ -32,6 +34,9 @@ class MothershipAdminLogsCest
             'client_id' => $this->clientData['id'],
             'name' => 'Test Account',
         ]);
+
+        
+
         $this->logData[] = $I->createMothershipLog([
             'client_id'   => $this->clientData['id'],
             'account_id'  => $this->accountData['id'],
@@ -42,6 +47,8 @@ class MothershipAdminLogsCest
             'meta'        => json_encode([]),
             'created'     => '2025-04-11 01:29:03',
         ]);
+        $this->logTextDescription[$this->logData[0]['id']] = "Payment ID 93 was viewed.";
+        $this->logTextDetails[$this->logData[0]['id']] = "Payment ID 93 was viewed by user ID 548.";
         
         $this->logData[] = $I->createMothershipLog([
             'client_id'   => 1,
@@ -57,6 +64,9 @@ class MothershipAdminLogsCest
             'created'     => '2025-04-11 01:32:21',
         ]);
         
+        $this->logTextDescription[$this->logData[1]['id']] = "Payment status changed from `Completed` to `Pending`.";
+        $this->logTextDetails[$this->logData[1]['id']] = "Payment ID 93 status changed from `Completed` to `Pending` by user 548.";
+        
         $this->logData[] = $I->createMothershipLog([
             'client_id'   => 1,
             'account_id'  => 1,
@@ -67,6 +77,9 @@ class MothershipAdminLogsCest
             'meta'        => json_encode([]),
             'created'     => '2025-04-11 01:45:19',
         ]);
+
+        $this->logTextDescription[$this->logData[2]['id']] = "Invoice ID 2 was viewed.";
+        $this->logTextDetails[$this->logData[2]['id']] = "Invoice ID 2 was viewed by user ID 548.";
         
         $this->logData[] = $I->createMothershipLog([
             'client_id'   => 1,
@@ -81,6 +94,9 @@ class MothershipAdminLogsCest
             ]),
             'created'     => '2025-04-11 01:59:16',
         ]);
+
+        $this->logTextDescription[$this->logData[3]['id']] = "Payment ID 97 was initiated with method `Paypal` for invoice ID 2.";
+        $this->logTextDetails[$this->logData[3]['id']] = "Payment ID 97 was initiated with method `Paypal` for invoice ID 2 by user ID 548.";
         
         $this->logData[] = $I->createMothershipLog([
             'client_id'   => 1,
@@ -92,6 +108,9 @@ class MothershipAdminLogsCest
             'meta'        => json_encode([]),
             'created'     => '2025-04-21 21:34:08',
         ]);
+
+        $this->logTextDescription[$this->logData[4]['id']] = "Domain ID 1 was viewed.";
+        $this->logTextDetails[$this->logData[4]['id']] = "Domain ID 1 was viewed by user ID 548.";
         
 
         $I->amOnPage("/administrator/");
@@ -140,8 +159,8 @@ class MothershipAdminLogsCest
             $I->see("{$log['id']}", "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(2)");
             $I->see("{$this->clientData['name']}", "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(3)");
             $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(4)");
-            // $I->see("Description", "#j-main-container table thead tr th:nth-child(5)");
-            // $I->see("Details", "#j-main-container table thead tr th:nth-child(6)");
+            $I->see($this->logTextDescription[$log['id']], "#j-main-container table thead tr th:nth-child(5)");
+            $I->see($this->logTextDetails[$log['id']], "#j-main-container table thead tr th:nth-child(6)");
             $I->see("{$log['object_type']}", "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(7)");
             $I->see("{$log['object_id']}", "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(8)");
             $I->see("{$log['action']}", "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(9)");
