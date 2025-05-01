@@ -708,6 +708,7 @@ class MothershipAdminInvoicesCest
             'object_id' => $this->invoiceData['id'],
             'object_type' => 'invoice',
         ]);
+        $emailobject = null;
         try{
             $email_id = $I->getLastEmailId();
             $emailobject = $I->getEmailById($email_id);
