@@ -29,8 +29,8 @@
         <folder>tmpl</folder>
     </files>
     <languages folder="site">
-        <language tag="en-GB">/site/language/en-GB/com_mothership.ini</language>
-        <language tag="en-GB">/site/language/en-GB/com_mothership.sys.ini</language>
+        <language tag="en-GB">/language/en-GB/com_mothership.ini</language>
+        <language tag="en-GB">/language/en-GB/com_mothership.sys.ini</language>
     </languages>
     <administration>
         <menu>com_mothership</menu>
@@ -59,14 +59,17 @@
         </files>
 
         <languages folder="admin">
-            <language tag="en-GB">language/en-GB/com_mothership.ini</language>
-            <language tag="en-GB">language/en-GB/com_mothership.sys.ini</language>
+            <language tag="en-GB">/language/en-GB/com_mothership.ini</language>
+            <language tag="en-GB">/language/en-GB/com_mothership.sys.ini</language>
         </languages>
     </administration>
     <install>
         <plugins>
-            <plugin group="mothership-payment" folder="mothership-payment" element="manual" method="manual">
+            <plugin group="mothership-payment" folder="mothership-payment" element="paybycheck" method="paybycheck">
                 <filename plugin="paybycheck">paybycheck.xml</filename>
+            </plugin>
+            <plugin group="mothership-payment" folder="mothership-payment" element="zelle" method="zelle">
+                <filename plugin="zelle">zelle.xml</filename>
             </plugin>
         </plugins>
     </install>
