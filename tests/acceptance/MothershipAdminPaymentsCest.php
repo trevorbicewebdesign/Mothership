@@ -386,7 +386,7 @@ class MothershipAdminPaymentsCest
         $I->seeElement("#jform_fee_passed_on");
         $I->seeElement("input#jform_payment_date");
         $I->seeElement("input#jform_transaction_id");
-        $I->seeElement("select#jform_status");
+        $I->seeElement("#jform_status");
 
         // Attempt to save the form without filling out any fields
         $I->click("Save", "#toolbar");
