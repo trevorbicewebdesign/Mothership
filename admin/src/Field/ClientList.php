@@ -12,9 +12,9 @@ use TrevorBice\Component\Mothership\Administrator\Helper\ClientHelper;
 
 \defined('_JEXEC') or die;
 
-class clientlistfield extends ListField
+class ClientListField extends ListField
 {
-    protected $type = 'clientlist';
+    protected $type = 'ClientList';
 
     public function getOptions()
     {
