@@ -12,8 +12,14 @@ use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 
-require_once JPATH_ADMINISTRATOR . '/components/com_mothership/src/Field/ClientList.php';
-require_once JPATH_ADMINISTRATOR . '/components/com_mothership/src/Field/AccountList.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_mothership/src/Field/clientlist.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_mothership/src/Field/accountlist.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_mothership/src/Field/dnsfield.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_mothership/src/Field/domainstatusfield.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_mothership/src/Field/invoiceitems.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_mothership/src/Field/invoicestatusfield.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_mothership/src/Field/paymentstatusfield.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_mothership/src/Field/registrarfield.php';
 
 require_once JPATH_ADMINISTRATOR . '/components/com_mothership/vendor/autoload.php';
 
