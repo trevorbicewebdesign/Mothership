@@ -167,6 +167,26 @@ class MothershipAdminLogsCest
         $toolbarCancel = "#toolbar-cancel";
         $I->seeElement("{$toolbar} {$toolbarCancel}");
         $I->see("Close", "{$toolbar} {$toolbarCancel} .btn.button-cancel");
+
+        $I->seeElement("select#jform_client_id");
+        $I->seeElement("select#jform_account_id");
+        $I->seeElement("input#jform_user_id");
+        $I->seeElement("input#jform_object_type");
+        $I->seeElement("input#jform_object_id");
+        $I->seeElement("input#jform_action");
+        $I->seeElement("input#jform_created");
+
+        $I->seeOptionIsSelected("select#jform_client_id", $this->clientData['name']);
+        $I->seeOptionIsSelected("select#jform_account_id", $this->accountData['name']);
+        $I->seeInField("input#jform_user_id", $this->logData[0]['user_id']);
+        $I->seeInField("input#jform_object_type", $this->logData[0]['object_type']);
+        $I->seeInField("input#jform_object_id", $this->logData[0]['object_id']);
+        $I->seeInField("input#jform_action", $this->logData[0]['action']);
+        $I->seeInField("input#jform_created", $this->logData[0]['created']);
+        
+        $I->click("Close", "#toolbar");
+        $I->waitForText("Mothership: Logs", 20, "h1.page-title");
+        
     }
 
 }
