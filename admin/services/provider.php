@@ -14,12 +14,8 @@ use Joomla\DI\ServiceProviderInterface;
 
 require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/ClientList.php';
 require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/AccountList.php';
-require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/dnsfield.php';
-require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/domainstatusfield.php';
-require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/invoiceitems.php';
-require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/invoicestatusfield.php';
-require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/paymentstatusfield.php';
-require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/registrarfield.php';
+require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/InvoiceItems.php';
+require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/PaymentStatusField.php';
 
 require_once JPATH_ROOT . '/administrator/components/com_mothership/vendor/autoload.php';
 
