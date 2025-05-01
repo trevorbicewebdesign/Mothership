@@ -115,10 +115,6 @@ class HtmlView extends BaseHtmlView
 
         ToolbarHelper::title(Text::_('COM_MOTHERSHIP_MANAGER_LOGS'), 'bookmark mothership-logs');
 
-        if ($canDo->get('core.create')) {
-            $toolbar->addNew('log.add');
-        }
-
         if (!$this->isEmptyState && ($canDo->get('core.edit.state') || $canDo->get('core.admin'))) {
             $dropdown = $toolbar->dropdownButton('status-group', 'JTOOLBAR_CHANGE_STATUS')
                 ->toggleSplit(false)
