@@ -40,9 +40,8 @@
 			<menu link="option=com_mothership&amp;view=projects" view="projects">com_mothership_projects</menu>
             <menu link="option=com_mothership&amp;view=domains" view="domains">com_mothership_domains</menu>
 			<menu link="option=com_mothership&amp;view=invoices" view="invoices">com_mothership_invoices</menu>
-			<menu link="option=com_mothership&amp;view=payments" view="payments">com_mothership_payments</menu>
             <menu link="option=com_mothership&amp;view=payments" view="payments">com_mothership_payments</menu>
-            <menu link="option=com_mothership&amp;view=payments" view="payments">com_mothership_logs</menu>
+            <menu link="option=com_mothership&amp;view=logs" view="logs">com_mothership_logs</menu>
         </submenu>
 
         <files folder="admin">
