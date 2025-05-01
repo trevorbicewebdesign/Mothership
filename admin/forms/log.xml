@@ -2,13 +2,13 @@
 <form addfieldprefix="TrevorBice\Component\Mothership\Administrator\Field">
 	<fieldset name="details">
 		<field name="id" type="number" label="JGLOBAL_FIELD_ID_LABEL" default="0" readonly="true" class="readonly" />
-		<field name="client_id" type="clientlist" label="COM_MOTHERSHIP_FIELD_CLIENT_ID_LABEL" description="COM_MOTHERSHIP_FIELD_CLIENT_NAME_DESC" required="true" class="" default="" readonly="" />
-		<field name="account_id" type="accountlist" label="COM_MOTHERSHIP_FIELD_ACCOUNT_ID_LABEL" description="COM_MOTHERSHIP_FIELD_ACCOUNT_NAME_DESC" required="true" class="" default="" readonly="" />
-		<field name="user_id" type="text" label="COM_MOTHERSHIP_FIELD_USER_ID_LABEL" description="COM_MOTHERSHIP_FIELD_USER_ID_DESC" required="true" class="" default="" readonly="" />
-		<field name="object_type" type="text" label="COM_MOTHERSHIP_FIELD_OBJECT_TYPE_LABEL" description="COM_MOTHERSHIP_FIELD_OBJECT_TYPE_DESC" required="true" class="" default="" readonly="" />
-		<field name="object_id" type="text" label="COM_MOTHERSHIP_FIELD_OBJECT_ID_LABEL" description="COM_MOTHERSHIP_FIELD_OBJECT_ID_DESC" required="true" class="" default="" readonly="" />
-		<field name="action" type="text" label="COM_MOTHERSHIP_FIELD_ACTION_LABEL" description="COM_MOTHERSHIP_FIELD_ACTION_DESC" required="true" class="" default="" readonly="" />
-		<field name="created" type="calendar" label="COM_MOTHERSHIP_FIELD_CREATED_LABEL" description="COM_MOTHERSHIP_FIELD_CREATED_DESC" required="true" class="" default="" readonly="" format="%Y-%m-%d %H:%M:%S" filter="user_utc" />
+		<field name="client_id" type="clientlist" label="COM_MOTHERSHIP_FIELD_CLIENT_ID_LABEL" description="COM_MOTHERSHIP_FIELD_CLIENT_NAME_DESC" required="true" class="" default="" readonly="true" />
+		<field name="account_id" type="accountlist" label="COM_MOTHERSHIP_FIELD_ACCOUNT_ID_LABEL" description="COM_MOTHERSHIP_FIELD_ACCOUNT_NAME_DESC" required="true" class="" default="" readonly="true" />
+		<field name="user_id" type="text" label="COM_MOTHERSHIP_FIELD_USER_ID_LABEL" description="COM_MOTHERSHIP_FIELD_USER_ID_DESC" required="true" class="" default="" readonly="true" />
+		<field name="object_type" type="text" label="COM_MOTHERSHIP_FIELD_OBJECT_TYPE_LABEL" description="COM_MOTHERSHIP_FIELD_OBJECT_TYPE_DESC" required="true" class="" default="" readonly="true" />
+		<field name="object_id" type="text" label="COM_MOTHERSHIP_FIELD_OBJECT_ID_LABEL" description="COM_MOTHERSHIP_FIELD_OBJECT_ID_DESC" required="true" class="" default="" readonly="true" />
+		<field name="action" type="text" label="COM_MOTHERSHIP_FIELD_ACTION_LABEL" description="COM_MOTHERSHIP_FIELD_ACTION_DESC" required="true" class="" default="" readonly="true" />
+		<field name="created" type="calendar" label="COM_MOTHERSHIP_FIELD_CREATED_LABEL" description="COM_MOTHERSHIP_FIELD_CREATED_DESC" required="true" class="" default="" readonly="true" format="%Y-%m-%d %H:%M:%S" filter="user_utc" />
 	</fieldset>
 	<fieldset name="metadata" label="JGLOBAL_FIELDSET_METADATA_OPTIONS">
 		<field name="metakey" type="textarea" label="JFIELD_META_KEYWORDS_LABEL" rows="3" cols="30" />
