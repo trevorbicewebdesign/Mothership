@@ -120,32 +120,8 @@ class HtmlView extends BaseHtmlView
         $toolbar = $this->getDocument()->getToolbar();
 
         ToolbarHelper::title(
-            $isNew ? Text::_('COM_MOTHERSHIP_MANAGER_LOG_NEW') : Text::_('COM_MOTHERSHIP_MANAGER_LOG_EDIT'),
+            Text::_('COM_MOTHERSHIP_MANAGER_LOG_VIEW'),
             'bookmark mothership-logs'
-        );
-
-        // If not checked out, can save the item.
-        if (!$checkedOut && ($canDo->get('core.edit') || $canDo->get('core.create'))) {
-            $toolbar->apply('log.apply');
-        }
-
-        $saveGroup = $toolbar->dropdownButton('save-group');
-        $saveGroup->configure(
-            function (Toolbar $childBar) use ($checkedOut, $canDo, $isNew) {
-                // If not checked out, can save the item.
-                if (!$checkedOut && ($canDo->get('core.edit') || $canDo->get('core.create'))) {
-                    $childBar->save('log.save');
-                }
-
-                if (!$checkedOut && $canDo->get('core.create')) {
-                    $childBar->save2new('log.save2new');
-                }
-
-                // If an existing item, can save to a copy.
-                if (!$isNew && $canDo->get('core.create')) {
-                    $childBar->save2copy('log.save2copy');
-                }
-            }
         );
 
         if (empty($this->item->id)) {

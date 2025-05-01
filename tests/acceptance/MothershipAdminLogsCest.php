@@ -9,12 +9,15 @@ use DateTimeZone;
 
 class MothershipAdminLogsCest
 {
-    private $logData;
+    private $logData=[];
     private $userData;
+    private $clientData;
     private $accountData;
     private $invoiceData;
     private $paymentData;
     private $joomlaUserData;
+    private $logTextDescription = [];
+    private $logTextDetails = [];
 
     const LOGS_VIEW_ALL_URL = "/administrator/index.php?option=com_mothership&view=logs";
     const LOG_EDIT_URL = "/administrator/index.php?option=com_mothership&view=log&layout=edit&id=%s";
@@ -23,10 +26,92 @@ class MothershipAdminLogsCest
     {
         $I->resetMothershipTables();
 
-        $this->logData = $I->createMothershipLog([
-            'description' => 'Test Log',
-            'details' => 'Test Log Details',
+        $this->clientData = $I->createMothershipClient([
+            'name' => 'Test Client',
         ]);
+
+        $this->accountData = $I->createMothershipAccount([
+            'client_id' => $this->clientData['id'],
+            'name' => 'Test Account',
+        ]);
+
+        
+
+        $this->logData[] = $I->createMothershipLog([
+            'client_id'   => $this->clientData['id'],
+            'account_id'  => $this->accountData['id'],
+            'user_id'     => 548,
+            'object_id'   => 93,
+            'object_type' => 'payment',
+            'action'      => 'viewed',
+            'meta'        => json_encode([]),
+            'created'     => '2025-04-11 01:29:03',
+        ]);
+        $this->logTextDescription[$this->logData[0]['id']] = "Payment ID 93 was viewed.";
+        $this->logTextDetails[$this->logData[0]['id']] = "Payment ID 93 was viewed by user 548.";
+        
+        $this->logData[] = $I->createMothershipLog([
+            'client_id'   => 1,
+            'account_id'  => 1,
+            'user_id'     => 548,
+            'object_id'   => 93,
+            'object_type' => 'payment',
+            'action'      => 'status_changed',
+            'meta'        => json_encode([
+                'new_status' => 'Pending',
+                'old_status' => 'Completed',
+            ]),
+            'created'     => '2025-04-11 01:32:21',
+        ]);
+        
+        $this->logTextDescription[$this->logData[1]['id']] = "Payment status changed from `Completed` to `Pending`.";
+        $this->logTextDetails[$this->logData[1]['id']] = "Payment ID 93 status changed from `Completed` to `Pending` by user 548.";
+        
+        $this->logData[] = $I->createMothershipLog([
+            'client_id'   => 1,
+            'account_id'  => 1,
+            'user_id'     => 548,
+            'object_id'   => 2,
+            'object_type' => 'invoice',
+            'action'      => 'viewed',
+            'meta'        => json_encode([]),
+            'created'     => '2025-04-11 01:45:19',
+        ]);
+
+        $this->logTextDescription[$this->logData[2]['id']] = "Invoice ID 2 was viewed.";
+        $this->logTextDetails[$this->logData[2]['id']] = "Invoice ID 2 was viewed by user 548.";
+        
+        $this->logData[] = $I->createMothershipLog([
+            'client_id'   => 1,
+            'account_id'  => 1,
+            'user_id'     => 548,
+            'object_id'   => 97,
+            'object_type' => 'payment',
+            'action'      => 'initiated',
+            'meta'        => json_encode([
+                'invoice_id'     => 2,
+                'payment_method' => 'Paypal',
+            ]),
+            'created'     => '2025-04-11 01:59:16',
+        ]);
+
+        $this->logTextDescription[$this->logData[3]['id']] = "Payment ID 97 was initiated.";
+        $this->logTextDetails[$this->logData[3]['id']] = "Payment ID 97 using method Paypal was initiated by user 548 to pay invoice 2.";
+        
+        $this->logData[] = $I->createMothershipLog([
+            'client_id'   => 1,
+            'account_id'  => 1,
+            'user_id'     => 548,
+            'object_id'   => 1,
+            'object_type' => 'domain',
+            'action'      => 'viewed',
+            'meta'        => json_encode([]),
+            'created'     => '2025-04-21 21:34:08',
+        ]);
+
+        $this->logTextDescription[$this->logData[4]['id']] = "Domain `1` was viewed.";
+        $this->logTextDetails[$this->logData[4]['id']] = "Domain `1` was viewed by user 548.";
+        
 
         $I->amOnPage("/administrator/");
         $I->fillField("input[name=username]", "admin");
@@ -41,7 +126,7 @@ class MothershipAdminLogsCest
      * @group log
      * @group backend-log
      */
-    public function MothershipViewLogs(AcceptanceTester $I)
+    public function MothershipViewAllLogs(AcceptanceTester $I)
     {
         $I->amOnPage(self::LOGS_VIEW_ALL_URL);
         $I->waitForText("Mothership: Logs", 20, "h1.page-title");
@@ -50,30 +135,39 @@ class MothershipAdminLogsCest
 
         $toolbar = "#toolbar";
         $toolbarNew = "#toolbar-new";
-        $toolbarStatusGroup = "#toolbar-status-group";
-        $I->seeElement("{$toolbar} {$toolbarNew}");
-        $I->see("New", "{$toolbar} {$toolbarNew} .btn.button-new");
+        // New Logs Can't Be Created
+        $I->dontSeeElement("{$toolbar} {$toolbarNew}");
+        $I->dontSee("New", "{$toolbar} {$toolbarNew} .btn.button-new");
 
         $I->seeElement("#j-main-container ");
         $I->seeElement("#j-main-container thead");
 
-        $I->see("Log Name Asc");
+        $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 5);
 
-        $I->see("Id", "#j-main-container table thead tr th:nth-child(2)");
-        $I->see("Name", "#j-main-container table thead tr th:nth-child(3)");
-        $I->see("Phone", "#j-main-container table thead tr th:nth-child(4)");
-        $I->see("Default Rate", "#j-main-container table thead tr th:nth-child(5)");
-        $I->see("Created", "#j-main-container table thead tr th:nth-child(6)");
+        $I->see("ID", "#j-main-container table thead tr th:nth-child(2)");
+        $I->see("Client Name", "#j-main-container table thead tr th:nth-child(3)");
+        $I->see("Account Name", "#j-main-container table thead tr th:nth-child(4)");
+        $I->see("Description", "#j-main-container table thead tr th:nth-child(5)");
+        $I->see("Details", "#j-main-container table thead tr th:nth-child(6)");
+        $I->see("Object Type", "#j-main-container table thead tr th:nth-child(7)");
+        $I->see("Object ID", "#j-main-container table thead tr th:nth-child(8)");
+        $I->see("Action", "#j-main-container table thead tr th:nth-child(9)");
+        $I->see("Created", "#j-main-container table thead tr th:nth-child(10)");
 
-        $I->see("1", "#j-main-container table tbody tr td:nth-child(2)");
-        $I->see("Test Log", "#j-main-container table tbody tr td:nth-child(3)");
-        $I->see($this->logData['phone'], "#j-main-container table tbody tr td:nth-child(4)");
-        $I->see("$100.00", "#j-main-container table tbody tr td:nth-child(5)");
-        $I->see(date("Y-m-d"), "#j-main-container table tbody tr td:nth-child(6)");
-
-        $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 1);
-
-        $I->see("1 - 1 / 1 items", "#j-main-container .pagination__wrapper");
+        foreach(array_reverse($this->logData) as $index=>$log) {
+            $realIndex = $index+1;
+            $I->see("{$log['id']}", "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(2)");
+            $I->see("{$this->clientData['name']}", "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(3)");
+            $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(4)");
+            $I->see($this->logTextDescription[$log['id']], "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(5)");
+            $I->see($this->logTextDetails[$log['id']], "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(6)");
+            $I->see("{$log['object_type']}", "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(7)");
+            $I->see("{$log['object_id']}", "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(8)");
+            $I->see("{$log['action']}", "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(9)");
+            $I->see("{$log['created']}", "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(10)");
+        }
+       
+        $I->see("1 - 5 / 5 items", "#j-main-container .pagination__wrapper");
     }
 
     /**
@@ -81,186 +175,37 @@ class MothershipAdminLogsCest
      * @group log
      * @group backend-log
      */
-    public function MothershipAddLog(AcceptanceTester $I)
+    public function MothershipViewLog(AcceptanceTester $I)
     {
-        $I->amOnPage(self::LOGS_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Logs", 20, "h1.page-title");
+        $I->amOnPage(sprintf(self::LOG_EDIT_URL, $this->logData[0]['id']));
+        $I->waitForText("Mothership: View Log", 20, "h1.page-title");
+
+        $I->makeScreenshot("mothership-log-view");
 
         $toolbar = "#toolbar";
-        $toolbarNew = "#toolbar-new";
-        $toolbarStatusGroup = "#toolbar-status-group";
-        $I->seeElement("{$toolbar} {$toolbarNew}");
-        $I->see("New", "{$toolbar} {$toolbarNew} .btn.button-new");
+        $toolbarCancel = "#toolbar-cancel";
+        $I->seeElement("{$toolbar} {$toolbarCancel}");
+        $I->see("Close", "{$toolbar} {$toolbarCancel} .btn.button-cancel");
 
-        $I->click("{$toolbar} {$toolbarNew} .btn.button-new");
-        $I->waitForText("Mothership: New Log", 20, "h1.page-title");
+        $I->seeElement("select#jform_client_id");
+        $I->seeElement("select#jform_account_id");
+        $I->seeElement("input#jform_user_id");
+        $I->seeElement("input#jform_object_type");
+        $I->seeElement("input#jform_object_id");
+        $I->seeElement("input#jform_action");
+        $I->seeElement("input#jform_created");
 
-        $I->makeScreenshot("mothership-log-add-details");
-
-        $I->see("Save", "#toolbar");
-        $I->see("Save & Close", "#toolbar");
-        $I->see("Cancel", "#toolbar");
-
-        $I->seeElement("form[name=adminForm]");
-        $I->seeElement("form#log-form");
-
-        $I->seeElement("#myTab");
-        $I->see("Log Details", "#myTab");
-
-        $I->seeElement("input#jform_name");
-        $I->seeElement("input#jform_email");
-        $I->seeElement("input#jform_phone");
-        $I->seeElement("input#jform_address_1");
-        $I->seeElement("input#jform_address_2");
-        $I->seeElement("input#jform_city");
-        $I->seeElement("select#jform_state");
-        $I->seeElement("input#jform_zip");
-        $I->seeElement("input#jform_default_rate");
-        $I->seeElement("input#jform_owner_user_id");
-
-        $I->fillField("input#jform_name", "Another Log");
-        $I->fillField("input#jform_email", "another.log@mailinator.com");
-        $I->fillField("input#jform_phone", "(555) 555-5555");
-        $I->fillField("input#jform_address_1", "12345 St.");
-        $I->fillField("input#jform_address_2", "APT 123");
-        $I->fillField("input#jform_city", "City");
-        $I->selectOption("select#jform_state", "California");
-        $I->fillField("input#jform_zip", "95524");
-        $I->fillField("input#jform_default_rate", "100.00");
-
-        $I->click(".icon-user");
-        $I->makeScreenshot("mothership-log-add-contact");
-        $I->switchToIFrame(".iframe-content");       
-        $I->fillFIeld("#filter_search", $this->joomlaUserData['name']);
-        $I->click('//button[contains(@class, "btn") and .//span[contains(@class, "icon-search")]]');
-        $I->wait(3);
-        $I->click($this->joomlaUserData['name']);
-        $I->wait(1);
-        $I->switchToIFrame();
-
-        $I->click("Save & Close", "#toolbar");
-        $I->wait(3);
-        $I->seeInCurrentUrl(("/administrator/index.php?option=com_mothership&view=logs"));
-        $I->see("Log saved", ".alert-message");
-
-        $I->seeInCurrentUrl(self::LOGS_VIEW_ALL_URL);
-        $I->seeNumberOfElements("#j-main-container table tbody tr", 2);
-
-        $log_id = $I->grabTextFrom("#j-main-container table tbody tr:nth-child(1) td:nth-child(2)");
-
-        $I->see($log_id . "", "#j-main-container table tbody tr:nth-child(1) td:nth-child(2)");
-        $I->see("Another Log", "#j-main-container table tbody tr:nth-child(1) td:nth-child(3)");
-        $I->see((new DateTime('now', new DateTimeZone('America/Los_Angeles')))->format('Y-m-d'), "#j-main-container table tbody tr:nth-child(1) td:nth-child(6)");
-
-        $I->seeInDatabase("jos_mothership_logs", [
-            'name' => 'Another Log',
-            'email' => 'another.log@mailinator.com',
-            'phone' => '(555) 555-5555',
-            'address_1' => '12345 St.',
-            'address_2' => 'APT 123',
-            'city' => 'City',
-            'state' => 'CA',
-            'zip' => '95524',
-            'default_rate' => '100.00',
-            'tax_id' => '',
-            // 'created' => date("Y-m-d 00:00:00"),
-        ]);
-
-        // Open the Invoice again and confirm the data is correct
-        $I->amOnPage(sprintf(self::LOG_EDIT_URL, $log_id));
-        $I->click("Details");
-        // Confirm the value in jform_number is correct
-        $I->seeInField("input#jform_name", "Another Log");
-        $I->click("Save", "#toolbar");
-
-        $I->wait(1);
-        $I->see("Mothership: Edit Log", "h1.page-title");
-        $I->seeCurrentUrlEquals(sprintf(self::LOG_EDIT_URL, $log_id));
-        $I->see("Log Another Log saved successfully.", ".alert-message");
-    }
-
-    /**
-     * @group backend
-     * @group log
-     * @group delete
-     * @group backend-log
-     */
-    public function MothershipDeleteLogWithAccountsFailure(AcceptanceTester $I)
-    {
-        $I->seeInDatabase("jos_mothership_logs", [
-            'id' => $this->logData['id'],
-        ]);
-        $I->amOnPage(self::LOGS_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Logs", 20, "h1.page-title");
-
-        $I->seeNumberOfElements("#j-main-container table tbody tr", 1);
+        $I->seeOptionIsSelected("select#jform_client_id", $this->clientData['name']);
+        $I->seeOptionIsSelected("select#jform_account_id", $this->accountData['name']);
+        $I->seeInField("input#jform_user_id", "{$this->logData[0]['user_id']}");
+        $I->seeInField("input#jform_object_type", "{$this->logData[0]['object_type']}");
+        $I->seeInField("input#jform_object_id", "{$this->logData[0]['object_id']}");
+        $I->seeInField("input#jform_action", "{$this->logData[0]['action']}");
+        $I->seeInField("input#jform_created", "{$this->logData[0]['created']}");
         
-        $I->seeElement(".btn-toolbar");
-
-        $I->click("input[name=checkall-toggle]");
-        $I->click("Actions");
-        $I->see("Check-in", "joomla-toolbar-button#status-group-children-checkin");
-        $I->see("Delete", "joomla-toolbar-button#status-group-children-delete");
-        $I->seeElement("joomla-toolbar-button#status-group-children-delete", ['task' => "logs.delete"]);
-
-        $I->click("Delete", "#toolbar");
-        $I->wait(1);
-
-        $I->seeInCurrentUrl(self::LOGS_VIEW_ALL_URL);
-        $I->see("Mothership: Logs", "h1.page-title");
-        $I->see("Cannot delete log(s) [1] because they have one or more associated accounts.", ".alert-message");
-        $I->seeNumberOfElements("#j-main-container table tbody tr", 1);
-        $I->seeInDatabase("jos_mothership_logs", [
-            'id' => $this->logData['id'],
-        ]);
-        $I->seeInDatabase("jos_mothership_accounts", [
-            'log_id' => $this->logData['id'],
-        ]);
-    }
-
-    /**
-     * @group backend
-     * @group log
-     * @group delete
-     * @group backend-log
-     */
-    public function MothershipDeleteLogSuccess(AcceptanceTester $I)
-    {
-        $noAccountsLog = $I->createMothershipLog([
-            'description' => 'No Accounts Log',
-            'details' => 'No Accounts Log Details',
-        ]);
-
-        $I->amOnPage(self::LOGS_VIEW_ALL_URL);
+        $I->click("Close", "#toolbar");
         $I->waitForText("Mothership: Logs", 20, "h1.page-title");
-
-        $I->seeNumberOfElements("#j-main-container table tbody tr", 2);
         
-        $I->seeElement(".btn-toolbar");
-
-        $I->click("input[name=checkall-toggle]");
-        $I->click("Actions");
-        $I->see("Check-in", "joomla-toolbar-button#status-group-children-checkin");
-        $I->seeElement("joomla-toolbar-button#status-group-children-checkin", ['task' => "logs.checkIn"]);
-        $I->see("Edit", "joomla-toolbar-button#status-group-children-edit");
-        $I->seeElement("joomla-toolbar-button#status-group-children-edit", ['task' => "log.edit"]);
-        $I->see("Delete", "joomla-toolbar-button#status-group-children-delete");
-        $I->seeElement("joomla-toolbar-button#status-group-children-delete", ['task' => "logs.delete"]);
-
-        $I->click("Delete", "#toolbar");
-        $I->wait(1);
-
-        $I->seeInCurrentUrl(self::LOGS_VIEW_ALL_URL);
-        $I->see("Mothership: Logs", "h1.page-title");
-        $I->see("Cannot delete log(s) [1] because they have one or more associated accounts.", ".alert-message");
-        $I->see("1 Log deleted successfully.", ".alert-message");
-        $I->seeNumberOfElements("#j-main-container table tbody tr", 1);
-
-        $I->seeInDatabase("jos_mothership_logs", [
-            'id' => $this->logData['id'],
-        ]);
-        $I->dontSeeInDatabase('jos_mothership_logs', [
-            'id' => $noAccountsLog['id'],
-        ]);
     }
+
 }

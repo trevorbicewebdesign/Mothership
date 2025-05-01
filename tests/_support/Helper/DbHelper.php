@@ -598,6 +598,7 @@ class DbHelper extends Db
 
     public function createMothershipLogData(array $data)
     {
+
         $defaultData = [
             "client_id" => $data['client_id'] ?? 0,
             "account_id" => $data['account_id'] ?? 0,
@@ -610,6 +611,7 @@ class DbHelper extends Db
             "created" => date('Y-m-d H:i:s'),
             "notes" => $data['notes'] ?? '',
         ];
+        
 
         // Merge provided data with defaults
         $finalData = array_merge($defaultData, $data);
