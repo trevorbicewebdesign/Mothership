@@ -28,7 +28,11 @@ jobs:
           - suite: acceptance
             group: backend-domain
           - suite: acceptance
+            group: backend-invoice
+          - suite: acceptance
             group: backend-payment
+          - suite: acceptance
+            group: backend-options
           - suite: acceptance
             group: frontend
 

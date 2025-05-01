@@ -4,6 +4,7 @@ namespace TrevorBice\Component\Mothership\Administrator\Field;
 
 use Joomla\CMS\Form\Field\SubformField;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Layout\FileLayout;
 
 \defined('_JEXEC') or die;
 
@@ -25,7 +26,7 @@ class invoiceitemsfield extends SubformField
             return parent::getInput(); // Fallback to default Joomla subform
         }
 
-        $layout = new \Joomla\CMS\Layout\FileLayout('invoiceitems',JPATH_ROOT . '/administrator/components/com_mothership/tmpl/fields');
+        $layout = new FileLayout('invoiceitems',JPATH_ROOT . '/administrator/components/com_mothership/tmpl/fields');
 
         return $layout->render(['field' => $this]);
     }
