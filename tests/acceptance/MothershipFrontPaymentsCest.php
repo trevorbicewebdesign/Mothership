@@ -115,6 +115,7 @@ class MothershipFrontPaymentsCest
     /**
      * @group frontend
      * @group payment
+     * @group frontend-payment
      */
     public function ViewAllPaymentsPage(AcceptanceTester $I)
     {
@@ -185,6 +186,7 @@ class MothershipFrontPaymentsCest
     /**
      * @group frontend
      * @group payment
+     * @group frontend-payment
      */
     public function ViewPaymentPage(AcceptanceTester $I)
     {
@@ -207,7 +209,7 @@ class MothershipFrontPaymentsCest
         $I->see("Invoices Paid With This Payment:");
         $I->see("Invoice #{$this->invoiceData['number']}", "ul.list-group li a");
 
-        /*
+        
         $I->seeInDatabase("jos_mothership_logs", [
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
@@ -217,9 +219,5 @@ class MothershipFrontPaymentsCest
             'object_id' => $this->accountData['id'],
             'created' => $log_created,
         ]);
-        */
-
-
     }
-
 }

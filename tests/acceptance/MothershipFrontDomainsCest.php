@@ -92,6 +92,7 @@ class MothershipFrontDomainsCest
     /**
      * @group frontend
      * @group domain
+     * @group frontend-domain
      */
     public function ViewAllDomainsPage(AcceptanceTester $I)
     {
@@ -136,6 +137,7 @@ class MothershipFrontDomainsCest
     /**
      * @group frontend
      * @group domain
+     * @group frontend-domain
      */
     public function ViewDomainPage(AcceptanceTester $I)
     {
