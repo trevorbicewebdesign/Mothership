@@ -48,7 +48,7 @@ class MothershipAdminLogsCest
             'created'     => '2025-04-11 01:29:03',
         ]);
         $this->logTextDescription[$this->logData[0]['id']] = "Payment ID 93 was viewed.";
-        $this->logTextDetails[$this->logData[0]['id']] = "Payment ID 93 was viewed by user ID 548.";
+        $this->logTextDetails[$this->logData[0]['id']] = "Payment ID 93 was viewed by user 548.";
         
         $this->logData[] = $I->createMothershipLog([
             'client_id'   => 1,
@@ -79,7 +79,7 @@ class MothershipAdminLogsCest
         ]);
 
         $this->logTextDescription[$this->logData[2]['id']] = "Invoice ID 2 was viewed.";
-        $this->logTextDetails[$this->logData[2]['id']] = "Invoice ID 2 was viewed by user ID 548.";
+        $this->logTextDetails[$this->logData[2]['id']] = "Invoice ID 2 was viewed by user 548.";
         
         $this->logData[] = $I->createMothershipLog([
             'client_id'   => 1,
@@ -95,8 +95,8 @@ class MothershipAdminLogsCest
             'created'     => '2025-04-11 01:59:16',
         ]);
 
-        $this->logTextDescription[$this->logData[3]['id']] = "Payment ID 97 was initiated with method `Paypal` for invoice ID 2.";
-        $this->logTextDetails[$this->logData[3]['id']] = "Payment ID 97 was initiated with method `Paypal` for invoice ID 2 by user ID 548.";
+        $this->logTextDescription[$this->logData[3]['id']] = "Payment ID 97 was initiated.";
+        $this->logTextDetails[$this->logData[3]['id']] = "Payment ID 97 using method Paypal was initiated by user 548 to pay invoice 2.";
         
         $this->logData[] = $I->createMothershipLog([
             'client_id'   => 1,
@@ -109,8 +109,8 @@ class MothershipAdminLogsCest
             'created'     => '2025-04-21 21:34:08',
         ]);
 
-        $this->logTextDescription[$this->logData[4]['id']] = "Domain 1 was viewed.";
-        $this->logTextDetails[$this->logData[4]['id']] = "Domain ID 1 was viewed by user ID 548.";
+        $this->logTextDescription[$this->logData[4]['id']] = "Domain `1` was viewed.";
+        $this->logTextDetails[$this->logData[4]['id']] = "Domain `1` was viewed by user 548.";
         
 
         $I->amOnPage("/administrator/");
