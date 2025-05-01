@@ -15,7 +15,6 @@
 			<option value="a.created ASC">COM_MOTHERSHIP_HEADING_ACCOUNT_CREATED_ASC</option>
 			<option value="a.created DESC">COM_MOTHERSHIP_HEADING_ACCOUNT_CREATED_DESC</option>
 		</field>
-
 		<field name="limit" type="limitbox" label="JGLOBAL_LIST_LIMIT" default="25" class="js-select-submit-on-change" />
 	</fields>
 </form>

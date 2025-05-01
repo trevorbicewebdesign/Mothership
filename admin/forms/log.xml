@@ -10,7 +10,6 @@
 		<field name="action" type="text" label="COM_MOTHERSHIP_FIELD_ACTION_LABEL" description="COM_MOTHERSHIP_FIELD_ACTION_DESC" required="true" class="" default="" readonly="" />
 		<field name="created" type="calendar" label="COM_MOTHERSHIP_FIELD_CREATED_LABEL" description="COM_MOTHERSHIP_FIELD_CREATED_DESC" required="true" class="" default="" readonly="" format="%Y-%m-%d %H:%M:%S" filter="user_utc" />
 	</fieldset>
-
 	<fieldset name="metadata" label="JGLOBAL_FIELDSET_METADATA_OPTIONS">
 		<field name="metakey" type="textarea" label="JFIELD_META_KEYWORDS_LABEL" rows="3" cols="30" />
 		<field name="own_prefix" type="radio" layout="joomla.form.field.radio.switcher" label="COM_MOTHERSHIP_FIELD_CLIENTOWNPREFIX_LABEL" default="0">
@@ -19,7 +18,6 @@
 		</field>
 		<field name="metakey_prefix" type="text" label="COM_MOTHERSHIP_FIELD_CLIENT_METAKEYWORDPREFIX_LABEL" description="COM_MOTHERSHIP_FIELD_CLIENT_METAKEYWORDPREFIX_DESC" />
 	</fieldset>
-
 	<fieldset name="extra" label="COM_MOTHERSHIP_EXTRA">
 		<field name="extrainfo" type="textarea" label="COM_MOTHERSHIP_FIELD_EXTRAINFO_LABEL" rows="5" cols="80" />
 	</fieldset>

@@ -13,7 +13,6 @@
 		</field>
 		<field name="payment_method" type="text" default="" class="input-xxlarge" label="COM_MOTHERSHIP_FIELD_PAYMENT_METHOD_LABEL" description="COM_MOTHERSHIP_FIELD_PAYMENT_METHOD_DESC" />
 		<field name="transaction_id" type="text" default="" class="input-xxlarge" label="COM_MOTHERSHIP_FIELD_TRANSACTION_ID_LABEL" description="COM_MOTHERSHIP_FIELD_TRANSACTION_ID_DESC" />
-		
 		<field name="status" type="paymentstatus" default="1" readonly="" class="" label="COM_MOTHERSHIP_FIELD_PAYMENT_STATUS_LABEL" description="COM_MOTHERSHIP_FIELD_PAYMENT_STATUS_DESC" />
 		<field name="created_at" type="calendar" default="" readonly="true" class="validate-date" label="COM_MOTHERSHIP_FIELD_CREATED_AT_LABEL" description="COM_MOTHERSHIP_FIELD_CREATED_AT_DESC" format="%Y-%m-%d %H:%M:%S" filter="user_utc" />
 		<field name="updated_at" type="calendar" default="" readonly="true" class="validate-date" label="COM_MOTHERSHIP_FIELD_UPDATED_AT_LABEL" description="COM_MOTHERSHIP_FIELD_UPDATED_AT_DESC" format="%Y-%m-%d %H:%M:%S" filter="user_utc" />

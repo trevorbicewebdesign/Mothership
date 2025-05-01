@@ -65,9 +65,7 @@
 		<field name="tax_id" type="text" label="COM_MOTHERSHIP_FORM_CLIENT_TAX_ID_LABEL" />
 		<field name="default_rate" type="text" label="COM_MOTHERSHIP_FORM_CLIENT_DEFAULT_RATE_LABEL" required="true" />
 		<field name="owner_user_id"  type="user" label="COM_MOTHERSHIP_CLIENT_OWNER_LABEL" repeat="true" required="true"/>
-		
 	</fieldset>
-
 	<fieldset name="metadata" label="JGLOBAL_FIELDSET_METADATA_OPTIONS">
 		<field name="metakey" type="textarea" label="JFIELD_META_KEYWORDS_LABEL" rows="3" cols="30" />
 		<field name="own_prefix" type="radio" layout="joomla.form.field.radio.switcher" label="COM_MOTHERSHIP_FIELD_CLIENTOWNPREFIX_LABEL" default="0">
@@ -76,7 +74,6 @@
 		</field>
 		<field name="metakey_prefix" type="text" label="COM_MOTHERSHIP_FIELD_CLIENT_METAKEYWORDPREFIX_LABEL" description="COM_MOTHERSHIP_FIELD_CLIENT_METAKEYWORDPREFIX_DESC" />
 	</fieldset>
-
 	<fieldset name="extra" label="COM_MOTHERSHIP_EXTRA">
 		<field name="extrainfo" type="textarea" label="COM_MOTHERSHIP_FIELD_EXTRAINFO_LABEL" rows="5" cols="80" />
 	</fieldset>
