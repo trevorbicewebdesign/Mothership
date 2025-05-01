@@ -28,7 +28,7 @@ COPY /docker/composer.json ./composer.json
 COPY /docker/composer.lock ./composer.lock
 
 # Install the dev dependencies (e.g., Codeception, Helper\DbHelper)
-RUN composer install --no-interaction --no-scripts --prefer-dist
+RUN composer update --no-interaction --no-scripts --prefer-dist
 
 # Fix permissions AFTER
 RUN chown -R www-data:www-data /var/www/html
