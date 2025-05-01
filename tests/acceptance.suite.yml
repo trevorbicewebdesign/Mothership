@@ -9,7 +9,7 @@ modules:
     - Mailpit
   config:
       Mailpit:
-          base_uri: http://localhost:8025
+          base_uri: http://mailpit:8025
       WebDriver:
         url: '%LIVE_SITE%'
         browser: chrome
