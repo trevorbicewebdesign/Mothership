@@ -24,7 +24,7 @@
         "league/factory-muffin": "^3.0",
         "league/factory-muffin-faker": "^2.0",
         "codeception/module-filesystem": "^3.0",
-        "trevorbicewebdesign/codeception-mailpit": "*"
+        "trevorbicewebdesign/codeception-mailpit": "0.0.6"
     },
     "autoload": {
         "psr-4": {
