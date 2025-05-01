@@ -94,16 +94,18 @@ class MothershipAdminPaymentsCest
         $I->amOnPage("/administrator/");
 
         // Log in with valid credentials
-        $I->fillField("input[name=username]", "trevorbice");
-        $I->fillField("input[name=passwd]", "4&GoH#7FvPsY");
+        $I->fillField("input[name=username]", "admin");
+        $I->fillField("input[name=passwd]", "password123!test");
         $I->click("Log in");
-        $I->wait(3);
+        $I->waitForText("Hide Forever");
+        $I->click("Hide Forever");
     }
 
     /**
      * @group backend
      * @group payment
      * @group account
+     * @group backend-payment
      */
     public function MothershipCancelClientEdit(AcceptanceTester $I)
     {
@@ -121,6 +123,7 @@ class MothershipAdminPaymentsCest
      * @group backend
      * @group payment
      * @group account
+     * @group backend-payment
      */
     public function MothershipCancelAccountEdit(AcceptanceTester $I)
     {
@@ -138,6 +141,7 @@ class MothershipAdminPaymentsCest
      * @group backend
      * @group payment
      * @group account
+     * @group backend-payment
      */
     public function MothershipCancelInvoiceEdit(AcceptanceTester $I)
     {
@@ -174,6 +178,7 @@ class MothershipAdminPaymentsCest
     /**
      * @group backend
      * @group payment
+     * @group backend-payment
      */
     public function MothershipViewPayments(AcceptanceTester $I)
     {
@@ -238,6 +243,7 @@ class MothershipAdminPaymentsCest
      * @group backend
      * @group payment
      * @group delete
+     * @group backend-payment
      */
     public function MothershipDeletePaymentSuccess(AcceptanceTester $I)
     {
@@ -283,6 +289,7 @@ class MothershipAdminPaymentsCest
      * @group backend
      * @group payment
      * @group delete
+     * @group backend-payment
      */
     public function MothershipDeletePaymentNoInvoicePayment(AcceptanceTester $I)
     {
@@ -315,6 +322,7 @@ class MothershipAdminPaymentsCest
      * @group backend
      * @group payment
      * @group delete
+     * @group backend-payment
      */
     public function MothershipDeleteMultiplePayments(AcceptanceTester $I)
     {
@@ -350,6 +358,7 @@ class MothershipAdminPaymentsCest
     /**
      * @group backend
      * @group payment
+     * @group backend-payment
      */
     public function MothershipAddPayment(AcceptanceTester $I)
     {
@@ -377,7 +386,7 @@ class MothershipAdminPaymentsCest
         $I->seeElement("#jform_fee_passed_on");
         $I->seeElement("input#jform_payment_date");
         $I->seeElement("input#jform_transaction_id");
-        $I->seeElement("select#jform_status");
+        $I->seeElement("#jform_status");
 
         // Attempt to save the form without filling out any fields
         $I->click("Save", "#toolbar");
@@ -429,9 +438,10 @@ class MothershipAdminPaymentsCest
         $I->seeOptionIsSelected("select#jform_account_id", "Test Account");
     }
 
-        /**
+    /**
      * @group backend
      * @group invoice
+     * @group backend-payment
      */
     public function LockedPaymentCannotBeEdited(AcceptanceTester $I)
     {

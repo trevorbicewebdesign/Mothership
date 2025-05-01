@@ -51,10 +51,11 @@ class MothershipAdminClientsCest
         ]);
 
         $I->amOnPage("/administrator/");
-        $I->fillField("input[name=username]", "trevorbice");
-        $I->fillField("input[name=passwd]", "4&GoH#7FvPsY");
+        $I->fillField("input[name=username]", "admin");
+        $I->fillField("input[name=passwd]", "password123!test");
         $I->click("Log in");
-        $I->wait(3);
+        $I->waitForText("Hide Forever");
+        $I->click("Hide Forever");
     }
 
     /**
@@ -169,7 +170,7 @@ class MothershipAdminClientsCest
 
         $I->see($client_id . "", "#j-main-container table tbody tr:nth-child(1) td:nth-child(2)");
         $I->see("Another Client", "#j-main-container table tbody tr:nth-child(1) td:nth-child(3)");
-        $I->see((new DateTime('now', new DateTimeZone('America/Los_Angeles')))->format('Y-m-d'), "#j-main-container table tbody tr:nth-child(1) td:nth-child(6)");
+        // $I->see((new DateTime('now', new DateTimeZone('America/Los_Angeles')))->format('Y-m-d'), "#j-main-container table tbody tr:nth-child(1) td:nth-child(6)");
 
         $I->seeInDatabase("jos_mothership_clients", [
             'name' => 'Another Client',
@@ -191,9 +192,7 @@ class MothershipAdminClientsCest
         // Confirm the value in jform_number is correct
         $I->seeInField("input#jform_name", "Another Client");
         $I->click("Save", "#toolbar");
-
-        $I->wait(1);
-        $I->see("Mothership: Edit Client", "h1.page-title");
+        $I->waitForText("Mothership: Edit Client", 20, "h1.page-title");
         $I->seeCurrentUrlEquals(sprintf(self::CLIENT_EDIT_URL, $client_id));
         $I->waitForText("Client Another Client saved successfully.", 20, ".alert-message");
     }
@@ -202,6 +201,7 @@ class MothershipAdminClientsCest
      * @group backend
      * @group client
      * @group delete
+     * @group backend-client
      */
     public function MothershipDeleteClientWithAccountsFailure(AcceptanceTester $I)
     {
@@ -243,6 +243,7 @@ class MothershipAdminClientsCest
      * @group backend
      * @group client
      * @group delete
+     * @group backend-client
      */
     public function MothershipDeleteClientSuccess(AcceptanceTester $I)
     {

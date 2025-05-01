@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<extension type="component" method="upgrade" version="0.0.15">
+<extension type="component" method="upgrade" version="0.0.16">
     <name>com_mothership</name>
     <author>Trevor Bice</author>
     <creationDate>2023-10-01</creationDate>
@@ -7,7 +7,7 @@
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <authorEmail>trevorbicewebdesign@gmail.com</authorEmail>
     <authorUrl>https://webdesign.trevorbice.com</authorUrl>
-    <version>0.0.15</version>
+    <version>0.0.16</version>
     <description>COM_MOTHERSHIP_XML_DESCRIPTION</description>
     <namespace path="src">TrevorBice\Component\Mothership</namespace>
     <install>
@@ -23,49 +23,43 @@
     <updateservers>
         <server type="extension" priority="1" name="Mothership Update Server">https://mothership.trevorbice.com/updates.xml</server>
     </updateservers>
-    <update>
-        <schemas>
-            <schemapath type="mysql">sql</schemapath>
-        </schemas>
-    </update>
     <files folder="site">
+        <folder>layouts</folder>
         <folder>src</folder>
+        <folder>tmpl</folder>
     </files>
     <languages folder="site">
-        <language tag="en-GB">language/en-GB/com_mothership.ini</language>
+        <language tag="en-GB">/site/language/en-GB/com_mothership.ini</language>
+        <language tag="en-GB">/site/language/en-GB/com_mothership.sys.ini</language>
     </languages>
-    <media destination="com_mothership" folder="media">
-        <folder>js</folder>
-    </media>
     <administration>
         <menu>com_mothership</menu>
         <submenu>
-            <menu link="option=com_mothership" view="mothership">com_mothership</menu>
             <menu link="option=com_mothership&amp;view=clients" view="clients">com_mothership_clients</menu>
 			<menu link="option=com_mothership&amp;view=accounts" view="accounts">com_mothership_accounts</menu>
 			<menu link="option=com_mothership&amp;view=projects" view="projects">com_mothership_projects</menu>
+            <menu link="option=com_mothership&amp;view=domains" view="domains">com_mothership_domains</menu>
 			<menu link="option=com_mothership&amp;view=invoices" view="invoices">com_mothership_invoices</menu>
-			<menu link="option=com_mothership&amp;view=quotes" view="quotes">com_mothership_quotes</menu>
 			<menu link="option=com_mothership&amp;view=payments" view="payments">com_mothership_payments</menu>
-			<menu link="option=com_mothership&amp;view=expenses" view="expenses">com_mothership_expenses</menu>
-			<menu link="option=com_mothership&amp;view=tickets" view="tickets">com_mothership_tickets</menu>
-			<menu link="option=com_mothership&amp;view=templates" view="templates">com_mothership_templates</menu>
-			<menu link="option=com_mothership&amp;view=subscriptions" view="subscriptions">com_mothership_subscriptions</menu>
+            <menu link="option=com_mothership&amp;view=payments" view="payments">com_mothership_payments</menu>
+            <menu link="option=com_mothership&amp;view=payments" view="payments">com_mothership_logs</menu>
         </submenu>
 
-        <files>
+        <files folder="admin">
             <filename>access.xml</filename>
-            <filename>mothership.xml</filename>
             <filename>config.xml</filename>
+            <folder>assets</folder>
+            <folder>config</folder>
             <folder>forms</folder>
-            <folder>helpers</folder>
+            <folder>layouts</folder>
             <folder>services</folder>
             <folder>sql</folder>
             <folder>src</folder>
             <folder>tmpl</folder>
+            <folder>vendor</folder>
         </files>
 
-        <languages>
+        <languages folder="admin">
             <language tag="en-GB">language/en-GB/com_mothership.ini</language>
             <language tag="en-GB">language/en-GB/com_mothership.sys.ini</language>
         </languages>
@@ -73,7 +67,7 @@
     <install>
         <plugins>
             <plugin group="mothership-payment" folder="mothership-payment" element="manual" method="manual">
-                <filename plugin="paypal">paypal.xml</filename>
+                <filename plugin="paybycheck">paybycheck.xml</filename>
             </plugin>
         </plugins>
     </install>

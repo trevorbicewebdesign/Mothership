@@ -33,32 +33,37 @@ class LogHelper extends ContentHelper
     public static function log(array $params): bool
     {
         $db = Factory::getDbo();
+        $columns = [
+            'client_id',
+            'account_id',
+            'object_type',
+            'object_id',
+            'action',
+            'meta',
+            'user_id',
+            'created'
+        ];
+
+        $values = [
+            isset($params['client_id']) ? (int) $params['client_id'] : 'NULL',
+            isset($params['account_id']) ? (int) $params['account_id'] : 'NULL',
+            $db->quote($params['object_type'] ?? null),
+            isset($params['object_id']) ? (int) $params['object_id'] : 'NULL',
+            $db->quote($params['action'] ?? null),
+            $db->quote(json_encode($params['meta'] ?? [])),
+            isset($params['user_id']) ? (int) $params['user_id'] : (int) Factory::getUser()->id,
+            $db->quote(date('Y-m-d H:i:s')),
+        ];
+
         $query = $db->getQuery(true)
             ->insert($db->quoteName('#__mothership_logs'))
-            ->columns([
-                'client_id',
-                'account_id',
-                'object_type',
-                'object_id',
-                'action',
-                'meta',
-                'user_id',
-                'created'
-            ])
-            ->values(implode(',', [
-                $db->quote($params['client_id'] ?? null),
-                $db->quote($params['account_id'] ?? null),
-                $db->quote($params['object_type'] ?? null),
-                $db->quote($params['object_id'] ?? null),
-                $db->quote($params['action'] ?? null),
-                $db->quote(json_encode($params['meta'] ?? [])),
-                $db->quote($params['user_id'] ?? Factory::getUser()->id),
-                $db->quote(date('Y-m-d H:i:s')),
-            ]));
+            ->columns($columns)
+            ->values(implode(',', $values));
 
         $db->setQuery($query);
         return $db->execute();
     }
+
 
     public static function logPaymentLifecycle(string $event, int $invoiceId, int $paymentId, ?int $clientId = null, ?int $accountId = null, float $amount = 0.0, string $method = '', ?string $extraDetails = null): void {
         $eventLabels = [
@@ -76,15 +81,17 @@ class LogHelper extends ContentHelper
             default => "Payment event '{$event}' occurred for Payment ID {$paymentId}."
         };
 
-        self::log([
+        $criteria = [
             'object_type' => 'payment',
             'object_id' => $paymentId,
             'client_id' => $clientId,
             'account_id' => $accountId,
             'action' => $event,
-            'meta' => [],
-            'user_id' => Factory::getUser()->id,
-        ]);
+            //'meta' => [],
+            //'user_id' => Factory::getUser()->id,
+        ];
+
+        self::log($criteria);
     }
 
     public static function logPaymentInitiated($invoice_id, $payment_id, $client_id, $account_id, $invoiceTotal, $paymentMethod): void

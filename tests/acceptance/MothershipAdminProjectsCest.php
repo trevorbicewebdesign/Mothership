@@ -67,16 +67,18 @@ class MothershipAdminProjectsCest
         $I->amOnPage("/administrator/");
 
         // Log in with valid credentials
-        $I->fillField("input[name=username]", "trevorbice");
-        $I->fillField("input[name=passwd]", "4&GoH#7FvPsY");
+        $I->fillField("input[name=username]", "admin");
+        $I->fillField("input[name=passwd]", "password123!test");
         $I->click("Log in");
-        $I->wait(3);
+        $I->waitForText("Hide Forever");
+        $I->click("Hide Forever");
     }
 
 
     /**
      * @group backend
      * @group project
+     * @group backend-project
      */
     public function MothershipViewProjects(AcceptanceTester $I)
     {
@@ -116,6 +118,7 @@ class MothershipAdminProjectsCest
     /**
      * @group backend
      * @group project
+     * @group backend-project
      */
     public function MothershipAddProject(AcceptanceTester $I)
     {
@@ -178,7 +181,7 @@ class MothershipAdminProjectsCest
         $I->waitForText("Mothership: Edit Project", 5, "h1.page-title");
         $I->seeInCurrentUrl( sprintf(self::PROJECT_EDIT_URL, ($this->projectData['id']+1)) );
 
-        $metadata = $I->grabFromDatabase("jos_mothership_projects", "metadata", ['id' => ($this->projectData['id']+1)]);
+        $metadata = json_decode($I->grabFromDatabase("jos_mothership_projects", "metadata", ['id' => ($this->projectData['id']+1)]));
         codecept_debug($metadata);
 
         
@@ -190,7 +193,7 @@ class MothershipAdminProjectsCest
             'type' => 'website',
         ]);
 
-        if($metadata!== null) {
+        if($metadata!== null && is_array($metadata)) {
             $I->assertArrayHasKey('primary_url', $metadata);
             $I->assertArrayHasKey('primary_domain', $metadata);
             $I->assertArrayHasKey('cms_type', $metadata);
@@ -213,6 +216,7 @@ class MothershipAdminProjectsCest
      * @group backend
      * @group project
      * @group scan
+     * @group backend-project
      */
     public function MothershipScanProject(AcceptanceTester $I)
     {

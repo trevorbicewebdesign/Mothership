@@ -2,47 +2,121 @@ name: Run Mothership Tests
 
 on:
   workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize]
+  push:
+    branches:
+      - main
 
 jobs:
   test:
+    name: Testing ${{ matrix.suite}}  ${{ matrix.group || '' }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - suite: functional
+          - suite: api
+          - suite: integration
+          - suite: acceptance
+            group: backend-client
+          - suite: acceptance
+            group: backend-account
+          - suite: acceptance
+            group: backend-project
+          - suite: acceptance
+            group: backend-domain
+          - suite: acceptance
+            group: backend-invoice
+          - suite: acceptance
+            group: backend-payment
+          - suite: acceptance
+            group: backend-options
+          - suite: acceptance
+            group: frontend
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Start Docker Services
-        run: docker compose up -d --build
+      - name: Pull Joomla Docker Image from GHCR
+        run: docker pull ghcr.io/trevorbicewebdesign/mothership:php8.2-joomla5.3.0
 
-      - name: Install Joomla
+      - name: Rename .env.sample to .env
+        run: mv ./tests/.env.sample ./tests/.env
+
+      - name: Start Docker Services
+        run: docker compose up -d
+
+      - name: Wait for Database to be ready
         run: |
-          docker compose exec joomla php /var/www/html/cli/joomla.php site:install \
-            --db-user root \
-            --db-pass root \
-            --db-name joomla \
-            --db-host db \
-            --admin-user admin \
-            --admin-pass admin123 \
-            --admin-email admin@example.com \
-            --site-name "Mothership Test Site"
-      
-      - name: Wait for Joomla to be ready
-        run: |
-          echo "Waiting for Joomla..."
-          until curl -s http://localhost:8080 | grep -q "DOCTYPE"; do
-            echo "Still waiting for Joomla..."
+          echo "Waiting for Database..."
+          until docker compose exec db mysqladmin ping -h "localhost" --silent; do
+            echo "Still waiting for MySQL server to start..."
             sleep 5
           done
-          echo "Joomla is ready."
-      
+          echo "MySQL server is up."
 
-      - name: Install Mothership via CLI
-        run: |
-          docker compose exec joomla php cli/joomla.php extension:install /var/www/html/tmp/mothership
+          echo "Waiting for Joomla Database..."
+          until docker compose exec db mysql -uroot -proot -e "USE local"; do
+            echo "Still waiting for Joomla database to be ready..."
+            sleep 5
+          done
+          echo "Joomla Database is ready."
 
-      - name: Run Codeception Acceptance Tests
+      - name: Wait for Joomla Web to be ready
         run: |
-          docker compose exec joomla bash -c 'cd /var/www/html && ~/.composer/vendor/bin/codecept run acceptance -d -f'
+          echo "Waiting for Joomla Web..."
+          until curl --fail --silent --output /dev/null http://localhost:8080; do
+            echo "Still waiting for Joomla Web..."
+            sleep 5
+          done
+          echo "Joomla Web is ready."
+
+      - name: Discover & Install Mothership via CLI
+        run: |
+          docker compose exec joomla sh -c "php /var/www/html/cli/joomla.php extension:discover"
+          docker compose exec joomla sh -c "php /var/www/html/cli/joomla.php extension:discover:install"
+          docker compose exec db mysql -uroot -proot -e "UPDATE local.jos_extensions SET enabled = 1 WHERE type = 'plugin' AND folder = 'mothership-payment' AND element = 'zelle';"
+          docker compose exec db mysql -uroot -proot -e "UPDATE local.jos_extensions SET enabled = 1 WHERE type = 'plugin' AND folder = 'mothership-payment' AND element = 'paybycheck';"
+
+      - name: Add Joomla User & Suppress Popup
+        run: |
+          docker compose exec joomla sh -c "php /var/www/html/cli/joomla.php user:add \
+          --username=admin \
+          --name='Site Admin' \
+          --password='password123!test' \
+          --email='admin@example.com' \
+          --usergroup='Super Users' --quiet"
+
+      - name: Export Database
+        run: |
+          docker compose exec db sh -c "mysqldump -uroot -proot --no-tablespaces --skip-comments --extended-insert=false local" | docker compose exec -T joomla sh -c "cat > /var/www/html/tests/_support/Data/db/dump.sql"
+
+      - name: Run Codeception Tests for ${{ matrix.suite }}
+        run: |
+          if [ "${{ matrix.group }}" != "" ]; then
+            docker compose exec joomla sh -c "/var/www/html/vendor/bin/codecept run ${{ matrix.suite }} --group ${{ matrix.group }}"
+          else
+            docker compose exec joomla sh -c "/var/www/html/vendor/bin/codecept run ${{ matrix.suite }}"
+          fi
+
+      - name: Copy Test Artifacts (always)
+        if: always()
+        run: |
+          mkdir -p test-artifacts/${{ matrix.suite }}-${{ matrix.group || 'default' }}
+          cp -v tests/_output/* test-artifacts/${{ matrix.suite }}-${{ matrix.group || 'default' }}/ || true
+          cp -v tests/_output/debug/* test-artifacts/${{ matrix.suite }}-${{ matrix.group || 'default' }}/ || true
+          cp -v wp-content/debug.log test-artifacts/${{ matrix.suite }}-${{ matrix.group || 'default' }}/ || true
+          cp -v /var/log/php_errors.log test-artifacts/${{ matrix.suite }}-${{ matrix.group || 'default' }}/ || true
+
+      - name: Upload Artifacts for Suite
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.suite }}-${{ matrix.group || 'default' }}-output-${{ github.sha }}
+          path: test-artifacts/${{ matrix.suite }}-${{ matrix.group || 'default' }}/
 
       - name: Teardown
         if: always()

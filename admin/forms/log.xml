@@ -4,20 +4,12 @@
 		<field name="id" type="number" label="JGLOBAL_FIELD_ID_LABEL" default="0" readonly="true" class="readonly" />
 		<field name="client_id" type="clientlist" label="COM_MOTHERSHIP_FIELD_CLIENT_ID_LABEL" description="COM_MOTHERSHIP_FIELD_CLIENT_NAME_DESC" required="true" class="" default="" readonly="" />
 		<field name="account_id" type="accountlist" label="COM_MOTHERSHIP_FIELD_ACCOUNT_ID_LABEL" description="COM_MOTHERSHIP_FIELD_ACCOUNT_NAME_DESC" required="true" class="" default="" readonly="" />
-		<field name="description" type="text" label="COM_MOTHERSHIP_FIELD_DESCRIPTION_LABEL" description="COM_MOTHERSHIP_FIELD_DESCRIPTION_DESC" required="true" class="" default="" readonly="" />
-		<field name="details" type="text" label="COM_MOTHERSHIP_FIELD_DETAILS_LABEL" description="COM_MOTHERSHIP_FIELD_DETAILS_DESC" required="true" class="" default="" readonly="" />
+		<field name="user_id" type="text" label="COM_MOTHERSHIP_FIELD_USER_ID_LABEL" description="COM_MOTHERSHIP_FIELD_USER_ID_DESC" required="true" class="" default="" readonly="" />
 		<field name="object_type" type="text" label="COM_MOTHERSHIP_FIELD_OBJECT_TYPE_LABEL" description="COM_MOTHERSHIP_FIELD_OBJECT_TYPE_DESC" required="true" class="" default="" readonly="" />
 		<field name="object_id" type="text" label="COM_MOTHERSHIP_FIELD_OBJECT_ID_LABEL" description="COM_MOTHERSHIP_FIELD_OBJECT_ID_DESC" required="true" class="" default="" readonly="" />
 		<field name="action" type="text" label="COM_MOTHERSHIP_FIELD_ACTION_LABEL" description="COM_MOTHERSHIP_FIELD_ACTION_DESC" required="true" class="" default="" readonly="" />
-		<field name="field_changed" type="text" label="COM_MOTHERSHIP_FIELD_FIELD_CHANGED_LABEL" description="COM_MOTHERSHIP_FIELD_FIELD_CHANGED_DESC" required="true" class="" default="" readonly="" />
-		<field name="old_value" type="textarea" label="COM_MOTHERSHIP_FIELD_OLD_VALUE_LABEL" description="COM_MOTHERSHIP_FIELD_OLD_VALUE_DESC" required="true" class="" default="" readonly="" rows="5" cols="80" />
-		<field name="new_value" type="textarea" label="COM_MOTHERSHIP_FIELD_NEW_VALUE_LABEL" description="COM_MOTHERSHIP_FIELD_NEW_VALUE_DESC" required="true" class="" default="" readonly="" rows="5" cols="80" />
-		<field name="user_id" type="text" label="COM_MOTHERSHIP_FIELD_USER_ID_LABEL" description="COM_MOTHERSHIP_FIELD_USER_ID_DESC" required="true" class="" default="" readonly="" />
 		<field name="created" type="calendar" label="COM_MOTHERSHIP_FIELD_CREATED_LABEL" description="COM_MOTHERSHIP_FIELD_CREATED_DESC" required="true" class="" default="" readonly="" format="%Y-%m-%d %H:%M:%S" filter="user_utc" />
-		<field name="notes" type="textarea" label="COM_MOTHERSHIP_FIELD_NOTES_LABEL" description="COM_MOTHERSHIP_FIELD_NOTES_DESC" required="true" class="" default="" readonly="" rows="5" cols="80" />
-
 	</fieldset>
-
 	<fieldset name="metadata" label="JGLOBAL_FIELDSET_METADATA_OPTIONS">
 		<field name="metakey" type="textarea" label="JFIELD_META_KEYWORDS_LABEL" rows="3" cols="30" />
 		<field name="own_prefix" type="radio" layout="joomla.form.field.radio.switcher" label="COM_MOTHERSHIP_FIELD_CLIENTOWNPREFIX_LABEL" default="0">
@@ -26,7 +18,6 @@
 		</field>
 		<field name="metakey_prefix" type="text" label="COM_MOTHERSHIP_FIELD_CLIENT_METAKEYWORDPREFIX_LABEL" description="COM_MOTHERSHIP_FIELD_CLIENT_METAKEYWORDPREFIX_DESC" />
 	</fieldset>
-
 	<fieldset name="extra" label="COM_MOTHERSHIP_EXTRA">
 		<field name="extrainfo" type="textarea" label="COM_MOTHERSHIP_FIELD_EXTRAINFO_LABEL" rows="5" cols="80" />
 	</fieldset>

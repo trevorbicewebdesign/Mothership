@@ -17,15 +17,17 @@ class MothershipAdminPluginZelleSettingsCest
         $I->amOnPage("/administrator/");
 
         // Log in with valid credentials
-        $I->fillField("input[name=username]", "trevorbice");
-        $I->fillField("input[name=passwd]", "4&GoH#7FvPsY");
+        $I->fillField("input[name=username]", "admin");
+        $I->fillField("input[name=passwd]", "password123!test");
         $I->click("Log in");
-        $I->wait(3);
+        $I->waitForText("Hide Forever");
+        $I->click("Hide Forever");
     }
 
     /**
      * @group backend
      * @group payment
+     * @group backend-payment
      */
     public function MothershipViewPluginZelleSettings(AcceptanceTester $I)
     {
@@ -42,7 +44,8 @@ class MothershipAdminPluginZelleSettingsCest
         $I->makeScreenshot("mothership-payments-zelle-settings");
 
         $I->see("Payment Display Label", "label");
-        $I->see("Zelle Email or Phone Number", "label");
-        $I->see("Instructions", "label");
+        $I->see("Zelle Email Address", "label");
+        $I->see("Zelle Phone Number", "label");
+        $I->see("Instructions", "label");        
     }
 }

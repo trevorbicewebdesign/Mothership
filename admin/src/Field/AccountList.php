@@ -9,7 +9,7 @@ use TrevorBice\Component\Mothership\Administrator\Helper\AccountHelper;
 
 class AccountListField extends ListField
 {
-    protected $type = 'AccountList';
+    protected $type = 'accountlist';
 
     public function getOptions()
     {

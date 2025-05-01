@@ -1,6 +1,6 @@
 {
     "require": {
         "mpdf/mpdf": "^8.2",
-        "io-developer/php-whois": "*"
+        "io-developer/php-whois": "^4.0"
     }
 }

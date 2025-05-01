@@ -12,10 +12,13 @@ use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 
-require_once JPATH_ADMINISTRATOR . '/components/com_mothership/src/Field/ClientList.php';
-require_once JPATH_ADMINISTRATOR . '/components/com_mothership/src/Field/AccountList.php';
+require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/ClientList.php';
+require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/AccountList.php';
+require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/invoiceitems.php';
+require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/PaymentStatusField.php';
+require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/InvoiceStatusField.php';
 
-require_once JPATH_ADMINISTRATOR . '/components/com_mothership/vendor/autoload.php';
+require_once JPATH_ROOT . '/administrator/components/com_mothership/vendor/autoload.php';
 
 /**
  * Joomla 5 Service Provider for com_mothership

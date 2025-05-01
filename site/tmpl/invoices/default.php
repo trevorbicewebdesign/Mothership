@@ -84,7 +84,7 @@ use Joomla\CMS\Language\Text;
                 Invoice Status Legend
             </div>
             <div class="card-body">
-                <ul class="mb-0"></ul>
+                <ul class="mb-0">
                     <li><strong>Opened</strong>: Invoice is awaiting payment.</li>
                     <li><strong>Cancelled</strong>: Invoice has been voided and is no longer valid.</li>
                     <li><strong>Closed</strong>: Invoice has been paid and is no longer active.</li>

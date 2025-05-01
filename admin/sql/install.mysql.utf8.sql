@@ -1,3 +1,6 @@
+-- disable foreign keys so we can drop/recreate safely
+SET FOREIGN_KEY_CHECKS = 0;
+
 -- Clients Table
 CREATE TABLE IF NOT EXISTS `#__mothership_clients` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
@@ -41,7 +44,8 @@ CREATE TABLE IF NOT EXISTS `#__mothership_domains` (
   `name` VARCHAR(255) NOT NULL,
   `client_id` INT(10) NOT NULL,
   `account_id` INT(10) DEFAULT NULL,
-  `status` ENUM('active', 'expired', 'transferring') NOT NULL DEFAULT 'active',
+  `status` VARCHAR(255) NOT NULL DEFAULT '' COLLATE 'utf8mb4_unicode_ci',
+  `epp_status` varchar(255) DEFAULT NULL,
   `registrar` VARCHAR(255) DEFAULT NULL,
   `reseller` VARCHAR(255) DEFAULT NULL,
   `dns_provider` VARCHAR(255) DEFAULT NULL,
@@ -49,8 +53,8 @@ CREATE TABLE IF NOT EXISTS `#__mothership_domains` (
   `ns2` VARCHAR(255) NULL DEFAULT NULL,
   `ns3` VARCHAR(255) NULL DEFAULT NULL,
   `ns4` VARCHAR(255) NULL DEFAULT NULL,
-  `purchase_date` DATE DEFAULT NULL,
-  `expiration_date` DATE DEFAULT NULL,
+  `purchase_date` DATETIME DEFAULT NULL,
+  `expiration_date` DATETIME DEFAULT NULL,
   `auto_renew` TINYINT(1) NOT NULL DEFAULT 0,
   `notes` TEXT DEFAULT NULL,
   `created` DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -74,7 +78,7 @@ CREATE TABLE IF NOT EXISTS `#__mothership_invoices` (
   `due_date` DATE NULL DEFAULT NULL,
   `sent_date` DATE NULL DEFAULT NULL,
   `paid_date` DATE NULL DEFAULT NULL,
-  `locked` BOOLEAN NOT NULL DEFAULT 0,
+  `locked` TINYINT(1) NOT NULL DEFAULT 0,
   `created` DATETIME NULL DEFAULT (CURRENT_TIMESTAMP),
   `created_by` INT(11) NULL DEFAULT NULL,
   `checked_out_time` DATETIME NULL DEFAULT NULL,
@@ -119,7 +123,7 @@ CREATE TABLE IF NOT EXISTS `#__mothership_payments` (
   `transaction_id` VARCHAR(255) DEFAULT NULL,
   `status` INT NOT NULL DEFAULT 0,
   `processed_date` DATETIME DEFAULT NULL,
-  'locked' BOOLEAN NOT NULL DEFAULT 0,
+  `locked` TINYINT(1) NOT NULL DEFAULT 0,
   `created_by` INT(11) DEFAULT NULL,
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -149,6 +153,7 @@ CREATE TABLE IF NOT EXISTS `#__mothership_projects` (
   `description` TEXT DEFAULT NULL,
   `type` VARCHAR(255) DEFAULT NULL,
   `status` ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
+  `metadata` JSON DEFAULT NULL,
   `created` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `created_by` INT(11) DEFAULT NULL,
   `checked_out_time` DATETIME DEFAULT NULL,
@@ -188,3 +193,5 @@ CREATE TABLE IF NOT EXISTS `#__mothership_logs` (
   `notes` TEXT NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+SET FOREIGN_KEY_CHECKS = 1;

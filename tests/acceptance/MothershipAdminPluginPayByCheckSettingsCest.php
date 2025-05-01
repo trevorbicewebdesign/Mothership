@@ -17,15 +17,17 @@ class MothershipAdminPluginPayByCheckSettingsCest
         $I->amOnPage("/administrator/");
 
         // Log in with valid credentials
-        $I->fillField("input[name=username]", "trevorbice");
-        $I->fillField("input[name=passwd]", "4&GoH#7FvPsY");
+        $I->fillField("input[name=username]", "admin");
+        $I->fillField("input[name=passwd]", "password123!test");
         $I->click("Log in");
-        $I->wait(3);
+        $I->waitForText("Hide Forever");
+        $I->click("Hide Forever");
     }
 
     /**
      * @group backend
      * @group payment
+     * @group backend-payment
      */
     public function MothershipViewPluginPayByCheckSettings(AcceptanceTester $I)
     {
@@ -38,11 +40,11 @@ class MothershipAdminPluginPayByCheckSettingsCest
 
         $I->see("Mothership Payment - Pay By Check");
         $I->click("Mothership Payment - Pay By Check");
-        $I->waitForText("Plugins: Mothership Payment - Pay By Check", 20, "h1.page-title");
+        $I->waitForText("Plugins: Mothership Payment - Pay by Check", 20, "h1.page-title");
         $I->makeScreenshot("mothership-payments-paybycheck-settings");
 
         $I->see("Payment Display Label", "label");
-        $I->see("Check Payee", "label");
+        $I->see("Payee Name", "label");
         $I->see("Instructions", "label");
     }
 }

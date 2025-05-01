@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c677c9784170bde95f5167e839425690",
+    "content-hash": "8300f5efcd39a0e554381dc81f9ea936",
     "packages": [
         {
             "name": "io-developer/php-whois",

@@ -100,7 +100,6 @@ class DomainHelper extends ContentHelper
                 foreach ($name_servers as $key => $value) {
                     // strip eric.ns.cloudflare.com down to just cloudflare 
                     $dns_provider = preg_replace('/^(?:[^.]+\.)?([^\.]+)\.[^.]+$/', '$1', $value);
-
                 }
             }
             else {

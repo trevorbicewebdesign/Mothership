@@ -41,7 +41,7 @@ use Joomla\CMS\Language\Text;
                     <?php 
                     $plugin = \Joomla\CMS\Plugin\PluginHelper::getPlugin('mothership-payment', $payment->payment_method);
                     $pluginParams = new \Joomla\Registry\Registry($plugin->params);
-                    echo $pluginParams->get('display_name');
+                    echo $pluginParams->get('display_name')?$pluginParams->get('display_name') : $payment->payment_method;
                     ?>
                 </td>
                 <td><?php echo $payment->transaction_id; ?></td>

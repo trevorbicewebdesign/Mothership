@@ -9,9 +9,9 @@ use Joomla\CMS\Language\Text;
 
 \defined('_JEXEC') or die;
 
-class RegistrarField extends ListField
+class registrargield extends ListField
 {
-    protected $type = 'Registrar';
+    protected $type = 'registrar';
 
     public function getOptions()
     {

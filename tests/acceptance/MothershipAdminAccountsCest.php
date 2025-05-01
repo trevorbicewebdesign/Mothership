@@ -51,33 +51,34 @@ class MothershipAdminAccountsCest
         ]);
 
         $I->amOnPage("/administrator/");
-        $I->fillField("input[name=username]", "trevorbice");
-        $I->fillField("input[name=passwd]", "4&GoH#7FvPsY");
+        $I->fillField("input[name=username]", "admin");
+        $I->fillField("input[name=passwd]", "password123!test");
         $I->click("Log in");
-        $I->wait(3);
-    }
+        $I->waitForText("Hide Forever", 20);
+        $I->click("Hide Forever");
+;    }
 
     /**
      * @group backend
      * @group account
+     * @group backend-account
      */
     public function MothershipCancelClientEdit(AcceptanceTester $I)
-    {
+    {   
         $I->amOnPage( self::ACCOUNTS_VIEW_ALL_URL);
         $I->waitForText("Mothership: Accounts", 20, "h1.page-title");
 
         $I->click("Test Client");
-        $I->wait(1);
-        $I->see("Mothership: Edit Client", "h1.page-title");
+        $I->waitForText("Mothership: Edit Client", 20, "h1.page-title");
         $I->click("Close", "#toolbar");
-        $I->wait(1);
+        $I->waitForText("Mothership: Accounts", 20, "h1.page-title");
         $I->seeCurrentUrlEquals(self::ACCOUNTS_VIEW_ALL_URL);
-        $I->see("Mothership: Accounts", "h1.page-title");
     }
 
     /**
      * @group backend
      * @group account
+     * @group backend-account
      */
     public function MothershipViewAccounts(AcceptanceTester $I)
     {
@@ -110,6 +111,7 @@ class MothershipAdminAccountsCest
     /**
      * @group backend
      * @group account
+     * @group backend-account
      */
     public function MothershipAddAccount(AcceptanceTester $I)
     {
@@ -166,6 +168,7 @@ class MothershipAdminAccountsCest
      * @group backend
      * @group account
      * @group delete
+     * @group backend-account
      */
     public function MothershipDeleteAccount(AcceptanceTester $I)
     {
@@ -208,6 +211,7 @@ class MothershipAdminAccountsCest
      * @group backend
      * @group account
      * @group delete
+     * @group backend-account
      */
     public function MothershipDeleteAccountFailure(AcceptanceTester $I)
     {
@@ -241,6 +245,7 @@ class MothershipAdminAccountsCest
      * @group backend
      * @group account
      * @group delete
+     * @group backend-account
      */
     public function MothershipDeleteAccountWithPaymentUnlinksPayment(AcceptanceTester $I)
     {

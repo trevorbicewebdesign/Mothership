@@ -718,6 +718,6 @@
             "install-path": "../symfony/polyfill-intl-normalizer"
         }
     ],
-    "dev": true,
+    "dev": false,
     "dev-package-names": []
 }

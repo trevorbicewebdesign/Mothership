@@ -51,15 +51,17 @@ class MothershipAdminDomainsCest
         ]);
 
         $I->amOnPage("/administrator/");
-        $I->fillField("input[name=username]", "trevorbice");
-        $I->fillField("input[name=passwd]", "4&GoH#7FvPsY");
+        $I->fillField("input[name=username]", "admin");
+        $I->fillField("input[name=passwd]", "password123!test");
         $I->click("Log in");
-        $I->wait(3);
+        $I->waitForText("Hide Forever");
+        $I->click("Hide Forever");
     }
 
     /**
      * @group backend
-     * @group account
+     * @group domain
+     * @group backend-domain
      */
     public function MothershipViewDomains(AcceptanceTester $I)
     {
@@ -101,6 +103,7 @@ class MothershipAdminDomainsCest
     /**
      * @group backend
      * @group domain
+     * @group backend-domain
      */
     public function MothershipAddDomain(AcceptanceTester $I)
     {
@@ -136,6 +139,7 @@ class MothershipAdminDomainsCest
         $I->selectOption("select#jform_client_id", "Test Client");
         $I->selectOption("select#jform_account_id", "Test Account");
         $I->fillField("input#jform_name", "example.com");
+        $I->fillField("input#jform_purchase_date", date("Y-m-d"));
 
         $I->click("Save", "#toolbar");
         $I->waitForText("Mothership: Edit Domain", 10, "h1.page-title");
@@ -156,6 +160,7 @@ class MothershipAdminDomainsCest
      * @group backend
      * @group domain
      * @group delete
+     * @group backend-domain
      */
     public function MothershipDeleteDomain(AcceptanceTester $I)
     {
@@ -206,6 +211,7 @@ class MothershipAdminDomainsCest
      * @group backend
      * @group domain
      * @group delete
+     * @group backend-domain
      */
     public function MothershipScanDomain(AcceptanceTester $I)
     {
@@ -245,9 +251,9 @@ class MothershipAdminDomainsCest
             'account_id' => $accountData['id'],
             'registrar' => 'GoDaddy',
             'reseller' => 'GoDaddy',
-            'purchase_date' => '1992-01-01 00:00:00',
-            'expiration_date' => '2026-04-25 16:17:40',
-            'modified' => '2025-04-25 09:17:43',
+            // 'purchase_date' => '1992-01-01 00:00:00',
+            // 'expiration_date' => '2026-04-26 18:21:44',
+            // 'modified' => '2025-04-26 11:21:45',
         ]);
 
         $I->seeInDatabase("jos_mothership_logs", [

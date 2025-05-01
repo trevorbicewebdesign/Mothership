@@ -559,6 +559,77 @@ class DbHelper extends Db
         return $data;
     }
 
+    public function createMothershipDomainData(array $data)
+    {
+
+        $defaultData = [
+            "name" => isset($data['name']) ? $data['name'] : 'example.com',
+            "client_id" => isset($data['client_id']) ? $data['client_id'] : 0,
+            'status' => isset($data['status']) ? $data['status'] : 1,
+            'registrar' => isset($data['registrar']) ? $data['registrar'] : 'GoDaddy',
+            'reseller' => isset($data['reseller']) ? $data['reseller'] : 'GoDaddy',
+            'dns_provider' => isset($data['dns_provider']) ? $data['dns_provider'] : 'Cloudflare',
+            'purchase_date' => isset($data['purchase_date']) ? $data['purchase_date'] : date('Y-m-d H:i:s'),
+            'expiration_date' => isset($data['expiration_date']) ? $data['expiration_date'] : date('Y-m-d H:i:s', strtotime('+1 year')),
+            'auto_renew' => isset($data['auto_renew']) ? $data['auto_renew'] : 1,
+            'notes' => isset($data['notes']) ? $data['notes'] : '',
+            'created' => isset($data['created']) ? $data['created'] : date('Y-m-d H:i:s'),
+        ];
+
+        // Merge provided data with defaults
+        $finalData = array_merge($defaultData, $data);
+        return $finalData;
+    }
+
+    public function createMothershipDomain(array $data)
+    {
+        $data = $this->createMothershipDomainData($data);
+        // Debugging output for visibility
+        codecept_debug("Creating Mothership Domain with the following data:");
+        codecept_debug($data);
+
+        // Insert into the database
+        $id = $this->Db->haveInDatabase("{$this->prefix}mothership_domains", $data);
+        $data['id'] = $id;
+
+        // Return the ID of the newly created invoice
+        return $data;
+    }
+
+    public function createMothershipLogData(array $data)
+    {
+        $defaultData = [
+            "client_id" => $data['client_id'] ?? 0,
+            "account_id" => $data['account_id'] ?? 0,
+            "object_type" => $data['object_type'] ?? 'Test Object Type',
+            "object_id" => $data['object_id'] ?? 0,
+            "action" => $data['action'] ?? 'Test Action',
+            "meta" => isset($data['meta']) ? json_encode($data['meta']) : json_encode(['default' => 'Test Meta']),
+            "description" => $data['description'] ?? 'Test Description',
+            "user_id" => $data['user_id'] ?? 0,
+            "created" => date('Y-m-d H:i:s'),
+            "notes" => $data['notes'] ?? '',
+        ];
+
+        // Merge provided data with defaults
+        $finalData = array_merge($defaultData, $data);
+        return $finalData;
+    }
+    public function createMothershipLog(array $data)
+    {
+        $data = $this->createMothershipLogData($data);
+        // Debugging output for visibility
+        codecept_debug("Creating Mothership Log with the following data:");
+        codecept_debug($data);
+
+        // Insert into the database
+        $id = $this->Db->haveInDatabase("{$this->prefix}mothership_logs", $data);
+        $data['id'] = $id;
+
+        // Return the ID of the newly created invoice
+        return $data;
+    }
+
     public function setInvoiceStatus($invoiceId, $status)
     {
         // Status levels are 1-5
@@ -647,6 +718,7 @@ class DbHelper extends Db
             'company_state',
             'company_zip',
             'company_phone',
+            'company_default_rate',
             'testmode',
             'company_email',
             'company_address_2',
@@ -844,6 +916,64 @@ class DbHelper extends Db
         return $ticketData;
     }
 
+    public function grabDomainFromDatabase($ticketId)
+    {
+        $fields = [
+            'id',
+            'name',
+            'client_id',
+            'account_id',
+            'status',
+            'registrar',
+            'reseller',
+            'dns_provider',
+            'ns1',
+            'ns2',
+            'ns3',
+            'ns4',
+            'purchase_date',
+            'expiration_date',
+            'notes',
+            'created',
+            'modified'
+        ];
+
+        $ticketData = [];
+        foreach ($fields as $field) {
+            $ticketData[$field] = $this->Db->grabFromDatabase("{$this->prefix}mothership_domains", $field, ["id" => $ticketId]);
+        }
+
+        return $ticketData;
+    }
+
+    public function grabProjectFromDatabase($ticketId)
+    {
+        $fields = [
+            'id',
+            'name',
+            'description',
+            'client_id',
+            'account_id',
+            'type',
+            'status',
+            'metadata',
+            'created',
+            'created_by',
+            'checked_out_time',
+            'checked_out',
+        ];
+
+        $ticketData = [];
+        foreach ($fields as $field) {
+            if($field == 'metadata') {
+                $ticketData[$field] = json_decode($this->Db->grabFromDatabase("{$this->prefix}mothership_projects", $field, ["id" => $ticketId]), true);
+            } else {
+                $ticketData[$field] = $this->Db->grabFromDatabase("{$this->prefix}mothership_projects", $field, ["id" => $ticketId]);
+            }
+        }
+
+        return $ticketData;
+    }
 
     public function getClientIdByName($clientName)
     {
@@ -934,6 +1064,26 @@ class DbHelper extends Db
     public function setPaymentStatus($paymentId, $status)
     {
         $this->Db->updateInDatabase("{$this->prefix}mothership_payments", ['status' => $status], ['id' => $paymentId]);
+    }
+
+    public function setPaymentLocked($paymentId)
+    {
+        $this->Db->updateInDatabase("{$this->prefix}mothership_payments", ['locked' => 1], ['id' => $paymentId]);
+    }
+
+    public function setPaymentUnlocked($paymentId)
+    {
+        $this->Db->updateInDatabase("{$this->prefix}mothership_payments", ['locked' => 0], ['id' => $paymentId]);
+    }
+
+    public function setInvoiceLocked($invoiceId)
+    {
+        $this->Db->updateInDatabase("{$this->prefix}mothership_invoices", ['locked' => 1], ['id' => $invoiceId]);
+    }
+
+    public function setInvoiceUnlocked($invoiceId)
+    {
+        $this->Db->updateInDatabase("{$this->prefix}mothership_invoices", ['locked' => 0], ['id' => $invoiceId]);
     }
 
 }

@@ -4,19 +4,23 @@ namespace TrevorBice\Component\Mothership\Administrator\Field;
 
 use Joomla\CMS\Form\Field\ListField;
 use Joomla\CMS\Language\Text;
-use TrevorBice\Component\Mothership\Administrator\Enum\InvoiceStatus;
 
 defined('_JEXEC') or die;
 
-class InvoicestatusField extends ListField
+class InvoiceStatusField extends ListField
 {
-    protected $type = 'Invoicestatus';
+    protected $type = 'invoicestatus';
 
     protected function getOptions()
     {
         $options = [];
 
-        $statuses = ['draft'=>1, 'opened'=>2, 'late'=>3, 'paid'=>4];
+        $statuses = [
+            'draft'=>1, 
+            'opened'=>2, 
+            'canceled'=>3, 
+            'closed'=>4
+        ];
         foreach ($statuses as $key=>$status) {
             $options[] = (object) [
             'value' => $status,

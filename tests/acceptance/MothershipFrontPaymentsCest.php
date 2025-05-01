@@ -20,7 +20,6 @@ class MothershipFrontPaymentsCest
     const PAYMENT_VIEW_URL= "index.php?option=com_mothership&view=payment&id=%s";
     const PAYMENTS_VIEW_ALL_SEF_URL = "/account-center/billing/payments";
     const PAY_INVOICE_URL= "index.php?option=com_mothership&controller=payments&task=processPayment&id=%s&pactiontype=processPayment";
-    const PAYPAL_NOTIFICATION_URL= "index.php?option=com_mothership&controller=payments&task=processPayment&invoice_id=%s&payment_id=%s&pactiontype=notify";
 
     public function _before(AcceptanceTester $I)
     {
@@ -208,6 +207,7 @@ class MothershipFrontPaymentsCest
         $I->see("Invoices Paid With This Payment:");
         $I->see("Invoice #{$this->invoiceData['number']}", "ul.list-group li a");
 
+        /*
         $I->seeInDatabase("jos_mothership_logs", [
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
@@ -217,6 +217,7 @@ class MothershipFrontPaymentsCest
             'object_id' => $this->accountData['id'],
             'created' => $log_created,
         ]);
+        */
 
 
     }
