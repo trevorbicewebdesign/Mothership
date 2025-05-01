@@ -1,3 +1,4 @@
+![Run Mothership Tests](https://github.com/trevorbicewebdesign/mothership/actions/workflows/codeception.tests.yml/badge.svg)
 # Mothership
 Mothership is a friendly, open-source Joomla extension built for solo developers and small businesses. It started as a personal project designed to simplify everyday challenges like invoicing, support tickets, time tracking, expenses, taxes, and logs. Over time, it evolved into a tool that handles all these essential functions in one place—making life easier not just for me, but for anyone juggling the many hats of a web development operation.
 
@@ -516,16 +517,7 @@ The invoice has been set from `Draft` to `Opened`. This will send the email temp
 ## Payment Completed
 The payment has been set from `pending` to `completed`. This will send the email template `payment.completed` to the Client Owner and BCC an administrator. This should be sent to the payee whenever the payment cycle has been completed. 
 
-### Emails Left to create
-- **Invoice Cancelled**:
-- **Invoice due in 7 days**:
-- **Invoice due in 1 day**:
-- **Invoice 1 day late**:
-- **Invoice 7 days late**:
-- **Invoice 1 Month Late**:
-- **Invoice Refunded**:
-- **Payment Cancelled**:
-- **Payment Failed**:
-- **Domain Expiring in 30 days**:
+# Testing
 
+## 
 
