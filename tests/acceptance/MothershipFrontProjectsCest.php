@@ -111,6 +111,7 @@ class MothershipFrontProjectsCest
     /**
      * @group frontend
      * @group project
+     * @group frontend-project
      */
     public function ViewAllProjectsPage(AcceptanceTester $I)
     {
@@ -151,6 +152,7 @@ class MothershipFrontProjectsCest
     /**
      * @group frontend
      * @group project
+     * @group frontend-project
      */
     public function ViewProjectPage(AcceptanceTester $I)
     {
@@ -167,17 +169,15 @@ class MothershipFrontProjectsCest
         // Capture a screenshot of the view
         $I->makeScreenshot("account-center-view-project");
 
-        /*
         $I->seeInDatabase("jos_mothership_logs", [
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
-            // 'user_id' => $this->joomlaUserData['id'],            
+            'user_id' => $this->joomlaUserData['id'],            
             'action' => 'viewed',
             'object_type' => 'project',
             'object_id' => $this->accountData['id'],
-            // 'created' => $log_created,
+            'created' => $log_created,
         ]);
-        */
     }
 
 }
