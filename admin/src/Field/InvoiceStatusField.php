@@ -4,11 +4,10 @@ namespace TrevorBice\Component\Mothership\Administrator\Field;
 
 use Joomla\CMS\Form\Field\ListField;
 use Joomla\CMS\Language\Text;
-use TrevorBice\Component\Mothership\Administrator\Enum\InvoiceStatus;
 
 defined('_JEXEC') or die;
 
-class invoicestatusfield extends ListField
+class InvoiceStatusField extends ListField
 {
     protected $type = 'invoicestatus';
 

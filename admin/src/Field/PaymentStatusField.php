@@ -5,11 +5,11 @@ namespace TrevorBice\Component\Mothership\Administrator\Field;
 use Joomla\CMS\Form\Field\ListField;
 use Joomla\CMS\Language\Text;
 
-\defined('_JEXEC') or die;
+defined('_JEXEC') or die;
 
-class paymentstatusfield extends ListField
+class PaymentStatusField extends ListField
 {
-    protected $type = 'paymentstatus';
+    protected $type = 'PaymentStatus';
 
     protected function getOptions()
     {
