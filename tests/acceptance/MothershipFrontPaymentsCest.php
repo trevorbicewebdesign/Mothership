@@ -209,7 +209,6 @@ class MothershipFrontPaymentsCest
         $I->see("Invoices Paid With This Payment:");
         $I->see("Invoice #{$this->invoiceData['number']}", "ul.list-group li a");
 
-        
         $I->seeInDatabase("jos_mothership_logs", [
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
