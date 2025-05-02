@@ -265,4 +265,45 @@ class MothershipAdminProjectsCest
             'action' => 'scanned',
         ]);
     }
+
+    /**
+     * @group backend
+     * @group project
+     * @group delete
+     * @group backend-project
+     */
+    public function MothershipDeleteProject(AcceptanceTester $I)
+    {
+        $projectData = $I->createMothershipProject([
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'name' => 'Test Project',
+            'status' => 1,
+        ]);
+        $I->seeInDatabase("jos_mothership_projects", [ 'id' => $projectData['id'] ]);
+        $I->amOnPage(self::PROJECTS_VIEW_ALL_URL);
+        $I->waitForText("Mothership: Projects", 20, "h1.page-title");
+
+        $I->seeNumberOfElements("#j-main-container table tbody tr", 2);
+
+        $I->seeElement(".btn-toolbar");
+
+        $I->click("input[name=checkall-toggle]");
+        $I->click("Actions");
+        $I->see("Check-in", "joomla-toolbar-button#status-group-children-checkin");
+        $I->seeElement("joomla-toolbar-button#status-group-children-checkin", ['task' => "projects.checkin"]);
+        $I->see("Edit", "joomla-toolbar-button#status-group-children-edit");
+        $I->seeElement("joomla-toolbar-button#status-group-children-edit", ['task' => "project.edit"]);
+        $I->see("Delete", "joomla-toolbar-button#status-group-children-delete");
+        $I->seeElement("joomla-toolbar-button#status-group-children-delete", ['task' => "projects.delete"]);
+
+        $I->click("Delete", "#toolbar");
+        $I->wait(1);
+        $I->waitForText("Mothership: Projects", 10, "h1.page-title");
+        $I->seeInCurrentUrl(self::PROJECTS_VIEW_ALL_URL);
+        $I->see("2 Projects deleted successfully.", ".alert-message");
+        $I->seeNumberOfElements("#j-main-container table tbody tr", 0);
+
+        $I->dontSeeInDatabase("jos_mothership_projects", [ 'id' => $projectData['id'] ]);
+    }
 }

@@ -110,6 +110,7 @@ class HtmlView extends BaseHtmlView
                 $childBar->checkin('projects.checkin')->listCheck(true);
             }
 
+            $childBar->edit('project.edit')->listCheck(true);
             $childBar->delete('projects.delete')->listCheck(true);
         }
 

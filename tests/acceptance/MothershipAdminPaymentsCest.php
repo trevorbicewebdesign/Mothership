@@ -486,4 +486,62 @@ class MothershipAdminPaymentsCest
         $I->waitForText("Mothership: View Payment", 20, "h1.page-title");
         $I->waitForText("Payment locked successfully.", 20, "#system-message-container .alert-message");
     }
+
+    /**
+     * @group backend
+     * @group payment
+     * @group delete
+     * @group backend-payment
+     */
+    public function MothershipDeletePayment(AcceptanceTester $I)
+    {
+        $clientData = $I->createMothershipClient([
+            'name' => 'Test Client 2',
+        ]);
+        $accountData = $I->createMothershipAccount([
+            'client_id' => $clientData['id'],
+            'name' => 'Test Account 2',
+        ]);
+
+        $paymentData = $I->createMothershipPayment([
+            'client_id' => $clientData['id'],
+            'account_id' => $accountData['id'],
+            'amount' => 103.2,
+            'fee_amount' => 3.2,
+            'fee_passed_on' => FALSE,
+            'payment_method' => 'paypal',
+            'transaction_id' => '123456',
+            'status' => 1,
+            'processed_date' => date('Y-m-d H:i:s'),
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s'),
+        ]);
+
+        $I->seeInDatabase("jos_mothership_payments", [ 'id' => $paymentData['id'] ]);
+        $I->amOnPage(self::PAYMENTS_VIEW_ALL_URL);
+        $I->waitForText("Mothership: Payments", 20, "h1.page-title");
+
+        $I->seeNumberOfElements("#j-main-container table tbody tr", 2);
+
+        $I->seeElement(".btn-toolbar");
+
+        $I->click("input[name=checkall-toggle]");
+        $I->click("Actions");
+        $I->see("Check-in", "joomla-toolbar-button#status-group-children-checkin");
+        $I->seeElement("joomla-toolbar-button#status-group-children-checkin", ['task' => "payments.checkIn"]);
+        $I->see("Edit", "joomla-toolbar-button#status-group-children-edit");
+        $I->seeElement("joomla-toolbar-button#status-group-children-edit", ['task' => "payment.edit"]);
+        $I->see("Delete", "joomla-toolbar-button#status-group-children-delete");
+        $I->seeElement("joomla-toolbar-button#status-group-children-delete", ['task' => "payments.delete"]);
+
+        $I->click("Delete", "#toolbar");
+        $I->wait(1);
+
+        $I->seeInCurrentUrl(self::PAYMENTS_VIEW_ALL_URL);
+        $I->see("Mothership: Payments", "h1.page-title");
+        $I->see("2 Payments deleted successfully.", ".alert-message");
+        $I->seeNumberOfElements("#j-main-container table tbody tr", 0);
+
+        $I->dontSeeInDatabase("jos_mothership_payments", [ 'id' => $paymentData['id'] ]);
+    }
 }
