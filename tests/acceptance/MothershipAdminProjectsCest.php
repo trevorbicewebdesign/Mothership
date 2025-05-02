@@ -302,7 +302,7 @@ class MothershipAdminProjectsCest
 
         $I->seeInCurrentUrl(self::PROJECTS_VIEW_ALL_URL);
         $I->see("Mothership: Projects", "h1.page-title");
-        $I->see("1 Project deleted successfully.", ".alert-message");
+        $I->see("2 Projects deleted successfully.", ".alert-message");
         $I->seeNumberOfElements("#j-main-container table tbody tr", 1);
 
         $I->dontSeeInDatabase("jos_mothership_projects", [ 'id' => $projectData['id'] ]);
