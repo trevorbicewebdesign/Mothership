@@ -9,6 +9,7 @@ use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\Plugin\PluginHelper;
+use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper; // Import LogHelper
 use Mpdf\Mpdf;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\Event;
@@ -203,6 +204,15 @@ class InvoiceController extends BaseController
             $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoice&id=' . $invoiceId, false));
             return;
         }
+
+        LogHelper::logPaymentInitiated(
+            $invoiceId,
+            $payment->id,
+            $invoice->client_id,
+            $invoice->account_id,
+            $invoice->total,
+            $paymentMethod
+        );
 
         // Invoke the plugin to process
         try {

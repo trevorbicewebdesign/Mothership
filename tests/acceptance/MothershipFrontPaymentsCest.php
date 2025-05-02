@@ -115,6 +115,7 @@ class MothershipFrontPaymentsCest
     /**
      * @group frontend
      * @group payment
+     * @group frontend-payment
      */
     public function ViewAllPaymentsPage(AcceptanceTester $I)
     {
@@ -185,14 +186,15 @@ class MothershipFrontPaymentsCest
     /**
      * @group frontend
      * @group payment
+     * @group frontend-payment
      */
     public function ViewPaymentPage(AcceptanceTester $I)
     {
         // Navigate to the payment detail page
         $I->setPaymentStatus($this->paymentData['id'], 2);
         $I->amOnPage(sprintf(self::PAYMENT_VIEW_URL, $this->paymentData['id']));
-        $I->waitForText("Payment #{$this->paymentData['id']}", 10);
         $log_created = date('Y-m-d H:i:s');
+        $I->waitForText("Payment #{$this->paymentData['id']}", 10);
 
         // Capture a screenshot of the view
         $I->makeScreenshot("account-center-view-payment");
@@ -207,19 +209,15 @@ class MothershipFrontPaymentsCest
         $I->see("Invoices Paid With This Payment:");
         $I->see("Invoice #{$this->invoiceData['number']}", "ul.list-group li a");
 
-        /*
-        $I->seeInDatabase("jos_mothership_logs", [
+        $created = $I->grabFromDatabase("jos_mothership_logs", "created", [
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
             'user_id' => $this->joomlaUserData['id'],            
             'action' => 'viewed',
             'object_type' => 'payment',
             'object_id' => $this->accountData['id'],
-            'created' => $log_created,
         ]);
-        */
 
-
+        $I->assertEquals($log_created, $created, "Log created date should be the same as the one in the database.");
     }
-
 }

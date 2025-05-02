@@ -114,8 +114,10 @@ class MothershipAdminPaymentsCest
 
         $I->click("Test Client");
         $I->waitForText("Mothership: Edit Client", 20, "h1.page-title");
+        $I->wait(1);
         $I->click("Close", "#toolbar");
         $I->waitForText("Mothership: Payments", 20, "h1.page-title");
+        $I->wait(1);
         $I->seeCurrentUrlEquals(self::PAYMENTS_VIEW_ALL_URL);
     }
 
@@ -132,8 +134,10 @@ class MothershipAdminPaymentsCest
 
         $I->click("Test Account");
         $I->waitForText("Mothership: Edit Account", 20, "h1.page-title");
+        $I->wait(1);
         $I->click("Close", "#toolbar");
         $I->waitForText("Mothership: Payments", 20, "h1.page-title");
+        $I->wait(1);
         $I->seeCurrentUrlEquals(self::PAYMENTS_VIEW_ALL_URL);
     }
 

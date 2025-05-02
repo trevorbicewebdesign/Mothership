@@ -163,25 +163,25 @@ class MothershipFrontInvoicesCest
     public function ViewInvoicePage(AcceptanceTester $I)
     {
         $I->amOnPage(sprintf(self::INVOICE_VIEW_URL, $this->invoiceData['id']));
-        $I->waitForText("Invoice #{$this->invoiceData['number']}", 10, "h1");
         $log_created = date('Y-m-d H:i:s');
+        $I->waitForText("Invoice #{$this->invoiceData['number']}", 10, "h1");
 
         $I->see("Test Item 1");
         $I->see("Test Item 2");
 
         $I->makeScreenshot("account-center-view-invoice");
 
-        /*
-        $I->seeInDatabase("jos_mothership_logs", [
+        $created = $I->grabFromDatabase("jos_mothership_logs", "created", [
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
             'user_id' => $this->joomlaUserData['id'],            
             'action' => 'viewed',
             'object_type' => 'invoice',
             'object_id' => $this->accountData['id'],
-            'created' => $log_created,
         ]);
-        */
+
+        $I->assertEquals($log_created, $created, "Log created date should be the same as the one in the database.");
+        
     }
 
     /**

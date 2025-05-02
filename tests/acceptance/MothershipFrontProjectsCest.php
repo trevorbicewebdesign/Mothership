@@ -111,6 +111,7 @@ class MothershipFrontProjectsCest
     /**
      * @group frontend
      * @group project
+     * @group frontend-project
      */
     public function ViewAllProjectsPage(AcceptanceTester $I)
     {
@@ -151,6 +152,7 @@ class MothershipFrontProjectsCest
     /**
      * @group frontend
      * @group project
+     * @group frontend-project
      */
     public function ViewProjectPage(AcceptanceTester $I)
     {
@@ -161,23 +163,22 @@ class MothershipFrontProjectsCest
             'status' => 1,
         ]);
         $I->amOnPage(sprintf(self::PROJECT_VIEW_URL, $projectData['id']));
-        $I->waitForText("{$projectData['name']}", 10);
         $log_created = date('Y-m-d H:i:s');
+        $I->waitForText("{$projectData['name']}", 10);
 
         // Capture a screenshot of the view
         $I->makeScreenshot("account-center-view-project");
 
-        /*
-        $I->seeInDatabase("jos_mothership_logs", [
+        $created = $I->grabFromDatabase("jos_mothership_logs", "created", [
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
-            // 'user_id' => $this->joomlaUserData['id'],            
+            'user_id' => $this->joomlaUserData['id'],            
             'action' => 'viewed',
             'object_type' => 'project',
             'object_id' => $this->accountData['id'],
-            // 'created' => $log_created,
         ]);
-        */
+
+        $I->assertEquals($log_created, $created, "Log created date should be the same as the one in the database.");
     }
 
 }

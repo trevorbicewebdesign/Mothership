@@ -149,19 +149,19 @@ class MothershipFrontPayByZelleCest
             'applied_amount' => $this->invoiceData['total'],
         ]);
         
-        /*
         $I->seeInDatabase("jos_mothership_logs", [
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
-            //'user_id' => $this->joomlaUserData['id'],            
+            'user_id' => $this->joomlaUserData['id'],            
             'action' => 'initiated',
             'object_type' => 'payment',
             'object_id' => $this->accountData['id'], 
         ]);
+        
         $meta = json_decode($I->grabFromDatabase("jos_mothership_logs", "meta", [
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
-            //'user_id' => $this->joomlaUserData['id'],            
+            'user_id' => $this->joomlaUserData['id'],            
             'action' => 'initiated',
             'object_type' => 'payment',
             'object_id' => $this->accountData['id'], 
@@ -170,7 +170,6 @@ class MothershipFrontPayByZelleCest
         $I->assertEquals($meta->invoice_id,  $this->invoiceData['id']);
         $I->assertEquals($meta->payment_method, "zelle");
         $I->assertEquals($meta->amount, $this->invoiceData['total']);
-        */
     }
 
 }

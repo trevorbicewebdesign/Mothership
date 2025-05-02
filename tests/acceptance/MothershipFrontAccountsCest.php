@@ -92,6 +92,7 @@ class MothershipFrontAccountsCest
     /**
      * @group frontend
      * @group account
+     * @group frontend-account
      */
     public function ViewAllAccountsPage(AcceptanceTester $I)
     {
@@ -116,12 +117,13 @@ class MothershipFrontAccountsCest
     /**
      * @group frontend
      * @group account
+     * @group frontend-account
      */
     public function ViewAccountPage(AcceptanceTester $I)
     {
         $I->amOnPage(sprintf(self::ACCOUNT_VIEW_URL, $this->accountData['id']));
-        $I->waitForText($this->accountData['name'], 10, "h1");
         $log_created = date('Y-m-d H:i:s');
+        $I->waitForText($this->accountData['name'], 10, "h1");
 
         $I->makeScreenshot("account-center-view-account");
 
@@ -151,17 +153,16 @@ class MothershipFrontAccountsCest
         $I->see("Domains", "h4");
         $I->seeNumberOfElements("table#domainsTable tbody tr", 1);
 
-        /*
-        $I->seeInDatabase("jos_mothership_logs", [
+        $created = $I->grabFromDatabase("jos_mothership_logs", "created", [
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
-            // 'user_id' => $this->joomlaUserData['id'],            
+            'user_id' => $this->joomlaUserData['id'],            
             'action' => 'viewed',
             'object_type' => 'account',
             'object_id' => $this->accountData['id'],
-            // 'created' => $log_created,
         ]);
-        */
+
+        $I->assertEquals($log_created, $created, "Log created date should be the same as the one in the database.");
     }
 
 }

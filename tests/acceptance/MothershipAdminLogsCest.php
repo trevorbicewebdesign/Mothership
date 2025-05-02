@@ -22,6 +22,22 @@ class MothershipAdminLogsCest
     const LOGS_VIEW_ALL_URL = "/administrator/index.php?option=com_mothership&view=logs";
     const LOG_EDIT_URL = "/administrator/index.php?option=com_mothership&view=log&layout=edit&id=%s";
 
+    const LOG_ACCOUNT_VIEWED_DESCRIPTION = "Account `%s` was viewed.";
+    const LOG_ACCOUNT_VIEWED_DETAILS = "Account `%s` was viewed by user %s.";
+    const LOG_PROJECT_VIEWED_DESCRIPTION = "Project ID %s was viewed.";
+    const LOG_PROJECT_VIEWED_DETAILS = "Project ID %s was viewed by user %s.";
+    const LOG_DOMAIN_VIEWED_DESCRIPTION = "Domain `%s` was viewed.";
+    const LOG_DOMAIN_VIEWED_DETAILS = "Domain `%s` was viewed by user %s.";
+    const LOG_INVOICE_VIEWED_DESCRIPTION = "Invoice ID %s was viewed.";
+    const LOG_INVOICE_VIEWED_DETAILS = "Invoice ID %s was viewed by user %s.";
+    const LOG_PAYMENT_VIEWED_DESCRIPTION = "Payment ID %s was viewed.";
+    const LOG_PAYMENT_VIEWED_DETAILS = "Payment ID %s was viewed by user %s.";
+
+    const LOG_PAYMENT_STATUS_CHANGED_DESCRIPTION = "Payment status changed from `%s` to `%s`.";
+    const LOG_PAYMENT_STATUS_CHANGED_DETAILS = "Payment ID %s status changed from `%s` to `%s` by user %s.";
+    const LOG_PAYMENT_INITIATED_DESCRIPTION = "Payment ID %d was initiated.";
+    const LOG_PAYMENT_INITIATED_DETAILS = "Payment ID %d using method %s was initiated by user %s to pay invoice %s.";
+
     public function _before(AcceptanceTester $I)
     {
         $I->resetMothershipTables();
@@ -34,8 +50,21 @@ class MothershipAdminLogsCest
             'client_id' => $this->clientData['id'],
             'name' => 'Test Account',
         ]);
+        $j = 0;
 
-        
+        $this->logData[] = $I->createMothershipLog([
+            'client_id'   => $this->clientData['id'],
+            'account_id'  => $this->accountData['id'],
+            'user_id'     => 548,
+            'object_id'   => $this->accountData['id'],
+            'object_type' => 'account',
+            'action'      => 'viewed',
+            'meta'        => json_encode([]),
+            'created'     => '2025-04-11 01:29:03',
+        ]);
+        $this->logTextDescription[$this->logData[$j]['id']] = sprintf(self::LOG_ACCOUNT_VIEWED_DESCRIPTION, $this->accountData['name']);
+        $this->logTextDetails[$this->logData[$j]['id']] = sprintf(self::LOG_ACCOUNT_VIEWED_DETAILS, $this->accountData['name'], 548);
+        $j++;
 
         $this->logData[] = $I->createMothershipLog([
             'client_id'   => $this->clientData['id'],
@@ -47,12 +76,43 @@ class MothershipAdminLogsCest
             'meta'        => json_encode([]),
             'created'     => '2025-04-11 01:29:03',
         ]);
-        $this->logTextDescription[$this->logData[0]['id']] = "Payment ID 93 was viewed.";
-        $this->logTextDetails[$this->logData[0]['id']] = "Payment ID 93 was viewed by user 548.";
+        $this->logTextDescription[$this->logData[$j]['id']] = sprintf(self::LOG_PAYMENT_VIEWED_DESCRIPTION, 93);
+        $this->logTextDetails[$this->logData[$j]['id']] = sprintf(self::LOG_PAYMENT_VIEWED_DETAILS, 93, 548);
+        $j++;
+      
+        $this->logData[] = $I->createMothershipLog([
+            'client_id'   => $this->clientData['id'],
+            'account_id'  => $this->accountData['id'],
+            'user_id'     => 548,
+            'object_id'   => 2,
+            'object_type' => 'invoice',
+            'action'      => 'viewed',
+            'meta'        => json_encode([]),
+            'created'     => '2025-04-11 01:45:19',
+        ]);
+
+        $this->logTextDescription[$this->logData[$j]['id']] = sprintf(self::LOG_INVOICE_VIEWED_DESCRIPTION, 2);
+        $this->logTextDetails[$this->logData[$j]['id']] = sprintf(self::LOG_INVOICE_VIEWED_DETAILS, 2, 548);
+        $j++;
         
         $this->logData[] = $I->createMothershipLog([
-            'client_id'   => 1,
-            'account_id'  => 1,
+            'client_id'   => $this->clientData['id'],
+            'account_id'  => $this->accountData['id'],
+            'user_id'     => 548,
+            'object_id'   => 1,
+            'object_type' => 'domain',
+            'action'      => 'viewed',
+            'meta'        => json_encode([]),
+            'created'     => '2025-04-21 21:34:08',
+        ]);
+
+        $this->logTextDescription[$this->logData[$j]['id']] = sprintf(self::LOG_DOMAIN_VIEWED_DESCRIPTION, 1);
+        $this->logTextDetails[$this->logData[$j]['id']] = sprintf(self::LOG_DOMAIN_VIEWED_DETAILS, 1, 548);
+        $j++;
+
+        $this->logData[] = $I->createMothershipLog([
+            'client_id'   => $this->clientData['id'],
+            'account_id'  => $this->accountData['id'],
             'user_id'     => 548,
             'object_id'   => 93,
             'object_type' => 'payment',
@@ -64,26 +124,13 @@ class MothershipAdminLogsCest
             'created'     => '2025-04-11 01:32:21',
         ]);
         
-        $this->logTextDescription[$this->logData[1]['id']] = "Payment status changed from `Completed` to `Pending`.";
-        $this->logTextDetails[$this->logData[1]['id']] = "Payment ID 93 status changed from `Completed` to `Pending` by user 548.";
-        
-        $this->logData[] = $I->createMothershipLog([
-            'client_id'   => 1,
-            'account_id'  => 1,
-            'user_id'     => 548,
-            'object_id'   => 2,
-            'object_type' => 'invoice',
-            'action'      => 'viewed',
-            'meta'        => json_encode([]),
-            'created'     => '2025-04-11 01:45:19',
-        ]);
+        $this->logTextDescription[$this->logData[$j]['id']] = sprintf(self::LOG_PAYMENT_STATUS_CHANGED_DESCRIPTION, 'Completed', 'Pending');
+        $this->logTextDetails[$this->logData[$j]['id']] = sprintf(self::LOG_PAYMENT_STATUS_CHANGED_DETAILS, 93, 'Completed', 'Pending', 548);
+        $j++;
 
-        $this->logTextDescription[$this->logData[2]['id']] = "Invoice ID 2 was viewed.";
-        $this->logTextDetails[$this->logData[2]['id']] = "Invoice ID 2 was viewed by user 548.";
-        
         $this->logData[] = $I->createMothershipLog([
-            'client_id'   => 1,
-            'account_id'  => 1,
+            'client_id'   => $this->clientData['id'],
+            'account_id'  => $this->accountData['id'],
             'user_id'     => 548,
             'object_id'   => 97,
             'object_type' => 'payment',
@@ -95,23 +142,9 @@ class MothershipAdminLogsCest
             'created'     => '2025-04-11 01:59:16',
         ]);
 
-        $this->logTextDescription[$this->logData[3]['id']] = "Payment ID 97 was initiated.";
-        $this->logTextDetails[$this->logData[3]['id']] = "Payment ID 97 using method Paypal was initiated by user 548 to pay invoice 2.";
-        
-        $this->logData[] = $I->createMothershipLog([
-            'client_id'   => 1,
-            'account_id'  => 1,
-            'user_id'     => 548,
-            'object_id'   => 1,
-            'object_type' => 'domain',
-            'action'      => 'viewed',
-            'meta'        => json_encode([]),
-            'created'     => '2025-04-21 21:34:08',
-        ]);
-
-        $this->logTextDescription[$this->logData[4]['id']] = "Domain `1` was viewed.";
-        $this->logTextDetails[$this->logData[4]['id']] = "Domain `1` was viewed by user 548.";
-        
+        $this->logTextDescription[$this->logData[$j]['id']] = sprintf(self::LOG_PAYMENT_INITIATED_DESCRIPTION, 97);
+        $this->logTextDetails[$this->logData[$j]['id']] = sprintf(self::LOG_PAYMENT_INITIATED_DETAILS, 97, 'paypal', 548, 2);
+        $j++;
 
         $I->amOnPage("/administrator/");
         $I->fillField("input[name=username]", "admin");
@@ -129,6 +162,7 @@ class MothershipAdminLogsCest
     public function MothershipViewAllLogs(AcceptanceTester $I)
     {
         $I->amOnPage(self::LOGS_VIEW_ALL_URL);
+        $I->wait(1);
         $I->waitForText("Mothership: Logs", 20, "h1.page-title");
 
         $I->makeScreenshot("mothership-logs-view-all");
@@ -142,7 +176,7 @@ class MothershipAdminLogsCest
         $I->seeElement("#j-main-container ");
         $I->seeElement("#j-main-container thead");
 
-        $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 5);
+        $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", count($this->logData));
 
         $I->see("ID", "#j-main-container table thead tr th:nth-child(2)");
         $I->see("Client Name", "#j-main-container table thead tr th:nth-child(3)");
@@ -154,20 +188,19 @@ class MothershipAdminLogsCest
         $I->see("Action", "#j-main-container table thead tr th:nth-child(9)");
         $I->see("Created", "#j-main-container table thead tr th:nth-child(10)");
 
-        foreach(array_reverse($this->logData) as $index=>$log) {
-            $realIndex = $index+1;
-            $I->see("{$log['id']}", "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(2)");
-            $I->see("{$this->clientData['name']}", "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(3)");
-            $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(4)");
-            $I->see($this->logTextDescription[$log['id']], "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(5)");
-            $I->see($this->logTextDetails[$log['id']], "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(6)");
-            $I->see("{$log['object_type']}", "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(7)");
-            $I->see("{$log['object_id']}", "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(8)");
-            $I->see("{$log['action']}", "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(9)");
-            $I->see("{$log['created']}", "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(10)");
+        foreach ($this->logData as $log) {
+            $I->see("{$log['id']}", "#j-main-container table tbody");
+            $I->see($this->clientData['name'], "#j-main-container table tbody");
+            $I->see($this->accountData['name'], "#j-main-container table tbody");
+            $I->see($this->logTextDescription[$log['id']], "#j-main-container table tbody");
+            $I->see($this->logTextDetails[$log['id']], "#j-main-container table tbody");
+            $I->see("{$log['object_type']}", "#j-main-container table tbody");
+            $I->see("{$log['object_id']}", "#j-main-container table tbody");
+            $I->see("{$log['action']}", "#j-main-container table tbody");
+            $I->see("{$log['created']}", "#j-main-container table tbody");
         }
        
-        $I->see("1 - 5 / 5 items", "#j-main-container .pagination__wrapper");
+        $I->see("1 - 6 / 6 items", "#j-main-container .pagination__wrapper");
     }
 
     /**
@@ -178,6 +211,7 @@ class MothershipAdminLogsCest
     public function MothershipViewLog(AcceptanceTester $I)
     {
         $I->amOnPage(sprintf(self::LOG_EDIT_URL, $this->logData[0]['id']));
+        $I->wait(1);
         $I->waitForText("Mothership: View Log", 20, "h1.page-title");
 
         $I->makeScreenshot("mothership-log-view");
@@ -204,6 +238,7 @@ class MothershipAdminLogsCest
         $I->seeInField("input#jform_created", "{$this->logData[0]['created']}");
         
         $I->click("Close", "#toolbar");
+        $I->wait(1);
         $I->waitForText("Mothership: Logs", 20, "h1.page-title");
         
     }

@@ -108,7 +108,7 @@ class MothershipAdminDomainsCest
     public function MothershipAddDomain(AcceptanceTester $I)
     {
         $I->amOnPage(self::DOMAINS_VIEW_ALL_URL);
-        $I->wait(2);
+        $I->wait(1);
         $I->waitForText("Mothership: Domains", 20, "h1.page-title");
 
         $toolbar = "#toolbar";
@@ -142,6 +142,7 @@ class MothershipAdminDomainsCest
         $I->fillField("input#jform_purchase_date", date("Y-m-d"));
 
         $I->click("Save", "#toolbar");
+        $I->wait(1);
         $I->waitForText("Mothership: Edit Domain", 10, "h1.page-title");
 
         $I->waitForText("Domain example.com saved successfully.", 10, ".alert-message");
