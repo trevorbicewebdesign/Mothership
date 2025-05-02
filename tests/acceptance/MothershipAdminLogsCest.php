@@ -34,8 +34,21 @@ class MothershipAdminLogsCest
             'client_id' => $this->clientData['id'],
             'name' => 'Test Account',
         ]);
+        $j = 0;
 
-        
+        $this->logData[] = $I->createMothershipLog([
+            'client_id'   => $this->clientData['id'],
+            'account_id'  => $this->accountData['id'],
+            'user_id'     => 548,
+            'object_id'   => 93,
+            'object_type' => 'account',
+            'action'      => 'viewed',
+            'meta'        => json_encode([]),
+            'created'     => '2025-04-11 01:29:03',
+        ]);
+        $this->logTextDescription[$this->logData[$j]['id']] = "Account ID 93 was viewed.";
+        $this->logTextDetails[$this->logData[$j]['id']] = "Account ID 93 was viewed by user 548.";
+        $j++;
 
         $this->logData[] = $I->createMothershipLog([
             'client_id'   => $this->clientData['id'],
@@ -47,12 +60,43 @@ class MothershipAdminLogsCest
             'meta'        => json_encode([]),
             'created'     => '2025-04-11 01:29:03',
         ]);
-        $this->logTextDescription[$this->logData[0]['id']] = "Payment ID 93 was viewed.";
-        $this->logTextDetails[$this->logData[0]['id']] = "Payment ID 93 was viewed by user 548.";
+        $this->logTextDescription[$this->logData[$j]['id']] = "Payment ID 93 was viewed.";
+        $this->logTextDetails[$this->logData[$j]['id']] = "Payment ID 93 was viewed by user 548.";
+        $j++;
+      
+        $this->logData[] = $I->createMothershipLog([
+            'client_id'   => $this->clientData['id'],
+            'account_id'  => $this->accountData['id'],
+            'user_id'     => 548,
+            'object_id'   => 2,
+            'object_type' => 'invoice',
+            'action'      => 'viewed',
+            'meta'        => json_encode([]),
+            'created'     => '2025-04-11 01:45:19',
+        ]);
+
+        $this->logTextDescription[$this->logData[$j]['id']] = "Invoice ID 2 was viewed.";
+        $this->logTextDetails[$this->logData[$j]['id']] = "Invoice ID 2 was viewed by user 548.";
+        $j++;
         
         $this->logData[] = $I->createMothershipLog([
-            'client_id'   => 1,
-            'account_id'  => 1,
+            'client_id'   => $this->clientData['id'],
+            'account_id'  => $this->accountData['id'],
+            'user_id'     => 548,
+            'object_id'   => 1,
+            'object_type' => 'domain',
+            'action'      => 'viewed',
+            'meta'        => json_encode([]),
+            'created'     => '2025-04-21 21:34:08',
+        ]);
+
+        $this->logTextDescription[$this->logData[$j]['id']] = "Domain `1` was viewed.";
+        $this->logTextDetails[$this->logData[$j]['id']] = "Domain `1` was viewed by user 548.";
+        $j++;
+
+        $this->logData[] = $I->createMothershipLog([
+            'client_id'   => $this->clientData['id'],
+            'account_id'  => $this->accountData['id'],
             'user_id'     => 548,
             'object_id'   => 93,
             'object_type' => 'payment',
@@ -64,26 +108,13 @@ class MothershipAdminLogsCest
             'created'     => '2025-04-11 01:32:21',
         ]);
         
-        $this->logTextDescription[$this->logData[1]['id']] = "Payment status changed from `Completed` to `Pending`.";
-        $this->logTextDetails[$this->logData[1]['id']] = "Payment ID 93 status changed from `Completed` to `Pending` by user 548.";
-        
-        $this->logData[] = $I->createMothershipLog([
-            'client_id'   => 1,
-            'account_id'  => 1,
-            'user_id'     => 548,
-            'object_id'   => 2,
-            'object_type' => 'invoice',
-            'action'      => 'viewed',
-            'meta'        => json_encode([]),
-            'created'     => '2025-04-11 01:45:19',
-        ]);
+        $this->logTextDescription[$this->logData[$j]['id']] = "Payment status changed from `Completed` to `Pending`.";
+        $this->logTextDetails[$this->logData[$j]['id']] = "Payment ID 93 status changed from `Completed` to `Pending` by user 548.";
+        $j++;
 
-        $this->logTextDescription[$this->logData[2]['id']] = "Invoice ID 2 was viewed.";
-        $this->logTextDetails[$this->logData[2]['id']] = "Invoice ID 2 was viewed by user 548.";
-        
         $this->logData[] = $I->createMothershipLog([
-            'client_id'   => 1,
-            'account_id'  => 1,
+            'client_id'   => $this->clientData['id'],
+            'account_id'  => $this->accountData['id'],
             'user_id'     => 548,
             'object_id'   => 97,
             'object_type' => 'payment',
@@ -95,22 +126,10 @@ class MothershipAdminLogsCest
             'created'     => '2025-04-11 01:59:16',
         ]);
 
-        $this->logTextDescription[$this->logData[3]['id']] = "Payment ID 97 was initiated.";
-        $this->logTextDetails[$this->logData[3]['id']] = "Payment ID 97 using method Paypal was initiated by user 548 to pay invoice 2.";
-        
-        $this->logData[] = $I->createMothershipLog([
-            'client_id'   => 1,
-            'account_id'  => 1,
-            'user_id'     => 548,
-            'object_id'   => 1,
-            'object_type' => 'domain',
-            'action'      => 'viewed',
-            'meta'        => json_encode([]),
-            'created'     => '2025-04-21 21:34:08',
-        ]);
+        $this->logTextDescription[$this->logData[$j]['id']] = "Payment ID 97 was initiated.";
+        $this->logTextDetails[$this->logData[$j]['id']] = "Payment ID 97 using method Paypal was initiated by user 548 to pay invoice 2.";
 
-        $this->logTextDescription[$this->logData[4]['id']] = "Domain `1` was viewed.";
-        $this->logTextDetails[$this->logData[4]['id']] = "Domain `1` was viewed by user 548.";
+        
         
 
         $I->amOnPage("/administrator/");
