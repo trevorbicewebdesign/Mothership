@@ -752,16 +752,16 @@ class DbHelper extends Db
             'checked_out',
         ];
 
-        $ticketData = [];
+        $projectData = [];
         foreach ($fields as $field) {
             if($field == 'metadata') {
-                $ticketData[$field] = json_decode($this->Db->grabFromDatabase("{$this->prefix}mothership_projects", $field, ["id" => $ticketId]), true);
+                $projectData[$field] = json_decode($this->Db->grabFromDatabase("{$this->prefix}mothership_projects", $field, ["id" => $projectId]), true);
             } else {
-                $ticketData[$field] = $this->Db->grabFromDatabase("{$this->prefix}mothership_projects", $field, ["id" => $ticketId]);
+                $projectData[$field] = $this->Db->grabFromDatabase("{$this->prefix}mothership_projects", $field, ["id" => $projectId]);
             }
         }
 
-        return $ticketData;
+        return $projectData;
     }
 
     public function getClientIdByName($clientName)
