@@ -553,7 +553,7 @@ The payment has been set from `pending` to `completed`. This will send the email
 - **clearUsersTable()**:
 - **setMothershipConfig(array $settings)**:
 - **grabInvoiceRow($invoiceId, $rowNumber)**:
-- **grabDomainFromDatabase($ticketId)**:
+- **grabDomainFromDatabase($domainId)**:
 - **getClientIdByName($clientName)**:
 - **grabLastCompletedPaymentId()**:
 - **setPaymentStatus($paymentId, $status)**:
