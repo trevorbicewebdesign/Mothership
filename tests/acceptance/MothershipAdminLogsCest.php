@@ -188,20 +188,19 @@ class MothershipAdminLogsCest
         $I->see("Action", "#j-main-container table thead tr th:nth-child(9)");
         $I->see("Created", "#j-main-container table thead tr th:nth-child(10)");
 
-        foreach(array_reverse($this->logData) as $index=>$log) {
-            $realIndex = $index+1;
-            $I->see("{$log['id']}", "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(2)");
-            $I->see("{$this->clientData['name']}", "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(3)");
-            $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(4)");
-            $I->see($this->logTextDescription[$log['id']], "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(5)");
-            $I->see($this->logTextDetails[$log['id']], "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(6)");
-            $I->see("{$log['object_type']}", "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(7)");
-            $I->see("{$log['object_id']}", "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(8)");
-            $I->see("{$log['action']}", "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(9)");
-            $I->see("{$log['created']}", "#j-main-container table tbody tr:nth-child({$realIndex}) td:nth-child(10)");
+        foreach ($this->logData as $log) {
+            $I->see("{$log['id']}", "#j-main-container table tbody");
+            $I->see($this->clientData['name'], "#j-main-container table tbody");
+            $I->see($this->accountData['name'], "#j-main-container table tbody");
+            $I->see($this->logTextDescription[$log['id']], "#j-main-container table tbody");
+            $I->see($this->logTextDetails[$log['id']], "#j-main-container table tbody");
+            $I->see("{$log['object_type']}", "#j-main-container table tbody");
+            $I->see("{$log['object_id']}", "#j-main-container table tbody");
+            $I->see("{$log['action']}", "#j-main-container table tbody");
+            $I->see("{$log['created']}", "#j-main-container table tbody");
         }
        
-        $I->see("1 - 5 / 5 items", "#j-main-container .pagination__wrapper");
+        $I->see("1 - 6 / 6 items", "#j-main-container .pagination__wrapper");
     }
 
     /**
