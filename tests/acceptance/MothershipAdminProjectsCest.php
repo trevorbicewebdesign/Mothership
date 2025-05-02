@@ -123,6 +123,7 @@ class MothershipAdminProjectsCest
     public function MothershipAddProject(AcceptanceTester $I)
     {
         $I->amOnPage(self::PROJECTS_VIEW_ALL_URL);
+        $I->wait(1);
         $I->waitForText("Mothership: Projects", 20, "h1.page-title");
 
         $toolbar = "#toolbar";
@@ -131,6 +132,7 @@ class MothershipAdminProjectsCest
         $I->seeElement("{$toolbar} {$toolbarNew}");
         $I->see("New", "{$toolbar} {$toolbarNew} .btn.button-new");
         $I->click("{$toolbar} {$toolbarNew} .btn.button-new");
+        $I->wait(1);
         $I->waitForText("Mothership: New Project", 20, "h1.page-title");
 
         $I->makeScreenshot("mothership-add-project");
