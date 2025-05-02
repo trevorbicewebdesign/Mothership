@@ -35,8 +35,8 @@ class MothershipAdminLogsCest
 
     const LOG_PAYMENT_STATUS_CHANGED_DESCRIPTION = "Payment status changed from `%s` to `%s`.";
     const LOG_PAYMENT_STATUS_CHANGED_DETAILS = "Payment ID %s status changed from `%s` to `%s` by user %s.";
-    const LOG_PAYMENT_INITIATED_DESCRIPTION = "Payment ID %s was initiated.";
-    const LOG_PAYMENT_INITIATED_DETAILS = "Payment ID %s was initiated by user %s.";
+    const LOG_PAYMENT_INITIATED_DESCRIPTION = "Payment ID %d was initiated.";
+    const LOG_PAYMENT_INITIATED_DETAILS = "Payment ID %d using method %s was initiated by user %s to pay invoice %s.";
 
     public function _before(AcceptanceTester $I)
     {
@@ -143,7 +143,7 @@ class MothershipAdminLogsCest
         ]);
 
         $this->logTextDescription[$this->logData[$j]['id']] = sprintf(self::LOG_PAYMENT_INITIATED_DESCRIPTION, 97);
-        $this->logTextDetails[$this->logData[$j]['id']] = sprintf(self::LOG_PAYMENT_INITIATED_DETAILS, 97, 548);
+        $this->logTextDetails[$this->logData[$j]['id']] = sprintf(self::LOG_PAYMENT_INITIATED_DETAILS, 97, 'paypal', 548, 2);
         $j++;
 
         $I->amOnPage("/administrator/");
