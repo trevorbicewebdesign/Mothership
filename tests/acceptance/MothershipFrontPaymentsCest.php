@@ -193,8 +193,8 @@ class MothershipFrontPaymentsCest
         // Navigate to the payment detail page
         $I->setPaymentStatus($this->paymentData['id'], 2);
         $I->amOnPage(sprintf(self::PAYMENT_VIEW_URL, $this->paymentData['id']));
-        $I->waitForText("Payment #{$this->paymentData['id']}", 10);
         $log_created = date('Y-m-d H:i:s');
+        $I->waitForText("Payment #{$this->paymentData['id']}", 10);
 
         // Capture a screenshot of the view
         $I->makeScreenshot("account-center-view-payment");
