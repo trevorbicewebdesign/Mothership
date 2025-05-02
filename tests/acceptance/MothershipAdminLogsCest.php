@@ -56,14 +56,14 @@ class MothershipAdminLogsCest
             'client_id'   => $this->clientData['id'],
             'account_id'  => $this->accountData['id'],
             'user_id'     => 548,
-            'object_id'   => 93,
+            'object_id'   => $this->accountData['id'],
             'object_type' => 'account',
             'action'      => 'viewed',
             'meta'        => json_encode([]),
             'created'     => '2025-04-11 01:29:03',
         ]);
-        $this->logTextDescription[$this->logData[$j]['id']] = sprintf(self::LOG_ACCOUNT_VIEWED_DESCRIPTION, $this->accountData['id']);
-        $this->logTextDetails[$this->logData[$j]['id']] = sprintf(self::LOG_ACCOUNT_VIEWED_DETAILS, $this->accountData['id'], 548);
+        $this->logTextDescription[$this->logData[$j]['id']] = sprintf(self::LOG_ACCOUNT_VIEWED_DESCRIPTION, $this->accountData['name']);
+        $this->logTextDetails[$this->logData[$j]['id']] = sprintf(self::LOG_ACCOUNT_VIEWED_DETAILS, $this->accountData['name'], 548);
         $j++;
 
         $this->logData[] = $I->createMothershipLog([
