@@ -530,7 +530,7 @@ class MothershipAdminPaymentsCest
         $I->see("Check-in", "joomla-toolbar-button#status-group-children-checkin");
         $I->seeElement("joomla-toolbar-button#status-group-children-checkin", ['task' => "payments.checkIn"]);
         $I->see("Edit", "joomla-toolbar-button#status-group-children-edit");
-        $I->seeElement("joomla-toolbar-button#status-group-children-edit", ['task' => "payments.edit"]);
+        $I->seeElement("joomla-toolbar-button#status-group-children-edit", ['task' => "payment.edit"]);
         $I->see("Delete", "joomla-toolbar-button#status-group-children-delete");
         $I->seeElement("joomla-toolbar-button#status-group-children-delete", ['task' => "payments.delete"]);
 
@@ -539,7 +539,7 @@ class MothershipAdminPaymentsCest
 
         $I->seeInCurrentUrl(self::PAYMENTS_VIEW_ALL_URL);
         $I->see("Mothership: Payments", "h1.page-title");
-        $I->see("1 Payment deleted successfully.", ".alert-message");
+        $I->see("2 Payment deleteds successfully.", ".alert-message");
         $I->seeNumberOfElements("#j-main-container table tbody tr", 1);
 
         $I->dontSeeInDatabase("jos_mothership_payments", [ 'id' => $paymentData['id'] ]);
