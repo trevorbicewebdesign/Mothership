@@ -171,15 +171,17 @@ class MothershipFrontInvoicesCest
 
         $I->makeScreenshot("account-center-view-invoice");
 
-        $I->seeInDatabase("jos_mothership_logs", [
+        $created = $I->grabFromDatabase("jos_mothership_logs", "created", [
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
             'user_id' => $this->joomlaUserData['id'],            
             'action' => 'viewed',
             'object_type' => 'invoice',
             'object_id' => $this->accountData['id'],
-            'created' => $log_created,
         ]);
+
+        $I->assertEquals($log_created, $created, "Log created date should be the same as the one in the database.");
+        
     }
 
     /**
