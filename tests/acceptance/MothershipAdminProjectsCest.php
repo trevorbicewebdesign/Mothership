@@ -291,11 +291,11 @@ class MothershipAdminProjectsCest
         $I->click("input[name=checkall-toggle]");
         $I->click("Actions");
         $I->see("Check-in", "joomla-toolbar-button#status-group-children-checkin");
-        $I->seeElement("joomla-toolbar-button#status-group-children-checkin", ['task' => "project.checkIn"]);
+        $I->seeElement("joomla-toolbar-button#status-group-children-checkin", ['task' => "projects.checkin"]);
         $I->see("Edit", "joomla-toolbar-button#status-group-children-edit");
         $I->seeElement("joomla-toolbar-button#status-group-children-edit", ['task' => "project.edit"]);
         $I->see("Delete", "joomla-toolbar-button#status-group-children-delete");
-        $I->seeElement("joomla-toolbar-button#status-group-children-delete", ['task' => "project.delete"]);
+        $I->seeElement("joomla-toolbar-button#status-group-children-delete", ['task' => "projects.delete"]);
 
         $I->click("Delete", "#toolbar");
         $I->wait(1);
