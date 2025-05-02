@@ -705,7 +705,7 @@ class DbHelper extends Db
         return $itemData;
     }
 
-    public function grabDomainFromDatabase($ticketId)
+    public function grabDomainFromDatabase($domainId)
     {
         $fields = [
             'id',
@@ -727,12 +727,12 @@ class DbHelper extends Db
             'modified'
         ];
 
-        $ticketData = [];
+        $domainData = [];
         foreach ($fields as $field) {
-            $ticketData[$field] = $this->Db->grabFromDatabase("{$this->prefix}mothership_domains", $field, ["id" => $ticketId]);
+            $domainData[$field] = $this->Db->grabFromDatabase("{$this->prefix}mothership_domains", $field, ["id" => $domainId]);
         }
 
-        return $ticketData;
+        return $domainData;
     }
 
     public function grabProjectFromDatabase($projectId)
