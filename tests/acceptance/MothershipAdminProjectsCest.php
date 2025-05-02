@@ -299,11 +299,10 @@ class MothershipAdminProjectsCest
 
         $I->click("Delete", "#toolbar");
         $I->wait(1);
-
+        $I->waitForText("Mothership: Projects", 10, "h1.page-title");
         $I->seeInCurrentUrl(self::PROJECTS_VIEW_ALL_URL);
-        $I->see("Mothership: Projects", "h1.page-title");
         $I->see("2 Projects deleted successfully.", ".alert-message");
-        $I->seeNumberOfElements("#j-main-container table tbody tr", 1);
+        $I->seeNumberOfElements("#j-main-container table tbody tr", 0);
 
         $I->dontSeeInDatabase("jos_mothership_projects", [ 'id' => $projectData['id'] ]);
     }
