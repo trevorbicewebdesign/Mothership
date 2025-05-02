@@ -540,7 +540,7 @@ class MothershipAdminPaymentsCest
         $I->seeInCurrentUrl(self::PAYMENTS_VIEW_ALL_URL);
         $I->see("Mothership: Payments", "h1.page-title");
         $I->see("2 Payments deleted successfully.", ".alert-message");
-        $I->seeNumberOfElements("#j-main-container table tbody tr", 1);
+        $I->seeNumberOfElements("#j-main-container table tbody tr", 0);
 
         $I->dontSeeInDatabase("jos_mothership_payments", [ 'id' => $paymentData['id'] ]);
     }
