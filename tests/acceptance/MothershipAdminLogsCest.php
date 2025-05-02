@@ -148,6 +148,7 @@ class MothershipAdminLogsCest
     public function MothershipViewAllLogs(AcceptanceTester $I)
     {
         $I->amOnPage(self::LOGS_VIEW_ALL_URL);
+        $I->wait(1);
         $I->waitForText("Mothership: Logs", 20, "h1.page-title");
 
         $I->makeScreenshot("mothership-logs-view-all");
@@ -197,6 +198,7 @@ class MothershipAdminLogsCest
     public function MothershipViewLog(AcceptanceTester $I)
     {
         $I->amOnPage(sprintf(self::LOG_EDIT_URL, $this->logData[0]['id']));
+        $I->wait(1);
         $I->waitForText("Mothership: View Log", 20, "h1.page-title");
 
         $I->makeScreenshot("mothership-log-view");
@@ -223,6 +225,7 @@ class MothershipAdminLogsCest
         $I->seeInField("input#jform_created", "{$this->logData[0]['created']}");
         
         $I->click("Close", "#toolbar");
+        $I->wait(1);
         $I->waitForText("Mothership: Logs", 20, "h1.page-title");
         
     }
