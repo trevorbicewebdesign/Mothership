@@ -582,6 +582,7 @@ The payment has been set from `pending` to `completed`. This will send the email
 ## Acceptance
 
 ### Front End
+Front end codeception test classes
 
 - **MothershipFrontClientsCest**:
 - **MothershipFrontAccountsCest**:
@@ -591,6 +592,18 @@ The payment has been set from `pending` to `completed`. This will send the email
 - **MothershipFrontPayByCheckCest**:
 - **MothershipFrontZelleCest**:
 - **MothershipFrontPaymentsCest**:
+
+### Back End
+Back end codeception test classes.
+
+- **MothershipAdminClientsCest**:
+- **MothershipAdminAccountsCest**:
+- **MothershipAdminInvoicesCest**:
+- **MothershipAdminProjectsCest**:
+- **MothershipAdminDomainsCest**:
+- **MothershipAdminPaymentsCest**:
+- **MothershipAdminPluginPayByCheckSettingsCest**:
+- **MothershipAdminPluginZelleSettingsCest**:
 
 
 ## Functional
