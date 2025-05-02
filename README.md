@@ -519,8 +519,6 @@ The payment has been set from `pending` to `completed`. This will send the email
 
 # Testing
 
-## Acceptance
-
 ### DB Helpers
 
 - **createMothershipClientData(array $data)**:
@@ -580,6 +578,20 @@ The payment has been set from `pending` to `completed`. This will send the email
 
 - **calculatePaypalFee($amount)**:
 - **totalWithPaypalFee($amount)**:
+
+## Acceptance
+
+### Front End
+
+- **MothershipFrontClientsCest**:
+- **MothershipFrontAccountsCest**:
+- **MothershipFrontInvoicesCest**:
+- **MothershipFrontProjectsCest**:
+- **MothershipFrontDomainsCest**:
+- **MothershipFrontPayByCheckCest**:
+- **MothershipFrontZelleCest**:
+- **MothershipFrontPaymentsCest**:
+
 
 ## Functional
 
