@@ -35,6 +35,8 @@ class MothershipAdminLogsCest
 
     const LOG_PAYMENT_STATUS_CHANGED_DESCRIPTION = "Payment status changed from `%s` to `%s`.";
     const LOG_PAYMENT_STATUS_CHANGED_DETAILS = "Payment ID %s status changed from `%s` to `%s` by user %s.";
+    const LOG_PAYMENT_INITIATED_DESCRIPTION = "Payment ID %s was initiated.";
+    const LOG_PAYMENT_INITIATED_DETAILS = "Payment ID %s was initiated by user %s.";
 
     public function _before(AcceptanceTester $I)
     {
@@ -104,8 +106,8 @@ class MothershipAdminLogsCest
             'created'     => '2025-04-21 21:34:08',
         ]);
 
-        $this->logTextDescription[$this->logData[$j]['id']] = "Domain `1` was viewed.";
-        $this->logTextDetails[$this->logData[$j]['id']] = "Domain `1` was viewed by user 548.";
+        $this->logTextDescription[$this->logData[$j]['id']] = sprintf(self::LOG_DOMAIN_VIEWED_DESCRIPTION, 1);
+        $this->logTextDetails[$this->logData[$j]['id']] = sprintf(self::LOG_DOMAIN_VIEWED_DETAILS, 1, 548);
         $j++;
 
         $this->logData[] = $I->createMothershipLog([
@@ -122,8 +124,8 @@ class MothershipAdminLogsCest
             'created'     => '2025-04-11 01:32:21',
         ]);
         
-        $this->logTextDescription[$this->logData[$j]['id']] = "Payment status changed from `Completed` to `Pending`.";
-        $this->logTextDetails[$this->logData[$j]['id']] = "Payment ID 93 status changed from `Completed` to `Pending` by user 548.";
+        $this->logTextDescription[$this->logData[$j]['id']] = sprintf(self::LOG_PAYMENT_STATUS_CHANGED_DESCRIPTION, 'Completed', 'Pending');
+        $this->logTextDetails[$this->logData[$j]['id']] = sprintf(self::LOG_PAYMENT_STATUS_CHANGED_DETAILS, 93, 'Completed', 'Pending', 548);
         $j++;
 
         $this->logData[] = $I->createMothershipLog([
@@ -140,8 +142,9 @@ class MothershipAdminLogsCest
             'created'     => '2025-04-11 01:59:16',
         ]);
 
-        $this->logTextDescription[$this->logData[$j]['id']] = "Payment ID 97 was initiated.";
-        $this->logTextDetails[$this->logData[$j]['id']] = "Payment ID 97 using method Paypal was initiated by user 548 to pay invoice 2.";
+        $this->logTextDescription[$this->logData[$j]['id']] = sprintf(self::LOG_PAYMENT_INITIATED_DESCRIPTION, 97);
+        $this->logTextDetails[$this->logData[$j]['id']] = sprintf(self::LOG_PAYMENT_INITIATED_DETAILS, 97, 548);
+        $j++;
 
         $I->amOnPage("/administrator/");
         $I->fillField("input[name=username]", "admin");
