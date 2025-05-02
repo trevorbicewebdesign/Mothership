@@ -147,9 +147,9 @@ class MothershipFrontDomainsCest
             'name' => 'example.com',
         ]);
         $I->amOnPage(sprintf(self::DOMAIN_VIEW_URL, $domainData['id']));
-        $I->waitForText("Domain: {$domainData['name']}", 10, "h1");
         $log_created = date('Y-m-d H:i:s');
-
+        $I->waitForText("Domain: {$domainData['name']}", 10, "h1");
+    
         $I->makeScreenshot("account-center-view-domain");
 
         $created = $I->grabFromDatabase("jos_mothership_logs", "created", [
@@ -161,15 +161,7 @@ class MothershipFrontDomainsCest
             'object_id' => $domainData['id'],
         ]);
 
-        $I->seeInDatabase("jos_mothership_logs", [
-            'client_id' => $this->clientData['id'],
-            'account_id' => $this->accountData['id'],
-            'user_id' => $this->joomlaUserData['id'],            
-            'action' => 'viewed',
-            'object_type' => 'domain',
-            'object_id' => $this->accountData['id'],
-            'created' => $log_created,
-        ]);
+        $I->assertEquals($log_created, $created, "Log created date should be the same as the one in the database.");
     }
 
 }

@@ -122,8 +122,8 @@ class MothershipFrontAccountsCest
     public function ViewAccountPage(AcceptanceTester $I)
     {
         $I->amOnPage(sprintf(self::ACCOUNT_VIEW_URL, $this->accountData['id']));
-        $I->waitForText($this->accountData['name'], 10, "h1");
         $log_created = date('Y-m-d H:i:s');
+        $I->waitForText($this->accountData['name'], 10, "h1");
 
         $I->makeScreenshot("account-center-view-account");
 
