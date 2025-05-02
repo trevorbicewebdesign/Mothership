@@ -519,5 +519,96 @@ The payment has been set from `pending` to `completed`. This will send the email
 
 # Testing
 
-## 
+### DB Helpers
+
+- **createMothershipClientData(array $data)**:
+- **createMothershipClient(array $data)**:
+- **createJoomlaUserData(array $data)**:
+- **createJoomlaUser(array $data)**:
+- **createMothershipUserData(array $data)**:
+- **createMothershipUser(array $data)**:
+- **createMothershipAccountData(array $data)**:
+- **createMothershipAccount(array $data)**:
+- **createMothershipInvoiceData(array $data)**: 
+- **createMothershipInvoice(array $data)**: 
+- **createMothershipInvoiceItemData(array $data)**:
+- **createMothershipPaymentData(array $data)**:
+- **createMothershipPayment(array $data)**:
+- **createMothershipProjectData(array $data)**:
+- **createMothershipInvoicePaymentData(array $data)**:
+- **createMothershipInvoicePayment(array $data)**:
+- **createMothershipDomainData(array $data)**:
+- **createMothershipDomain(array $data)**:
+- **createMothershipLogData(array $data)**:
+- **createMothershipLog(array $data)**:
+- **setInvoiceStatus($invoiceId, $status)**:
+- **clearClientsTable()**:
+- **clearAccountsTable()**:
+- **clearInvoicesTable()**:
+- **clearInvoiceItemsTable()**:
+- **clearPaymentsTable()**:
+- **clearInvoicePaymentTable()**:
+- **clearUsersTable()**:
+- **setMothershipConfig(array $settings)**:
+- **grabInvoiceRow($invoiceId, $rowNumber)**:
+- **grabDomainFromDatabase($domainId)**:
+- **getClientIdByName($clientName)**:
+- **grabLastCompletedPaymentId()**:
+- **setPaymentStatus($paymentId, $status)**:
+- **setPaymentLocked($paymentId)**:
+- **setPaymentUnlocked($paymentId)**:
+- **setInvoiceLocked($invoiceId)**:
+- **setInvoiceUnlocked($invoiceId)**:
+
+### Custom Assertions
+
+- **assertInvoiceHasRows($invoiceId, $expectedRows)**:
+- **assertInvoiceStatus(int $invoiceId, string $expectedStatusLabel)**:
+- **assertInvoiceStatusDraft($invoiceId)**:
+- **assertInvoiceStatusOpened($invoiceId)**:
+- **assertInvoiceStatusClosed($invoiceId)**:
+- **assertPaymentStatus(int $paymentId, string $expectedStatusLabel)**:
+- **assertPaymentStatusDraft($paymentId)**:
+- **assertPaymentStatusOpened($paymentId)**:
+- **assertPaymentStatusCompleted($paymentId)**:
+- **assertInvoiceClientId($invoiceId, $expectedClientId)**:
+- **assertInvoiceHasItems(int $invoiceId, array $expectedItems)**:
+
+### Helpers
+
+- **calculatePaypalFee($amount)**:
+- **totalWithPaypalFee($amount)**:
+
+## Acceptance
+
+### Front End
+Front end codeception test classes
+
+- **MothershipFrontClientsCest**:
+- **MothershipFrontAccountsCest**:
+- **MothershipFrontInvoicesCest**:
+- **MothershipFrontProjectsCest**:
+- **MothershipFrontDomainsCest**:
+- **MothershipFrontPayByCheckCest**:
+- **MothershipFrontZelleCest**:
+- **MothershipFrontPaymentsCest**:
+
+### Back End
+Back end codeception test classes.
+
+- **MothershipAdminClientsCest**:
+- **MothershipAdminAccountsCest**:
+- **MothershipAdminInvoicesCest**:
+- **MothershipAdminProjectsCest**:
+- **MothershipAdminDomainsCest**:
+- **MothershipAdminPaymentsCest**:
+- **MothershipAdminPluginPayByCheckSettingsCest**:
+- **MothershipAdminPluginZelleSettingsCest**:
+
+
+## Functional
+
+## API
+
+## Integration
 

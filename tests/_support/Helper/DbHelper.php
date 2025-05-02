@@ -26,11 +26,6 @@ class DbHelper extends Db
         $this->prefix = "jos_";
     }
 
-    public function customMethodExample()
-    {
-        codecept_debug("Custom method called!");
-    }
-
     public function createMothershipClientData(array $data)
     {
         $faker = Faker\Factory::create();
@@ -336,200 +331,6 @@ class DbHelper extends Db
 
     }
 
-    public function createMothershipTicketData(array $data)
-    {
-        /*
-        name	varchar(255) [0]	
-        user_id	int(11) NULL	
-        client_id	int(11) NULL	
-        account_id	int(11) NULL	
-        project_id	int(11) NULL	
-        sample_url	text NULL	
-        short_desc	varchar(255) NULL	
-        emailCC	varchar(255) NULL	
-        url	varchar(255) NULL	
-        long_desc	text NULL	
-        note	text NULL	
-        priority	int(11) NULL [0]	
-        requestdate	datetime NULL	
-        status	int(11) [0]	
-        status_history	text	
-        submitted	timestamp NULL [CURRENT_TIMESTAMP]	
-        submitted_userid	int(11) NULL	
-        completed	timestamp NULL	
-        hours_estimated	decimal(10,2) NULL	
-        hours_recorded	decimal(10,2) NULL	
-        closedate	timestamp NULL	
-        communication	int(11) [0]	
-        ticket_sent_date	datetime NULL	
-        checked_out_time	timestamp NULL	
-        checked_out	int(11) NULL
-        */
-        $defaultData = [
-            'name' => isset($data['name']) ? $data['name'] : '',
-            'user_id' => isset($data['user_id']) ? $data['user_id'] : 0,
-            'client_id' => isset($data['client_id']) ? $data['client_id'] : NULL,
-            'account_id' => isset($data['account_id']) ? $data['account_id'] : NULL,
-            'project_id' => isset($data['project_id']) ? $data['project_id'] : NULL,
-            'sample_url' => isset($data['sample_url']) ? $data['sample_url'] : NULL,
-            'short_desc' => isset($data['short_desc']) ? $data['short_desc'] : NULL,
-            'long_desc' => isset($data['long_desc']) ? $data['long_desc'] : NULL,
-            'priority' => isset($data['priority']) ? $data['priority'] : 5,
-            'requestdate' => isset($data['requestdate']) ? $data['requestdate'] : date("Y-m-d H:i:s"),
-            'status' => isset($data['status']) ? $data['status'] : 0,
-            'status_history' => '',
-            'submitted' => isset($data['user_id']) ? $data['user_id'] : date("Y-m-d H:i:s"),
-            'submitted_userid' => isset($data['user_id']) ? $data['user_id'] : NULL,
-            'completed' => NULL,
-            'hours_estimated' => isset($data['hours_estimated']) ? $data['hours_estimated'] : 0,
-            'hours_recorded' => isset($data['hours_recorded']) ? $data['hours_recorded'] : 0,
-            'closedate' => NULL,
-            'communication' => isset($data['communication']) ? $data['communication'] : false,
-            'ticket_sent_date' => isset($data['ticket_sent_date']) ? $data['ticket_sent_date'] : NULL,
-
-        ];
-        // Merge provided data with defaults
-        $finalData = array_merge($defaultData, $data);
-        return $finalData;
-    }
-
-    public function createMothershipTicket(array $data)
-    {
-        $data = $this->createMothershipTicketData($data);
-        // Debugging output for visibility
-        codecept_debug("Creating Mothership Ticket with the following data:");
-        // Insert into the database
-        $id = $this->Db->haveInDatabase("{$this->prefix}mothership_tickets", $data);
-        $data['id'] = $id;
-        codecept_debug($data);
-
-        // Return the ID of the newly created invoice
-        return $data;
-    }
-
-    public function createMothershipExpenseData(array $data)
-    {
-        $defaultData = [
-            "type" => isset($data['type']) ? $data['type'] : 'expense',
-            "tax_type" => isset($data['tax_type']) ? $data['tax_type'] : 0,
-            "item" => isset($data['item']) ? $data['item'] : 'Test Item',
-            "client_id" => isset($data['client_id']) ? $data['client_id'] : 0,
-            "account_id" => isset($data['account_id']) ? $data['account_id'] : 0,
-            "project_id" => isset($data['project_id']) ? $data['project_id'] : 0,
-            "name" => isset($data['name']) ? $data['name'] : 'Test Expense',
-            "date" => isset($data['date']) ? $data['date'] : date('Y-m-d H:i:s'),
-            "paypal_transactionid" => isset($data['paypal_transactionid']) ? $data['paypal_transactionid'] : '',
-            "price" => isset($data['price']) ? $data['price'] : 0.00,
-            "description" => isset($data['description']) ? $data['description'] : 'Test Description',
-            'merchant' => isset($data['merchant']) ? $data['merchant'] : '',
-        ];
-
-        // Merge provided data with defaults
-        $finalData = array_merge($defaultData, $data);
-        return $finalData;
-    }
-
-    /**
-     * Creates a new Mothership Expense record in the database.
-     *
-     * This method takes an array of data, processes it to ensure it meets the
-     * necessary format, and then inserts it into the database. The ID of the
-     * newly created record is added to the data array and returned.
-     *
-     * @param array $data The data to be used for creating the Mothership Expense.
-     * @return array The data array with the ID of the newly created record.
-     */
-    public function createMothershipExpense(array $data)
-    {
-        $data = $this->createMothershipExpenseData($data);
-        // Debugging output for visibility
-        codecept_debug("Creating Mothership Expense with the following data:");
-        codecept_debug($data);
-
-        // Insert into the database
-        $id = $this->Db->haveInDatabase("{$this->prefix}mothership_expenses", $data);
-        $data['id'] = $id;
-        codecept_debug($data);
-
-        return $data;
-
-    }
-
-    public function createMothershipQuoteData(array $data)
-    {
-
-        if (!isset($data['items'])) {
-            $data['items'] = [
-                [
-                    'id' => 1,
-                    'name' => 'Test Item',
-                    'description' => 'Test Description',
-                    'hours' => 1,
-                    'minutes' => 30,
-                    'quantity' => 1.5,
-                    'rate' => 100.00,
-                    'price' => 100.00,
-                    'tax' => 0.00,
-                ]
-            ];
-            $data['items'] = json_encode($data['items']);
-            // $data['items'] = serialize($data['items']);
-        } else {
-            $data['items'] = json_encode($data['items']);
-        }
-
-        $defaultData = [
-            "type" => isset($data['type']) ? $data['type'] : 0,
-            "template_pieces" => isset($data['template_pieces']) ? $data['template_pieces'] : NULL,
-            "status" => isset($data['status']) ? $data['status'] : 0,
-            "client_id" => isset($data['client_id']) ? $data['client_id'] : 0,
-            "name" => isset($data['name']) ? $data['name'] : 'Test Item',
-            "account_id" => isset($data['account_id']) ? $data['account_id'] : 0,
-            "project_id" => isset($data['project_id']) ? $data['project_id'] : 0,
-            "deposit_invoice_id" => isset($data['deposit_invoice_id']) ? $data['deposit_invoice_id'] : 0,
-            "project_name" => isset($data['project_name']) ? $data['project_name'] : 'Test Project',
-            "project_domain" => isset($data['project_domain']) ? $data['project_domain'] : 'example.com',
-            "total" => isset($data['total']) ? $data['total'] : 0.00,
-            "sitemap" => isset($data['sitemap']) ? $data['sitemap'] : '',
-            "approved" => isset($data['approved']) ? $data['approved'] : 0,
-            "deposit" => isset($data['deposit']) ? $data['deposit'] : 0,
-            "deposit_date" => isset($data['deposit_date']) ? $data['deposit_date'] : date('Y-m-d H:i:s'),
-            "summary" => isset($data['summary']) ? $data['summary'] : '',
-            "programming_basic" => isset($data['programming_basic']) ? $data['programming_basic'] : '',
-            "programming_modules" => isset($data['programming_modules']) ? $data['programming_modules'] : '',
-            "programming_template" => isset($data['programming_template']) ? $data['programming_template'] : '',
-            "programming_extensions" => isset($data['programming_extensions']) ? $data['programming_extensions'] : '',
-            "programming_forms" => isset($data['programming_forms']) ? $data['programming_forms'] : '',
-            "programming_other" => isset($data['programming_other']) ? $data['programming_other'] : '',
-            "programming_notes" => isset($data['programming_notes']) ? $data['programming_notes'] : '',
-            "items" => isset($data['items']) ? $data['items'] : '',
-            "created" => isset($data['created']) ? $data['created'] : date('Y-m-d H:i:s'),
-            "sent_date" => isset($data['sent_date']) ? $data['sent_date'] : date('Y-m-d H:i:s'),
-            "expires" => isset($data['expires']) ? $data['expires'] : date('Y-m-d H:i:s'),
-            "hours" => isset($data['hours']) ? $data['hours'] : 0,
-            "communication" => isset($data['communication']) ? $data['communication'] : 0,
-            "checked_out_time" => isset($data['checked_out_time']) ? $data['checked_out_time'] : date('Y-m-d H:i:s'),
-        ];
-
-        // Merge provided data with defaults
-        $finalData = array_merge($defaultData, $data);
-        return $finalData;
-    }
-
-    public function createMothershipQuote(array $data)
-    {
-        $data = $this->createMothershipQuoteData($data);
-        // Debugging output for visibility
-        codecept_debug("Creating Mothership Quote with the following data:");
-        codecept_debug($data);
-
-        // Insert into the database
-        $id = $this->Db->haveInDatabase("{$this->prefix}mothership_quotes", $data);
-
-        // Return the ID of the newly created invoice
-        return $id;
-    }
-
     public function createMothershipInvoicePaymentData(array $data)
     {
 
@@ -673,6 +474,12 @@ class DbHelper extends Db
         $this->Db->driver->executeQuery("TRUNCATE TABLE {$this->prefix}mothership_invoices", []);
     }
 
+    public function clearInvoicePaymentTable()
+    {
+        codecept_debug("Clearing invoice payment table");
+        $this->Db->driver->executeQuery("TRUNCATE TABLE {$this->prefix}mothership_invoice_payment", []);
+    }
+
     public function clearInvoiceItemsTable()
     {
         codecept_debug("Clearing invoice items table");
@@ -696,6 +503,7 @@ class DbHelper extends Db
          $this->clearInvoiceItemsTable();
          $this->clearInvoicesTable();
          $this->clearPaymentsTable();
+         $this->clearInvoicePaymentTable();
          $this->clearAccountsTable();
          $this->clearClientsTable();
          $this->clearUsersTable();
@@ -828,13 +636,9 @@ class DbHelper extends Db
         $this->assertInvoiceStatus($invoiceId, 'Opened');
     }
 
-    public function assertInvoiceStatusLate($invoiceId)
+    public function assertInvoiceStatusClosed($invoiceId)
     {
-        $this->assertInvoiceStatus($invoiceId, 'Late');
-    }
-    public function assertInvoiceStatusPaid($invoiceId)
-    {
-        $this->assertInvoiceStatus($invoiceId, 'Paid');
+        $this->assertInvoiceStatus($invoiceId, 'Closed');
     }
 
     public function assertPaymentStatus(int $paymentId, string $expectedStatusLabel)
@@ -901,24 +705,7 @@ class DbHelper extends Db
         return $itemData;
     }
 
-    public function grabTicketFromDatabase($ticketId)
-    {
-        $fields = [
-            'id', 'short_desc', 'user_id', 'client_id', 'account_id', 'project_id', 'sample_url', 'emailCC', 'url', 
-            'long_desc', 'note', 'priority', 'requestdate', 'status', 'status_history', 'submitted', 
-            'submitted_userid', 'completed', 'hours_estimated', 'hours_recorded', 'closedate', 'communication', 
-            'ticket_sent_date'
-        ];
-
-        $ticketData = [];
-        foreach ($fields as $field) {
-            $ticketData[$field] = $this->Db->grabFromDatabase("{$this->prefix}mothership_tickets", $field, ["id" => $ticketId]);
-        }
-
-        return $ticketData;
-    }
-
-    public function grabDomainFromDatabase($ticketId)
+    public function grabDomainFromDatabase($domainId)
     {
         $fields = [
             'id',
@@ -940,15 +727,15 @@ class DbHelper extends Db
             'modified'
         ];
 
-        $ticketData = [];
+        $domainData = [];
         foreach ($fields as $field) {
-            $ticketData[$field] = $this->Db->grabFromDatabase("{$this->prefix}mothership_domains", $field, ["id" => $ticketId]);
+            $domainData[$field] = $this->Db->grabFromDatabase("{$this->prefix}mothership_domains", $field, ["id" => $domainId]);
         }
 
-        return $ticketData;
+        return $domainData;
     }
 
-    public function grabProjectFromDatabase($ticketId)
+    public function grabProjectFromDatabase($projectId)
     {
         $fields = [
             'id',
@@ -965,16 +752,16 @@ class DbHelper extends Db
             'checked_out',
         ];
 
-        $ticketData = [];
+        $projectData = [];
         foreach ($fields as $field) {
             if($field == 'metadata') {
-                $ticketData[$field] = json_decode($this->Db->grabFromDatabase("{$this->prefix}mothership_projects", $field, ["id" => $ticketId]), true);
+                $projectData[$field] = json_decode($this->Db->grabFromDatabase("{$this->prefix}mothership_projects", $field, ["id" => $projectId]), true);
             } else {
-                $ticketData[$field] = $this->Db->grabFromDatabase("{$this->prefix}mothership_projects", $field, ["id" => $ticketId]);
+                $projectData[$field] = $this->Db->grabFromDatabase("{$this->prefix}mothership_projects", $field, ["id" => $projectId]);
             }
         }
 
-        return $ticketData;
+        return $projectData;
     }
 
     public function getClientIdByName($clientName)
