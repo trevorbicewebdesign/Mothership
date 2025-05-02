@@ -216,7 +216,6 @@ class MothershipFrontPaymentsCest
             'action' => 'viewed',
             'object_type' => 'payment',
             'object_id' => $this->accountData['id'],
-            'created' => $log_created,
         ]);
 
         $I->assertEquals($log_created, $created, "Log created date should be the same as the one in the database.");
