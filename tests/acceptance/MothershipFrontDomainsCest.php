@@ -152,6 +152,15 @@ class MothershipFrontDomainsCest
 
         $I->makeScreenshot("account-center-view-domain");
 
+        $created = $I->grabFromDatabase("jos_mothership_logs", "created", [
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'user_id' => $this->joomlaUserData['id'],            
+            'action' => 'viewed',
+            'object_type' => 'domain',
+            'object_id' => $domainData['id'],
+        ]);
+
         $I->seeInDatabase("jos_mothership_logs", [
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
