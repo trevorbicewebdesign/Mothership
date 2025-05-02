@@ -64,7 +64,11 @@ class ProjectsController extends BaseController
         } else {
             $model = $this->getModel('Projects');
             if ($model->delete($ids)) {
-                $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_PROJECT_DELETE_SUCCESS', count($ids)), 'message');
+                $app->enqueueMessage(Text::sprintf(
+                    'COM_MOTHERSHIP_PROJECT_DELETE_SUCCESS',
+                    count($ids),
+                    count($ids) > 1 ? 's' : ''
+                ), 'message');
             } else {
                 $app->enqueueMessage(Text::_('COM_MOTHERSHIP_PROJECT_DELETE_FAILED'), 'error');
             }
