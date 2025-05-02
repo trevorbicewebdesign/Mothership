@@ -22,6 +22,20 @@ class MothershipAdminLogsCest
     const LOGS_VIEW_ALL_URL = "/administrator/index.php?option=com_mothership&view=logs";
     const LOG_EDIT_URL = "/administrator/index.php?option=com_mothership&view=log&layout=edit&id=%s";
 
+    const LOG_ACCOUNT_VIEWED_DESCRIPTION = "Account ID %s was viewed.";
+    const LOG_ACCOUNT_VIEWED_DETAILS = "Account ID %s was viewed by user %s.";
+    const LOG_PROJECT_VIEWED_DESCRIPTION = "Project ID %s was viewed.";
+    const LOG_PROJECT_VIEWED_DETAILS = "Project ID %s was viewed by user %s.";
+    const LOG_DOMAIN_VIEWED_DESCRIPTION = "Domain `%s` was viewed.";
+    const LOG_DOMAIN_VIEWED_DETAILS = "Domain `%s` was viewed by user %s.";
+    const LOG_INVOICE_VIEWED_DESCRIPTION = "Invoice ID %s was viewed.";
+    const LOG_INVOICE_VIEWED_DETAILS = "Invoice ID %s was viewed by user %s.";
+    const LOG_PAYMENT_VIEWED_DESCRIPTION = "Payment ID %s was viewed.";
+    const LOG_PAYMENT_VIEWED_DETAILS = "Payment ID %s was viewed by user %s.";
+
+    const LOG_PAYMENT_STATUS_CHANGED_DESCRIPTION = "Payment status changed from `%s` to `%s`.";
+    const LOG_PAYMENT_STATUS_CHANGED_DETAILS = "Payment ID %s status changed from `%s` to `%s` by user %s.";
+
     public function _before(AcceptanceTester $I)
     {
         $I->resetMothershipTables();
@@ -128,9 +142,6 @@ class MothershipAdminLogsCest
 
         $this->logTextDescription[$this->logData[$j]['id']] = "Payment ID 97 was initiated.";
         $this->logTextDetails[$this->logData[$j]['id']] = "Payment ID 97 using method Paypal was initiated by user 548 to pay invoice 2.";
-
-        
-        
 
         $I->amOnPage("/administrator/");
         $I->fillField("input[name=username]", "admin");
