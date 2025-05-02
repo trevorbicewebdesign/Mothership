@@ -173,7 +173,7 @@ class MothershipAdminLogsCest
         $I->seeElement("#j-main-container ");
         $I->seeElement("#j-main-container thead");
 
-        $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 5);
+        $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", count($this->logData));
 
         $I->see("ID", "#j-main-container table thead tr th:nth-child(2)");
         $I->see("Client Name", "#j-main-container table thead tr th:nth-child(3)");
