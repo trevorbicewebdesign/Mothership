@@ -574,7 +574,7 @@ The payment has been set from `pending` to `completed`. This will send the email
 - **assertPaymentStatusOpened($paymentId)**:
 - **assertPaymentStatusCompleted($paymentId)**:
 - **assertInvoiceClientId($invoiceId, $expectedClientId)**:
-- **ssertInvoiceHasItems(int $invoiceId, array $expectedItems)**:
+- **assertInvoiceHasItems(int $invoiceId, array $expectedItems)**:
 
 ### Helpers
 
