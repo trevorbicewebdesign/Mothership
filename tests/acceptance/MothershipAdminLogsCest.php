@@ -22,8 +22,8 @@ class MothershipAdminLogsCest
     const LOGS_VIEW_ALL_URL = "/administrator/index.php?option=com_mothership&view=logs";
     const LOG_EDIT_URL = "/administrator/index.php?option=com_mothership&view=log&layout=edit&id=%s";
 
-    const LOG_ACCOUNT_VIEWED_DESCRIPTION = "Account ID %s was viewed.";
-    const LOG_ACCOUNT_VIEWED_DETAILS = "Account ID %s was viewed by user %s.";
+    const LOG_ACCOUNT_VIEWED_DESCRIPTION = "Account `%s` was viewed.";
+    const LOG_ACCOUNT_VIEWED_DETAILS = "Account `%s` was viewed by user %s.";
     const LOG_PROJECT_VIEWED_DESCRIPTION = "Project ID %s was viewed.";
     const LOG_PROJECT_VIEWED_DETAILS = "Project ID %s was viewed by user %s.";
     const LOG_DOMAIN_VIEWED_DESCRIPTION = "Domain `%s` was viewed.";
