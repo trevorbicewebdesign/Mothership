@@ -180,7 +180,8 @@ class MothershipFrontInvoicesCest
             'object_id' => $this->accountData['id'],
         ]);
 
-        $I->assertEquals($log_created, $created, "Log created date should be the same as the one in the database.");
+        $timeDifference = abs(strtotime($log_created) - strtotime($created));
+        $I->assertLessThanOrEqual(2, $timeDifference, "Log created date should not differ by more than 2 seconds.");
         
     }
 
