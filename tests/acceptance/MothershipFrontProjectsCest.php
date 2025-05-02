@@ -16,8 +16,8 @@ class MothershipFrontProjectsCest
     private $invoicePaymentData;
 
     private $invoiceItemData = [];
-    const PROJECTS_VIEW_ALL_URL= "index.php?option=com_mothership&view=projects";
-    const PROJECT_VIEW_URL= "index.php?option=com_mothership&view=project&id=%s";
+    const PROJECTS_VIEW_ALL_URL = "index.php?option=com_mothership&view=projects";
+    const PROJECT_VIEW_URL = "index.php?option=com_mothership&view=project&id=%s";
 
     public function _before(AcceptanceTester $I)
     {
@@ -31,7 +31,7 @@ class MothershipFrontProjectsCest
             'company_zip' => '95524',
             'company_phone' => '707-880-0156',
             'testmode' => 1,
-        ]);        
+        ]);
 
         $this->joomlaUserData = $I->createJoomlaUser([
             'name' => 'Test Client',
@@ -39,7 +39,7 @@ class MothershipFrontProjectsCest
 
         $this->clientData = $I->createMothershipClient([
             'name' => 'Test Client',
-            'owner_user_id' => $this->joomlaUserData['id'], 
+            'owner_user_id' => $this->joomlaUserData['id'],
         ]);
 
         $this->userData = $I->createMothershipUser([
@@ -134,16 +134,16 @@ class MothershipFrontProjectsCest
         $I->see("#", "main table#projectsTable thead tr th:nth-child(1)");
         $I->see("Name", "main table#projectsTable thead tr th:nth-child(2)");
         $I->see("Account", "main table#projectsTable thead tr th:nth-child(3)");
-        $I->see("Type", "main table#projectsTable thead tr th:nth-child(4)"); // Type is not in the original code, but added for consistency
+        $I->see("Type", "main table#projectsTable thead tr th:nth-child(4)");
         $I->see("Status", "main table#projectsTable thead tr th:nth-child(5)");
-        $I->see("Created", "main table#projectsTable thead tr th:nth-child(6)");        
+        $I->see("Created", "main table#projectsTable thead tr th:nth-child(6)");
 
         // Confirm the table data
         $row = 1;
         $I->see("{$projectData['id']}", "main table#projectsTable tbody tr:nth-child({$row}) td:nth-child(1)");
         $I->see("{$projectData['name']}", "main table#projectsTable tbody tr:nth-child({$row}) td:nth-child(2)");
         $I->see("{$this->accountData['name']}", "main table#projectsTable tbody tr:nth-child({$row}) td:nth-child(3)");
-        $I->see("{$projectData['type']}", "main table#projectsTable tbody tr:nth-child({$row}) td:nth-child(4)"); // Type is not in the original code, but added for consistency
+        $I->see("{$projectData['type']}", "main table#projectsTable tbody tr:nth-child({$row}) td:nth-child(4)");
         $I->see("active", "main table#projectsTable tbody tr:nth-child({$row}) td:nth-child(5)");
         $I->see("{$projectData['created']}", "main table#projectsTable tbody tr:nth-child({$row}) td:nth-child(6)");
 
@@ -172,7 +172,7 @@ class MothershipFrontProjectsCest
         $created = $I->grabFromDatabase("jos_mothership_logs", "created", [
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
-            'user_id' => $this->joomlaUserData['id'],            
+            'user_id' => $this->joomlaUserData['id'],
             'action' => 'viewed',
             'object_type' => 'project',
             'object_id' => $this->accountData['id'],
