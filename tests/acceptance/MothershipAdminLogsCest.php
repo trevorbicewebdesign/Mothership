@@ -60,8 +60,8 @@ class MothershipAdminLogsCest
             'meta'        => json_encode([]),
             'created'     => '2025-04-11 01:29:03',
         ]);
-        $this->logTextDescription[$this->logData[$j]['id']] = "Account ID 93 was viewed.";
-        $this->logTextDetails[$this->logData[$j]['id']] = "Account ID 93 was viewed by user 548.";
+        $this->logTextDescription[$this->logData[$j]['id']] = sprintf(self::LOG_ACCOUNT_VIEWED_DESCRIPTION, $this->accountData['id']);
+        $this->logTextDetails[$this->logData[$j]['id']] = sprintf(self::LOG_ACCOUNT_VIEWED_DETAILS, $this->accountData['id'], 548);
         $j++;
 
         $this->logData[] = $I->createMothershipLog([
@@ -74,8 +74,8 @@ class MothershipAdminLogsCest
             'meta'        => json_encode([]),
             'created'     => '2025-04-11 01:29:03',
         ]);
-        $this->logTextDescription[$this->logData[$j]['id']] = "Payment ID 93 was viewed.";
-        $this->logTextDetails[$this->logData[$j]['id']] = "Payment ID 93 was viewed by user 548.";
+        $this->logTextDescription[$this->logData[$j]['id']] = sprintf(self::LOG_PAYMENT_VIEWED_DESCRIPTION, 93);
+        $this->logTextDetails[$this->logData[$j]['id']] = sprintf(self::LOG_PAYMENT_VIEWED_DETAILS, 93, 548);
         $j++;
       
         $this->logData[] = $I->createMothershipLog([
@@ -89,8 +89,8 @@ class MothershipAdminLogsCest
             'created'     => '2025-04-11 01:45:19',
         ]);
 
-        $this->logTextDescription[$this->logData[$j]['id']] = "Invoice ID 2 was viewed.";
-        $this->logTextDetails[$this->logData[$j]['id']] = "Invoice ID 2 was viewed by user 548.";
+        $this->logTextDescription[$this->logData[$j]['id']] = sprintf(self::LOG_INVOICE_VIEWED_DESCRIPTION, 2);
+        $this->logTextDetails[$this->logData[$j]['id']] = sprintf(self::LOG_INVOICE_VIEWED_DETAILS, 2, 548);
         $j++;
         
         $this->logData[] = $I->createMothershipLog([
