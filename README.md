@@ -106,7 +106,6 @@ The **Domains** object represents the domains associated with client accounts.
 - **NS4**: An optional quaternary nameserver for the domain.
 - **Purchase Date**: The date when the domain was purchased.
 - **Expiration Date**: The date when the domain is set to expire.
-- **Auto Renew**: Indicates whether the domain is set to renew automatically.
 
 ### Domains Table
 ```
@@ -115,7 +114,8 @@ CREATE TABLE IF NOT EXISTS `#__mothership_domains` (
   `name` VARCHAR(255) NOT NULL,
   `client_id` INT(10) NOT NULL,
   `account_id` INT(10) DEFAULT NULL,
-  `status` ENUM('active', 'expired', 'transferring') NOT NULL DEFAULT 'active',
+  `status` VARCHAR(255) NOT NULL DEFAULT '' COLLATE 'utf8mb4_unicode_ci',
+  `epp_status` varchar(255) DEFAULT NULL,
   `registrar` VARCHAR(255) DEFAULT NULL,
   `reseller` VARCHAR(255) DEFAULT NULL,
   `dns_provider` VARCHAR(255) DEFAULT NULL,
@@ -123,15 +123,17 @@ CREATE TABLE IF NOT EXISTS `#__mothership_domains` (
   `ns2` VARCHAR(255) NULL DEFAULT NULL,
   `ns3` VARCHAR(255) NULL DEFAULT NULL,
   `ns4` VARCHAR(255) NULL DEFAULT NULL,
-  `purchase_date` DATE DEFAULT NULL,
-  `expiration_date` DATE DEFAULT NULL,
+  `purchase_date` DATETIME DEFAULT NULL,
+  `expiration_date` DATETIME DEFAULT NULL,
   `auto_renew` TINYINT(1) NOT NULL DEFAULT 0,
   `notes` TEXT DEFAULT NULL,
   `created` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `modified` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `checked_out_time` DATETIME DEFAULT NULL,
+  `checked_out` INT(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `fk_domains_client` (`client_id`),
-  KEY `fk_domains_account` (`account_id`),
+  CONSTRAINT `fk_domains_client_mship` FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients`(`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_domains_account_mship` FOREIGN KEY (`account_id`) REFERENCES `#__mothership_accounts`(`id`) ON DELETE SET NULL,
   KEY `idx_name` (`name`(100))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1;
 ```
@@ -270,7 +272,7 @@ CREATE TABLE IF NOT EXISTS `#__mothership_payments` (
   `transaction_id` VARCHAR(255) DEFAULT NULL,
   `status` INT NOT NULL DEFAULT 0,
   `processed_date` DATETIME DEFAULT NULL,
-  `locked` BOOLEAN NOT NULL DEFAULT 0,
+  `locked` TINYINT(1) NOT NULL DEFAULT 0,
   `created_by` INT(11) DEFAULT NULL,
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
