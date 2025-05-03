@@ -78,6 +78,7 @@ class ClientsModel extends ListModel
                     $db->quoteName('c.tax_id'),
                     $db->quoteName('c.created'),
                     $db->quoteName('c.checked_out'),
+                    $db->quoteName('c.checked_out_time'),
                 ]
             )
         );

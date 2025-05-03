@@ -35,6 +35,8 @@ class DomainsModel extends ListModel
                 'status', 'd.status',
                 'dns_provider', 'd.dns_provider',
                 'created', 'd.created',
+                'checked_out', 'd.checked_out',
+                'checked_out_time', 'd.checked_out_time',
             ];
         }
 
@@ -86,6 +88,8 @@ class DomainsModel extends ListModel
             $db->quoteName('d.created'),
             $db->quoteName('c.name', 'client_name'),
             $db->quoteName('a.name', 'account_name'),
+            $db->quoteName('d.checked_out'),
+            $db->quoteName('d.checked_out_time'),
             ]
             )
         );
