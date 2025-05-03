@@ -613,7 +613,22 @@ Back end codeception test classes.
 
 ## Functional
 
+- **homepageIsVisible(FunctionalTester $I)**:
+
 ## API
 
 ## Integration
+
+- **MothershipClientHelperTest**:
+- **MothershipAccountHelperTest**:
+- **MothershipProjectHelperTest**:
+- **MothershipInvoiceHelperTest**:
+- **MothershipDomainHelperTest**:
+- **MothershipEmailServiceTest**:
+- **MothershipPaymentHelperTest**:
+- **MothershipPaymentPluginZelleTest**:
+- **MothershipHelperTest**:
+- **MothershipLogHelperTest**:
+
+
 
