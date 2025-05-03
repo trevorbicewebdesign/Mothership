@@ -610,7 +610,6 @@ Back end codeception test classes.
 - **MothershipAdminPluginPayByCheckSettingsCest**:
 - **MothershipAdminPluginZelleSettingsCest**:
 
-
 ## Functional
 
 - **homepageIsVisible(FunctionalTester $I)**:
@@ -629,6 +628,3 @@ Back end codeception test classes.
 - **MothershipPaymentPluginZelleTest**:
 - **MothershipHelperTest**:
 - **MothershipLogHelperTest**:
-
-
-
