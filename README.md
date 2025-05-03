@@ -338,6 +338,7 @@ CREATE TABLE IF NOT EXISTS `#__mothership_projects` (
   `description` TEXT DEFAULT NULL,
   `type` VARCHAR(255) DEFAULT NULL,
   `status` ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
+  `metadata` JSON DEFAULT NULL,
   `created` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `created_by` INT(11) DEFAULT NULL,
   `checked_out_time` DATETIME DEFAULT NULL,
@@ -369,15 +370,17 @@ CREATE TABLE IF NOT EXISTS `#__mothership_logs` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `client_id` INT(11) NULL DEFAULT NULL,
   `account_id` INT(11) NULL DEFAULT NULL,
-  `user_id` INT(11) NULL DEFAULT NULL,
-  `object_id` INT(11) NULL DEFAULT NULL,
   `object_type` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+  `object_id` INT(11) NULL DEFAULT NULL,
   `action` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
   `meta` JSON NULL DEFAULT NULL,
+  `description` TEXT NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+  `details` TEXT NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+  `user_id` INT(11) NULL DEFAULT NULL,
   `created` DATETIME NULL DEFAULT (CURRENT_TIMESTAMP),
+  `notes` TEXT NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-;
 ```
 
 ---
