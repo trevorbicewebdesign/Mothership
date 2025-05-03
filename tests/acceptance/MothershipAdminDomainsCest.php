@@ -72,6 +72,7 @@ class MothershipAdminDomainsCest
         ]);
 
         $I->amOnPage(self::DOMAINS_VIEW_ALL_URL);
+        $I->wait(1);
         $I->waitForText("Mothership: Domains", 20, "h1.page-title");
         
         $I->makeScreenshot("mothership-domains-view-all");
