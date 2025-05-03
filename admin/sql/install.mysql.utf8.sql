@@ -59,6 +59,8 @@ CREATE TABLE IF NOT EXISTS `#__mothership_domains` (
   `notes` TEXT DEFAULT NULL,
   `created` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `modified` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `checked_out` DATETIME DEFAULT NULL,
+  `checked_out_time` INT(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_domains_client_mship` FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients`(`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_domains_account_mship` FOREIGN KEY (`account_id`) REFERENCES `#__mothership_accounts`(`id`) ON DELETE SET NULL,
