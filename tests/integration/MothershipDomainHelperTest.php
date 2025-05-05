@@ -55,5 +55,15 @@ class MothershipDomainHelperTest extends \Codeception\Test\Unit
         $this->assertContains('ns4.google.com', $results['name_servers']);
         
         $this->assertEquals('google', $results['dns_provider']);
+
+        $this->assertEquals([
+            'clientUpdateProhibited', 
+            'clientTransferProhibited', 
+            'clientDeleteProhibited', 
+            'serverUpdateProhibited',
+            'serverTransferProhibited', 
+            'serverDeleteProhibited', 
+            
+        ],$results['epp_status']);
     }
 }
