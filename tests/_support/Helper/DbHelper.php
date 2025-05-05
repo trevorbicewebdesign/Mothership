@@ -713,6 +713,7 @@ class DbHelper extends Db
             'client_id',
             'account_id',
             'status',
+            'epp_status',
             'registrar',
             'reseller',
             'dns_provider',
