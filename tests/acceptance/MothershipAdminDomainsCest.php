@@ -153,7 +153,7 @@ class MothershipAdminDomainsCest
         $I->fillField("input#jform_name", "example.com");
         $I->fillField("input#jform_registrar", "GoDaddy");
         $I->fillField("input#jform_reseller", "GoDaddy");
-        $I->fillField("input#jform_dns_provider", "Cloudflare");
+        $I->selectOption("select#jform_dns_provider", "cloudflare");
         $I->fillField("input#jform_purchase_date", date("Y-m-d"));
 
         $I->click("Save", "#toolbar");
