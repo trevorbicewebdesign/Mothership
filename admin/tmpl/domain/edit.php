@@ -46,6 +46,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                         <?php echo $this->form->renderField('status'); ?>
                         <?php echo $this->form->renderField('epp_status'); ?>
                         <?php echo $this->form->renderField('registrar'); ?>
+                        <?php echo $this->form->renderField('reseller'); ?>
                         <?php echo $this->form->renderField('dns_provider'); ?>
                         <?php echo $this->form->renderField('notes'); ?>
                     </fieldset>

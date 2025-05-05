@@ -54,6 +54,9 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_DOMAIN_HEADING_REGISTRAR', 'd.registrar', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_DOMAIN_HEADING_RESELLER', 'd.reseller', $listDirn, $listOrder); ?>
+                                </th>
+                                <th scope="col" class="w-10">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_DOMAIN_HEADING_DNS_PROVIDER', 'd.dns', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
@@ -77,7 +80,7 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                     </td>
                                     <td>
                                         <?php if ($item->checked_out) : ?>
-                                            <?php echo HTMLHelper::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'articles.', $canCheckin); ?>
+                                            <?php echo HTMLHelper::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'domains.', $canCheckin); ?>
                                         <?php endif; ?>
 
                                         <?php if ($canEdit || $canEditOwn) : ?>
@@ -95,6 +98,9 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                     </td>
                                     <td>
                                         <?php echo $this->escape($item->registrar); ?>
+                                    </td>
+                                    <td>
+                                        <?php echo $this->escape($item->reseller); ?>
                                     </td>
                                     <td>
                                         <?php echo $this->escape($item->dns_provider); ?>

@@ -100,6 +100,11 @@ class MothershipFrontDomainsCest
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
             'name' => 'example.com',
+            'registrar' => 'godaddy',
+            'reseller' => 'godaddy',
+            'dns_provider' => 'coudflare',
+            'created' => "2020-01-01 00:00:00",
+            'status' => 'active',
         ]);
         // Verify redirection to account center
         $I->amOnPage(self::DOMAINS_VIEW_ALL_URL);
@@ -125,13 +130,11 @@ class MothershipFrontDomainsCest
         $I->see($domainData['name'], "table#domainsTable tbody tr td:nth-child(2)");
         $I->see($this->accountData['name'], "table#domainsTable tbody tr td:nth-child(3)");
         $I->see($domainData['registrar'], "table#domainsTable tbody tr td:nth-child(4)");
-        /*
-        $I->see("", "table#domainsTable tbody tr td:nth-child(3)");
-        $I->see("", "table#domainsTable tbody tr td:nth-child(5)");
-        $I->see("", "table#domainsTable tbody tr td:nth-child(6)");
-        $I->see("", "table#domainsTable tbody tr td:nth-child(7)");
-        $I->see("", "table#domainsTable tbody tr td:nth-child(8) ul li");
-        */
+        $I->see($domainData['reseller'], "table#domainsTable tbody tr td:nth-child(5)");
+        $I->see($domainData['dns_provider'], "table#domainsTable tbody tr td:nth-child(6)");
+        $I->see(date('Y-m-d', strtotime($domainData['created'])), "table#domainsTable tbody tr td:nth-child(7)");
+        
+
     }
 
     /**
