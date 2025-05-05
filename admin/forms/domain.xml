@@ -29,6 +29,7 @@
 		<option value="pendingRestore">Pending Restore</option>
 	</field>
 	<field name="registrar" type="registrar" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_DOMAIN_REGISTRAR_LABEL" description="COM_MOTHERSHIP_FIELD_DOMAIN_REGISTRAR_DESC" />
+	<field name="reseller" type="text" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_DOMAIN_RESELLER_LABEL" description="COM_MOTHERSHIP_FIELD_DOMAIN_RESELLER_DESC" />
 	<field name="dns_provider" type="dns" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_DOMAIN_DNS_PROVIDER_LABEL" description="COM_MOTHERSHIP_FIELD_DOMAIN_DNS_PROVIDER_DESC" />
 	<field name="ns1" type="text" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_DOMAIN_NS1_LABEL" description="COM_MOTHERSHIP_FIELD_DOMAIN_NS1_DESC" />
 	<field name="ns2" type="text" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_DOMAIN_NS2_LABEL" description="COM_MOTHERSHIP_FIELD_DOMAIN_NS2_DESC" />
