@@ -246,6 +246,9 @@ class MothershipAdminDomainsCest
         $domain= $I->grabDomainFromDatabase($domainData['id']);
         codecept_debug($domain);
 
+        $epp_status = json_decode($domain['epp_status'], true);
+        codecept_debug($epp_status);
+
         $I->seeInDatabase("jos_mothership_domains", [
             'id' => $domainData['id'],
             'name' => 'example.com',
