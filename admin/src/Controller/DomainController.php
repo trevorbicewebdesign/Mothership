@@ -62,7 +62,7 @@ class DomainController extends FormController
         $domain->modified = isset($domainInfo['updated_date']) ? date('Y-m-d H:i:s', $domainInfo['updated_date']) : null;
         $domain->expiration_date = isset($domainInfo['expiration_date']) ? date('Y-m-d H:i:s', $domainInfo['expiration_date']) : null;
 
-        $domain->epp_status = $domainInfo['status'][0] ?? null;
+        $domain->epp_status = json_encode($domainInfo['epp_status']);
 
         $domain->ns1 = $domainInfo['name_servers'][0] ?? null;
         $domain->ns2 = $domainInfo['name_servers'][1] ?? null;
