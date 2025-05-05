@@ -83,7 +83,7 @@ class DomainHelper extends ContentHelper
             if( isset($extra['groups'][0]["Reseller"]) ) {
                 $reseller = $extra['groups'][0]["Reseller"];
             } else {
-                $reseller = null;
+                $reseller = "";
             }
            
             if( isset($extra['groups'][0]["Domain Status"]) ) {
