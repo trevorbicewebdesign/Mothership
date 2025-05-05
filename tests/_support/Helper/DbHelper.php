@@ -369,6 +369,7 @@ class DbHelper extends Db
             'status' => isset($data['status']) ? $data['status'] : 1,
             'registrar' => isset($data['registrar']) ? $data['registrar'] : 'GoDaddy',
             'reseller' => isset($data['reseller']) ? $data['reseller'] : 'GoDaddy',
+            'epp_status' => isset($data['epp_status']) ? json_encode($data['epp_status']) : json_encode(['clientUpdateProhibited']),
             'dns_provider' => isset($data['dns_provider']) ? $data['dns_provider'] : 'Cloudflare',
             'purchase_date' => isset($data['purchase_date']) ? $data['purchase_date'] : date('Y-m-d H:i:s'),
             'expiration_date' => isset($data['expiration_date']) ? $data['expiration_date'] : date('Y-m-d H:i:s', strtotime('+1 year')),
@@ -713,6 +714,7 @@ class DbHelper extends Db
             'client_id',
             'account_id',
             'status',
+            'epp_status',
             'registrar',
             'reseller',
             'dns_provider',
@@ -729,7 +731,11 @@ class DbHelper extends Db
 
         $domainData = [];
         foreach ($fields as $field) {
-            $domainData[$field] = $this->Db->grabFromDatabase("{$this->prefix}mothership_domains", $field, ["id" => $domainId]);
+            if($field == 'epp_status'){
+                $domainData[$field] = json_decode($this->Db->grabFromDatabase("{$this->prefix}mothership_domains", $field, ["id" => $domainId]), true);
+            } else {            
+                $domainData[$field] = $this->Db->grabFromDatabase("{$this->prefix}mothership_domains", $field, ["id" => $domainId]);
+            }
         }
 
         return $domainData;

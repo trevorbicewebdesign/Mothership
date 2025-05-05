@@ -83,14 +83,16 @@ class DomainHelper extends ContentHelper
             if( isset($extra['groups'][0]["Reseller"]) ) {
                 $reseller = $extra['groups'][0]["Reseller"];
             } else {
-                $reseller = null;
+                $reseller = "";
             }
            
             if( isset($extra['groups'][0]["Domain Status"]) ) {
                 $domain_status = $extra['groups'][0]["Domain Status"];
-                $domain_status = json_encode($domain_status);
+                foreach ($domain_status as $key => $value) {
+                    $domain_status[$key] = preg_replace('/\s*\(.*\)$/', '', $value);
+                }
             } else {
-                $domain_status = json_encode(null);
+                $domain_status = null;
             }
 
             $updated_date = $data['updatedDate'] ?: null;

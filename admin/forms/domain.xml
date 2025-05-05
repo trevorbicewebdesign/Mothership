@@ -5,7 +5,29 @@
 	<field name="client_id" type="clientlist" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_CLIENT_ID_LABEL" description="COM_MOTHERSHIP_FIELD_CLIENT_NAME_DESC" required="true"/>
 	<field name="account_id" type="accountlist" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_ACCOUNT_ID_LABEL" description="COM_MOTHERSHIP_FIELD_ACCOUNT_NAME_DESC" />
 	<field name="status" type="domainstatus" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_DOMAIN_STATUS_LABEL" description="COM_MOTHERSHIP_FIELD_DOMAIN_STATUS_DESC" />
-	<field name="epp_status" type="text" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_EPP_DOMAIN_STATUS_LABEL" description="COM_MOTHERSHIP_FIELD_DOMAIN_EPP_STATUS_DESC" />
+	<field name="epp_status" type="list" multiple="true" class="" label="COM_MOTHERSHIP_FIELD_EPP_DOMAIN_STATUS_LABEL" description="COM_MOTHERSHIP_FIELD_DOMAIN_EPP_STATUS_DESC">
+		<option value="ok">OK</option>
+		<option value="inactive">Inactive</option>
+		<option value="pendingCreate">Pending Create</option>
+		<option value="pendingTransfer">Pending Transfer</option>
+		<option value="pendingDelete">Pending Delete</option>
+		<option value="pendingRenew">Pending Renew</option>
+		<option value="pendingUpdate">Pending Update</option>
+		<option value="clientHold">Client Hold</option>
+		<option value="serverHold">Server Hold</option>
+		<option value="clientTransferProhibited">Client Transfer Prohibited</option>
+		<option value="serverTransferProhibited">Server Transfer Prohibited</option>
+		<option value="clientUpdateProhibited">Client Update Prohibited</option>
+		<option value="serverUpdateProhibited">Server Update Prohibited</option>
+		<option value="clientDeleteProhibited">Client Delete Prohibited</option>
+		<option value="serverDeleteProhibited">Server Delete Prohibited</option>
+		<option value="addPeriod">Add Period</option>
+		<option value="autoRenewPeriod">Auto Renew Period</option>
+		<option value="renewPeriod">Renew Period</option>
+		<option value="transferPeriod">Transfer Period</option>
+		<option value="redemptionPeriod">Redemption Period</option>
+		<option value="pendingRestore">Pending Restore</option>
+	</field>
 	<field name="registrar" type="registrar" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_DOMAIN_REGISTRAR_LABEL" description="COM_MOTHERSHIP_FIELD_DOMAIN_REGISTRAR_DESC" />
 	<field name="reseller" type="text" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_DOMAIN_RESELLER_LABEL" description="COM_MOTHERSHIP_FIELD_DOMAIN_RESELLER_DESC" />
 	<field name="dns_provider" type="dns" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_DOMAIN_DNS_PROVIDER_LABEL" description="COM_MOTHERSHIP_FIELD_DOMAIN_DNS_PROVIDER_DESC" />
