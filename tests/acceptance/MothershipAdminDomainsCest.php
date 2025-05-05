@@ -54,8 +54,8 @@ class MothershipAdminDomainsCest
         $I->fillField("input[name=username]", "admin");
         $I->fillField("input[name=passwd]", "password123!test");
         $I->click("Log in");
-        $I->waitForText("Hide Forever");
-        $I->click("Hide Forever");
+        //$I->waitForText("Hide Forever");
+        //$I->click("Hide Forever");
     }
 
     /**
@@ -229,36 +229,44 @@ class MothershipAdminDomainsCest
         $domainData = $I->createMothershipDomain([
             'client_id' => $clientData['id'],
             'account_id' => $accountData['id'],
-            'name' => 'example.com',
+            'name' => 'google.com',
         ]);
 
         $I->seeInDatabase("jos_mothership_domains", [ 'id' => $domainData['id'] ]);
         $I->amOnPage( sprintf(self::DOMAIN_EDIT_URL, $domainData['id']) );
-        $I->waitForText("Mothership: Edit Domain", 20, "h1.page-title");
+        $I->waitForText("Mothership: Edit Domain", 10, "h1.page-title");
 
         $I->see("WHOIS Scan & Update", "joomla-toolbar-button#toolbar-refresh");
         $I->seeElement("joomla-toolbar-button#toolbar-refresh", ['task' => "domain.whoisScan"]);
 
         $I->click("WHOIS Scan & Update", "#toolbar");
-        $I->waitForText("Domain example.com WHOIS scan completed successfully.", 20, ".alert-message");
+        $I->waitForText("Domain {$domainData['name']} WHOIS scan completed successfully.", 10, ".alert-message");
         $I->seeInCurrentUrl( sprintf(self::DOMAIN_EDIT_URL, $domainData['id']));
 
-        $domain= $I->grabDomainFromDatabase($domainData['id']);
+        $domain = $I->grabDomainFromDatabase($domainData['id']);
         codecept_debug($domain);
 
         $epp_status = json_decode($domain['epp_status'], true);
         codecept_debug($epp_status);
 
+        $I->assertEquals([
+            "clientUpdateProhibited (https://www.icann.org/epp#clientUpdateProhibited)",
+            "clientTransferProhibited (https://www.icann.org/epp#clientTransferProhibited)",
+            "clientDeleteProhibited (https://www.icann.org/epp#clientDeleteProhibited)",
+            "serverUpdateProhibited (https://www.icann.org/epp#serverUpdateProhibited)",
+            "serverTransferProhibited (https://www.icann.org/epp#serverTransferProhibited)",
+            "serverDeleteProhibited (https://www.icann.org/epp#serverDeleteProhibited)"
+        ], $epp_status);
+
         $I->seeInDatabase("jos_mothership_domains", [
             'id' => $domainData['id'],
-            'name' => 'example.com',
+            'name' => 'google.com',
             'client_id' => $clientData['id'],
             'account_id' => $accountData['id'],
-            'registrar' => 'GoDaddy',
-            'reseller' => 'GoDaddy',
-            // 'purchase_date' => '1992-01-01 00:00:00',
-            // 'expiration_date' => '2026-04-26 18:21:44',
-            // 'modified' => '2025-04-26 11:21:45',
+            'registrar' => 'MarkMonitor, Inc.',
+            'reseller' => '',
+            'purchase_date' => '1997-09-15 07:00:00',
+            'expiration_date' => '2028-09-13 07:00:00',
         ]);
 
         $I->seeInDatabase("jos_mothership_logs", [
