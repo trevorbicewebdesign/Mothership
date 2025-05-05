@@ -149,6 +149,9 @@ class MothershipAdminDomainsCest
         $I->selectOption("select#jform_client_id", "Test Client");
         $I->selectOption("select#jform_account_id", "Test Account");
         $I->fillField("input#jform_name", "example.com");
+        $I->fillField("input#jform_registrar", "GoDaddy");
+        $I->fillField("input#jform_reseller", "GoDaddy");
+        $I->fillField("input#jform_dns_provider", "Cloudflare");
         $I->fillField("input#jform_purchase_date", date("Y-m-d"));
 
         $I->click("Save", "#toolbar");
@@ -163,6 +166,10 @@ class MothershipAdminDomainsCest
         $I->seeInDatabase("jos_mothership_domains", [
             'name' => 'example.com',
             'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'registrar' => 'godaddy',
+            'reseller' => 'godaddy',
+            'dns_provider' => 'cloudflare',
         ]);
 
     }
