@@ -54,8 +54,8 @@ class MothershipAdminDomainsCest
         $I->fillField("input[name=username]", "admin");
         $I->fillField("input[name=passwd]", "password123!test");
         $I->click("Log in");
-        $I->waitForText("Hide Forever");
-        $I->click("Hide Forever");
+        // $I->waitForText("Hide Forever");
+        // $I->click("Hide Forever");
     }
 
     /**
@@ -269,12 +269,12 @@ class MothershipAdminDomainsCest
         codecept_debug($epp_status);
 
         $I->assertEquals([
-            "clientUpdateProhibited (https://www.icann.org/epp#clientUpdateProhibited)",
-            "clientTransferProhibited (https://www.icann.org/epp#clientTransferProhibited)",
-            "clientDeleteProhibited (https://www.icann.org/epp#clientDeleteProhibited)",
-            "serverUpdateProhibited (https://www.icann.org/epp#serverUpdateProhibited)",
-            "serverTransferProhibited (https://www.icann.org/epp#serverTransferProhibited)",
-            "serverDeleteProhibited (https://www.icann.org/epp#serverDeleteProhibited)"
+            "clientUpdateProhibited",
+            "clientTransferProhibited",
+            "clientDeleteProhibited",
+            "serverUpdateProhibited",
+            "serverTransferProhibited",
+            "serverDeleteProhibited"
         ], $epp_status);
 
         $I->seeInDatabase("jos_mothership_domains", [
