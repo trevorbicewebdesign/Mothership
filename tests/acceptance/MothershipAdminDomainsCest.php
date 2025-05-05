@@ -87,6 +87,8 @@ class MothershipAdminDomainsCest
         $I->seeElement("{$toolbar} {$toolbarNew}");
         $I->see("New", "{$toolbar} {$toolbarNew} .btn.button-new");
 
+        $created = date("Y-m-d", strtotime($domainData['created']));
+
         $I->seeElement("#j-main-container ");
         $I->seeElement("#j-main-container thead");
         $I->see("Id", "#j-main-container table thead tr th:nth-child(2)");
@@ -105,7 +107,7 @@ class MothershipAdminDomainsCest
         $I->see("{$domainData['registrar']}", "#j-main-container table tbody tr td:nth-child(6)");
         $I->see("{$domainData['reseller']}", "#j-main-container table tbody tr td:nth-child(7)");
         $I->see("{$domainData['dns_provider']}", "#j-main-container table tbody tr td:nth-child(8)");
-        $I->see("{$domainData['created']}", "#j-main-container table tbody tr td:nth-child(9)");
+        $I->see("{$created}", "#j-main-container table tbody tr td:nth-child(9)");
 
         $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 1);
     }
