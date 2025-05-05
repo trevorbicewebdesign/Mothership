@@ -154,7 +154,7 @@ class MothershipAdminDomainsCest
         $I->fillField("input#jform_registrar", "GoDaddy");
         $I->fillField("input#jform_reseller", "GoDaddy");
         $I->selectOption("select#jform_dns_provider", "cloudflare");
-        $I->fillField("input#jform_purchase_date", date("Y-m-d"));
+        $I->fillField("input#jform_purchase_date", "2020-01-01 00:00:00");
 
         $I->click("Save", "#toolbar");
         $I->wait(1);
@@ -172,6 +172,7 @@ class MothershipAdminDomainsCest
             'registrar' => 'godaddy',
             'reseller' => 'godaddy',
             'dns_provider' => 'cloudflare',
+            'purchase_date' => '2020-01-01 00:00:00',
         ]);
 
     }
