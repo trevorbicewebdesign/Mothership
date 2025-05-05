@@ -69,6 +69,10 @@ class MothershipAdminDomainsCest
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
             'name' => 'example.com',
+            'registrar' => 'GoDaddy',
+            'reseller' => 'GoDaddy',
+            'dns_provider' => 'cloudflare',
+            'created' => "2020-01-01 00:00:00",
         ]);
 
         $I->amOnPage(self::DOMAINS_VIEW_ALL_URL);
@@ -90,13 +94,18 @@ class MothershipAdminDomainsCest
         $I->see("Client", "#j-main-container table thead tr th:nth-child(4)");
         $I->see("Account", "#j-main-container table thead tr th:nth-child(5)");
         $I->see("Registrar", "#j-main-container table thead tr th:nth-child(6)");
-        $I->see("DNS Provider", "#j-main-container table thead tr th:nth-child(7)");
-        $I->see("Created", "#j-main-container table thead tr th:nth-child(8)");
+        $I->see("Reseller", "#j-main-container table thead tr th:nth-child(7)");
+        $I->see("DNS Provider", "#j-main-container table thead tr th:nth-child(8)");
+        $I->see("Created", "#j-main-container table thead tr th:nth-child(9)");
 
         $I->see("{$domainData['id']}", "#j-main-container table tbody tr td:nth-child(2)");
         $I->see("{$domainData['name']}", "#j-main-container table tbody tr td:nth-child(3)");
         $I->see("{$this->clientData['name']}", "#j-main-container table tbody tr td:nth-child(4)");
-        // $I->see(date("Y-m-d"), "#j-main-container table tbody tr td:nth-child(5)");
+        $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr td:nth-child(5)");
+        $I->see("{$domainData['registrar']}", "#j-main-container table tbody tr td:nth-child(6)");
+        $I->see("{$domainData['reseller']}", "#j-main-container table tbody tr td:nth-child(7)");
+        $I->see("{$domainData['dns_provider']}", "#j-main-container table tbody tr td:nth-child(8)");
+        $I->see("{$domainData['created']}", "#j-main-container table tbody tr td:nth-child(9)");
 
         $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 1);
     }
