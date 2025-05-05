@@ -523,6 +523,9 @@ The invoice has been set from `Draft` to `Opened`. This will send the email temp
 The payment has been set from `pending` to `completed`. This will send the email template `payment.completed` to the Client Owner and BCC an administrator. This should be sent to the payee whenever the payment cycle has been completed. 
 
 # Testing
+Mothership is built with stability and confidence in mind. Our automated testing suite uses Codeception to simulate real-world usage across backend and frontend features, ensuring every update works as expected. From invoice lifecycle logic to payment integration and PDF generation, our tests catch regressions early and help maintain a high standard of code quality. Whether you're contributing or deploying, the suite gives you peace of mind that Mothership remains reliable.
+
+**WORK IS NOT CONSIDERED DONE UNTIL IT IS COVERED BY TESTS**
 
 ### DB Helpers
 
