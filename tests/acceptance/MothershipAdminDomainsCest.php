@@ -249,7 +249,7 @@ class MothershipAdminDomainsCest
             'client_id' => $clientData['id'],
             'account_id' => $accountData['id'],
             'name' => 'google.com',
-            'epp_status' => [],
+            'epp_status' => json_encode([]  ),
         ]);
 
         $I->seeInDatabase("jos_mothership_domains", [ 'id' => $domainData['id'] ]);
@@ -266,7 +266,7 @@ class MothershipAdminDomainsCest
         $domain = $I->grabDomainFromDatabase($domainData['id']);
         codecept_debug($domain);
 
-        $epp_status = json_decode($domain['epp_status'], true);
+        $epp_status = $domain['epp_status'];
         codecept_debug($epp_status);
 
         $I->assertEquals([
