@@ -249,6 +249,7 @@ class MothershipAdminDomainsCest
             'client_id' => $clientData['id'],
             'account_id' => $accountData['id'],
             'name' => 'google.com',
+            'epp_status' => [],
         ]);
 
         $I->seeInDatabase("jos_mothership_domains", [ 'id' => $domainData['id'] ]);
