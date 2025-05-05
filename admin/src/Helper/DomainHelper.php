@@ -88,6 +88,9 @@ class DomainHelper extends ContentHelper
            
             if( isset($extra['groups'][0]["Domain Status"]) ) {
                 $domain_status = $extra['groups'][0]["Domain Status"];
+                foreach ($domain_status as $key => $value) {
+                    $domain_status[$key] = preg_replace('/\s*\(.*\)$/', '', $value);
+                }
             } else {
                 $domain_status = null;
             }
