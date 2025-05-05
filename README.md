@@ -528,6 +528,7 @@ Mothership is built with stability and confidence in mind. Our automated testing
 **WORK IS NOT CONSIDERED DONE UNTIL IT IS COVERED BY TESTS**
 
 ### DB Helpers
+These methods for Codeception's DB module allow the database to be quickly configured for testing.
 
 - **createMothershipClientData(array $data)**:
 - **createMothershipClient(array $data)**:
