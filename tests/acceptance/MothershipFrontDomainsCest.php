@@ -132,7 +132,8 @@ class MothershipFrontDomainsCest
         $I->see($domainData['registrar'], "table#domainsTable tbody tr td:nth-child(4)");
         $I->see($domainData['reseller'], "table#domainsTable tbody tr td:nth-child(5)");
         $I->see($domainData['dns_provider'], "table#domainsTable tbody tr td:nth-child(6)");
-        $I->see($domainData['created'], "table#domainsTable tbody tr td:nth-child(7)");
+        $I->see(date('Y-m-d', strtotime($domainData['created'])), "table#domainsTable tbody tr td:nth-child(7)");
+        
 
     }
 
