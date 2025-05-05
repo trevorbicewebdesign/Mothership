@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS `#__mothership_domains` (
   `client_id` INT(10) NOT NULL,
   `account_id` INT(10) DEFAULT NULL,
   `status` VARCHAR(255) NOT NULL DEFAULT '' COLLATE 'utf8mb4_unicode_ci',
-  `epp_status` varchar(255) DEFAULT NULL,
+  `epp_status` JSON DEFAULT NULL,
   `registrar` VARCHAR(255) DEFAULT NULL,
   `reseller` VARCHAR(255) DEFAULT NULL,
   `dns_provider` VARCHAR(255) DEFAULT NULL,
