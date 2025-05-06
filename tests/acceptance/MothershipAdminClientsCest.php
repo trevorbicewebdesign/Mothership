@@ -61,6 +61,7 @@ class MothershipAdminClientsCest
     /**
      * @group backend
      * @group client
+     * @group backend-client
      */
     public function MothershipViewClients(AcceptanceTester $I)
     {
@@ -100,6 +101,7 @@ class MothershipAdminClientsCest
     /**
      * @group backend
      * @group client
+     * @group backend-client
      */
     public function MothershipAddClient(AcceptanceTester $I)
     {
@@ -116,6 +118,7 @@ class MothershipAdminClientsCest
         $I->waitForText("Mothership: New Client", 20, "h1.page-title");
 
         $I->makeScreenshot("mothership-client-add-details");
+        $I->dontSee("Warning");
 
         $I->see("Save", "#toolbar");
         $I->see("Save & Close", "#toolbar");
@@ -159,7 +162,7 @@ class MothershipAdminClientsCest
         $I->switchToIFrame();
 
         $I->click("Save & Close", "#toolbar");
-        $I->wait(3);
+        $I->waitForText("Mothership: Clients", 20, "h1.page-title");
         $I->seeInCurrentUrl(("/administrator/index.php?option=com_mothership&view=clients"));
         $I->see("Client saved", ".alert-message");
 
