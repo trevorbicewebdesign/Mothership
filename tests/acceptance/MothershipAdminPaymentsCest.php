@@ -97,8 +97,8 @@ class MothershipAdminPaymentsCest
         $I->fillField("input[name=username]", "admin");
         $I->fillField("input[name=passwd]", "password123!test");
         $I->click("Log in");
-        $I->waitForText("Hide Forever");
-        $I->click("Hide Forever");
+        //$I->waitForText("Hide Forever");
+        //$I->click("Hide Forever");
     }
 
     /**
@@ -570,9 +570,10 @@ class MothershipAdminPaymentsCest
         ]);
 
         $I->amOnPage(sprintf(self::PAYMENT_EDIT_URL, $paymentData['id']));
+        $I->wait(1);
         $I->waitForText("Mothership: Edit Payment", 20, "h1.page-title");
 
-        $I->seeElement("Confirm Payment", "#toolbar");
-        $I->seeElement("joomla-toolbar-button#toolbar-ok", ['task' => "payment.confrim"]);
+        $I->see("Confirm Payment", "#toolbar");
+        $I->seeElement("joomla-toolbar-button#toolbar-vcard", ['task' => "payment.confirm"]);
     }
 }
