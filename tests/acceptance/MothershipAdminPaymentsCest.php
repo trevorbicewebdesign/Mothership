@@ -97,8 +97,8 @@ class MothershipAdminPaymentsCest
         $I->fillField("input[name=username]", "admin");
         $I->fillField("input[name=passwd]", "password123!test");
         $I->click("Log in");
-        //$I->waitForText("Hide Forever");
-        //$I->click("Hide Forever");
+        $I->waitForText("Hide Forever");
+        $I->click("Hide Forever");
     }
 
     /**
