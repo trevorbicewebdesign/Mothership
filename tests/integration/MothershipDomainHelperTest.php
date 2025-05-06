@@ -66,4 +66,37 @@ class MothershipDomainHelperTest extends \Codeception\Test\Unit
             
         ],$results['epp_status']);
     }
+
+    public function nameServerProvider()
+    {
+        return [
+            'Google DNS' => [
+                ['ns1.google.com', 'ns2.google.com', 'ns3.google.com', 'ns4.google.com'],
+                'google'
+            ],
+            'Cloudflare DNS' => [
+                ['ns1.cloudflare.com', 'ns2.cloudflare.com'],
+                'cloudflare'
+            ],
+            'Unknown DNS' => [
+                ['ns1.unknown.com', 'ns2.unknown.com'],
+                'unknown'
+            ],
+            // Add no DNS
+            // Add two different DNS servers
+        ];
+    }
+
+    /**
+     * @dataProvider nameServerProvider
+     */
+    public function testGetDnsProvider($name_servers, $expected_provider)
+    {
+        $dns_provider = DomainHelper::getDnsProvider($name_servers);
+        codecept_debug($dns_provider);
+        codecept_debug($expected_provider);
+        
+
+        $this->assertEquals($expected_provider, $dns_provider);
+    }
 }

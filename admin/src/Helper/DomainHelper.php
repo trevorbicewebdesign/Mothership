@@ -26,6 +26,16 @@ use Iodev\Whois\Factory as WhoisFactory;
 class DomainHelper extends ContentHelper
 {
 
+    public static function getDnsProvider(array $name_servers)
+    {
+        foreach($name_servers as $name_server) {
+            $dns_provider[] = preg_replace('/^(?:[^.]+\.)?([^\.]+)\.[^.]+$/', '$1', $name_server);
+        }
+
+        $dns_provider = array_unique($dns_provider);
+
+        return $dns_provider[0];
+    }
     /**
      * Scans the WHOIS information of a given domain name and returns the details.
      *
@@ -36,10 +46,16 @@ class DomainHelper extends ContentHelper
      *               - 'message' (string): A message about the domain's availability or error details.
      *               - 'domain' (string|null): The domain name (if available in WHOIS data).
      *               - 'registrar' (string|null): The registrar of the domain (if available in WHOIS data).
-     *               - 'creationDate' (\DateTime|null): The creation date of the domain (if available in WHOIS data).
-     *               - 'expirationDate' (\DateTime|null): The expiration date of the domain (if available in WHOIS data).
-     *               - 'whoisServer' (string|null): The WHOIS server used (if available in WHOIS data).
-     *               - 'status' (array|null): The status of the domain (if available in WHOIS data).
+     *               - 'creation_date' (\DateTime|null): The creation date of the domain (if available in WHOIS data).
+     *               - 'expiration_date' (\DateTime|null): The expiration date of the domain (if available in WHOIS data).
+     *               - 'updated_date' (\DateTime|null): The last updated date of the domain (if available in WHOIS data).
+     *               - 'registrar' (string|null): The registrar of the domain (if available in WHOIS data).
+     *               - 'reseller' (string|null): The reseller of the domain (if available in WHOIS data).
+     *               - 'epp_status' (array|null): The EPP status of the domain (if available in WHOIS data).
+     *               - 'name_servers' (array|null): The name servers of the domain (if available in WHOIS data).
+     *               - 'dns_provider' (string|null): The DNS provider of the domain (if available in WHOIS data).
+     *               - 'data' (array|null): Additional data about the domain (if available in WHOIS data).
+     *               - 'extra' (array|null): Extra information about the domain (if available in WHOIS data).
      *               - 'rawText' (string|null): The raw WHOIS response text (if available in WHOIS data).
      *               - 'error' (bool|null): Indicates if an error occurred during the scan.
      *               - 'message' (string): A message describing the error, if applicable.
@@ -97,16 +113,8 @@ class DomainHelper extends ContentHelper
 
             $updated_date = $data['updatedDate'] ?: null;
 
-            // Check the domain of the name servers
-            if( is_array($name_servers) ) {                    
-                foreach ($name_servers as $key => $value) {
-                    // strip eric.ns.cloudflare.com down to just cloudflare 
-                    $dns_provider = preg_replace('/^(?:[^.]+\.)?([^\.]+)\.[^.]+$/', '$1', $value);
-                }
-            }
-            else {
-                $dns_provider = null;
-            }
+            // Determine the DNS provider using the new function
+            $dns_provider = self::getDnsProvider($name_servers);
             
             if (!$info) {
                 return [
