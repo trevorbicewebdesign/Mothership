@@ -184,7 +184,7 @@ class MothershipAdminPaymentsCest
      * @group payment
      * @group backend-payment
      */
-    public function MothershipViewPayments(AcceptanceTester $I)
+    public function MothershipViewAllPayments(AcceptanceTester $I)
     {
         $paymentData = $I->createMothershipPayment([
             'client_id' => $this->clientData['id'],
@@ -210,6 +210,8 @@ class MothershipAdminPaymentsCest
         $I->waitForText("Mothership: Payments", 20, "h1.page-title");
 
         $I->makeScreenshot("mothership-view-payments");
+
+        $I->dontSee("Warning");
 
         $toolbar = "#toolbar";
         $toolbarNew = "#toolbar-new";
