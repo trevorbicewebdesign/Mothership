@@ -61,6 +61,7 @@ class MothershipAdminClientsCest
     /**
      * @group backend
      * @group client
+     * @group backend-client
      */
     public function MothershipViewClients(AcceptanceTester $I)
     {
@@ -100,6 +101,7 @@ class MothershipAdminClientsCest
     /**
      * @group backend
      * @group client
+     * @group backend-client
      */
     public function MothershipAddClient(AcceptanceTester $I)
     {
