@@ -108,7 +108,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                                         echo $item->status."<br/>";
                                         switch ($item->status) {
                                             case 'Pending':
-                                                echo "<button class=\"btn btn-primary btn-sm\" type=\"button\" onclick=\"submitbutton('payment.confirm', {$item->id})\">Confirm</button>";
+                                                echo "<button class=\"btn btn-payment-confirm btn-primary btn-sm\" type=\"button\" data-id=\"{$item->id}\" data-task=\"payment.confirm\">Confirm</button>";
 
                                                 break;
                                             default:
@@ -141,21 +141,27 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
     </div>
 </form>
 <script type="text/javascript">
-    function submitbutton(task, id) {
+jQuery(document).ready(function ($) {
+    $('button.btn-payment-confirm').on('click', function (e) {
+        e.preventDefault();
+        const id = $(this).data('id');
+        const task = $(this).data('task');
         const form = document.getElementById('adminForm');
-        if (!form) return;
 
-        // Create or set the task
-        form.task.value = task;
+        if (form) {
+            // Create or set the task
+            form.task.value = task;
 
-        // Ensure the correct checkbox is checked
-        const boxchecked = form.querySelector('input[name=\"boxchecked\"]');
-        boxchecked.value = 1;
+            // Ensure the correct checkbox is checked
+            const boxchecked = form.querySelector('input[name=\"boxchecked\"]');
+            boxchecked.value = 1;
 
-        // Check the right item checkbox
-        const checkbox = form.querySelector('input[type=\"checkbox\"][name=\"cid[]\"][value=\"' + id + '\"]');
-        if (checkbox) checkbox.checked = true;
+            // Check the right item checkbox
+            const checkbox = form.querySelector('input[type=\"checkbox\"][name=\"cid[]\"][value=\"' + id + '\"]');
+            if (checkbox) checkbox.checked = true;
 
-        form.submit();
-    }
+            form.submit();
+        }
+    });
+});
 </script>
