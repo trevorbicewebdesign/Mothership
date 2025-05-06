@@ -18,8 +18,9 @@ class MothershipHelper
     {
        
 
+        $user = Factory::getUser();
+
         if ($userId === null) {
-            $user = Factory::getUser();
             $userId = $user->id;
         }
 
