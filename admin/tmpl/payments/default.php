@@ -101,11 +101,11 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                                         </a>
                                     </td>
                                     <td>
-                                        <?php echo HTMLHelper::_('date', $item->created, Text::_('DATE_FORMAT_LC4')); ?>
+                                        <?php echo HTMLHelper::_('date', $item->created_at, Text::_('DATE_FORMAT_LC4')); ?>
                                     </td>
                                     <td>
                                         <?php echo $item->status; ?><br/>
-                                        <?php $invoice_ids = array_filter(explode(",", $item->invoice_ids)); ?>
+                                        <?php $invoice_ids = array_filter(explode(",", $item->invoice_ids ?? '')); ?>
                                         <?php if (count($invoice_ids) > 0): ?>
                                         <ul style="margin-bottom:0px;">
                                             <?php foreach ($invoice_ids as $invoiceId): ?>

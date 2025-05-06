@@ -35,6 +35,7 @@ class PaymentsModel extends ListModel
                 'checked_out',
                 'p.checked_out',
                 'p.locked',
+                'p.created_at',
                 'checked_out_time',
                 'p.checked_out_time'
             ];
@@ -80,6 +81,7 @@ class PaymentsModel extends ListModel
                     $db->quoteName('p.payment_date'),
                     $db->quoteName('p.payment_method'),
                     $db->quoteName('p.locked'),
+                    $db->quoteName('p.created_at'),
                     $db->quoteName('inv.invoice_ids'),
 
                     // Interpreted payment status
