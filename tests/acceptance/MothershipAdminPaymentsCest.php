@@ -573,5 +573,6 @@ class MothershipAdminPaymentsCest
         $I->waitForText("Mothership: Edit Payment", 20, "h1.page-title");
 
         $I->seeElement("Confirm Payment", "#toolbar");
+        $I->seeElement("joomla-toolbar-button#toolbar-ok", ['task' => "payment.confrim"]);
     }
 }
