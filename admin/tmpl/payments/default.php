@@ -104,7 +104,17 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                                         <?php echo HTMLHelper::_('date', $item->created_at, Text::_('DATE_FORMAT_LC4')); ?>
                                     </td>
                                     <td>
-                                        <?php echo $item->status; ?><br/>
+                                        <?php 
+                                        echo $item->status."<br/>";
+                                        switch ($item->status) {
+                                            case 'Pending':
+                                                echo "<button class=\"btn btn-primary btn-sm\" type=\"button\" onclick=\"submitbutton('payment.confirm', {$item->id})\">Confirm</button>";
+
+                                                break;
+                                            default:
+                                                break;
+                                        }                                  
+                                        ?><br/>
                                         <?php $invoice_ids = array_filter(explode(",", $item->invoice_ids ?? '')); ?>
                                         <?php if (count($invoice_ids) > 0): ?>
                                         <ul style="margin-bottom:0px;">
@@ -130,3 +140,22 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
         </div>
     </div>
 </form>
+<script type="text/javascript">
+    function submitbutton(task, id) {
+        const form = document.getElementById('adminForm');
+        if (!form) return;
+
+        // Create or set the task
+        form.task.value = task;
+
+        // Ensure the correct checkbox is checked
+        const boxchecked = form.querySelector('input[name=\"boxchecked\"]');
+        boxchecked.value = 1;
+
+        // Check the right item checkbox
+        const checkbox = form.querySelector('input[type=\"checkbox\"][name=\"cid[]\"][value=\"' + id + '\"]');
+        if (checkbox) checkbox.checked = true;
+
+        form.submit();
+    }
+</script>
