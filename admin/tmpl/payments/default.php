@@ -101,7 +101,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                                         </a>
                                     </td>
                                     <td>
-                                        <?php echo HTMLHelper::_('date', $item->created, Text::_('DATE_FORMAT_LC4')); ?>
+                                        <?php echo HTMLHelper::_('date', $item->created_at, Text::_('DATE_FORMAT_LC4')); ?>
                                     </td>
                                     <td>
                                         <?php echo $item->status; ?><br/>
