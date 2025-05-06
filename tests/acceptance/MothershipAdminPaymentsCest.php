@@ -547,4 +547,31 @@ class MothershipAdminPaymentsCest
 
         $I->dontSeeInDatabase("jos_mothership_payments", [ 'id' => $paymentData['id'] ]);
     }
+
+    /**
+     * @group backend
+     * @group invoice
+     * @group backend-payment
+     */
+    public function ManuallyConfrimPendingPayment(AcceptanceTester $I)
+    {
+        $paymentData = $I->createMothershipPayment([
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'amount' => 103.2,
+            'fee_amount' => 3.2,
+            'fee_passed_on' => FALSE,
+            'payment_method' => 'paypal',
+            'transaction_id' => '123456',
+            'status' => 2,
+            'processed_date' => date('Y-m-d H:i:s'),
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s'),
+        ]);
+
+        $I->amOnPage(sprintf(self::PAYMENT_EDIT_URL, $paymentData['id']));
+        $I->waitForText("Mothership: Edit Payment", 20, "h1.page-title");
+
+        $I->seeElement("Confirm Payment", "#toolbar");
+    }
 }
