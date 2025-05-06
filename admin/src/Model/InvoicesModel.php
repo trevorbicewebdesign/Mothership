@@ -35,6 +35,7 @@ class InvoicesModel extends ListModel
                 'locked', 'i.locked',
                 'checked_out', 'i.checked_out',
                 'checked_out_time', 'i.checked_out_time',
+                'created', 'i.created',
             ];
         }
 
@@ -84,7 +85,8 @@ class InvoicesModel extends ListModel
                     $db->quoteName('i.checked_out'),
                     $db->quoteName('i.locked'),
                     $db->quoteName('pay.payment_ids'),
-                    
+                    $db->quoteName('i.created'),
+                    $db->quoteName('i.created_by'),      
 
                     // Invoice status (Draft, Opened, etc.)
                     'CASE ' . $db->quoteName('i.status') . 

@@ -224,6 +224,8 @@ class MothershipAdminInvoicesCest
 
         $I->makeScreenshot("mothership-view-invoices");
 
+        $I->dontSee("Warning");
+
         $toolbar = "#toolbar";
         $toolbarNew = "#toolbar-new";
         $toolbarStatusGroup = "#toolbar-status-group";

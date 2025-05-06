@@ -105,7 +105,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                                     </td>
                                     <td>
                                         <?php echo $item->status; ?><br/>
-                                        <?php $invoice_ids = array_filter(explode(",", $item->invoice_ids)); ?>
+                                        <?php $invoice_ids = array_filter(explode(",", $item->invoice_ids ?? '')); ?>
                                         <?php if (count($invoice_ids) > 0): ?>
                                         <ul style="margin-bottom:0px;">
                                             <?php foreach ($invoice_ids as $invoiceId): ?>
