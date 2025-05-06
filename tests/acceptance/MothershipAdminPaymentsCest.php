@@ -550,10 +550,10 @@ class MothershipAdminPaymentsCest
 
     /**
      * @group backend
-     * @group invoice
+     * @group payment
      * @group backend-payment
      */
-    public function ManuallyConfrimPendingPayment(AcceptanceTester $I)
+    public function ManuallyConfirmPendingPayment(AcceptanceTester $I)
     {
         $paymentData = $I->createMothershipPayment([
             'client_id' => $this->clientData['id'],
@@ -579,5 +579,11 @@ class MothershipAdminPaymentsCest
         $I->click("Confirm Payment", "#toolbar");
         $I->wait(1);
         $I->waitForText("Mothership: Payments", 20, "h1.page-title");
+        $I->see("Payment confirmed successfully.", ".alert-message");
+
+        $I->seeInDatabase("jos_mothership_payments", [ 
+            'id' => $paymentData['id'], 
+            'status' => 2 
+        ]);
     }
 }
