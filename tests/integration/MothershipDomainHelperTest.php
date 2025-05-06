@@ -66,4 +66,19 @@ class MothershipDomainHelperTest extends \Codeception\Test\Unit
             
         ],$results['epp_status']);
     }
+
+    public function testGetDnsProvider()
+    {
+        $name_servers = [
+            'ns1.google.com',
+            'ns2.google.com',
+            'ns3.google.com',
+            'ns4.google.com',
+        ];
+
+        $dns_provider = DomainHelper::getDnsProvider($name_servers);
+        codecept_debug($dns_provider);
+
+        $this->assertEquals('google', $dns_provider);
+    }
 }
