@@ -87,6 +87,8 @@ class MothershipAdminAccountsCest
         
         $I->makeScreenshot("mothership-accounts-view-all");
 
+        $I->dontSee("Warning");
+
         $toolbar = "#toolbar";
         $toolbarNew = "#toolbar-new";
         $toolbarStatusGroup = "#toolbar-status-group";
