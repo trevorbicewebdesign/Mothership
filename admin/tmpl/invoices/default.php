@@ -128,7 +128,7 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                     </td>
                                     <td>
                                         <?php echo $item->payment_status; ?><br/>
-                                        <?php $payment_ids = array_filter(explode(",", $item->payment_ids)); ?>
+                                        <?php $payment_ids = array_filter(explode(",", $item->payment_ids ?? '')); ?>
                                         <?php if (count($payment_ids) > 0): ?>
                                         <ul style="margin-bottom:0px;">
                                             <?php foreach ($payment_ids as $paymentId): ?>
