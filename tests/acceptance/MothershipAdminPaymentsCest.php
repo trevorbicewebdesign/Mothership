@@ -563,7 +563,7 @@ class MothershipAdminPaymentsCest
             'fee_passed_on' => FALSE,
             'payment_method' => 'paypal',
             'transaction_id' => '123456',
-            'status' => 2,
+            'status' => 1,
             'processed_date' => date('Y-m-d H:i:s'),
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
