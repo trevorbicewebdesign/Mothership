@@ -575,5 +575,9 @@ class MothershipAdminPaymentsCest
 
         $I->see("Confirm Payment", "#toolbar");
         $I->seeElement("joomla-toolbar-button#toolbar-vcard", ['task' => "payment.confirm"]);
+
+        $I->click("Confirm Payment", "#toolbar");
+        $I->wait(1);
+        $I->waitForText("Mothership: Payments", 20, "h1.page-title");
     }
 }
