@@ -190,6 +190,15 @@ class PaymentModel extends AdminModel
     
         return true;
     }
+
+    public function confirm($id)
+    {
+        $table = $this->getTable();
+        $table->load($id);
+
+        $table->status = 2;
+        return $table->store();
+    }
     
     /**
      * Cancel editing by checking in the record.
