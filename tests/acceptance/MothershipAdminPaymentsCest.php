@@ -380,6 +380,8 @@ class MothershipAdminPaymentsCest
 
         $I->makeScreenshot("mothership-add-payment");
 
+        $I->dontSee("Warning");
+
         $I->see("Save", "#toolbar");
         $I->see("Save & Close", "#toolbar");
         $I->see("Cancel", "#toolbar");
