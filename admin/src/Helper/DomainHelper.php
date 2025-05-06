@@ -26,6 +26,16 @@ use Iodev\Whois\Factory as WhoisFactory;
 class DomainHelper extends ContentHelper
 {
 
+    public static function getDnsProvider($name_servers)
+    {
+        foreach($name_servers as $name_server) {
+            $dns_provider[] = preg_replace('/^(?:[^.]+\.)?([^\.]+)\.[^.]+$/', '$1', $name_server);
+        }
+
+        $dns_provider = array_unique($dns_provider);
+
+        return $dns_provider[0];
+    }
     /**
      * Scans the WHOIS information of a given domain name and returns the details.
      *
@@ -97,16 +107,8 @@ class DomainHelper extends ContentHelper
 
             $updated_date = $data['updatedDate'] ?: null;
 
-            // Check the domain of the name servers
-            if( is_array($name_servers) ) {                    
-                foreach ($name_servers as $key => $value) {
-                    // strip eric.ns.cloudflare.com down to just cloudflare 
-                    $dns_provider = preg_replace('/^(?:[^.]+\.)?([^\.]+)\.[^.]+$/', '$1', $value);
-                }
-            }
-            else {
-                $dns_provider = null;
-            }
+            // Determine the DNS provider using the new function
+            $dns_provider = self::getDnsProvider($name_servers);
             
             if (!$info) {
                 return [
