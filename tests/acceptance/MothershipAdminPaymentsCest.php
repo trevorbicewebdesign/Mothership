@@ -228,7 +228,6 @@ class MothershipAdminPaymentsCest
         $I->see("Account", "#j-main-container table thead tr th:nth-child(7)");
         $I->see("Created", "#j-main-container table thead tr th:nth-child(8)");
         $I->see("Status", "#j-main-container table thead tr th:nth-child(9)");
-        $I->see("Allocations", "#j-main-container table thead tr th:nth-child(10)");
 
         $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 2);
 

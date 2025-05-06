@@ -61,9 +61,6 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                                 <th scope="col" class="w-10">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_PAYMENT_HEADING_STATUS', 'p.status', $listDirn, $listOrder); ?>
                                 </th>
-                                <th scope="col" class="w-5">
-                                    <?php echo Text::_('COM_MOTHERSHIP_PAYMENT_HEADING_ALLOCATIONS'); ?>
-                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -116,11 +113,6 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                                             <?php endforeach; ?>
                                         </ul>
                                         <?php endif; ?>
-                                    </td>
-                                    <td>
-                                        <a href="<?php echo Route::_("index.php?option=com_mothership&view=invoicepayments&payment_id={$item->id}"); ?>" title="<?php echo Text::_('COM_MOTHERSHIP_PAYMENT_MANAGE_ALLOCATIONS'); ?>">
-                                            <?php echo Text::_('COM_MOTHERSHIP_PAYMENT_MANAGE_ALLOCATIONS'); ?>
-                                        </a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
