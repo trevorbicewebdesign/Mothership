@@ -179,9 +179,9 @@ class HtmlView extends BaseHtmlView
         }
 
         // Make a Confirm Payment button below
-        // if ($this->item->status == 'pending' && $canDo->get('core.edit')) {
+        if ($this->item->status == '1' && $canDo->get('core.edit')) {
             ToolbarHelper::custom('payment.confirm', 'vcard', 'vcard', 'COM_MOTHERSHIP_CONFIRM_PAYMENT', false);
-        // }
+        }
 
 
         if (empty($this->item->id)) {
