@@ -66,7 +66,7 @@ class PaymentController extends FormController
         $id = $input->getInt('id');
 
         if ($model->confirm($id)) {
-            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_PAYMENT_CONFIRMED_SUCCESSFULLY'), 'message');
+            $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_PAYMENT_CONFIRMED_SUCCESSFULLY', $id), 'message');
         } else {
             $app->enqueueMessage(Text::_('COM_MOTHERSHIP_PAYMENT_CONFIRM_FAILED'), 'error');
         }
