@@ -177,6 +177,11 @@ class HtmlView extends BaseHtmlView
             ToolbarHelper::custom('payment.lock', 'lock', 'lock', 'COM_MOTHERSHIP_LOCK', false);
         }
 
+        // Make a Confirm Payment button below
+        // if ($this->item->status == 'pending' && $canDo->get('core.edit')) {
+            ToolbarHelper::custom('payment.confirm', 'ok', 'ok', 'COM_MOTHERSHIP_CONFIRM_PAYMENT', false);
+        // }
+
 
         if (empty($this->item->id)) {
             $toolbar->cancel('payment.cancel', 'JTOOLBAR_CANCEL');
