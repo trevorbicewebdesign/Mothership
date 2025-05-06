@@ -28,7 +28,7 @@ class JConfig {
 	public $live_site = 'http://joomla';
 	public $secret = 'RANDOM_SECRET'; // Can be anything random
 	public $gzip = false;
-	public $error_reporting = 'none';
+	public $error_reporting = 'maximum';
 	public $helpurl = 'https://help.joomla.org/proxy?keyref=Help{major}{minor}:{keyref}&lang={langcode}';
 	public $offset = 'UTC';
 	public $mailonline = true;
