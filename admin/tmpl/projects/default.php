@@ -74,7 +74,7 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                     <td>
                                         <?php $metadata = json_decode($item->metadata, true); ?>
                                         <?php if ($item->checked_out) : ?>
-                                            <?php echo HTMLHelper::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'articles.', $canCheckin); ?>
+                                            <?php echo HTMLHelper::_('jgrid.checkedout', $i, $item->editor ?? '', $item->checked_out_time, 'articles.', $canCheckin); ?>
                                         <?php endif; ?>
 
                                         <?php if($metadata['status'] == 'online'):?>
