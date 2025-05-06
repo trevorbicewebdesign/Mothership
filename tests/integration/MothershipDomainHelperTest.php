@@ -82,6 +82,8 @@ class MothershipDomainHelperTest extends \Codeception\Test\Unit
                 ['ns1.unknown.com', 'ns2.unknown.com'],
                 'unknown'
             ],
+            // Add no DNS
+            // Add two different DNS servers
         ];
     }
 
