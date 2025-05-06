@@ -569,6 +569,11 @@ class MothershipAdminPaymentsCest
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
 
+        $I->seeInDatabase("jos_mothership_payments", [ 
+            'id' => $paymentData['id'], 
+            'status' => 1 
+        ]);
+
         $I->amOnPage(sprintf(self::PAYMENT_EDIT_URL, $paymentData['id']));
         $I->wait(1);
         $I->waitForText("Mothership: Edit Payment", 20, "h1.page-title");
@@ -579,7 +584,7 @@ class MothershipAdminPaymentsCest
         $I->click("Confirm Payment", "#toolbar");
         $I->wait(1);
         $I->waitForText("Mothership: Payments", 20, "h1.page-title");
-        $I->see("Payment confirmed successfully.", ".alert-message");
+        $I->see("Payment {$paymentData['id']} confirmed successfully.", ".alert-message");
 
         $I->seeInDatabase("jos_mothership_payments", [ 
             'id' => $paymentData['id'], 
