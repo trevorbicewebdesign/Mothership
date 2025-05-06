@@ -590,5 +590,31 @@ class MothershipAdminPaymentsCest
             'id' => $paymentData['id'], 
             'status' => 2 
         ]);
+
+        $I->see("Completed", "#j-main-container table tbody tr:nth-child(2) td:nth-child(9)");
+        $I->dontSee("Confirm", "#j-main-container table tbody tr:nth-child(2) td:nth-child(9) button");
+        $I->dontSee("Pending", "#j-main-container table tbody tr:nth-child(2) td:nth-child(9)");
+
+        $I->setPaymentStatus($paymentData['id'], 1);
+        $I->seeInDatabase("jos_mothership_payments", [ 
+            'id' => $paymentData['id'], 
+            'status' => 1 
+        ]);
+
+        $I->amOnPage(self::PAYMENTS_VIEW_ALL_URL);
+        $I->waitForText("Mothership: Payments", 20, "h1.page-title");
+        $I->seeNumberOfElements("#j-main-container table tbody tr", 2);
+        $I->see("Pending", "#j-main-container table tbody tr:nth-child(2) td:nth-child(9)");
+        $I->see("Confirm", "#j-main-container table tbody tr:nth-child(2) td:nth-child(9)");
+
+        $I->click("Confirm", "#j-main-container table tbody tr:nth-child(2) td:nth-child(9)");
+        $I->wait(1);
+        $I->waitForText("Mothership: Payments", 20, "h1.page-title");
+        $I->see("Payment {$paymentData['id']} confirmed successfully.", ".alert-message");
+        $I->seeInDatabase("jos_mothership_payments", [ 
+            'id' => $paymentData['id'], 
+            'status' => 2 
+        ]);
+
     }
 }
