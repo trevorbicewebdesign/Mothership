@@ -32,15 +32,11 @@ $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn = $this->escape($this->state->get('list.direction'));
 ?>
 <style>
- 
  .account-loading-spinner,
  .project-loading-spinner {
     display:none;
  }
 </style>
-
-
-
 <form action="<?php echo Route::_('index.php?option=com_mothership&layout=edit&id=' . (int) $this->item->id); ?>"
     method="post" name="adminForm" id="invoice-form"
     aria-label="<?php echo Text::_('COM_MOTHERSHIP_INVOICE_' . ((int) $this->item->id === 0 ? 'NEW' : 'EDIT'), true); ?>"
