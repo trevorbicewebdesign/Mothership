@@ -12,7 +12,7 @@ class MothershipAdminDomainsCest
     private $clientData;
     private $userData;
     private $accountData;
-    private $projectData
+    private $projectData;
     private $invoiceData;
     private $paymentData;
     private $joomlaUserData;
