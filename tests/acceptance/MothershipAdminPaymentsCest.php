@@ -616,5 +616,14 @@ class MothershipAdminPaymentsCest
             'status' => 2 
         ]);
 
+        $I->seeInDatabase("jos_mothership_logs", [ 
+            'client_id' => $this->clientData['id'], 
+            'account_id' => $this->accountData['id'],
+            'action' => 'payment_status_changed', 
+            'object_id' => $paymentData['id'], 
+            'object_type' => 'payment', 
+            'user_id' => 548, 
+        ]);
+
     }
 }
