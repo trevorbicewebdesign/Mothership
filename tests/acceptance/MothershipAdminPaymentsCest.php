@@ -110,14 +110,14 @@ class MothershipAdminPaymentsCest
     public function MothershipCancelClientEdit(AcceptanceTester $I)
     {
         $I->amOnPage( self::PAYMENTS_VIEW_ALL_URL);
+        $I->wait(1);
         $I->waitForText("Mothership: Payments", 20, "h1.page-title");
-
         $I->click("Test Client");
+        $I->wait(1);
         $I->waitForText("Mothership: Edit Client", 20, "h1.page-title");
-        $I->wait(1);
         $I->click("Close", "#toolbar");
-        $I->waitForText("Mothership: Payments", 20, "h1.page-title");
         $I->wait(1);
+        $I->waitForText("Mothership: Payments", 20, "h1.page-title");
         $I->seeCurrentUrlEquals(self::PAYMENTS_VIEW_ALL_URL);
     }
 
