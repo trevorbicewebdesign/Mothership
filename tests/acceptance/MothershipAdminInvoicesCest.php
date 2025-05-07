@@ -532,15 +532,15 @@ class MothershipAdminInvoicesCest
 
         $I->selectOption("select#jform_client_id", $this->clientData['id']);
         $I->wait(1);
-        $I->seeOptionIsSelected("select#jform_client_id", $this->clientData['id']);
+        $I->seeOptionIsSelected("select#jform_client_id", "{$this->clientData['name']}");
         $I->selectOption("select#jform_account_id", $this->accountData['id']);
         $I->dontSeeElement("select#jform_project_id");
         $I->wait(1);
-        $I->seeOptionIsSelected("select#jform_account_id", $this->accountData['id']);
+        $I->seeOptionIsSelected("select#jform_account_id", "{$this->accountData['name']}");
         $I->wait(5);
-        $I->selectOption("select#jform_project_id", $this->projectData['id']);
+        $I->selectOption("select#jform_project_id", "{$this->projectData['id']}");
         $I->wait(1);
-        $I->seeOptionIsSelected("select#jform_project_id", $this->projectData['id']);
+        $I->seeOptionIsSelected("select#jform_project_id", "{$this->projectData['name']}");
 
         $I->fillFIeld("input#jform_number", "1001");
         $I->seeInField("input#jform_rate", $this->clientData['default_rate']);
