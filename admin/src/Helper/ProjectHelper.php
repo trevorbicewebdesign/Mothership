@@ -17,12 +17,47 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
 use Joomla\Database\DatabaseDriver;
 use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper;
 use TrevorBice\Component\Mothership\Administrator\Service\EmailService;
 
 class ProjectHelper
 {
+
+    public static function getProjectListOptions($account_id=NULL)
+    {
+        $db = Factory::getContainer()->get(\Joomla\Database\DatabaseInterface::class);
+
+        $query = $db->getQuery(true)
+            ->select($db->quoteName(['id', 'name']))
+            ->from($db->quoteName('#__mothership_projects'));
+
+        if ($account_id !== null) {
+            $query->where($db->quoteName('account_id') . ' = ' . $db->quote($account_id));
+        }
+
+        $query->order($db->quoteName('name') . ' ASC');
+
+        $db->setQuery($query);
+        $accounts = $db->loadObjectList();
+
+        $options = [];
+
+        // Add placeholder option
+        $options[] = HTMLHelper::_('select.option', '', Text::_('COM_MOTHERSHIP_SELECT_PROJECT'));
+
+        // Build options array
+        if ($accounts) {
+            foreach ($accounts as $account) {
+                $options[] = HTMLHelper::_('select.option', $account->id, $account->name);
+            }
+        }
+
+        return $options;
+    }
+
     /**
      * Scans a website URL and retrieves headers, HTML, cookies, and other data
      * that can be used to identify the platform.
