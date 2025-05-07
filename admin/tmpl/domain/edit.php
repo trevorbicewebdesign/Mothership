@@ -31,7 +31,12 @@ $userId = $user->id;
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
 ?>
-
+<style>
+ .account-loading-spinner,
+ .project-loading-spinner {
+    display:none;
+ }
+</style>
 <form action="<?php echo Route::_('index.php?option=com_mothership&layout=edit&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" id="domain-form" aria-label="<?php echo Text::_('COM_MOTHERSHIP_DOMAIN_' . ((int) $this->item->id === 0 ? 'NEW' : 'EDIT'), true); ?>" class="form-validate">
     <div class="main-card">
         <?php echo HTMLHelper::_('uitab.startTabSet', 'myTab', ['active' => 'details', 'recall' => true, 'breakpoint' => 768]); ?>
