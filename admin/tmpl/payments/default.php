@@ -107,8 +107,8 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                                         <?php 
                                         echo $item->status."<br/>";
                                         switch ($item->status) {
-                                            case 'Pending': ?>
-                                               <a class="btn btn-primary btn-sm" href="index.php?option=com_mothership&controller=payment&task=payment.confirm&id=<?php echo $item->id;?>&return=<?php echo base64_encode(Route::_('index.php?option=com_mothership&view=payments')); ?>">Confirm</a>
+                                            case 'Pending': ?>                                                
+                                               <a class="btn btn-primary btn-sm" href="index.php?option=com_mothership&task=payment.confirm&id=<?php echo $item->id;?><?php echo "&return=".base64_encode(Route::_('index.php?option=com_mothership&view=payments')); ?>">Confirm</a>
                                                <?php
                                                 break;
                                             default:
