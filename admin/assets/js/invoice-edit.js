@@ -228,7 +228,7 @@ jQuery(document).ready(function ($) {
         );
     }
 
-    function revealProjectField(clientId) {
+    function revealProjectField(accountId) {
         if (projectWrapper.is(':visible')) return;
 
         // Initial state
@@ -306,7 +306,7 @@ jQuery(document).ready(function ($) {
         );
     }
 
-    function hideProjectField() {
+    function hideProjectsField() {
         const currentHeight = projectWrapper.outerHeight();
 
         projectWrapper.css({
@@ -441,6 +441,8 @@ jQuery(document).ready(function ($) {
     if (isNewInvoice()) {
         accountWrapper.hide();
         accountSpinner.hide();
+        projectWrapper.hide();
+        projectSpinner.hide();
     }
 
     // On client change
@@ -451,6 +453,16 @@ jQuery(document).ready(function ($) {
             hideAccountField();
         } else {
             revealAccountField(selectedVal);
+        }
+    });
+
+    accountSelect.on('change', function () {
+        const selectedVal = $(this).val();
+
+        if (selectedVal === '') {
+            hideProjectsField();
+        } else {
+            revealProjectField(selectedVal);
         }
     });
 
