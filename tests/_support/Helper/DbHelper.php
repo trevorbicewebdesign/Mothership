@@ -175,6 +175,7 @@ class DbHelper extends Db
             "number" => rand(1, 100),
             "client_id" => 1,
             "account_id" => 1,
+            "project_id" => NULL,
             "status" => 1,
             "due_date" => date('Y-m-d H:i:s', strtotime('+30 days')),
             "created" => null,
@@ -366,6 +367,8 @@ class DbHelper extends Db
         $defaultData = [
             "name" => isset($data['name']) ? $data['name'] : 'example.com',
             "client_id" => isset($data['client_id']) ? $data['client_id'] : 0,
+            "account_id" => isset($data['account_id']) ? $data['account_id'] : 0,
+            "project_id" => isset($data['project_id']) ? $data['project_id'] : NULL,
             'status' => isset($data['status']) ? $data['status'] : 1,
             'registrar' => isset($data['registrar']) ? $data['registrar'] : 'GoDaddy',
             'reseller' => isset($data['reseller']) ? $data['reseller'] : 'GoDaddy',
