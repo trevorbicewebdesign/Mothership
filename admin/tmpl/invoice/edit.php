@@ -33,7 +33,8 @@ $listDirn = $this->escape($this->state->get('list.direction'));
 ?>
 <style>
  
- .account-loading-spinner {
+ .account-loading-spinner,
+ .project-loading-spinner {
     display:none;
  }
 </style>
