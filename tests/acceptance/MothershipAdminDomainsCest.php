@@ -12,7 +12,6 @@ class MothershipAdminDomainsCest
     private $clientData;
     private $userData;
     private $accountData;
-    private $projectData;
     private $invoiceData;
     private $paymentData;
     private $joomlaUserData;
@@ -37,12 +36,6 @@ class MothershipAdminDomainsCest
             'name' => 'Test Account',
         ]);
 
-        $this->projectData = $I->createMothershipProject([
-            'client_id' => $this->clientData['id'],
-            'account_id' => $this->accountData['id'],
-            'name' => 'Test Project',
-            'type' => 'website',
-        ]);
         $this->invoiceData = $I->createMothershipInvoice([
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
