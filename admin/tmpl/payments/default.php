@@ -107,9 +107,9 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                                         <?php 
                                         echo $item->status."<br/>";
                                         switch ($item->status) {
-                                            case 'Pending':
-                                                echo "<button class=\"btn btn-payment-confirm btn-primary btn-sm\" type=\"button\" data-id=\"{$item->id}\" data-task=\"payment.confirm\">Confirm</button>";
-
+                                            case 'Pending': ?>
+                                               <a class="btn btn-primary btn-sm" href="index.php?option=com_mothership&controller=payment&task=payment.confirm&id=<?php echo $item->id;?>&return=<?php echo base64_encode(Route::_('index.php?option=com_mothership&view=payments')); ?>">Confirm</a>
+                                               <?php
                                                 break;
                                             default:
                                                 break;
@@ -140,28 +140,3 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
         </div>
     </div>
 </form>
-<script type="text/javascript">
-jQuery(document).ready(function ($) {
-    $('button.btn-payment-confirm').on('click', function (e) {
-        e.preventDefault();
-        const id = $(this).data('id');
-        const task = $(this).data('task');
-        const form = document.getElementById('adminForm');
-
-        if (form) {
-            // Create or set the task
-            form.task.value = task;
-
-            // Ensure the correct checkbox is checked
-            const boxchecked = form.querySelector('input[name=\"boxchecked\"]');
-            boxchecked.value = 1;
-
-            // Check the right item checkbox
-            const checkbox = form.querySelector('input[type=\"checkbox\"][name=\"cid[]\"][value=\"' + id + '\"]');
-            if (checkbox) checkbox.checked = true;
-
-            form.submit();
-        }
-    });
-});
-</script>
