@@ -622,7 +622,7 @@ class MothershipAdminPaymentsCest
             'action' => 'payment_status_changed', 
             'object_id' => $paymentData['id'], 
             'object_type' => 'payment', 
-            'user_id' => 548, 
+            'user_id' => 1, 
         ]);
 
     }
