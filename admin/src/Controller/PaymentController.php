@@ -64,6 +64,8 @@ class PaymentController extends FormController
         $input = $app->input;
         $model = $this->getModel('Payment');
         $id = $input->getInt('id');
+
+        $payment = $model->getItem($id);
         
         if ($model->confirm($id)) {
             $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_PAYMENT_CONFIRMED_SUCCESSFULLY', $id), 'message');
@@ -73,6 +75,8 @@ class PaymentController extends FormController
 
         $defaultRedirect = Route::_('index.php?option=com_mothership&view=payments', false);
         $redirect = MothershipHelper::getReturnRedirect($defaultRedirect);
+
+        LogHelper::logStatusChange($payment, 'Completed');
 
         $this->setRedirect($redirect);
 
