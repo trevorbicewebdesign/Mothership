@@ -106,6 +106,7 @@ class MothershipAdminClientsCest
     public function MothershipAddClient(AcceptanceTester $I)
     {
         $I->amOnPage(self::CLIENTS_VIEW_ALL_URL);
+        $I->wait(1);
         $I->waitForText("Mothership: Clients", 20, "h1.page-title");
 
         $toolbar = "#toolbar";
@@ -115,6 +116,7 @@ class MothershipAdminClientsCest
         $I->see("New", "{$toolbar} {$toolbarNew} .btn.button-new");
 
         $I->click("{$toolbar} {$toolbarNew} .btn.button-new");
+        $I->wait(1);
         $I->waitForText("Mothership: New Client", 20, "h1.page-title");
 
         $I->makeScreenshot("mothership-client-add-details");
