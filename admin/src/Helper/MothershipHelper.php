@@ -40,6 +40,7 @@ class MothershipHelper extends ContentHelper
         // Check URL param
         $return = $input->getString('return', '');
         $return = base64_decode($return, true);
+        $return = htmlspecialchars_decode($return);
 
         // Check form data if not found in URL
         if (!$return) {
