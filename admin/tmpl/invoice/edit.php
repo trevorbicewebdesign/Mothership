@@ -61,6 +61,7 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                 <?php echo $this->form->renderField('account_id'); ?>
                             </div>
                         </div>
+
                         <div class="project-container">
                             <div class="project-loading-spinner">
                                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -70,7 +71,6 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                 <?php echo $this->form->renderField('project_id'); ?>
                             </div>
                         </div>
-
 
                         <?php echo $this->form->renderField('number'); ?>
                         <?php echo $this->form->renderField('rate'); ?>
