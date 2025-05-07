@@ -128,6 +128,8 @@ CREATE TABLE IF NOT EXISTS `#__mothership_payments` (
   `locked` TINYINT(1) NOT NULL DEFAULT 0,
   `created_by` INT(11) DEFAULT NULL,
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `checked_out_time` DATETIME DEFAULT NULL,
+  `checked_out` INT(11) DEFAULT NULL,
   `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `fk_payments_client` (`client_id`),

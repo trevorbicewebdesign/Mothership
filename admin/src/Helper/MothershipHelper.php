@@ -38,7 +38,9 @@ class MothershipHelper extends ContentHelper
         $input = Factory::getApplication()->input;
 
         // Check URL param
-        $return = $input->getBase64('return');
+        $return = $input->getString('return', '');
+        $return = base64_decode($return, true);
+        $return = htmlspecialchars_decode($return);
 
         // Check form data if not found in URL
         if (!$return) {

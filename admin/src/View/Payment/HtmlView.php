@@ -138,6 +138,7 @@ class HtmlView extends BaseHtmlView
         $isLocked = $this->item->locked;
         $toolbar = $this->getDocument()->getToolbar();
 
+
         ToolbarHelper::title(
             $isLocked 
             ? Text::_('COM_MOTHERSHIP_MANAGER_PAYMENT_VIEW') 
@@ -175,6 +176,11 @@ class HtmlView extends BaseHtmlView
             ToolbarHelper::custom('payment.unlock', 'unlock', 'unlock', 'COM_MOTHERSHIP_UNLOCK', false);
         } else {
             ToolbarHelper::custom('payment.lock', 'lock', 'lock', 'COM_MOTHERSHIP_LOCK', false);
+        }
+
+        // Make a Confirm Payment button below
+        if ($this->item->status == '1' && $canDo->get('core.edit')) {
+            ToolbarHelper::custom('payment.confirm', 'vcard', 'vcard', 'COM_MOTHERSHIP_CONFIRM_PAYMENT', false);
         }
 
 
