@@ -40,8 +40,25 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
             <div class="col-lg-9">
                 <div>
                     <fieldset class="adminform">
-                        <?php echo $this->form->renderField('client_id'); ?>
-                        <?php echo $this->form->renderField('account_id'); ?>
+                        <div class="account-container">
+                            <div class="account-loading-spinner">
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                <?php echo Text::_('Loading accounts...'); ?>
+                            </div>
+                            <div class="account_id_wrapper" style="opacity: 1;">
+                                <?php echo $this->form->renderField('account_id'); ?>
+                            </div>
+                        </div>
+
+                        <div class="project-container">
+                            <div class="project-loading-spinner">
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                <?php echo Text::_('Loading projects...'); ?>
+                            </div>
+                            <div class="project_id_wrapper" style="opacity: 1;">
+                                <?php echo $this->form->renderField('project_id'); ?>
+                            </div>
+                        </div>
                         <?php echo $this->form->renderField('name'); ?>
                         <?php echo $this->form->renderField('status'); ?>
                         <?php echo $this->form->renderField('epp_status'); ?>
