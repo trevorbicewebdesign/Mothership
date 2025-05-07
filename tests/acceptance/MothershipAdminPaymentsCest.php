@@ -380,6 +380,8 @@ class MothershipAdminPaymentsCest
 
         $I->makeScreenshot("mothership-add-payment");
 
+        $I->dontSee("Warning");
+
         $I->see("Save", "#toolbar");
         $I->see("Save & Close", "#toolbar");
         $I->see("Cancel", "#toolbar");
@@ -544,5 +546,84 @@ class MothershipAdminPaymentsCest
         $I->seeNumberOfElements("#j-main-container table tbody tr", 0);
 
         $I->dontSeeInDatabase("jos_mothership_payments", [ 'id' => $paymentData['id'] ]);
+    }
+
+    /**
+     * @group backend
+     * @group payment
+     * @group backend-payment
+     */
+    public function ManuallyConfirmPendingPayment(AcceptanceTester $I)
+    {
+        $paymentData = $I->createMothershipPayment([
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'amount' => 103.2,
+            'fee_amount' => 3.2,
+            'fee_passed_on' => FALSE,
+            'payment_method' => 'paypal',
+            'transaction_id' => '123456',
+            'status' => 1,
+            'processed_date' => date('Y-m-d H:i:s'),
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s'),
+        ]);
+
+        $I->seeInDatabase("jos_mothership_payments", [ 
+            'id' => $paymentData['id'], 
+            'status' => 1 
+        ]);
+
+        $I->amOnPage(sprintf(self::PAYMENT_EDIT_URL, $paymentData['id']));
+        $I->wait(1);
+        $I->waitForText("Mothership: Edit Payment", 20, "h1.page-title");
+
+        $I->see("Confirm Payment", "#toolbar");
+        $I->seeElement("joomla-toolbar-button#toolbar-vcard", ['task' => "payment.confirm"]);
+
+        $I->click("Confirm Payment", "#toolbar");
+        $I->wait(1);
+        $I->waitForText("Mothership: Payments", 20, "h1.page-title");
+        $I->see("Payment {$paymentData['id']} confirmed successfully.", ".alert-message");
+
+        $I->seeInDatabase("jos_mothership_payments", [ 
+            'id' => $paymentData['id'], 
+            'status' => 2 
+        ]);
+
+        $I->see("Completed", "#j-main-container table tbody tr:nth-child(2) td:nth-child(9)");
+        $I->dontSee("Confirm", "#j-main-container table tbody tr:nth-child(2) td:nth-child(9) button");
+        $I->dontSee("Pending", "#j-main-container table tbody tr:nth-child(2) td:nth-child(9)");
+
+        $I->setPaymentStatus($paymentData['id'], 1);
+        $I->seeInDatabase("jos_mothership_payments", [ 
+            'id' => $paymentData['id'], 
+            'status' => 1 
+        ]);
+
+        $I->amOnPage(self::PAYMENTS_VIEW_ALL_URL);
+        $I->waitForText("Mothership: Payments", 20, "h1.page-title");
+        $I->seeNumberOfElements("#j-main-container table tbody tr", 2);
+        $I->see("Pending", "#j-main-container table tbody tr:nth-child(2) td:nth-child(9)");
+        $I->see("Confirm", "#j-main-container table tbody tr:nth-child(2) td:nth-child(9)");
+
+        $I->click("Confirm", "#j-main-container table tbody tr:nth-child(2) td:nth-child(9)");
+        $I->wait(1);
+        $I->waitForText("Mothership: Payments", 20, "h1.page-title");
+        $I->see("Payment {$paymentData['id']} confirmed successfully.", ".alert-message");
+        $I->seeInDatabase("jos_mothership_payments", [ 
+            'id' => $paymentData['id'], 
+            'status' => 2 
+        ]);
+
+        $I->seeInDatabase("jos_mothership_logs", [ 
+            'client_id' => $this->clientData['id'], 
+            'account_id' => $this->accountData['id'],
+            'action' => 'payment_status_changed', 
+            'object_id' => $paymentData['id'], 
+            'object_type' => 'payment', 
+            'user_id' => 1, 
+        ]);
+
     }
 }

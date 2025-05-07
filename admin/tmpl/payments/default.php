@@ -104,7 +104,17 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                                         <?php echo HTMLHelper::_('date', $item->created_at, Text::_('DATE_FORMAT_LC4')); ?>
                                     </td>
                                     <td>
-                                        <?php echo $item->status; ?><br/>
+                                        <?php 
+                                        echo $item->status."<br/>";
+                                        switch ($item->status) {
+                                            case 'Pending': ?>                                                
+                                               <a class="btn btn-primary btn-sm" href="index.php?option=com_mothership&task=payment.confirm&id=<?php echo $item->id;?><?php echo "&return=".base64_encode(Route::_('index.php?option=com_mothership&view=payments')); ?>">Confirm</a>
+                                               <?php
+                                                break;
+                                            default:
+                                                break;
+                                        }                                  
+                                        ?><br/>
                                         <?php $invoice_ids = array_filter(explode(",", $item->invoice_ids ?? '')); ?>
                                         <?php if (count($invoice_ids) > 0): ?>
                                         <ul style="margin-bottom:0px;">
