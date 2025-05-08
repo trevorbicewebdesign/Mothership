@@ -13,7 +13,11 @@ class AccountListField extends ListField
 
     public function getOptions()
     {
-        $options = AccountHelper::getAccountListOptions();
+        $form = $this->form;
+        $data = $form->getData();
+        $client_id = $data->get('client_id', null);
+
+        $options = AccountHelper::getAccountListOptions($client_id);
         return array_merge(parent::getOptions(), $options);
     }
 }
