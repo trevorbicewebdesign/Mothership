@@ -165,6 +165,7 @@ class MothershipAdminDomainsCest
         $I->click("Save", "#toolbar");
         $I->wait(1);
         $I->waitForText("Mothership: Edit Domain", 10, "h1.page-title");
+        $I->dontSee("Warning");
 
         $I->waitForText("Domain example.com saved successfully.", 10, ".alert-message");
 
