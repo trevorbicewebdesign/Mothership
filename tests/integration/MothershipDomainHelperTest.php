@@ -75,7 +75,7 @@ class MothershipDomainHelperTest extends \Codeception\Test\Unit
                 'google'
             ],
             'Cloudflare DNS' => [
-                ['ns1.cloudflare.com', 'ns2.cloudflare.com'],
+                ['erin.ns.cloudflare.com', 'mark.ns.cloudflare.com'],
                 'cloudflare'
             ],
             'Unknown DNS' => [
