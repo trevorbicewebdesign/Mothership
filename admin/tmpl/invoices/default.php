@@ -57,7 +57,9 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                 <th scope="col" class="w-10">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_INVOICE_HEADING_ACCOUNT', 'a.name', $listDirn, $listOrder); ?>
                                 </th>
-
+                                <th scope="col" class="w-10">
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_INVOICE_HEADING_PROJECT', 'p.name', $listDirn, $listOrder); ?>
+                                </th>
                                 <th scope="col" class="w-10">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_INVOICE_HEADING_TOTAL', 'i.total', $listDirn, $listOrder); ?>
                                 </th>
@@ -120,6 +122,8 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                     <td>
                                         <a href="<?php echo Route::_("index.php?option=com_mothership&task=account.edit&id={$item->account_id}&return=" . base64_encode(Route::_('index.php?option=com_mothership&view=invoices'))) ?>"><?php echo htmlspecialchars($item->account_name, ENT_QUOTES, 'UTF-8'); ?></a>
                                     </td>
+                                    <td>
+                                        <a href="<?php echo Route::_("index.php?option=com_mothership&task=project.edit&id={$item->project_id}&return=" . base64_encode(Route::_('index.php?option=com_mothership&view=invoices'))) ?>"><?php echo htmlspecialchars($item->project_name, ENT_QUOTES, 'UTF-8'); ?></a>
                                     <td>
                                         $<?php echo number_format($item->total, 2, '.', ','); ?>
                                     </td>
