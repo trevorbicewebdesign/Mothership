@@ -143,4 +143,35 @@ class MothershipLogHelperTest extends \Codeception\Test\Unit
             // 'user_id' => 1,
         ]);
     }
+
+    public function testLogDomainScanned()
+    {
+        $result = LogHelper::logDomainScanned($this->domainData['id'], $this->clientData['id'], $this->accountData['id']);
+        codecept_debug($result);
+
+
+        $this->tester->seeInDatabase('jos_mothership_logs', [
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'object_type' => 'domain',
+            'object_id' => $this->domainData['id'],
+            'action' => 'scanned',
+            // 'user_id' => 1,
+        ]);
+    }
+
+    public function testLogProjectScanned()
+    {
+        $result = LogHelper::logProjectScanned($this->projectData['id'], $this->clientData['id'], $this->accountData['id']);
+        codecept_debug($result);
+
+        $this->tester->seeInDatabase('jos_mothership_logs', [
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'object_type' => 'project',
+            'object_id' => $this->projectData['id'],
+            'action' => 'scanned',
+            // 'user_id' => 1,
+        ]);
+    }
 }
