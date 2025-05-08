@@ -13,7 +13,11 @@ class ProjectListField extends ListField
 
     public function getOptions()
     {
-        $options = ProjectHelper::getProjectListOptions();
+        $form = $this->form;
+        $data = $form->getData();
+        $account_id = $data->get('account_id', null);
+
+        $options = ProjectHelper::getProjectListOptions($account_id);
         return array_merge(parent::getOptions(), $options);
     }
 }
