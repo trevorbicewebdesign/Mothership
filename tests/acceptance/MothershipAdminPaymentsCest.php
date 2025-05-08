@@ -368,6 +368,7 @@ class MothershipAdminPaymentsCest
     public function MothershipAddPayment(AcceptanceTester $I)
     {
         $I->amOnPage(self::PAYMENTS_VIEW_ALL_URL);
+        $I->wait(1);
         $I->waitForText("Mothership: Payments", 20, "h1.page-title");
 
         $toolbar = "#toolbar";
@@ -376,6 +377,7 @@ class MothershipAdminPaymentsCest
         $I->seeElement("{$toolbar} {$toolbarNew}");
         $I->see("New", "{$toolbar} {$toolbarNew} .btn.button-new");
         $I->click("{$toolbar} {$toolbarNew} .btn.button-new");
+        $I->wait(1);
         $I->waitForText("Mothership: New Payment", 20, "h1.page-title");
 
         $I->makeScreenshot("mothership-add-payment");
