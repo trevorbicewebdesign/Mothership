@@ -174,4 +174,39 @@ class MothershipLogHelperTest extends \Codeception\Test\Unit
             // 'user_id' => 1,
         ]);
     }
+
+    public function testLogPaymentCompleted()
+    {
+
+        codecept_debug((object) $this->paymentData);
+
+        try {
+            $result = LogHelper::logPaymentCompleted((object) $this->paymentData);
+        } catch (\Exception $e) {
+            codecept_debug($e->getMessage());
+            $this->fail("Log entry was not created successfully: " . $e->getMessage());
+        }
+
+        codecept_debug("Test Log Payment Completed");
+        $metadata = json_decode($this->tester->grabFromDatabase('jos_mothership_logs', 'meta', [
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'object_type' => 'payment',
+            'object_id' => $this->paymentData['id'],
+            'action' => 'payment_status_changed',
+        ]), true);
+        $this->assertArrayHasKey('new_status', $metadata);
+        $this->assertArrayHasKey('old_status', $metadata);
+        $this->assertEquals('Completed', $metadata['new_status']);
+        $this->assertEquals('Pending', $metadata['old_status']);
+
+        $this->tester->seeInDatabase('jos_mothership_logs', [
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'object_type' => 'payment',
+            'object_id' => $this->paymentData['id'],
+            'action' => 'payment_status_changed',
+            // 'user_id' => 1,
+        ]);
+    }
 }
