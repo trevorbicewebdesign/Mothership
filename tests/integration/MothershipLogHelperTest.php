@@ -45,4 +45,31 @@ class MothershipLogHelperTest extends \Codeception\Test\Unit
             'payment_method' => 'manual'
         ]);
     }
+
+    public function testLog()
+    {
+        $params = [
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'object_type' => 'invoice',
+            'object_id' => $this->invoiceData['id'],
+            'action' => 'viewed',
+            'meta' => [],
+            'user_id' => 1,
+        ];
+
+        $result = LogHelper::log($params);
+        codecept_debug($result);
+
+        $this->assertTrue($result, 'Log entry was not created successfully.');
+
+        $this->tester->seeInDatabase('jos_mothership_logs', [
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'object_type' => 'invoice',
+            'object_id' => $this->invoiceData['id'],
+            'action' => 'viewed',
+            'user_id' => 1,
+        ]);
+    }
 }
