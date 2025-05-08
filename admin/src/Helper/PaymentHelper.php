@@ -77,7 +77,7 @@ class PaymentHelper
         \Joomla\CMS\Factory::getApplication()->triggerEvent('onMothershipPaymentCompleted', [$payment]);
 
         // SEnd the invoice template to the client
-        EmailService::sendTemplate('payment', 'test.smith@mailinator.com', 'Payment Completed', [
+        EmailService::sendTemplate('payment.confirmed', 'test.smith@mailinator.com', 'Payment Completed', [
             'fname' => 'Trevor',
             'invoice_number' => 'INV-2045',
             'account_name' => 'Trevor Bice Webdesign',
