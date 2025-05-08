@@ -146,10 +146,16 @@ class MothershipAdminDomainsCest
         $I->see("Domain Details", "#myTab button[aria-controls=details]");
 
         $I->seeElement("select#jform_client_id");
+        $I->dontSee("select#jform_account_id");
         $I->seeElement("input#jform_name");
 
-        $I->selectOption("select#jform_client_id", "Test Client");
-        $I->selectOption("select#jform_account_id", "Test Account");
+        $I->selectOption("select#jform_client_id", $this->clientData['id']);
+        $I->wait(1);
+        $I->seeOptionIsSelected("select#jform_client_id", "{$this->clientData['name']}");
+        $I->selectOption("select#jform_account_id", $this->accountData['id']);
+        $I->wait(1);
+        $I->seeOptionIsSelected("select#jform_account_id", "{$this->accountData['name']}");
+        
         $I->fillField("input#jform_name", "example.com");
         $I->fillField("input#jform_registrar", "GoDaddy");
         $I->fillField("input#jform_reseller", "GoDaddy");

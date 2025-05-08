@@ -104,20 +104,20 @@ class MothershipAdminPaymentsCest
     /**
      * @group backend
      * @group payment
-     * @group account
+     * @group client
      * @group backend-payment
      */
     public function MothershipCancelClientEdit(AcceptanceTester $I)
     {
         $I->amOnPage( self::PAYMENTS_VIEW_ALL_URL);
+        $I->wait(1);
         $I->waitForText("Mothership: Payments", 20, "h1.page-title");
-
         $I->click("Test Client");
+        $I->wait(1);
         $I->waitForText("Mothership: Edit Client", 20, "h1.page-title");
-        $I->wait(1);
         $I->click("Close", "#toolbar");
-        $I->waitForText("Mothership: Payments", 20, "h1.page-title");
         $I->wait(1);
+        $I->waitForText("Mothership: Payments", 20, "h1.page-title");
         $I->seeCurrentUrlEquals(self::PAYMENTS_VIEW_ALL_URL);
     }
 
@@ -144,7 +144,7 @@ class MothershipAdminPaymentsCest
     /**
      * @group backend
      * @group payment
-     * @group account
+     * @group invoice
      * @group backend-payment
      */
     public function MothershipCancelInvoiceEdit(AcceptanceTester $I)
@@ -387,7 +387,8 @@ class MothershipAdminPaymentsCest
         $I->see("Cancel", "#toolbar");
 
         $I->seeElement("select#jform_client_id");
-        $I->seeElement("select#jform_account_id");
+        $I->dontSeeElement("select#jform_account_id");
+
         $I->seeElement("input#jform_amount");
         $I->seeElement("input#jform_fee_amount");
         $I->seeElement("#jform_fee_passed_on");
@@ -404,13 +405,16 @@ class MothershipAdminPaymentsCest
         $I->see("Please correct the marked fields and try again.");
         
         $I->see("One of the options must be selected", "label#jform_client_id-lbl .form-control-feedback");
-        $I->see("One of the options must be selected", "label#jform_account_id-lbl .form-control-feedback");
         
         $I->amGoingTo("Fill out the form");
 
         $I->selectOption("select#jform_client_id", $this->clientData['id']);
-        $I->waitForElementVisible("select#jform_account_id", 5); // Wait for the spinner
+        $I->wait(1);
+        $I->seeOptionIsSelected("select#jform_client_id", "{$this->clientData['name']}");
         $I->selectOption("select#jform_account_id", $this->accountData['id']);
+        $I->wait(1);
+        $I->seeOptionIsSelected("select#jform_account_id", "{$this->accountData['name']}");
+
         $I->fillFIeld("input#jform_amount", "103.20");
         $I->fillFIeld("input#jform_fee_amount", "3.20");
         $I->fillFIeld("input#jform_payment_method", "PayPal");

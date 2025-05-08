@@ -3,21 +3,21 @@
 namespace TrevorBice\Component\Mothership\Administrator\Field;
 
 use Joomla\CMS\Form\Field\ListField;
-use TrevorBice\Component\Mothership\Administrator\Helper\AccountHelper;
+use TrevorBice\Component\Mothership\Administrator\Helper\ProjectHelper;
 
 \defined('_JEXEC') or die;
 
-class AccountListField extends ListField
+class ProjectListField extends ListField
 {
-    protected $type = 'accountlist';
+    protected $type = 'projectlist';
 
     public function getOptions()
     {
         $form = $this->form;
         $data = $form->getData();
-        $client_id = $data->get('client_id', null);
+        $account_id = $data->get('account_id', null);
 
-        $options = AccountHelper::getAccountListOptions($client_id);
+        $options = ProjectHelper::getProjectListOptions($account_id);
         return array_merge(parent::getOptions(), $options);
     }
 }

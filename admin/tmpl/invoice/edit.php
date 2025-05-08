@@ -32,14 +32,11 @@ $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn = $this->escape($this->state->get('list.direction'));
 ?>
 <style>
- 
- .account-loading-spinner {
+ .account-loading-spinner,
+ .project-loading-spinner {
     display:none;
  }
 </style>
-
-
-
 <form action="<?php echo Route::_('index.php?option=com_mothership&layout=edit&id=' . (int) $this->item->id); ?>"
     method="post" name="adminForm" id="invoice-form"
     aria-label="<?php echo Text::_('COM_MOTHERSHIP_INVOICE_' . ((int) $this->item->id === 0 ? 'NEW' : 'EDIT'), true); ?>"
@@ -62,6 +59,15 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                             </div>
                         </div>
 
+                        <div class="project-container">
+                            <div class="project-loading-spinner">
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                <?php echo Text::_('Loading projects...'); ?>
+                            </div>
+                            <div class="project_id_wrapper" style="opacity: 1;">
+                                <?php echo $this->form->renderField('project_id'); ?>
+                            </div>
+                        </div>
 
                         <?php echo $this->form->renderField('number'); ?>
                         <?php echo $this->form->renderField('rate'); ?>
