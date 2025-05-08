@@ -123,8 +123,21 @@ class LogHelper extends ContentHelper
         $accountId = $payment->account_id ?? null;
         $invoiceTotal = $payment->amount ?? 0.0;
         $paymentMethod = $payment->payment_method ?? '';
+        $user = Factory::getUser();
+        $userId = $user->id;
         
-        self::logPaymentLifecycle('completed', $invoiceId, $paymentId, $clientId, $accountId, $invoiceTotal, $paymentMethod);
+        self::log([
+            'client_id' => $clientId,
+            'account_id' => $accountId,
+            'object_type' => 'payment',
+            'object_id' => $paymentId,
+            'action' => 'payment_status_changed',
+            'meta' =>[
+                'old_status' => 'Pending',
+                'new_status' => 'Completed',
+            ],
+            'user_id' => $userId,
+        ]);
     }
 
     public static function logPaymentFailed($paymentId, ?string $reason = null): void
