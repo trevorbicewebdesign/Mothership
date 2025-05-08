@@ -85,8 +85,6 @@ jQuery(document).ready(function ($) {
     }
 
     function revealAccountField(clientId) {
-        if (accountWrapper.is(':visible')) return;
-
         // Initial state
         accountWrapper.css({
             display: 'block',
@@ -222,11 +220,12 @@ jQuery(document).ready(function ($) {
     // On client change
     clientSelect.on('change', function () {
         const selectedVal = $(this).val();
-
-        if (selectedVal === '') {
-            hideAccountField();
-        } else {
+        
+        if (selectedVal) {
             revealAccountField(selectedVal);
+        }
+        else {
+            hideAccountField();
         }
     });
 });
