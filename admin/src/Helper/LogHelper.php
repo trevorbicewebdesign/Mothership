@@ -30,38 +30,62 @@ use TrevorBice\Component\Mothership\Administrator\Helper\PaymentHelper;
  */
 class LogHelper extends ContentHelper
 {
+    /**
+     * Logs an action to the database.
+     *
+     * This method inserts a log entry into the `#__mothership_logs` table with the provided parameters.
+     *
+     * @param array $params An associative array containing the following keys:
+     *     - client_id (int|null): The ID of the client. Defaults to NULL if not provided.
+     *     - account_id (int|null): The ID of the account. Defaults to NULL if not provided.
+     *     - object_type (string|null): The type of the object being logged. Defaults to NULL if not provided.
+     *     - object_id (int|null): The ID of the object being logged. Defaults to NULL if not provided.
+     *     - action (string|null): The action being logged. Defaults to NULL if not provided.
+     *     - meta (array): Additional metadata for the log entry. Defaults to an empty array if not provided.
+     *     - user_id (int|null): The ID of the user performing the action. Defaults to the current user's ID if not provided.
+     *
+     * @return bool Returns true on successful execution of the query, or false on failure.
+     */
     public static function log(array $params): bool
     {
-        $db = Factory::getDbo();
-        $columns = [
-            'client_id',
-            'account_id',
-            'object_type',
-            'object_id',
-            'action',
-            'meta',
-            'user_id',
-            'created'
-        ];
+        $user = Factory::getUser();
+        $user_id = $user->id;
 
-        $values = [
-            isset($params['client_id']) ? (int) $params['client_id'] : 'NULL',
-            isset($params['account_id']) ? (int) $params['account_id'] : 'NULL',
-            $db->quote($params['object_type'] ?? null),
-            isset($params['object_id']) ? (int) $params['object_id'] : 'NULL',
-            $db->quote($params['action'] ?? null),
-            $db->quote(json_encode($params['meta'] ?? [])),
-            isset($params['user_id']) ? (int) $params['user_id'] : (int) Factory::getUser()->id,
-            $db->quote(date('Y-m-d H:i:s')),
-        ];
+        try {
+            $db = Factory::getDbo();
+            $columns = [
+                'client_id',
+                'account_id',
+                'object_type',
+                'object_id',
+                'action',
+                'meta',
+                'user_id',
+                'created'
+            ];
 
-        $query = $db->getQuery(true)
-            ->insert($db->quoteName('#__mothership_logs'))
-            ->columns($columns)
-            ->values(implode(',', $values));
+            $values = [
+                isset($params['client_id']) ? (int) $params['client_id'] : 'NULL',
+                isset($params['account_id']) ? (int) $params['account_id'] : 'NULL',
+                $db->quote($params['object_type'] ?? null),
+                isset($params['object_id']) ? (int) $params['object_id'] : 'NULL',
+                $db->quote($params['action'] ?? null),
+                $db->quote(json_encode($params['meta'] ?? [])),
+                isset($params['user_id']) ? (int) $params['user_id'] : $user_id,
+                $db->quote(date('Y-m-d H:i:s')),
+            ];
 
-        $db->setQuery($query);
-        return $db->execute();
+            $query = $db->getQuery(true)
+                ->insert($db->quoteName('#__mothership_logs'))
+                ->columns($columns)
+                ->values(implode(',', $values));
+
+            $db->setQuery($query);
+            $db->execute();
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
 
@@ -115,6 +139,22 @@ class LogHelper extends ContentHelper
         ]);
     }
 
+    /**
+     * Logs the completion of a payment.
+     *
+     * This method records a log entry when a payment's status changes to "Completed".
+     *
+     * @param object $payment The payment object containing details about the payment.
+     *                        Expected properties:
+     *                        - invoice_id (int|null): The ID of the associated invoice.
+     *                        - id (int|null): The ID of the payment.
+     *                        - client_id (int|null): The ID of the client making the payment.
+     *                        - account_id (int|null): The ID of the account associated with the payment.
+     *                        - amount (float|null): The total amount of the payment.
+     *                        - payment_method (string|null): The method used for the payment.
+     *
+     * @return void
+     */
     public static function logPaymentCompleted($payment): void
     {
         $invoiceId = $payment->invoice_id ?? 0;
@@ -123,8 +163,21 @@ class LogHelper extends ContentHelper
         $accountId = $payment->account_id ?? null;
         $invoiceTotal = $payment->amount ?? 0.0;
         $paymentMethod = $payment->payment_method ?? '';
+        $user = Factory::getUser();
+        $userId = $user->id;
         
-        self::logPaymentLifecycle('completed', $invoiceId, $paymentId, $clientId, $accountId, $invoiceTotal, $paymentMethod);
+        self::log([
+            'client_id' => $clientId,
+            'account_id' => $accountId,
+            'object_type' => 'payment',
+            'object_id' => $paymentId,
+            'action' => 'payment_status_changed',
+            'meta' =>[
+                'old_status' => 'Pending',
+                'new_status' => 'Completed',
+            ],
+            'user_id' => $userId,
+        ]);
     }
 
     public static function logPaymentFailed($paymentId, ?string $reason = null): void
@@ -132,13 +185,13 @@ class LogHelper extends ContentHelper
         self::logPaymentLifecycle('failed', 0, $paymentId, null, null, 0.0, '', $reason);
     }
 
-    public static function logObjectViewed($object_type, $object_id, $client_id, $account_id): void
+    public static function logObjectViewed($object_type, $object_id, $client_id, $account_id): bool
     {
         $user = Factory::getUser();
         $userId = $user->id;
         $username = $user->name ?: $user->username;
 
-        self::log([
+        if(self::log([
             'client_id' => $client_id,
             'account_id' => $account_id,
             'object_type' => $object_type,
@@ -146,7 +199,10 @@ class LogHelper extends ContentHelper
             'action' => 'viewed',
             'meta' =>[],
             'user_id' => $userId,
-        ]);
+        ])) {
+            return true;
+        }
+        return false;
     }
 
     public static function logDomainViewed($client_id, $account_id, $domain_id): void
@@ -176,9 +232,6 @@ class LogHelper extends ContentHelper
 
     public static function logInvoiceStatusOpened($invoice_id, $client_id, $account_id): void
     {
-        $user = Factory::getApplication()->getIdentity();
-        $user_display_name = $user->name ?: $user->username;
-
         self::log([
             'client_id' => $client_id,
             'account_id' => $account_id,
@@ -186,7 +239,6 @@ class LogHelper extends ContentHelper
             'object_id' => $invoice_id,
             'action' => 'status_opened',
             'meta' => [],
-            'user_id' => $user->id,
             'created' => date('Y-m-d H:i:s'),
         ]);
     }
@@ -240,12 +292,17 @@ class LogHelper extends ContentHelper
         }
     }
 
+    /**
+     * Logs the action of a domain being scanned.
+     *
+     * @param int $domain_id The ID of the domain that was scanned.
+     * @param int $client_id The ID of the client associated with the domain.
+     * @param int|null $account_id The ID of the account associated with the domain, or NULL if not applicable.
+     *
+     * @return void
+     */
     public static function logDomainScanned($domain_id, $client_id, $account_id=NULL): void
     {
-        $user = Factory::getUser();
-        $userId = $user->id;
-        $username = $user->name ?: $user->username;
-
         $logArray = [
             'client_id' => $client_id,
             'account_id' => $account_id,
@@ -253,18 +310,22 @@ class LogHelper extends ContentHelper
             'object_id' => $domain_id,
             'action' => 'scanned',
             'meta' => [],
-            'user_id' => $userId,
         ];
 
         self::log($logArray);
     }
 
+    /**
+     * Logs the action of a project being scanned.
+     *
+     * @param int $project_id The ID of the project that was scanned.
+     * @param int $client_id The ID of the client associated with the project.
+     * @param int $account_id The ID of the account associated with the project.
+     *
+     * @return void
+     */
     public static function logProjectScanned($project_id, $client_id, $account_id): void
     {
-        $user = Factory::getUser();
-        $userId = $user->id;
-        $username = $user->name ?: $user->username;
-
         self::log([
             'client_id' => $client_id,
             'account_id' => $account_id,
@@ -272,7 +333,6 @@ class LogHelper extends ContentHelper
             'object_id' => $project_id,
             'action' => 'scanned',
             'meta' => [],
-            'user_id' => $userId,
         ]);
     }
 }

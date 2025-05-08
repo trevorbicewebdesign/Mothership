@@ -249,11 +249,12 @@ class MothershipAdminInvoicesCest
         $I->see("PDF", "#j-main-container table thead tr th:nth-child(4)");
         $I->see("Client", "#j-main-container table thead tr th:nth-child(5)");
         $I->see("Account", "#j-main-container table thead tr th:nth-child(6)");
-        $I->see("Total", "#j-main-container table thead tr th:nth-child(7)");
-        $I->see("Status", "#j-main-container table thead tr th:nth-child(8)");
-        $I->see("Payment Status", "#j-main-container table thead tr th:nth-child(9)");
-        $I->see("Due", "#j-main-container table thead tr th:nth-child(10)");
-        $I->see("Created", "#j-main-container table thead tr th:nth-child(11)");
+        $I->see("Project", "#j-main-container table thead tr th:nth-child(7)");
+        $I->see("Total", "#j-main-container table thead tr th:nth-child(8)");
+        $I->see("Status", "#j-main-container table thead tr th:nth-child(9)");
+        $I->see("Payment Status", "#j-main-container table thead tr th:nth-child(10)");
+        $I->see("Due", "#j-main-container table thead tr th:nth-child(11)");
+        $I->see("Created", "#j-main-container table thead tr th:nth-child(12)");
 
         $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 2);
 
@@ -274,10 +275,11 @@ class MothershipAdminInvoicesCest
 
         $I->see("{$this->clientData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5)");
         $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(6)");
-        $I->see("{$this->invoiceData['total']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(7)");
-        $I->see("Draft", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(8)");
-        $I->see("Unpaid", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(9)");
-        $I->see(date('Y-m-d'), "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(11)");
+        $I->see("{$this->projectData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(7)");
+        $I->see("{$this->invoiceData['total']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(8)");
+        $I->see("Draft", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(9)");
+        $I->see("Unpaid", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(10)");
+        $I->see(date('Y-m-d'), "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(12)");
 
         $row = 2;
         // This invoice IS not locked, so it SHOULD have the lock icon
@@ -296,11 +298,11 @@ class MothershipAdminInvoicesCest
 
         $I->see("{$this->clientData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5)");
         $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(6)");
-        $I->see("{$invoiceData['total']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(7)");
-        $I->see("Closed", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(8)");
-        $I->see("Paid", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(9)");
-        $I->see("Payment #{$paymentData['id']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(9)"); 
-        $I->see(date('Y-m-d'), "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(11)");
+        $I->see("{$invoiceData['total']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(8)");
+        $I->see("Closed", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(9)");
+        $I->see("Paid", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(10)");
+        $I->see("Payment #{$paymentData['id']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(10)"); 
+        $I->see(date('Y-m-d'), "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(12)");
 
         $I->see("1 - 2 / 2 items", "#j-main-container .pagination__wrapper");
     }
@@ -419,7 +421,7 @@ class MothershipAdminInvoicesCest
         // Confirm only the closed one remains
         $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 1);
         $I->see("{$closedInvoiceData['number']}", "#j-main-container table.itemList tbody tr td:nth-child(3)");
-        $I->see("Closed", "#j-main-container table.itemList tbody tr td:nth-child(8)");
+        $I->see("Closed", "#j-main-container table.itemList tbody tr td:nth-child(9)");
 
         // Database cleanup checks
         $I->dontSeeInDatabase('jos_mothership_invoices', ['id' => $draftInvoiceData['id']]);
@@ -657,7 +659,7 @@ class MothershipAdminInvoicesCest
         $I->see("1001", "#j-main-container table.itemList tbody tr td:nth-child(3)");
         $I->see("Test Client", "#j-main-container table.itemList tbody tr td:nth-child(5)");
         $I->see("Test Account", "#j-main-container table.itemList tbody tr td:nth-child(6)");
-        $I->see(date("Y-m-d"), "#j-main-container table.itemList tbody tr td:nth-child(11)");
+        $I->see(date("Y-m-d"), "#j-main-container table.itemList tbody tr td:nth-child(12)");
 
         // Open the Invoice again and confirm the data is correct
         $I->amOnPage(sprintf(self::INVOICE_EDIT_URL, ($this->invoiceData['id'] + 1)));

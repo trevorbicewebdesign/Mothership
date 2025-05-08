@@ -85,8 +85,6 @@ jQuery(document).ready(function ($) {
     }
 
     function revealAccountField(clientId) {
-        if (accountWrapper.is(':visible')) return;
-
         // Initial state
         accountWrapper.css({
             display: 'block',
