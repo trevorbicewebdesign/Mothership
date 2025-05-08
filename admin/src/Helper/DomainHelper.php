@@ -28,8 +28,10 @@ class DomainHelper extends ContentHelper
 
     public static function getDnsProvider(array $name_servers)
     {
-        foreach($name_servers as $name_server) {
-            $dns_provider[] = preg_replace('/^(?:[^.]+\.)?([^\.]+)\.[^.]+$/', '$1', $name_server);
+        foreach ($name_servers as $name_server) {
+            if (preg_match('/(?:[a-z0-9-]+\.)?([a-z0-9-]+)\.[a-z]+$/i', $name_server, $matches)) {
+            $dns_provider[] = $matches[1];
+            }
         }
 
         $dns_provider = array_unique($dns_provider);
