@@ -109,8 +109,6 @@ class HtmlView extends BaseHtmlView
 
         // ✅ Use WebAssetManager to load the script
         $wa = $this->getDocument()->getWebAssetManager();
-
-        // C:\Users\trevo\LocalSites\joomlav4trevorbicecom\app\public\administrator/components/com_mothership/assets/js/invoice-edit.js
         $jsPath = JPATH_ROOT . '/administrator/components/com_mothership/assets/js/invoice-edit.js';
         $jsVersion = filemtime($jsPath);
         $wa->useScript('jquery');
