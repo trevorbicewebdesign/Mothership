@@ -387,7 +387,8 @@ class MothershipAdminPaymentsCest
         $I->see("Cancel", "#toolbar");
 
         $I->seeElement("select#jform_client_id");
-        $I->seeElement("select#jform_account_id");
+        $I->dontSeeElement("select#jform_account_id");
+        
         $I->seeElement("input#jform_amount");
         $I->seeElement("input#jform_fee_amount");
         $I->seeElement("#jform_fee_passed_on");
