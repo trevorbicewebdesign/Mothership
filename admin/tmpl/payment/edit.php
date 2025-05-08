@@ -26,7 +26,12 @@ $wa->useScript('table.columns')
 
 $user = $this->getCurrentUser();
 ?>
-
+<style>
+ .account-loading-spinner,
+ .project-loading-spinner {
+    display:none;
+ }
+</style>
 <form action="<?php echo Route::_('index.php?option=com_mothership&layout=edit&id=' . (int) $this->item->id); ?>"
       method="post"
       name="adminForm"
