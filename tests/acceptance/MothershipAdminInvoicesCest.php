@@ -65,7 +65,7 @@ class MothershipAdminInvoicesCest
         $this->invoiceData = $I->createMothershipInvoice([
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
-            'project_id' => NULL,
+            'project_id' => $this->projectData['id'],   
             'total' => '175.00',
             'number' => 1000,
             'due_date' => NULL,
@@ -183,6 +183,7 @@ class MothershipAdminInvoicesCest
         $invoiceData = $I->createMothershipInvoice([
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
+            'project_id' => NULL,
             'total' => '475.00',
             'number' => 1004,
             'created' => date('Y-m-d H:i:s'),
@@ -591,9 +592,10 @@ class MothershipAdminInvoicesCest
         $I->seeInField("#invoice-items-table input[name='jform[items][0][rate]']", "70.00");
         $I->seeInField("#invoice-items-table input[name='jform[items][0][subtotal]']", "140.00");
 
-        $I->seeInFIeld("input#jform_total", "140.00");
+        $I->seeInField("input#jform_total", "140.00");
 
-        $I->scrollTo("#add-invoice-item");
+        $I->executeJS("document.querySelector('#add-invoice-item').scrollIntoView({ behavior: 'instant', block: 'center' });");
+        $I->wait(1);
         $I->click("#add-invoice-item");
 
         $I->dontSee("#invoice-items-table input[name='jform[items][2][name]']");
