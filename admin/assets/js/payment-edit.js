@@ -84,7 +84,7 @@ jQuery(document).ready(function ($) {
         return clientSelect.val() === '';
     }
 
-    function revealAccountField(clientId) {}
+    function revealAccountField(clientId) {
         // Initial state
         accountWrapper.css({
             display: 'block',
