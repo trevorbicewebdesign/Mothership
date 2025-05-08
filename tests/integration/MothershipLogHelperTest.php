@@ -41,13 +41,13 @@ class MothershipLogHelperTest extends \Codeception\Test\Unit
         $this->domainData = $this->tester->createMothershipDomain([
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
-            'project_id' => $this->projectData['id'],
             'name' => 'google.com',
         ]);
 
         $this->invoiceData = $this->tester->createMothershipInvoice([
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
+            'project_id' => $this->projectData['id'],
             'total' => 175.00,
             'status' => '2',
         ]);
