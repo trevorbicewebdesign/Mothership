@@ -211,9 +211,6 @@ class LogHelper extends ContentHelper
         $account_id = $payment->account_id ?? null;
         $object_id = $payment->id ?? null;
 
-        $user = Factory::getApplication()->getIdentity();
-        $user_display_name = $user->name ?: $user->username;
-
         $meta = [
             'old_status' => PaymentHelper::getStatus($oldStatus),
             'new_status' => PaymentHelper::getStatus($newStatus),
@@ -226,7 +223,6 @@ class LogHelper extends ContentHelper
             'object_id' => $object_id,
             'action'=> 'payment_status_changed',
             'meta' => $meta,
-            'user_id' => $user->id,
             'created' => date('Y-m-d H:i:s'),
         ];
 
