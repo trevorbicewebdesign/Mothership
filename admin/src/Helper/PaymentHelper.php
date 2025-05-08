@@ -67,13 +67,6 @@ class PaymentHelper
 
     public static function onPaymentCompleted($payment)
     {
-        // Log the event or trigger plugins here
-        \Joomla\CMS\Log\Log::add(
-            sprintf('Invoice #%d status changed from %d to Opened.', $payment->id, $previousStatus),
-            \Joomla\CMS\Log\Log::INFO,
-            'com_mothership'
-        );
-
         \Joomla\CMS\Factory::getApplication()->triggerEvent('onMothershipPaymentCompleted', [$payment]);
 
         // SEnd the invoice template to the client
