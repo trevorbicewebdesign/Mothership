@@ -659,7 +659,7 @@ class MothershipAdminInvoicesCest
         $I->see("1001", "#j-main-container table.itemList tbody tr td:nth-child(3)");
         $I->see("Test Client", "#j-main-container table.itemList tbody tr td:nth-child(5)");
         $I->see("Test Account", "#j-main-container table.itemList tbody tr td:nth-child(6)");
-        $I->see(date("Y-m-d"), "#j-main-container table.itemList tbody tr td:nth-child(11)");
+        $I->see(date("Y-m-d"), "#j-main-container table.itemList tbody tr td:nth-child(12)");
 
         // Open the Invoice again and confirm the data is correct
         $I->amOnPage(sprintf(self::INVOICE_EDIT_URL, ($this->invoiceData['id'] + 1)));
