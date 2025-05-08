@@ -87,9 +87,12 @@ class HtmlView extends BaseHtmlView
         $this->helper = new MothershipHelper;
         $this->canDo = ContentHelper::getActions('com_mothership');
 
-        // ✅ Use WebAssetManager to load the script
         $wa = $this->getDocument()->getWebAssetManager();
-        $wa->registerAndUseScript('com_mothership.project-edit', 'media/com_mothership/js/project-edit.js', [], ['defer' => true]);
+        $jsPath = JPATH_ROOT . '/administrator/components/com_mothership/assets/js/project-edit.js';
+        $jsVersion = filemtime($jsPath);
+        $wa->useScript('jquery');
+        $wa->registerAndUseScript('com_mothership.invoice-edit', 'administrator/components/com_mothership/assets/js/project-edit.js', [], ['defer' => true, 'version' => $jsVersion]);
+
         $wa->registerAndUseStyle('com_mothership.project-edit', 'media/com_mothership/css/project-edit.css');
 
         // Check for errors.
