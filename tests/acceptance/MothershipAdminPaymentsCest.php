@@ -409,9 +409,12 @@ class MothershipAdminPaymentsCest
         $I->amGoingTo("Fill out the form");
 
         $I->selectOption("select#jform_client_id", $this->clientData['id']);
-        $I->waitForElementVisible("select#jform_account_id", 5);
+        $I->wait(1);
+        $I->seeOptionIsSelected("select#jform_client_id", "{$this->clientData['name']}");
         $I->selectOption("select#jform_account_id", $this->accountData['id']);
-        
+        $I->wait(1);
+        $I->seeOptionIsSelected("select#jform_account_id", "{$this->accountData['name']}");
+
         $I->fillFIeld("input#jform_amount", "103.20");
         $I->fillFIeld("input#jform_fee_amount", "3.20");
         $I->fillFIeld("input#jform_payment_method", "PayPal");
