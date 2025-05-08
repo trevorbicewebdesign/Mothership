@@ -167,7 +167,7 @@ class MothershipAdminProjectsCest
         $I->amGoingTo("Fill out the form");
 
         $I->selectOption("select#jform_client_id", $this->clientData['id']);
-        $I->waitForElementVisible("select#jform_account_id", 5); // Wait for the spinner
+        $I->waitForElementVisible("select#jform_account_id", 5);
         $I->selectOption("select#jform_account_id", $this->accountData['id']);
         $I->fillField("input#jform_name", "Example Website 2");
         $I->fillFIeld("input#jform_metadata_primary_url", "https://example.com");
