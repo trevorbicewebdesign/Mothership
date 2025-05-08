@@ -8,6 +8,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use TrevorBice\Component\Mothership\Administrator\Helper\MothershipHelper;
 use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper;
+use TrevorBice\Component\Mothership\Administrator\Helper\PaymentHelper;
 
 \defined('_JEXEC') or die;
 
@@ -77,6 +78,7 @@ class PaymentController extends FormController
         $redirect = MothershipHelper::getReturnRedirect($defaultRedirect);
 
         LogHelper::logStatusChange($payment, 'Completed');
+        PaymentHelper::onPaymentCompleted($payment);
 
         $this->setRedirect($redirect);
 

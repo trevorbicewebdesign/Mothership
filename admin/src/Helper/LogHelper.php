@@ -123,8 +123,21 @@ class LogHelper extends ContentHelper
         $accountId = $payment->account_id ?? null;
         $invoiceTotal = $payment->amount ?? 0.0;
         $paymentMethod = $payment->payment_method ?? '';
+        $user = Factory::getUser();
+        $userId = $user->id;
         
-        self::logPaymentLifecycle('completed', $invoiceId, $paymentId, $clientId, $accountId, $invoiceTotal, $paymentMethod);
+        self::log([
+            'client_id' => $clientId,
+            'account_id' => $accountId,
+            'object_type' => 'payment',
+            'object_id' => $paymentId,
+            'action' => 'payment_status_changed',
+            'meta' =>[
+                'old_status' => 'Pending',
+                'new_status' => 'Completed',
+            ],
+            'user_id' => $userId,
+        ]);
     }
 
     public static function logPaymentFailed($paymentId, ?string $reason = null): void
@@ -132,13 +145,13 @@ class LogHelper extends ContentHelper
         self::logPaymentLifecycle('failed', 0, $paymentId, null, null, 0.0, '', $reason);
     }
 
-    public static function logObjectViewed($object_type, $object_id, $client_id, $account_id): void
+    public static function logObjectViewed($object_type, $object_id, $client_id, $account_id): bool
     {
         $user = Factory::getUser();
         $userId = $user->id;
         $username = $user->name ?: $user->username;
 
-        self::log([
+        if(self::log([
             'client_id' => $client_id,
             'account_id' => $account_id,
             'object_type' => $object_type,
@@ -146,7 +159,10 @@ class LogHelper extends ContentHelper
             'action' => 'viewed',
             'meta' =>[],
             'user_id' => $userId,
-        ]);
+        ])) {
+            return true;
+        }
+        return false;
     }
 
     public static function logDomainViewed($client_id, $account_id, $domain_id): void
