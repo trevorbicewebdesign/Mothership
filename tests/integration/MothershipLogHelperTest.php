@@ -209,4 +209,19 @@ class MothershipLogHelperTest extends \Codeception\Test\Unit
             // 'user_id' => 1,
         ]);
     }
+
+    public function testLogInvoiceStatusOpened()
+    {
+        $result = LogHelper::logInvoiceStatusOpened($this->invoiceData['id'], $this->clientData['id'], $this->accountData['id']);
+        codecept_debug($result);
+
+        $this->tester->seeInDatabase('jos_mothership_logs', [
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'object_type' => 'invoice',
+            'object_id' => $this->invoiceData['id'],
+            'action' => 'status_opened',
+            // 'user_id' => 1,
+        ]);
+    }
 }
