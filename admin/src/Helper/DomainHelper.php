@@ -26,7 +26,7 @@ use Iodev\Whois\Factory as WhoisFactory;
 class DomainHelper extends ContentHelper
 {
 
-    public static function getDnsProvider(array $name_servers)
+    public static function getDnsProvider(array $name_servers):string
     {
         foreach ($name_servers as $name_server) {
             if (preg_match('/(?:[a-z0-9-]+\.)?([a-z0-9-]+)\.[a-z]+$/i', $name_server, $matches)) {
@@ -38,6 +38,29 @@ class DomainHelper extends ContentHelper
 
         return $dns_provider[0];
     }
+
+    public static function getDomainStatus($epp_status): array
+    {
+        $status = [];
+
+        if (is_array($epp_status)) {
+            foreach ($epp_status as $key => $value) {
+
+                $status[$key] = preg_replace('/\s*\(.*\)$/', '', $value);
+                $status[$key] = preg_replace('/\s*http.*/', '', $status[$key]);
+            }
+        } else if(is_string($epp_status)) {
+            $single_status = preg_replace('/\s*\(.*\)$/', '', $epp_status);
+            $single_status = preg_replace('/\s*http.*/', '', $single_status);
+            $status[] = $single_status;
+        }
+        else {
+            $status = [];
+        }
+
+        return $status;
+    }
+
     /**
      * Scans the WHOIS information of a given domain name and returns the details.
      *
@@ -104,14 +127,7 @@ class DomainHelper extends ContentHelper
                 $reseller = "";
             }
            
-            if( isset($extra['groups'][0]["Domain Status"]) ) {
-                $domain_status = $extra['groups'][0]["Domain Status"];
-                foreach ($domain_status as $key => $value) {
-                    $domain_status[$key] = preg_replace('/\s*\(.*\)$/', '', $value);
-                }
-            } else {
-                $domain_status = null;
-            }
+            $domain_status = self::getDomainStatus($extra['groups'][0]["Domain Status"]);
 
             $updated_date = $data['updatedDate'] ?: null;
 
