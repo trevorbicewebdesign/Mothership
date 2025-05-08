@@ -421,7 +421,7 @@ class MothershipAdminInvoicesCest
         // Confirm only the closed one remains
         $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 1);
         $I->see("{$closedInvoiceData['number']}", "#j-main-container table.itemList tbody tr td:nth-child(3)");
-        $I->see("Closed", "#j-main-container table.itemList tbody tr td:nth-child(8)");
+        $I->see("Closed", "#j-main-container table.itemList tbody tr td:nth-child(9)");
 
         // Database cleanup checks
         $I->dontSeeInDatabase('jos_mothership_invoices', ['id' => $draftInvoiceData['id']]);
