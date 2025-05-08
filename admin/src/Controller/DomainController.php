@@ -69,6 +69,8 @@ class DomainController extends FormController
         $domain->ns3 = $domainInfo['name_servers'][2] ?? null;
         $domain->ns4 = $domainInfo['name_servers'][3] ?? null;
 
+        $domain->dns_provider = $domainInfo['dns_provider'] ?? null;
+
         $domain->raw_text = $domainInfo['rawText'] ?? null;
 
         $domain->last_scan = date('Y-m-d H:i:s');

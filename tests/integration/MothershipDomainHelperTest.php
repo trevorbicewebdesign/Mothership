@@ -75,7 +75,7 @@ class MothershipDomainHelperTest extends \Codeception\Test\Unit
                 'google'
             ],
             'Cloudflare DNS' => [
-                ['ns1.cloudflare.com', 'ns2.cloudflare.com'],
+                ['erin.ns.cloudflare.com', 'mark.ns.cloudflare.com'],
                 'cloudflare'
             ],
             'Unknown DNS' => [
@@ -98,5 +98,32 @@ class MothershipDomainHelperTest extends \Codeception\Test\Unit
         
 
         $this->assertEquals($expected_provider, $dns_provider);
+    }
+
+    public function testGetDomainStatus()
+    {
+        $epp_status = [
+            'ok https://icann.org/epp#ok',
+            'clientUpdateProhibited (https://icann.org/epp#clientUpdateProhibited)',
+            'clientTransferProhibited (https://icann.org/epp#clientTransferProhibited)',
+            'clientDeleteProhibited (https://icann.org/epp#clientDeleteProhibited)',
+            'serverUpdateProhibited (https://icann.org/epp#serverUpdateProhibited)',
+            'serverTransferProhibited (https://icann.org/epp#serverTransferProhibited)',
+            'serverDeleteProhibited (https://icann.org/epp#serverDeleteProhibited)'
+        ];
+
+        $status = DomainHelper::getDomainStatus($epp_status);
+        codecept_debug($status);
+
+        $this->assertEquals([
+            'ok',
+            'clientUpdateProhibited', 
+            'clientTransferProhibited', 
+            'clientDeleteProhibited', 
+            'serverUpdateProhibited',
+            'serverTransferProhibited', 
+            'serverDeleteProhibited', 
+            
+        ],$status);
     }
 }
