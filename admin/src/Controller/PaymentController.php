@@ -85,8 +85,6 @@ class PaymentController extends FormController
         return true;
     }
 
-
-
     public function cancel($key = null)
     {
         $model = $this->getModel('Payment');
@@ -99,7 +97,6 @@ class PaymentController extends FormController
 
         return true;
     }
-
 
     public function delete()
     {
