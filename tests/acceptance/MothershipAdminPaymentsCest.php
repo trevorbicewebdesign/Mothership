@@ -388,7 +388,7 @@ class MothershipAdminPaymentsCest
 
         $I->seeElement("select#jform_client_id");
         $I->dontSeeElement("select#jform_account_id");
-        
+
         $I->seeElement("input#jform_amount");
         $I->seeElement("input#jform_fee_amount");
         $I->seeElement("#jform_fee_passed_on");
@@ -405,7 +405,6 @@ class MothershipAdminPaymentsCest
         $I->see("Please correct the marked fields and try again.");
         
         $I->see("One of the options must be selected", "label#jform_client_id-lbl .form-control-feedback");
-        $I->see("One of the options must be selected", "label#jform_account_id-lbl .form-control-feedback");
         
         $I->amGoingTo("Fill out the form");
 
