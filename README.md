@@ -497,6 +497,7 @@ The **Payments Helper** provides several methods to manage and update payment re
 - **getGenerator($html)**: Extracts and returns the generator meta tag from the provided HTML content, which typically indicates the CMS or framework used by the website.
 - **detectJoomla(array $headers, string $html): bool**: Analyzes the provided HTTP headers and HTML content to determine if the website is powered by Joomla. Returns `true` if Joomla is detected, otherwise `false`.
 - **detectWordpress(array $headers, string $html): bool**: Analyzes the provided HTTP headers and HTML content to determine if the website is powered by WordPress. Returns `true` if WordPress is detected, otherwise `false`.
+- **getProjectListOptions($account_id = NULL)**: Retrieves a list of project options associated with the specified account. If no account ID is provided, it fetches project options for all accounts. This function is useful for populating dropdowns or selection lists with project data.
 
 
 ## Logs Helper

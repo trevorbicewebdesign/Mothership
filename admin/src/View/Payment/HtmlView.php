@@ -103,9 +103,11 @@ class HtmlView extends BaseHtmlView
             }
         }
 
-        // ✅ Use WebAssetManager to load the script
         $wa = $this->getDocument()->getWebAssetManager();
-        $wa->registerAndUseScript('com_mothership.payment-edit', 'media/com_mothership/js/payment-edit.js', [], ['defer' => true]);
+        $jsPath = JPATH_ROOT . '/administrator/components/com_mothership/assets/js/payment-edit.js';
+        $jsVersion = filemtime($jsPath);
+        $wa->useScript('jquery');
+        $wa->registerAndUseScript('com_mothership.payment-edit', 'administrator/components/com_mothership/assets/js/payment-edit.js', [], ['defer' => true, 'version' => $jsVersion]);
         $wa->registerAndUseStyle('com_mothership.payment-edit', 'media/com_mothership/css/payment-edit.css');
 
         // Check for errors.

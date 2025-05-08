@@ -12,6 +12,7 @@ class MothershipAdminInvoicesCest
     private $userData;
     private $accountData;
     private $invoiceData;
+    private $projectData;
     private $invoiceItemData = [];
     private $mothershipConfig = [];
 
@@ -46,6 +47,12 @@ class MothershipAdminInvoicesCest
             'name' => 'Test Account',
         ]);
 
+        $this->projectData = $I->createMothershipProject([
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'name' => 'Test Project',
+        ]);
+
         $clientData2 = $I->createMothershipClient([
             'name' => 'Acme Inc.',
         ]);
@@ -58,6 +65,7 @@ class MothershipAdminInvoicesCest
         $this->invoiceData = $I->createMothershipInvoice([
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
+            'project_id' => $this->projectData['id'],   
             'total' => '175.00',
             'number' => 1000,
             'due_date' => NULL,
@@ -175,6 +183,7 @@ class MothershipAdminInvoicesCest
         $invoiceData = $I->createMothershipInvoice([
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
+            'project_id' => NULL,
             'total' => '475.00',
             'number' => 1004,
             'created' => date('Y-m-d H:i:s'),
@@ -501,6 +510,7 @@ class MothershipAdminInvoicesCest
 
         $I->seeElement("select#jform_client_id");
         $I->dontSeeElement("select#jform_account_id");
+        $I->dontSeeElement("select#jform_project_id");
         $I->seeElement("input#jform_number");
         $I->seeElement("input#jform_created");
         $I->seeElement("input#jform_due_date");
@@ -523,7 +533,15 @@ class MothershipAdminInvoicesCest
 
         $I->selectOption("select#jform_client_id", $this->clientData['id']);
         $I->wait(1);
+        $I->seeOptionIsSelected("select#jform_client_id", "{$this->clientData['name']}");
         $I->selectOption("select#jform_account_id", $this->accountData['id']);
+        $I->dontSeeElement("select#jform_project_id");
+        $I->wait(1);
+        $I->seeOptionIsSelected("select#jform_account_id", "{$this->accountData['name']}");
+        $I->wait(5);
+        $I->selectOption("select#jform_project_id", "{$this->projectData['id']}");
+        $I->wait(1);
+        $I->seeOptionIsSelected("select#jform_project_id", "{$this->projectData['name']}");
 
         $I->fillFIeld("input#jform_number", "1001");
         $I->seeInField("input#jform_rate", $this->clientData['default_rate']);
@@ -574,9 +592,10 @@ class MothershipAdminInvoicesCest
         $I->seeInField("#invoice-items-table input[name='jform[items][0][rate]']", "70.00");
         $I->seeInField("#invoice-items-table input[name='jform[items][0][subtotal]']", "140.00");
 
-        $I->seeInFIeld("input#jform_total", "140.00");
+        $I->seeInField("input#jform_total", "140.00");
 
-        $I->scrollTo("#add-invoice-item");
+        $I->executeJS("document.querySelector('#add-invoice-item').scrollIntoView({ behavior: 'instant', block: 'center' });");
+        $I->wait(1);
         $I->click("#add-invoice-item");
 
         $I->dontSee("#invoice-items-table input[name='jform[items][2][name]']");

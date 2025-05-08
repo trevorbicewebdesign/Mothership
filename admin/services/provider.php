@@ -16,6 +16,7 @@ use Joomla\Component\Mothership\Administrator\Rule\DomainRule;
 
 require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/ClientList.php';
 require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/AccountList.php';
+require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/ProjectList.php';
 require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/invoiceitems.php';
 require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/PaymentStatusField.php';
 require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/InvoiceStatusField.php';
