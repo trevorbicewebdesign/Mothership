@@ -9,6 +9,7 @@ use Joomla\CMS\Router\Route;
     <p>Your payment was successfully received.</p>
     <?php if (!empty($this->invoiceId)) : ?>
         <p>Invoice #<?php echo (int) $this->invoiceId; ?></p>
+        <p>Payment Method: <?php echo $this->payment_method; ?></p>
         <p>Payment Status: pending</p>
     <?php endif; ?>
 
