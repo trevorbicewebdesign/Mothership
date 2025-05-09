@@ -130,10 +130,10 @@ class MothershipFrontPayByZelleCest
         $I->see("Please send payment via Zelle to test.smith@mailinator.com.");
 
         $I->click("Payment Sent");
-        $I->waitForText("Thank you for your payment!", 10, "h1");
+        $I->waitForText("Thank You", 10, "h1");
         $I->makeScreenshot("account-center-pay-invoice-zelle-thank-you");
 
-        $I->click("Return to Payments", "a.btn-primary");
+        $I->click("Return to Payment", "a.btn-primary");
         $I->waitForText("Payments", 10, "h1");
 
         $I->seeInDatabase("jos_mothership_payments", [
