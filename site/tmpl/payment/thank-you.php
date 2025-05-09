@@ -13,8 +13,6 @@ use Joomla\CMS\Router\Route;
     <?php endif; ?>
 
     <div class="mt-4">
-        <a href="<?php echo Route::_('index.php?option=com_mothership&view=payments'); ?>" class="btn btn-primary">
-            Return to Payments
-        </a>
+        <a href="<?php echo Route::_('index.php?option=com_mothership&view=payments'); ?>" class="btn btn-primary">Return to Payments</a>
     </div>
 </div>
