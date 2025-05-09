@@ -57,29 +57,27 @@ class PaymentController extends BaseController
         $app = Factory::getApplication();
         $input = $app->getInput();
 
-        /*
+        
         $id = $input->getInt('id');
+        $invoice_id = $input->getInt('invoice_id');
 
         if (!$id) {
             $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVALID_PAYMENT_ID'), 'error');
             $this->setRedirect(Route::_('index.php?option=com_mothership&view=payments', false));
             return;
         }
-        */
 
-        // $model = $this->getModel('Payment');
-        // $payment = $model->getItem($id);
+        $model = $this->getModel('Payment');
+        $payment = $model->getItem($id);
 
-        /*
         if (!$payment) {
             $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_PAYMENT_NOT_FOUND'), 'error');
             $this->setRedirect(Route::_('index.php?option=com_mothership&view=payments', false));
             return;
         }
-            */
 
         // Redirect to the thank you page layout with the correct payment id and invoice id
-        $this->setRedirect(Route::_('index.php?option=com_mothership&view=payment&layout=thank-you&id=1&invoice_id=1', false));
+        $this->setRedirect(Route::_("index.php?option=com_mothership&view=payment&layout=thank-you&id={$payment->id}&invoice_id={$invoice_id}", false));
     }
 
     public function payment()
