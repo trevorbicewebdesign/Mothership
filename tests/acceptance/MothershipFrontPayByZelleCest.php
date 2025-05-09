@@ -111,6 +111,8 @@ class MothershipFrontPayByZelleCest
         $I->click("Pay", "table#invoicesTable tbody tr td:nth-child(8)");
         $I->waitForText("Pay Invoice", 10, "h1");
 
+        $I->makeScreenshot("account-center-pay-invoice-payment-type");
+
         $I->waitForText("Pay Invoice #{$this->invoiceData['number']}", 10, "h1");
         // output the current url into the debug
         codecept_debug($I->grabFromCurrentUrl());
@@ -123,7 +125,13 @@ class MothershipFrontPayByZelleCest
         $I->click("Pay Now");
         $I->waitForText("Zelle Payment Instructions", 10);
 
+        $I->makeScreenshot("account-center-pay-invoice-zelle-instructions");
+
         $I->see("Please send payment via Zelle to test.smith@mailinator.com.");
+
+        $I->click("Payment Sent");
+        $I->waitForText("Thank you for your payment!", 10, "h1");
+        $I->makeScreenshot("account-center-pay-invoice-zelle-thank-you");
 
         $I->seeInDatabase("jos_mothership_payments", [
             'client_id' => $this->clientData['id'],
