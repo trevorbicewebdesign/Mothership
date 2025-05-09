@@ -88,6 +88,7 @@ class MothershipFrontPayByZelleCest
      * @group frontend
      * @group payment
      * @group zelle
+     * @group payment-end-to-end
      */
     public function PayInvoiceWithZelle(AcceptanceTester $I)
     {
