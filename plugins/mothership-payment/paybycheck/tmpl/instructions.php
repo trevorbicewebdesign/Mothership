@@ -26,4 +26,5 @@ $invoiceId = $displayData['invoiceId'] ?? 0;
 <p>
   After sending the payment please visit <a href="<?php echo JRoute::_('index.php?option=com_mothership&view=payments'); ?>">Payments</a><br/>
   Your payment will have been set to `pending` until an administrator receives payment and can set the payment to `completed`.<br/>
-  <button type="button" onclick="alert('Payment Sent')">Payment Sent</button>
+  <a href="<?php echo JRoute::_("index.php?option=com_mothership&task=payment.thankyou&invoice_id={$invoiceId}"); ?>" class="btn btn-primary">Payment Sent</a>
+</p>
