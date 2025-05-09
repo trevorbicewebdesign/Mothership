@@ -133,6 +133,9 @@ class MothershipFrontPayByZelleCest
         $I->waitForText("Thank you for your payment!", 10, "h1");
         $I->makeScreenshot("account-center-pay-invoice-zelle-thank-you");
 
+        $I->click("Return to Payments", "a.btn-primary");
+        $I->waitForText("Payments", 10, "h1");
+
         $I->seeInDatabase("jos_mothership_payments", [
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'], 
