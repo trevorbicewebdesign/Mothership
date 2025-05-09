@@ -50,6 +50,9 @@ class PlgMothershipPaymentPaybycheck extends CMSPlugin
         $input = $app->getInput();
         $invoiceId = $input->getInt('invoice_id', 0);
         $amount = $input->getFloat('amount', 0.0);
+        $id = $input->getInt('id', 0);
+
+        $payment = PaymentHelper::getPayment($id);
 
         if ($invoiceId) {
             // Load the `Pay By Check` instructions layout
@@ -57,7 +60,12 @@ class PlgMothershipPaymentPaybycheck extends CMSPlugin
             $layout = new FileLayout('instructions', $layoutPath);
 
             // Render the layout, passing data in an array
-            echo $layout->render(['invoiceId' => $invoiceId, 'amount' => $amount]);
+            echo $layout->render([
+                'invoiceId' => $invoiceId,
+                'id' => $id,
+                'amount' => $payment->amount,
+                'payment_method' => $payment->payment_method,
+            ]);
         } else {
             // Handle error: invalid invoice ID or amount
             // Log::add('Invalid invoice ID or amount for `Pay By Check` payment.', 'error', 'jerror');
