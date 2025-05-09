@@ -103,12 +103,14 @@ class MothershipFrontPayByZelleCest
         ]);
         // Verify redirection to account center
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
+        $I->wait(1);
         $I->waitForText("Invoices", 10, "h1");
 
         $I->makeScreenshot("account-center-pay-invoice");
 
         $I->see("Pay", "table#invoicesTable tbody tr td:nth-child(8)");
         $I->click("Pay", "table#invoicesTable tbody tr td:nth-child(8)");
+        $I->wait(1);
         $I->waitForText("Pay Invoice", 10, "h1");
 
         $I->makeScreenshot("account-center-pay-invoice-payment-type");
@@ -123,6 +125,7 @@ class MothershipFrontPayByZelleCest
         $I->click("#payment_method_1");
 
         $I->click("Pay Now");
+        $I->wait(1);
         $I->waitForText("Zelle Payment Instructions", 10);
 
         $I->makeScreenshot("account-center-pay-invoice-zelle-instructions");
@@ -130,10 +133,12 @@ class MothershipFrontPayByZelleCest
         $I->see("Please send payment via Zelle to test.smith@mailinator.com.");
 
         $I->click("Payment Sent");
+        $I->wait(1);
         $I->waitForText("Thank You", 10, "h1");
         $I->makeScreenshot("account-center-pay-invoice-zelle-thank-you");
 
-        $I->click("Return to Payment", "a.btn-primary");
+        $I->click("Return to Payments");
+        $I->wait(1);
         $I->waitForText("Payments", 10, "h1");
 
         $I->seeInDatabase("jos_mothership_payments", [
