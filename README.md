@@ -18,6 +18,12 @@ One of the standout features in the initial release is the projects module. Ofte
 
 In short, Mothership is built to streamline your workflow and let you focus on what really matters—delivering great work and growing your business.
 
+# Back End
+
+## Creating an Invoice
+
+# Front End
+
 ## Paying an Invoice
 
 ### Steps:
