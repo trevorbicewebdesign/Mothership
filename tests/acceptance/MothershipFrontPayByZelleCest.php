@@ -131,7 +131,7 @@ class MothershipFrontPayByZelleCest
 
         $I->makeScreenshot("account-center-pay-invoice-zelle-instructions");
 
-        $I->see("Please send payment via Zelle to test.smith@mailinator.com.");
+        $I->see("Please send your Zelle payment to: test.smith@mailinator.com.");
 
         $I->click("I've Sent the Payment");
         $I->wait(1);
