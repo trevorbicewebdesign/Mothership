@@ -27,7 +27,9 @@ class HtmlView extends BaseHtmlView
             throw new \Exception('Payment not found', 404);
         }
 
-        LogHelper::logPaymentViewed($this->item->client_id, $this->item->account_id, $this->item->id);
+        if ($this->getLayout() === 'default') {
+            LogHelper::logPaymentViewed($this->item->client_id, $this->item->account_id, $this->item->id);
+        }
 
         parent::display($tpl);
     }

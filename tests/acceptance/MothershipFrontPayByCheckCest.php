@@ -88,6 +88,7 @@ class MothershipFrontPayByCheckCest
      * @group frontend
      * @group payment
      * @group paybycheck
+     * @group payment-end-to-end
      */
     public function PayInvoiceWithPayByCheck(AcceptanceTester $I)
     {
@@ -109,6 +110,7 @@ class MothershipFrontPayByCheckCest
 
         $I->see("Pay", "table#invoicesTable tbody tr td:nth-child(8)");
         $I->click("Pay", "table#invoicesTable tbody tr td:nth-child(8)");
+        $I->wait(1);
         $I->waitForText("Pay Invoice", 10, "h1");
 
         $I->waitForText("Pay Invoice #{$this->invoiceData['number']}", 10, "h1");
@@ -120,9 +122,14 @@ class MothershipFrontPayByCheckCest
 
         $I->click("#payment_method_0");
         $I->click("Pay Now");
-        $I->wait(2);
+        $I->wait(1);
         $I->see("Pay By Check Payment Instructions", "h1");
         $I->see("Please write a check to Your Company Name.");
+        $I->makeScreenshot("account-center-pay-invoice-paybycheck-instructions");
+        $I->click("Payment Sent");
+        $I->wait(1);
+        $I->waitForText("Thank You", 10, "h1");
+        $I->makeScreenshot("account-center-pay-invoice-paybycheck-thank-you");
 
         $I->seeInDatabase("jos_mothership_payments", [
             'client_id' => $this->clientData['id'],

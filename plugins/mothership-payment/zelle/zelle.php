@@ -58,10 +58,9 @@ class PlgMothershipPaymentZelle extends CMSPlugin
         // $amount = $input->getFloat('amount', 0.0); // Retrieve the amount from the input
         // echo 'index.php?option=com_mothership&view=payment&task=zelle.displayInstructions&invoice_id=' . $invoiceId . '&amount=' . $amount;
         // die();
-
         if ($invoiceId) {
             // Redirect to the Zelle instructions page with the invoice ID and amount
-            $paymentLink = Route::_("index.php?option=com_mothership&controller=payment&task=pluginTask&plugin=zelle&action=displayInstructions&invoice_id={$invoiceId}", false);
+            $paymentLink = Route::_("index.php?option=com_mothership&controller=payment&task=pluginTask&plugin=zelle&action=displayInstructions&id={$payment->id}&invoice_id={$invoiceId}", false);
             Factory::getApplication()->redirect($paymentLink);
         } else {
             // Handle error: invalid invoice ID or amount
@@ -77,6 +76,10 @@ class PlgMothershipPaymentZelle extends CMSPlugin
         $input = $app->getInput();
         $invoiceId = $input->getInt('invoice_id', 0);
         $amount = $input->getFloat('amount', 0.0);
+        $id = $input->getInt('id', 0);
+
+        // Get the payment id
+        $payment = PaymentHelper::getPayment($id);
 
         if ($invoiceId) {
             // Load the Zelle instructions layout
@@ -84,7 +87,12 @@ class PlgMothershipPaymentZelle extends CMSPlugin
             $layout = new FileLayout('instructions', $layoutPath);
 
             // Render the layout, passing data in an array
-            echo $layout->render(['invoiceId' => $invoiceId, 'amount' => $amount]);
+            echo $layout->render([
+                'invoiceId' => $invoiceId,
+                'id' => $id,
+                'amount' => $payment->amount,
+                'payment_method' => $payment->payment_method,
+            ]);
         } else {
             // Handle error: invalid invoice ID or amount
             // Log::add('Invalid invoice ID or amount for Zelle payment.', 'error', 'jerror');
