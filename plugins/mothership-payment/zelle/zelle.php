@@ -58,10 +58,9 @@ class PlgMothershipPaymentZelle extends CMSPlugin
         // $amount = $input->getFloat('amount', 0.0); // Retrieve the amount from the input
         // echo 'index.php?option=com_mothership&view=payment&task=zelle.displayInstructions&invoice_id=' . $invoiceId . '&amount=' . $amount;
         // die();
-
         if ($invoiceId) {
             // Redirect to the Zelle instructions page with the invoice ID and amount
-            $paymentLink = Route::_("index.php?option=com_mothership&controller=payment&task=pluginTask&plugin=zelle&action=displayInstructions&invoice_id={$invoiceId}", false);
+            $paymentLink = Route::_("index.php?option=com_mothership&controller=payment&task=pluginTask&plugin=zelle&action=displayInstructions&id={$payment->id}&invoice_id={$invoiceId}", false);
             Factory::getApplication()->redirect($paymentLink);
         } else {
             // Handle error: invalid invoice ID or amount
@@ -76,8 +75,8 @@ class PlgMothershipPaymentZelle extends CMSPlugin
         $app = Factory::getApplication();
         $input = $app->getInput();
         $invoiceId = $input->getInt('invoice_id', 0);
-        $id = $input->getInt('id', 0);
-        $payment = PaymentHelper::getPayment($id);
+
+        // Get the payment id
 
         if ($invoiceId) {
             // Load the Zelle instructions layout
