@@ -18,6 +18,28 @@ One of the standout features in the initial release is the projects module. Ofte
 
 In short, Mothership is built to streamline your workflow and let you focus on what really matters—delivering great work and growing your business.
 
+## Paying an Invoice
+
+### Steps:
+1) Visit the `View All Invoices Page`
+2) Click `Pay` next to the invoice you wish to settle
+3) User is taken to the Select Payment Page, user must select a payment type
+4) Payment is initiated
+5) User is taken to the `Instructions` page where payment instructions are displayed
+6) User Writes payment check
+7) User clicks `Payment Sent` button
+8) User is taken to the `Thank You` page where details about the pending transaction are listed
+9) Administrator sets payment status to `Confirmed`
+10) User receives an email letting them know the process completed
+
+<div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between;">
+  <img src="https://github.com/user-attachments/assets/4db8f294-fdc8-4df2-a42b-42ed9c830b47" width="24%" />
+  <img src="https://github.com/user-attachments/assets/583c6a5f-7963-4570-ac15-fbc8c5d3ef69" width="24%" />
+  <img src="https://github.com/user-attachments/assets/ed3e23d2-59ab-4978-b2c0-6e16759d1b11" width="24%" />
+  <img src="https://github.com/user-attachments/assets/4c8e4d55-df36-48b9-a05b-34f60f206d18" width="24%" />
+</div>
+
+
 ---
 
 ## Clients
