@@ -75,8 +75,11 @@ class PlgMothershipPaymentZelle extends CMSPlugin
         $app = Factory::getApplication();
         $input = $app->getInput();
         $invoiceId = $input->getInt('invoice_id', 0);
+        $amount = $input->getFloat('amount', 0.0);
+        $id = $input->getInt('id', 0);
 
         // Get the payment id
+        $payment = PaymentHelper::getPayment($id);
 
         if ($invoiceId) {
             // Load the Zelle instructions layout
