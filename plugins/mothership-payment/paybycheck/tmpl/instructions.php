@@ -16,7 +16,7 @@ $invoiceId = (int) ($displayData['invoiceId'] ?? 0);
 $paymentId = (int) ($displayData['id'] ?? 0);
 ?>
 
-<h1>Pay by Check</h1>
+<h1>Pay By Check Payment Instructions</h1>
 
 <p><strong>Invoice #<?= $invoiceId ?></strong></p>
 
