@@ -21,8 +21,7 @@ $paymentId = (int) ($displayData['id'] ?? 0);
 <p><strong>Invoice #<?= $invoiceId ?></strong></p>
 
 <p>
-  Please send your Zelle payment to:
-  <br><strong><?= htmlspecialchars($pluginParams['zelle_email']); ?></strong>
+  Please send your Zelle payment to: <strong><?= htmlspecialchars($pluginParams['zelle_email']); ?></strong>
 </p>
 
 <p>
