@@ -33,9 +33,9 @@ In short, Mothership is built to streamline your workflow and let you focus on w
 10) User receives an email letting them know the process completed
 
 <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between;">
-  <img src="https://github.com/user-attachments/assets/53685d26-93b3-4e41-83c2-3ece6cdaff40" width="24%" />
   <img src="https://github.com/user-attachments/assets/25a09847-0867-4a2e-a665-db72e5038fe4" width="24%" />
   <img src="https://github.com/user-attachments/assets/3e46c7d4-94cf-46ec-9864-1e21616f7504" width="24%" />
+  <img src="https://github.com/user-attachments/assets/53685d26-93b3-4e41-83c2-3ece6cdaff40" width="24%" />
   <img src="https://github.com/user-attachments/assets/74392d8c-1216-40fa-ac77-fd250ae30daf" width="24%" />
 </div>
 
