@@ -126,7 +126,7 @@ class MothershipFrontPayByCheckCest
         $I->see("Pay By Check Payment Instructions", "h1");
         $I->see("Please write a check to Your Company Name.");
         $I->makeScreenshot("account-center-pay-invoice-paybycheck-instructions");
-        $I->click("Payment Sent");
+        $I->click("I've Sent the Payment");
         $I->wait(1);
         $I->waitForText("Thank You", 10, "h1");
         $I->makeScreenshot("account-center-pay-invoice-paybycheck-thank-you");
