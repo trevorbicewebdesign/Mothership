@@ -3,7 +3,6 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Router\Route;
 ?>
-
 <div class="container mt-5">
     <h1 class="text-success">Thank You</h1>
     <p>Your payment was successfully received.</p>
