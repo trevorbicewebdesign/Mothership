@@ -29,4 +29,16 @@ class PlgMothershipPaymentZelle extends CMSPlugin
         }
     }
 
+    public function getFee($amount)
+    {
+        // Zelle does not charge any fees, so the fee is always 0.
+        return number_format(0, 2, '.', '');
+    }
+
+    public function displayFee($amount)
+    {
+        $calculatedFee = $this->getFee($amount);
+        return "No Fee";
+    }
+
 }
