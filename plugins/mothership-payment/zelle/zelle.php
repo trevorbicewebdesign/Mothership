@@ -27,12 +27,11 @@ class PlgMothershipPaymentZelle extends CMSPlugin
         $input = $app->getInput();
         $invoiceId = $input->getInt('id', 0);
         if ($invoiceId) {
-            // Redirect to the Zelle instructions page with the invoice ID and amount
             $paymentLink = Route::_("index.php?option=com_mothership&controller=payment&task=payment.thankyou&id={$payment->id}&invoice_id={$invoiceId}", false);
             Factory::getApplication()->redirect($paymentLink);
         } else {
             return false;
         }
     }
-    
+
 }
