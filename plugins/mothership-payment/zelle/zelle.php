@@ -12,7 +12,7 @@ use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Router\Route;
 
-class PlgMothershipPaymentZelle extends CMSPlugin
+class PlgMothershipPaymentZelle extends CMSPlugin implements PaymentInterface
 {
     protected $autoloadLanguage = true;
 
