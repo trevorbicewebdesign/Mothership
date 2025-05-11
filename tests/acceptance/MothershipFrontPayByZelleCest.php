@@ -121,8 +121,8 @@ class MothershipFrontPayByZelleCest
         codecept_debug($I->grabFromCurrentUrl());
         $I->see("Pay Now");
         $I->see("Total Due: \${$this->invoiceData['total']}");
-        $I->click("#payment_method_0");
-        $I->makeScreenshot("account-center-pay-invoice-paybycheck-instructions");
+        $I->click("#payment_method_1");
+        $I->makeScreenshot("account-center-pay-invoice-zelle-instructions");
         $I->click("Pay Now");
         $I->wait(1);
         $I->waitForText("Thank You", 10, "h1");
