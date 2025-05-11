@@ -32,13 +32,3 @@ $paymentId = (int) ($displayData['id'] ?? 0);
   After completing the payment, click the button below to let us know.
   Your payment will be marked as <code>Pending</code> until it is manually verified by an administrator.
 </p>
-
-<p>
-  <a href="<?= JRoute::_('index.php?option=com_mothership&view=payments'); ?>">View All Payments</a>
-</p>
-
-<p>
-  <a href="<?= JRoute::_("index.php?option=com_mothership&task=payment.thankyou&id={$paymentId}&invoice_id={$invoiceId}"); ?>" class="btn btn-primary">
-    I've Sent the Payment
-  </a>
-</p>
