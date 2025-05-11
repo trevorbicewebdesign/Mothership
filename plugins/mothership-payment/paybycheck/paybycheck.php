@@ -29,8 +29,8 @@ class PlgMothershipPaymentPaybycheck extends CMSPlugin
         $invoiceId = $input->getInt('id', 0);
 
         if ($invoiceId) {
-            // Redirect to the `Pay By Check` instructions page with the invoice ID and amount
-            $paymentLink = Route::_("index.php?option=com_mothership&controller=payment&task=pluginTask&plugin=paybycheck&action=displayInstructions&id={$payment->id}&invoice_id={$invoiceId}", false);
+            // Redirect to the `Thank You` page with the invoice ID and amount
+            $paymentLink = Route::_("index.php?option=com_mothership&controller=payment&task=payment.thankyou&id={$payment->id}&invoice_id={$invoiceId}", false);
             Factory::getApplication()->redirect($paymentLink);
         } else {
             // Handle error: invalid invoice ID or amount
