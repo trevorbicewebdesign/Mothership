@@ -106,12 +106,29 @@ class InvoiceController extends BaseController
                 $display_fee = "No Fee";
             }
 
+            $layoutPath = JPATH_PLUGINS . '/mothership-payment/' . $plugin->name . '/tmpl';
+            if (!file_exists($layoutPath . '/instructions.php')) {
+                throw new \RuntimeException("Layout file 'instructions.php' not found in path: $layoutPath");
+            }
+
+            $layout = new FileLayout('instructions', $layoutPath);
+
+            // Render the layout, passing data in an array
+            $instructionsHtml = $layout->render([
+                'invoiceId' => $id,
+                'id' => null,
+                'amount' => null,
+                'payment_method' => null,
+            ]);
+
             $paymentOptions[] = [
                 'element' => $plugin->name,
                 'name' => $pluginName,
                 'fee_amount' => $fee_amount,
                 'display_fee' => $display_fee,
+                'instructions_html' => $instructionsHtml,
             ];
+            
 
         }
 
