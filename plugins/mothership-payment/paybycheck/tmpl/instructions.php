@@ -33,12 +33,3 @@ $paymentId = (int) ($displayData['id'] ?? 0);
   Your payment status will be marked as <code>Pending</code> until an administrator confirms receipt.
 </p>
 
-<p>
-  <a href="<?= JRoute::_('index.php?option=com_mothership&view=payments'); ?>">View All Payments</a>
-</p>
-
-<p>
-  <a href="<?= JRoute::_("index.php?option=com_mothership&task=payment.thankyou&id={$paymentId}&invoice_id={$invoiceId}"); ?>" class="btn btn-primary">
-    I've Sent the Payment
-  </a>
-</p>
