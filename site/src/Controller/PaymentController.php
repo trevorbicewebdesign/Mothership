@@ -25,38 +25,10 @@ class PaymentController extends BaseController
         parent::display($cachable, $urlparams);
     }
     
-    public function pluginTask()
-    {
-        $app = Factory::getApplication();
-        $input = $app->getInput();
-    
-        $pluginName = $input->getCmd('plugin');
-        $action     = $input->getCmd('action');
-    
-        if (!$pluginName || !$action) {
-            throw new \RuntimeException('Missing plugin or action.');
-        }
-    
-        try {
-            $plugin = $this->getPluginInstance($pluginName);
-    
-            if (!method_exists($plugin, $action)) {
-                throw new \RuntimeException("Plugin method '$action' not found in '$pluginName'");
-            }
-    
-            return $plugin->$action();
-        } catch (\Exception $e) {
-            $app->enqueueMessage("Plugin error: " . $e->getMessage(), 'error');
-            $this->setRedirect(Route::_('index.php?option=com_mothership&view=payments', false));
-            return;
-        }
-    }
-
     public function thankyou()
     {
         $app = Factory::getApplication();
         $input = $app->getInput();
-
         
         $id = $input->getInt('id');
         $invoice_id = $input->getInt('invoice_id');
@@ -78,33 +50,5 @@ class PaymentController extends BaseController
 
         // Redirect to the thank you page layout with the correct payment id and invoice id
         $this->setRedirect(Route::_("index.php?option=com_mothership&view=payment&layout=thank-you&id={$payment->id}&invoice_id={$invoice_id}", false));
-    }
-
-    protected function getPluginInstance(string $pluginName)
-    {
-        // Normalize plugin name casing
-        $normalized = strtolower($pluginName);
-
-        // Load the plugin group
-        PluginHelper::importPlugin('mothership-payment');
-
-        $plugins = PluginHelper::getPlugin('mothership-payment');
-
-        foreach ($plugins as $plugin) {
-            if ($plugin->name === $normalized) {
-                // Build expected class name, e.g., PlgMothershippaymentPaypal
-                $className = 'PlgMothershipPayment' . ucfirst($plugin->name);
-       
-                if (!class_exists($className)) {
-                    throw new \RuntimeException("Plugin class '$className' not found.");
-                }
-
-                // Instantiate and return
-                $dispatcher = Factory::getApplication()->getDispatcher();
-                return new $className($dispatcher, (array) $plugin);
-            }
-        }
-
-        throw new \RuntimeException("Payment plugin '$pluginName' not found or not enabled. 1 ".json_encode($plugins));
     }
 }
