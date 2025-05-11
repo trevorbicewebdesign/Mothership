@@ -120,20 +120,10 @@ class MothershipFrontPayByZelleCest
         // output the current url into the debug
         codecept_debug($I->grabFromCurrentUrl());
         $I->see("Pay Now");
-
         $I->see("Total Due: \${$this->invoiceData['total']}");
-
-        $I->click("#payment_method_1");
-
+        $I->click("#payment_method_0");
+        $I->makeScreenshot("account-center-pay-invoice-paybycheck-instructions");
         $I->click("Pay Now");
-        $I->wait(1);
-        $I->waitForText("Zelle Payment Instructions", 10);
-
-        $I->makeScreenshot("account-center-pay-invoice-zelle-instructions");
-
-        $I->see("Please send your Zelle payment to: test.smith@mailinator.com");
-
-        $I->click("I've Sent the Payment");
         $I->wait(1);
         $I->waitForText("Thank You", 10, "h1");
         $I->makeScreenshot("account-center-pay-invoice-zelle-thank-you");
