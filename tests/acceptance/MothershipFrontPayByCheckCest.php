@@ -117,19 +117,17 @@ class MothershipFrontPayByCheckCest
         // output the current url into the debug
         codecept_debug($I->grabFromCurrentUrl());
         $I->see("Pay Now");
-
         $I->see("Total Due: \${$this->invoiceData['total']}");
-
         $I->click("#payment_method_0");
-        $I->click("Pay Now");
-        $I->wait(1);
-        $I->see("Pay By Check Payment Instructions", "h1");
-        $I->see("Please make your check payable to: Your Company Name");
         $I->makeScreenshot("account-center-pay-invoice-paybycheck-instructions");
-        $I->click("I've Sent the Payment");
+        $I->click("Pay Now");
         $I->wait(1);
         $I->waitForText("Thank You", 10, "h1");
         $I->makeScreenshot("account-center-pay-invoice-paybycheck-thank-you");
+
+        $I->click("Return to Payments");
+        $I->wait(1);
+        $I->waitForText("Payments", 10, "h1");
 
         $I->seeInDatabase("jos_mothership_payments", [
             'client_id' => $this->clientData['id'],
