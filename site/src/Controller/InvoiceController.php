@@ -14,6 +14,7 @@ use Mpdf\Mpdf;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\Event;
 
+
 // Load all enabled payment plugins
 PluginHelper::importPlugin('mothership-payment');
 
