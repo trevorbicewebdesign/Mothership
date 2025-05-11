@@ -16,7 +16,7 @@ class PlgMothershipPaymentZelle extends CMSPlugin
 {
     protected $autoloadLanguage = true;
 
-    public function initiate($payment, $invoice)
+    public function initiate($payment, $invoice):bool
     {
         $app = Factory::getApplication();
         $input = $app->getInput();
@@ -24,18 +24,19 @@ class PlgMothershipPaymentZelle extends CMSPlugin
         if ($invoiceId) {
             $paymentLink = Route::_("index.php?option=com_mothership&controller=payment&task=payment.thankyou&id={$payment->id}&invoice_id={$invoiceId}", false);
             Factory::getApplication()->redirect($paymentLink);
+            return true;
         } else {
             return false;
         }
     }
 
-    public function getFee($amount)
+    public function getFee($amount): float
     {
         // Zelle does not charge any fees, so the fee is always 0.
         return number_format(0, 2, '.', '');
     }
 
-    public function displayFee($amount)
+    public function displayFee($amount):string
     {
         $calculatedFee = $this->getFee($amount);
         return "No Fee";
