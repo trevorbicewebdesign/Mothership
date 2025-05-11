@@ -38,38 +38,28 @@ class PlgMothershipPaymentPaybycheck extends CMSPlugin
             return false;
         }
     }
-
     
-    public function displayInstructions()
+    public function displayInstructions($invoiceId)
     {
         // Load the Joomla application and input objects
-        $app = Factory::getApplication();
-        $input = $app->getInput();
-        $invoiceId = $input->getInt('invoice_id', 0);
-        $amount = $input->getFloat('amount', 0.0);
-        $id = $input->getInt('id', 0);
-
-        $payment = PaymentHelper::getPayment($id);
-
         if ($invoiceId) {
-            // Load the `Pay By Check` instructions layout
+            // Load the Zelle instructions layout
             $layoutPath = __DIR__ . '/tmpl'; // plugin folder/tmpl
             $layout = new FileLayout('instructions', $layoutPath);
 
             // Render the layout, passing data in an array
             echo $layout->render([
                 'invoiceId' => $invoiceId,
-                'id' => $id,
-                'amount' => $payment->amount,
-                'payment_method' => $payment->payment_method,
+                'id' => NULL,
+                'amount' => NULL,
+                'payment_method' => NULL,
             ]);
         } else {
             // Handle error: invalid invoice ID or amount
-            // Log::add('Invalid invoice ID or amount for `Pay By Check` payment.', 'error', 'jerror');
+            // Log::add('Invalid invoice ID or amount for Zelle payment.', 'error', 'jerror');
             return false;
         }
     }
-
 
 
     /**
