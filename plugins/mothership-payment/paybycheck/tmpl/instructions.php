@@ -21,8 +21,7 @@ $paymentId = (int) ($displayData['id'] ?? 0);
 <p><strong>Invoice #<?= $invoiceId ?></strong></p>
 
 <p>
-  Please make your check payable to:  
-  <br><strong><?= htmlspecialchars($pluginParams['checkpayee']); ?></strong>
+  Please make your check payable to: <strong><?= htmlspecialchars($pluginParams['checkpayee']); ?></strong>
 </p>
 
 <p>
