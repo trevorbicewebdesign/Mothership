@@ -410,6 +410,32 @@ CREATE TABLE IF NOT EXISTS `#__mothership_logs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ```
 
+## Payment Flow
+
+1. **`InvoiceController->payment()`**  
+   The payment process begins when the `invoice.payment` task is called.
+
+2. **Payment Layout (`payment.php`)**  
+   The `payment.php` layout is rendered by the invoice controller (located alongside the default layout).  
+   - Information about installed and enabled payment plugins is collected.  
+   - The user selects a payment method.  
+   - Any applicable fees and pre-payment instructions are shown to the user at this stage.
+
+3. **`InvoiceController->processPayment()`**  
+   After selecting a payment method, the user clicks the **Pay Now** button.  
+   - A new record is created in both the `#__mothership_payments` and `#__mothership_payment_invoice` tables.  
+   - The selected plugin’s `initiate()` method is called, which begins processing the payment.  
+   - Since payment methods may behave differently, the plugin is responsible for controlling the next steps.
+
+4. **`PaymentPluginClass->initiate($payment, $invoice)`**  
+   The plugin’s `initiate()` method receives both the `Payment` and `Invoice` objects.  
+   - This allows it to carry out any required processing logic.  
+   - For example, the **Pay by Check** plugin immediately redirects the user to the final **Thank You** page without further steps.
+
+5. **Payment Completion (Thank You Page)**  
+   The user is redirected to a **Thank You** page to confirm that the payment process has completed.
+
+
 ---
 
 ## Payment Supported Events

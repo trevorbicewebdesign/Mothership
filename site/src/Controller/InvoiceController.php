@@ -14,6 +14,7 @@ use Mpdf\Mpdf;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\Event;
 
+
 // Load all enabled payment plugins
 PluginHelper::importPlugin('mothership-payment');
 
@@ -96,22 +97,40 @@ class InvoiceController extends BaseController
 
         foreach ($plugins as $plugin) {
             $params = new \Joomla\Registry\Registry($plugin->params);
-            $pluginName = $params->get('display_name') ?: ucfirst(str_replace('mothership-', '', $plugin->element));
+            $pluginName = $params->get('display_name');
 
-            if($plugin->name == 'paypal') {
-                $fee_amount = number_format($invoice->total * 0.039 + 0.30, 2);
-                $display_fee = " 3.9% + $0.30";
-            } else {
-                $fee_amount = number_format(0, 2);
-                $display_fee = "No Fee";
+            $layoutPath = JPATH_PLUGINS . '/mothership-payment/' . $plugin->name . '/tmpl';
+            if (!file_exists($layoutPath . '/instructions.php')) {
+                throw new \RuntimeException("Layout file 'instructions.php' not found in path: $layoutPath");
             }
+
+            $pluginInstance = $this->getPluginInstance($plugin->name);
+
+            if (!method_exists($pluginInstance, 'initiate')) {
+                throw new \RuntimeException("Plugin '{$plugin->name}' cannot be initiated.");
+            }
+
+            $fee_amount = $pluginInstance->getFee($invoice->total);
+            $display_fee = $pluginInstance->displayFee($invoice->total);
+
+            $layout = new FileLayout('instructions', $layoutPath);
+
+            // Render the layout, passing data in an array
+            $instructionsHtml = $layout->render([
+                'invoiceId' => $id,
+                'id' => null,
+                'amount' => null,
+                'payment_method' => null,
+            ]);
 
             $paymentOptions[] = [
                 'element' => $plugin->name,
                 'name' => $pluginName,
                 'fee_amount' => $fee_amount,
                 'display_fee' => $display_fee,
+                'instructions_html' => $instructionsHtml,
             ];
+            
 
         }
 
@@ -149,7 +168,7 @@ class InvoiceController extends BaseController
             }
         }
 
-        throw new \RuntimeException("Payment plugin '$pluginName' not found or not enabled. 1 ".json_encode($plugins));
+        throw new \RuntimeException("Payment plugin '$pluginName' not found or not enabled. ".json_encode($plugins));
     }
 
     public function processPayment()
@@ -164,7 +183,7 @@ class InvoiceController extends BaseController
 
         if (!$invoiceId || !$paymentMethod) {
             $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVALID_PAYMENT_REQUEST'), 'error');
-            $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoice&id=' . $invoiceId, false));
+            $this->setRedirect("index.php?option=com_mothership&view=invoice&id={$invoiceId}");
             return;
         }
 
@@ -186,7 +205,7 @@ class InvoiceController extends BaseController
         $payment->created = Factory::getDate()->toSql();
 
         if (!$payment->store()) {
-            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_PAYMENT_SAVE_FAILED'), 'error');
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_PAYMENT_SAVE_FAILED') . ' ' . $payment->getError(), 'error');
             $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoice&id=' . $invoiceId, false));
             return;
         }
