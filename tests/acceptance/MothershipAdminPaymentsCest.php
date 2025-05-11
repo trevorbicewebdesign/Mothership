@@ -475,6 +475,7 @@ class MothershipAdminPaymentsCest
         // Set the invoice to the locked state
         $I->setPaymentLocked($paymentData['id']);
         $I->amOnPage(sprintf(self::PAYMENT_EDIT_URL, $paymentData['id']));
+        $I->wait(1);
         $I->waitForText("Mothership: View Payment", 20, "h1.page-title");
 
         $I->seeElement("#jform_client_id");
@@ -483,6 +484,7 @@ class MothershipAdminPaymentsCest
         $I->assertEquals("true", $I->grabAttributeFrom("#jform_account_id", "disabled"));
 
         $I->click("Unlock", "#toolbar");
+        $I->wait(1);
         $I->waitForText("Mothership: Edit Payment", 20, "h1.page-title");
         $I->waitForText("Payment unlocked successfully.", 20, "#system-message-container .alert-message");
 
@@ -492,6 +494,7 @@ class MothershipAdminPaymentsCest
         $I->assertEquals(NULL, $I->grabAttributeFrom("#jform_account_id", "disabled"));
 
         $I->click("Lock", "#toolbar");
+        $I->wait(1);
         $I->waitForText("Mothership: View Payment", 20, "h1.page-title");
         $I->waitForText("Payment locked successfully.", 20, "#system-message-container .alert-message");
     }
