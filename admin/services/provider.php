@@ -12,6 +12,7 @@ use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 
+// Load the custom field types
 require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/ClientList.php';
 require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/AccountList.php';
 require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/ProjectList.php';
@@ -19,6 +20,9 @@ require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/in
 require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/PaymentStatusField.php';
 require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/InvoiceStatusField.php';
 
+// Load the plugin payment interface
+require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Plugin/Payment/PaymentInterface.php';
+// Auto load the composer packages
 require_once JPATH_ROOT . '/administrator/components/com_mothership/vendor/autoload.php';
 
 /**
