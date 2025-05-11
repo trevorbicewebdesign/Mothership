@@ -12,7 +12,7 @@ use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Router\Route;
 
-class PlgMothershipPaymentPaybycheck extends CMSPlugin implements PaymentInterface
+class PlgMothershipPaymentPaybycheck extends CMSPlugin
 {
     protected $autoloadLanguage = true;
     
