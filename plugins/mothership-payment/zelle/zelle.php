@@ -10,12 +10,7 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Factory;
-use Joomla\CMS\Log\Log;
 use Joomla\CMS\Router\Route;
-use Joomla\CMS\Layout\FileLayout;
-use Joomla\Database\DatabaseDriver;
-use TrevorBice\Component\Mothership\Administrator\Helper\PaymentHelper;
-use TrevorBice\Component\Mothership\Administrator\Helper\InvoiceHelper;
 
 class PlgMothershipPaymentZelle extends CMSPlugin
 {
