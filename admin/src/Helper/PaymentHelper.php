@@ -70,7 +70,10 @@ class PaymentHelper
         \Joomla\CMS\Factory::getApplication()->triggerEvent('onMothershipPaymentCompleted', [$payment]);
 
         // SEnd the invoice template to the client
-        EmailService::sendTemplate('payment.confirmed', 'test.smith@mailinator.com', 'Payment Completed', [
+        EmailService::sendTemplate('payment.user-confirmed', 
+        'test.smith@mailinator.com', 
+        'Payment Completed', 
+        [
             'fname' => 'Trevor',
             'invoice_number' => 'INV-2045',
             'account_name' => 'Trevor Bice Webdesign',
@@ -388,20 +391,15 @@ class PaymentHelper
         ]);
 
         // Log the event
-        LogHelper::logPaymentCompleted(
-            $invoice->id,
-            $payment_id,
-            $invoice->client_id,
-            $invoice->account_id,
-            $invoice->total,
-            $payment->method
-        );
+        LogHelper::logPaymentCompleted( $invoice->id );
 
         // Send email
-        EmailService::sendTemplate('payment.completed', $invoice->email, 'Payment Completed', [
+        EmailService::sendTemplate('payment.user-completed', 
+        $invoice->email, 
+        'Payment Completed', 
+        [
             'payment' => $payment,
             'invoice' => $invoice,
-            'company' => $company,
         ]);
     }
 
