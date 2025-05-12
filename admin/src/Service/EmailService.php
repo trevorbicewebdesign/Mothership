@@ -62,6 +62,7 @@ class EmailService
     private static function renderLayout(string $layoutName, array $data): string
     {
         $layout = new FileLayout($layoutName, \JPATH_ROOT . '/administrator/components/com_mothership/layouts');
+
         return $layout->render($data);
     }
 
