@@ -178,7 +178,7 @@ class MothershipFrontPayByZelleCest
         $I->assertEquals($meta->payment_method, "zelle");
         $I->assertEquals($meta->amount, $this->invoiceData['total']);
 
-        $I->getEmailBySubject("New Pending Payment for Pay By Check");
+        $I->getEmailBySubject("New Pending Payment for Zelle");
     }
 
 }
