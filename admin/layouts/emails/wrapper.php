@@ -1,7 +1,16 @@
 <?php
 defined('_JEXEC') or die;
 
-$content = $displayData['content'] ?? ''; // Raw HTML content
+$content = $displayData['content'] ?? '';
+$company_name = $displayData['data']['company_name'] ?? '';
+$company_address_1 = $displayData['data']['company_address_1'] ?? '';
+$company_address_2 = $displayData['data']['company_address_2'] ?? '';
+$company_city = $displayData['data']['company_city'] ?? '';
+$company_state = $displayData['data']['company_state'] ?? '';
+$company_zip = $displayData['data']['company_zip'] ?? '';
+$company_phone = $displayData['data']['company_phone'] ?? '';
+$company_email = $displayData['data']['company_email'] ?? '';
+$company_name = $displayData['data']['company_name'] ?? '';
 ?>
 <!--
 .ReadMsgBody {
@@ -53,8 +62,8 @@ body[yahoo] .center { text-align: center!important; }
                                     cellpadding="0" align="left">
                                     <tbody>
                                         <tr>
-                                            <td class="center" style="padding: 10px 20px;" width="50%"><a href="http://webdesign.trevorbice.com"><img src="http://webdesign.trevorbice.com/templates/source3/images/logo_white2lg.png" alt="" class="deviceWidth" style="width: 100%; height: auto;" border="0" /></a></td>
-                                            <td class="center" style="padding: 10px 20px; color: #ffffff;" align="right" width="50"></td>
+                                            <td class="center" style="padding: 10px 20px; color: #ffffff;font-family: 'Open Sans', sans-serif; font-size:32px;" width="80%"><?php echo htmlspecialchars($company_name); ?></td>
+                                            <td class="center" style="padding: 10px 20px; color: #ffffff;font-family: 'Open Sans', sans-serif; " align="right" width="20"></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -86,15 +95,16 @@ body[yahoo] .center { text-align: center!important; }
                                                         <tr>
                                                             <td class="center" style="font-size: 11px; color: #fff; font-family: Arial, sans-serif; padding-bottom: 20px;" valign="top">
                                                                 <div style="font-size: 12px; line-height: 1.2em;">
-                                                                    <em><?= $company_address_1; ?></em>
-                                                                    <em><?= $company_address_2; ?></em>
+                                                                    <strong style="font-size: 16px; line-height: 1.2em;"><?php echo htmlspecialchars($company_name); ?></strong><br />
+                                                                    <em><?php echo $company_address_1; ?></em>
+                                                                    <em><?php echo $company_address_2; ?></em>
                                                                 </div>
                                                                 <div style="font-size: 12px; line-height: 1.2em;">
-                                                                    <em><?= htmlspecialchars($company_city); ?>, <?= htmlspecialchars($company_state); ?>
-                                                                        <?= htmlspecialchars($company_zip); ?><br /> </em></div>
-                                                                <div style="font-size: 16px; line-height: 1.2em;"><a href="tel:<?= htmlspecialchars($company_phone); ?>" style="color: #ffffff;"><?= htmlspecialchars($company_phone); ?></a>
+                                                                    <em><?php echo htmlspecialchars($company_city); ?>, <?php echo htmlspecialchars($company_state); ?>
+                                                                        <?php echo htmlspecialchars($company_zip); ?><br /> </em></div>
+                                                                <div style="font-size: 16px; line-height: 1.2em;"><a href="tel:<?php echo htmlspecialchars($company_phone); ?>" style="color: #ffffff;"><?php echo htmlspecialchars($company_phone); ?></a>
                                                                 </div>
-                                                                <div style="font-size: 16px; line-height: 1.2em;"><a href="mailto:<?= htmlspecialchars($company_email); ?>" style="color: #ffffff;"><?= htmlspecialchars($company_email); ?></a>
+                                                                <div style="font-size: 16px; line-height: 1.2em;"><a href="mailto:<?php echo htmlspecialchars($company_email); ?>" style="color: #ffffff;"><?php echo htmlspecialchars($company_email); ?></a>
                                                                 </div>
                                                             </td>
                                                         </tr>
