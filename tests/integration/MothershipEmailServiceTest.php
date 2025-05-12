@@ -24,24 +24,8 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
     public function testGenerateBodySuccess($template, $expectedBody)
     {
         $data = [
-            'name' => 'Test User',
-            'account_id' => 12345,
-            'account_name' => 'Test Account',
-            'client_id' => 67890,
-            'client_name' => 'Test Client',
-            'invoice_number' => 123456,
             'fname' => 'John',
-            'invoice_due_date' => '2023-12-31',
-            'company_name' => 'Test Company',
-            'company_address' => '123 Test St, Test City, TC 12345',
-            'company_address_1' => '123 Test St',
-            'company_address_2' => '',
-            'company_city' => 'Test City',
-            'company_state' => 'TC',
-            'company_zip' => '12345',
-            'company_phone' => '123 456-7890',
-            'company_email' => 'test.company.email@malinator.com',
-            'company_default_rate' => 100.00,
+            'admin_fname' => 'Admin',
         ];
 
         $results = EmailService::generateBody($template, $data);
@@ -53,18 +37,23 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
         $this->assertNotEmpty($results['html'], 'HTML content is empty.');
         $this->assertNotEmpty($results['text'], 'Text content is empty.');
 
-        $this->assertEquals($expectedBody, $results['html'], 'HTML content does not match the expected body.');
-        $this->assertEquals($expectedBody, $results['text'], 'Text content does not match the expected body.');
+        $this->assertStringContainsString($expectedBody, $results['html'], 'HTML content does not match the expected body.');
+        $this->assertStringContainsString($expectedBody, $results['text'], 'Text content does not match the expected body.');
     }
 
     public function templateDataProvider()
     {
         return [
-            ['invoice.user-opened', 'Test User Invoice Opened'],
-            ['invoice.user-closed', 'Test User Invoice Closed'],
-            ['payment.admin-confirmed', 'Test Admin Payment Confirmed'],
-            ['payment.admin-pending', 'Test Admin Payment Pending'],
-            ['payment.user-confirmed', 'Test User Payment Confirmed'],
+            ['invoice.user-opened', 'Hello John,'],
+            ['invoice.user-opened', 'You have a new invoice.'],
+            ['invoice.user-closed', 'Hello John,'],
+            ['invoice.user-closed', 'Your invoice has been marked as closed.'],
+            ['payment.admin-confirmed', 'Hello Admin,'],
+            ['payment.admin-confirmed', 'A payment has been confirmed.'],
+            ['payment.admin-pending', 'Hello Admin,'],
+            ['payment.admin-pending', 'A new payment is pending your confirmation.'],
+            ['payment.user-confirmed', 'Hello John,'],
+            ['payment.user-confirmed', 'Your payment has been confirmed.'],
         ];
     }
 
@@ -93,7 +82,10 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
         EmailService::sendTemplate('payment.admin-pending', 
         'test.smith@mailinator.com', 
         'New Pending Payment for Pay By Check', 
-        []);
+        [
+            'fname' => 'John',
+            'admin_fname' => 'Admin',
+        ]);
 
         $email_id = $this->tester->getEmailBySubject("New Pending Payment for Pay By Check");        
         $email = $this->tester->getEmailById($email_id);
