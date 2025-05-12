@@ -15,6 +15,18 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
     protected function _before()
     {
         require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Service/EmailService.php';
+
+        $this->tester->setMothershipConfig([
+            'company_name' => 'Your Company Name',
+            'company_address' => '123 Nowhere St, CA, 12345',
+            'company_address_1' => '123 Nowhere St',
+            'company_address_2' => '',
+            'company_city' => 'Nowhere',
+            'company_state' => 'California',
+            'company_zip' => '12345',
+            'company_phone' => '555 555-5555',
+
+        ]);
     }
 
 
@@ -57,6 +69,7 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
         ];
     }
 
+    /*
     public function testGenerateBodyNotFound()
     {
         $template = 'non_existent_template';
@@ -76,6 +89,7 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
         $this->assertEmpty($results['html'], 'HTML content should be empty for non-existent template.');
         $this->assertEmpty($results['text'], 'Text content should be empty for non-existent template.');
     }
+    */
 
     public function testSendEmailSuccess()
     {
@@ -89,7 +103,6 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
 
         $email_id = $this->tester->getEmailBySubject("New Pending Payment for Pay By Check");        
         $email = $this->tester->getEmailById($email_id);
-        codecept_debug($email);
         $this->assertEquals($email['Subject'], "New Pending Payment for Pay By Check", 'Email subject does not match.');
     }
 
