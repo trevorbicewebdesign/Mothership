@@ -227,7 +227,7 @@ class InvoiceController extends BaseController
 
         EmailService::sendTemplate('payment.admin-pending', 
         'test.smith@mailinator.com', 
-        'New Pending Payment for Pay By Check', 
+        "New Pending Payment for {$paymentMethod}", 
         [
             'fname' => 'Trevor',
             'invoice_number' => 'INV-2045',
