@@ -67,32 +67,20 @@ class PaymentHelper
 
     public static function onPaymentCompleted($payment)
     {
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('onMothershipPaymentCompleted', [$payment]);
+        // Set the invoice status to be closed
+        InvoiceHelper::updateInvoiceStatus($payment->invoice_id, 4);
 
-        // SEnd the invoice template to the client
         EmailService::sendTemplate('payment.user-confirmed', 
-        'test.smith@mailinator.com', 
-        'Payment Completed', 
-        [
-            'fname' => 'Trevor',
-            'invoice_number' => 'INV-2045',
-            'account_name' => 'Trevor Bice Webdesign',
-            'account_center_url' => 'https://example.com/account',
-            'invoice_due_date' => 'April 30, 2025',
-            'pay_invoice_link' => 'https://example.com/pay?invoice=2045',
-            'company_name' => 'Trevor Bice Webdesign',
-            'company_address' => '123 Main St, San Francisco, CA',
-            'company_address_1' => '123 Main St',
-            'company_address_2' => 'Suite 100',
-            'company_city' => 'San Francisco',
-            'company_state' => 'CA',
-            'company_zip' => '94111',
-            'company_phone' => '(555) 555-5555',
-            'company_email' => 'info@trevorbice.com',
-        ]);
+            'test.smith@mailinator.com', 
+            'Payment Completed', 
+            []
+        );
 
         // Optional: add history or record in a log table
         LogHelper::logPaymentCompleted($payment);
+        // LogHelper::logStatusChange($payment, 'Completed');
+
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onMothershipPaymentCompleted', [$payment]);
     }
     public static function updateStatus($paymentId, $status_id)
     {
