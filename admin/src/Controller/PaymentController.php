@@ -10,6 +10,7 @@ use TrevorBice\Component\Mothership\Administrator\Helper\MothershipHelper;
 use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper;
 use TrevorBice\Component\Mothership\Administrator\Helper\PaymentHelper;
 use TrevorBice\Component\Mothership\Administrator\Helper\InvoiceHelper;
+use TrevorBice\Component\Mothership\Administrator\Service\EmailService; // Ensure this is the correct namespace for EmailService
 
 \defined('_JEXEC') or die;
 
@@ -54,6 +55,12 @@ class PaymentController extends FormController
             $defaultRedirect = Route::_('index.php?option=com_mothership&view=payments', false);
         }
 
+         EmailService::sendTemplate('payment.user-confirmed', 
+            'test.smith@mailinator.com', 
+            "Payment Confirmed", 
+            [],
+        );
+
         LogHelper::logStatusChange($payment, $new_payment_status);
 
         $this->setRedirect($defaultRedirect);
@@ -79,6 +86,12 @@ class PaymentController extends FormController
 
         $defaultRedirect = Route::_('index.php?option=com_mothership&view=payments', false);
         $redirect = MothershipHelper::getReturnRedirect($defaultRedirect);
+
+        EmailService::sendTemplate('payment.user-confirmed', 
+            'test.smith@mailinator.com', 
+            'Payment Confirmed', 
+            []
+        );
 
         LogHelper::logStatusChange($payment, 'Completed');
         PaymentHelper::onPaymentCompleted($payment);
