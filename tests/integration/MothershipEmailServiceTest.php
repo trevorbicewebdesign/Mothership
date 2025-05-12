@@ -17,10 +17,12 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
         require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Service/EmailService.php';
     }
 
-    public function testGenerateBodySuccess()
+
+    /**
+     * @dataProvider templateDataProvider
+     */
+    public function testGenerateBodySuccess($template, $expectedBody)
     {
-        $body = "Test Template";
-        $template = 'invoice.opened';
         $data = [
             'name' => 'Test User',
             'account_id' => 12345,
@@ -51,8 +53,19 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
         $this->assertNotEmpty($results['html'], 'HTML content is empty.');
         $this->assertNotEmpty($results['text'], 'Text content is empty.');
 
-        $this->assertEquals($body, $results['html'], 'Name in HTML content does not match the input data.');
-        $this->assertEquals($body, $results['text'], 'Name in Text content does not match the input data.');
+        $this->assertEquals($expectedBody, $results['html'], 'HTML content does not match the expected body.');
+        $this->assertEquals($expectedBody, $results['text'], 'Text content does not match the expected body.');
+    }
+
+    public function templateDataProvider()
+    {
+        return [
+            ['invoice.user-opened', 'Test User Invoice Opened'],
+            ['invoice.user-closed', 'Test User Invoice Closed'],
+            ['payment.admin-confirmed', 'Test Admin Payment Confirmed'],
+            ['payment.admin-pending', 'Test Admin Payment Pending'],
+            ['payment.user-confirmed', 'Test User Payment Confirmed'],
+        ];
     }
 
     public function testGenerateBodyNotFound()
