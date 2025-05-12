@@ -75,6 +75,8 @@ class PaymentController extends FormController
             $app->enqueueMessage(Text::_('COM_MOTHERSHIP_PAYMENT_CONFIRM_FAILED'), 'error');
         }
 
+        InvoiceHelper::updateInvoiceStatus($payment->invoice_id, 4);
+
         $defaultRedirect = Route::_('index.php?option=com_mothership&view=payments', false);
         $redirect = MothershipHelper::getReturnRedirect($defaultRedirect);
 
