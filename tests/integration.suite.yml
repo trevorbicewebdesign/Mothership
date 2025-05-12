@@ -9,7 +9,10 @@ modules:
         - Tests\Support\Helper\Integration
         - Asserts  
         - Helper\DbHelper
+        - Mailpit
     config:
+        Mailpit:
+            base_uri: http://mailpit:8025
         Helper\DbHelper:
             dsn: '%DSN%'
             user: '%DBUSER%'
