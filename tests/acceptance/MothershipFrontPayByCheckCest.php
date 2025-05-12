@@ -20,12 +20,14 @@ class MothershipFrontPayByCheckCest
         $I->resetMothershipTables();
 
         $this->mothershipConfig = $I->setMothershipConfig([
-            'company_name' => 'Trevor Bice Webdesign',
-            'company_address_1' => '370 Garden Lane',
-            'company_city' => 'Bayside',
+            'company_name' => 'Your Company Name',
+            'company_address' => '123 Nowhere St, CA, 12345',
+            'company_address_1' => '123 Nowhere St',
+            'company_address_2' => '',
+            'company_city' => 'Nowhere',
             'company_state' => 'California',
-            'company_zip' => '95524',
-            'company_phone' => '707-880-0156',
+            'company_zip' => '12345',
+            'company_phone' => '555 555-5555',
 
         ]);
 
