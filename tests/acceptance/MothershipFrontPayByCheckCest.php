@@ -175,5 +175,7 @@ class MothershipFrontPayByCheckCest
         $I->assertEquals($meta->invoice_id,  $this->invoiceData['id']);
         $I->assertEquals($meta->payment_method, "paybycheck");
         $I->assertEquals($meta->amount, $this->invoiceData['total']);
+
+        $I->getEmailBySubject("New Pending Payment for Pay By Check");
     }
 }
