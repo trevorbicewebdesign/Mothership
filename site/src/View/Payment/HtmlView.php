@@ -20,14 +20,21 @@ class HtmlView extends BaseHtmlView
             return;
         }
         $this->item = $this->getModel()->getItem();
-        $input = Factory::getApplication()->getInput();
-        $this->invoiceId = $input->getInt('invoice_id');
+        
+        
 
         if (!$this->item) {
             throw new \Exception('Payment not found', 404);
         }
 
-        LogHelper::logPaymentViewed($this->item->client_id, $this->item->account_id, $this->item->id);
+        if ($this->getLayout() === 'default') {
+            LogHelper::logPaymentViewed($this->item->client_id, $this->item->account_id, $this->item->id);
+        }
+        else if ($this->getLayout() === 'thank-you') {
+            $input = Factory::getApplication()->getInput();
+            $this->invoiceId = $input->getInt('invoice_id');
+            $this->payment_method = $this->item->payment_method;
+        }
 
         parent::display($tpl);
     }

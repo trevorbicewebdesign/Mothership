@@ -18,6 +18,33 @@ One of the standout features in the initial release is the projects module. Ofte
 
 In short, Mothership is built to streamline your workflow and let you focus on what really matters—delivering great work and growing your business.
 
+# Back End
+
+## Creating an Invoice
+
+# Front End
+
+## Paying an Invoice
+
+### Steps:
+1) Visit the `View All Invoices Page`
+2) Click `Pay` next to the invoice you wish to settle
+3) User is taken to the Select Payment Page, user must select a payment type
+4) Payment is initiated
+5) User is taken to the `Instructions` page where payment instructions are displayed
+6) User Writes payment check
+7) User clicks `Payment Sent` button
+8) User is taken to the `Thank You` page where details about the pending transaction are listed
+9) Administrator sets payment status to `Confirmed`
+10) User receives an email letting them know the process completed
+
+<div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between;">
+  <img src="https://github.com/user-attachments/assets/25a09847-0867-4a2e-a665-db72e5038fe4" width="24%" />
+  <img src="https://github.com/user-attachments/assets/3e46c7d4-94cf-46ec-9864-1e21616f7504" width="24%" />
+  <img src="https://github.com/user-attachments/assets/53685d26-93b3-4e41-83c2-3ece6cdaff40" width="24%" />
+  <img src="https://github.com/user-attachments/assets/74392d8c-1216-40fa-ac77-fd250ae30daf" width="24%" />
+</div>
+
 ---
 
 ## Clients
@@ -382,6 +409,32 @@ CREATE TABLE IF NOT EXISTS `#__mothership_logs` (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ```
+
+## Payment Flow
+
+1. **`InvoiceController->payment()`**  
+   The payment process begins when the `invoice.payment` task is called.
+
+2. **Payment Layout (`payment.php`)**  
+   The `payment.php` layout is rendered by the invoice controller (located alongside the default layout).  
+   - Information about installed and enabled payment plugins is collected.  
+   - The user selects a payment method.  
+   - Any applicable fees and pre-payment instructions are shown to the user at this stage.
+
+3. **`InvoiceController->processPayment()`**  
+   After selecting a payment method, the user clicks the **Pay Now** button.  
+   - A new record is created in both the `#__mothership_payments` and `#__mothership_payment_invoice` tables.  
+   - The selected plugin’s `initiate()` method is called, which begins processing the payment.  
+   - Since payment methods may behave differently, the plugin is responsible for controlling the next steps.
+
+4. **`PaymentPluginClass->initiate($payment, $invoice)`**  
+   The plugin’s `initiate()` method receives both the `Payment` and `Invoice` objects.  
+   - This allows it to carry out any required processing logic.  
+   - For example, the **Pay by Check** plugin immediately redirects the user to the final **Thank You** page without further steps.
+
+5. **Payment Completion (Thank You Page)**  
+   The user is redirected to a **Thank You** page to confirm that the payment process has completed.
+
 
 ---
 

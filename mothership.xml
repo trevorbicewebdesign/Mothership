@@ -21,7 +21,7 @@
         </sql>
     </uninstall>
     <updateservers>
-        <server type="extension" priority="1" name="Mothership Update Server">https://mothership.trevorbice.com/updates.xml</server>
+        <server type="extension" priority="1" name="Mothership Update Server">https://raw.githubusercontent.com/trevorbicewebdesign/Mothership/refs/heads/main/updates.xml</server>
     </updateservers>
     <files folder="site">
         <folder>layouts</folder>

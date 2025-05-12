@@ -10,25 +10,36 @@ use Joomla\CMS\Router\Route;
 
 $invoice = (object) $this->item;
 $total = (float) $invoice->total;
+
+$feesJson = json_encode(array_column($this->paymentOptions, 'fee_amount'));
+$instructionsJson = json_encode(array_column($this->paymentOptions, 'instructions_html'));
+echo HTMLHelper::_('jquery.framework'); // Ensure jQuery is loaded
 ?>
+
+<style>
+.payment-instructions {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    border-left: 4px solid #007BFF;
+    background-color: #f8f9fa;
+    display: none;
+}
+</style>
 
 <h1>Pay Invoice #<?php echo htmlspecialchars($invoice->number); ?></h1>
 
 <?php if (!empty($this->paymentOptions)) : ?>
     <form action="<?php echo Route::_('/index.php?option=com_mothership&task=invoice.processPayment&id=' . (int) $invoice->id); ?>" method="post">
-        <div style="text-align:right;width:100%;display:block;"><span style="font-weight:bold">Total Due:</span> $<?php echo number_format($total, 2); ?></div>
-        <hr/>
-        <div style="text-align:right;width:100%;display:block;"><span style="font-weight:bold">Select Payment Method:</span></div>
+        <div style="text-align:right;width:100%;display:block;">
+            <span style="font-weight:bold">Total Due:</span> $<?php echo number_format($total, 2); ?>
+        </div>
 
-        <?php foreach ($this->paymentOptions as $index => $method) : 
-            // Retrieve fee configuration from the payment method
-                // Calculate fee amount and the total including fee
-                $feeAmount = $method['fee_amount'];
-                $totalWithFee = $total + $feeAmount;
-                // Use the plugin's function feeDisplay
-                $feeDisplay = $method['display_fee'];
-            
-        ?>
+        <hr/>
+        <div style="text-align:right;width:100%;display:block;">
+            <span style="font-weight:bold">Select Payment Method:</span>
+        </div>
+
+        <?php foreach ($this->paymentOptions as $index => $method) : ?>
             <div class="payment-method" style="text-align:right;">
                 <label for="payment_method_<?php echo $index; ?>">
                     <input
@@ -41,12 +52,19 @@ $total = (float) $invoice->total;
                     <?php echo htmlspecialchars($method['name']); ?>
                 </label>
                 <span style="font-size: 0.9rem; color: #555;">
-                    <?php echo $feeDisplay; ?>: $<?php echo $feeAmount; ?>
+                    <?php echo $method['display_fee']; ?>: $<?php echo $method['fee_amount']; ?>
                 </span>
             </div>
         <?php endforeach; ?>
+
         <hr />
-        <div style="text-align:right;width:100%;display:block;"><span style="font-weight:bold">Total: <div id="payTotal"><?php echo $totalWithFee; ?></div></span>
+
+        <div style="text-align:right;width:100%;display:block;">
+            <span style="font-weight:bold">Total: $<span id="payTotal"><?php echo number_format($total, 2); ?></span></span>
+        </div>
+
+        <div id="selected-instructions" class="payment-instructions" aria-live="polite"></div>
+
         <button type="submit" class="btn btn-primary" style="float:right;">Pay Now</button>
         <?php echo HTMLHelper::_('form.token'); ?>
     </form>
@@ -56,19 +74,33 @@ $total = (float) $invoice->total;
     </div>
 <?php endif; ?>
 
-<script>
-// Update the #payTotal element with the total amount including the fee
-document.addEventListener('DOMContentLoaded', function() {
-    var paymentMethods = document.querySelectorAll('.payment-method input[name="payment_method"]');
-    var total = <?php echo $total; ?>;
-    var fees = <?php echo json_encode(array_column($this->paymentOptions, 'fee_amount')); ?>;
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+    const fees = <?php echo $feesJson; ?>;
+    const instructions = <?php echo $instructionsJson; ?>;
+    const total = <?php echo json_encode($total); ?>;
 
-    paymentMethods.forEach(function(method, index) {
-        method.addEventListener('change', function() {
-            var feeAmount = parseFloat(fees[index]);
-            var totalWithFee = total + feeAmount;
-            document.getElementById('payTotal').textContent = totalWithFee.toFixed(2);
+    $('input[name="payment_method"]').on('change', function () {
+        const selectedIndex = $('input[name="payment_method"]').index(this);
+        const selectedKey = $(this).val();
+
+        const feeAmount = parseFloat(fees[selectedIndex] || 0);
+        const totalWithFee = total + feeAmount;
+        $('#payTotal').text(totalWithFee.toFixed(2));
+
+        const instructionHtml = instructions[selectedIndex] || '';
+        const $instructions = $('#selected-instructions');
+
+        // Slide up, replace content, and slide down
+        $instructions.stop(true, true).slideUp(150, function () {
+            $(this).html(instructionHtml).slideDown(200);
         });
     });
+
+    // Auto-select first option
+    const $first = $('input[name="payment_method"]').first();
+    if ($first.length) {
+        $first.prop('checked', true).trigger('change');
+    }
 });
 </script>
