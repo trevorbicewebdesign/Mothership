@@ -38,14 +38,17 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
         $data = [
             'fname' => 'John',
             'admin_fname' => 'Admin',
-            'payment_id' => '1',
-            'payment_method' => 'paybycheck',
-            'payment_amount' => "100.00",
-            'payment_date' => "2023-10-01",
-            'client_name' => "Test Client",
-            'account_name' => "Test Account",
-            'project_name' => "Test Project",
-            'invoice_number' => "2023",
+            'payment' => (object) [
+                'id' => 1,
+                'amount' => 100.00,
+                'payment_method' => 'paybycheck',
+                'payment_date' => "2023-10-01",
+            ],
+            'invoice' => (object) [
+                'id' => 1,
+                'number' => '2023',
+                'amount' => 100.00,
+            ],
             'confirm_link' => 'index.php?option=com_mothership&task=payment.confirm&id=1',
             'view_link' => 'index.php?option=com_mothership&view=invoice&id=1',
         ];
@@ -109,14 +112,17 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
         [
             'fname' => 'John',
             'admin_fname' => 'Admin',
-            'payment_id' => '1',
-            'payment_method' => 'paybycheck',
-            'payment_amount' => "100.00",
-            'payment_date' => "2023-10-01",
-            'client_name' => "Test Client",
-            'account_name' => "Test Account",
-            'project_name' => "Test Project",
-            'invoice_number' => "2023",
+            'payment' => (object) [
+                'id' => 1,
+                'amount' => 100.00,
+                'payment_method' => 'paybycheck',
+                'payment_date' => "2023-10-01",
+            ],
+            'invoice' => (object) [
+                'id' => 1,
+                'number' => '2023',
+                'amount' => 100.00,
+            ],
             'confirm_link' => 'index.php?option=com_mothership&task=payment.confirm&id=1',
             'view_link' => 'index.php?option=com_mothership&view=invoice&id=1',
         ]);
