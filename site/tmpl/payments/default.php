@@ -15,6 +15,19 @@ use Joomla\CMS\Language\Text;
         color: #fff;
         background-color:rgb(0, 131, 11);
     }
+    .payment-status.status-pending {
+        background-color: #f39c12;
+    }
+    .payment-status.status-failed{
+        background-color: #e74c3c;
+    }
+    .payment-status.status-cancelled{
+        background-color: #e74c3c;
+    }
+    .payment-status.status-refunded{
+        background-color: #3498db;
+    }
+
 </style>
 <h1>Payments</h1>
 <table class="table paymentsTable" id="paymentsTable">
