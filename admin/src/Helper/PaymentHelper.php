@@ -80,15 +80,38 @@ class PaymentHelper
      */
     public static function onPaymentCompleted($payment)
     {
+        try{
+            $options = MothershipHelper::getMothershipOptions();
+            $client = ClientHelper::getClient(client_id: $payment->client_id);
+            $account = AccountHelper::getAccount($payment->account_id);
+        }
+        catch(\Exception $e){
+            // error message should bubble up
+            throw new \RuntimeException($e->getMessage());
+        }
+
         // Set the invoice status to be closed
         InvoiceHelper::updateInvoiceStatus($payment->invoice_id, 4);
 
         // Sends an email to the user that the payment has been completed
         EmailService::sendTemplate('payment.user-confirmed', 
-            'test.smith@mailinator.com', 
+            $client->email, 
             'Payment Completed', 
             [
                 'payment' => $payment,
+                'client' => $client,
+                'account' => $account,
+            ]
+        );
+
+        // Send an email to the admin that the payment has been completed
+        EmailService::sendTemplate('payment.admin-confirmed', 
+            $options['company_email'], 
+            'Payment Completed', 
+            [
+                'payment' => $payment,
+                'client' => $client,
+                'account' => $account,
             ]
         );
 
