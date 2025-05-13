@@ -16,6 +16,17 @@ class MothershipHelperTest extends \Codeception\Test\Unit
     {
         require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Helper/MothershipHelper.php';
 
+        $this->tester->setMothershipConfig([
+            'company_name' => 'Your Company Name',
+            'company_address' => '123 Nowhere St, CA, 12345',
+            'company_address_1' => '123 Nowhere St',
+            'company_address_2' => '',
+            'company_city' => 'Nowhere',
+            'company_state' => 'California',
+            'company_zip' => '12345',
+            'company_phone' => '555 555-5555',
+        ]);
+        
     }
 
     public function testGetMothershipOptions()
