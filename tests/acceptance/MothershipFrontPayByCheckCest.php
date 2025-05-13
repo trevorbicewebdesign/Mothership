@@ -113,7 +113,7 @@ class MothershipFrontPayByCheckCest
         $I->wait(1);
         $I->waitForText("Pay Invoice", 10, "h1");
         $I->waitForText("Pay Invoice #{$this->invoiceData['number']}", 10, "h1");
-        $I->makeScreenshot("account-center-pay-invoice");
+        $I->makeScreenshot("account-center-pay-invoice-payment-type");
         codecept_debug($I->grabFromCurrentUrl()); // output the current url into the debug
         $I->see("Pay Now");
         $I->see("Total Due: \${$this->invoiceData['total']}");
