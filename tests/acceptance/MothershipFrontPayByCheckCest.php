@@ -21,6 +21,7 @@ class MothershipFrontPayByCheckCest
 
         $this->mothershipConfig = $I->setMothershipConfig([
             'company_name' => 'Your Company Name',
+            'company_email' => 'company.email@mailinator.com',
             'company_address' => '123 Nowhere St, CA, 12345',
             'company_address_1' => '123 Nowhere St',
             'company_address_2' => '',
@@ -113,7 +114,7 @@ class MothershipFrontPayByCheckCest
         $I->wait(1);
         $I->waitForText("Pay Invoice", 10, "h1");
         $I->waitForText("Pay Invoice #{$this->invoiceData['number']}", 10, "h1");
-        $I->makeScreenshot("account-center-pay-invoice-payment-type");
+        $I->makeScreenshot("account-center-pay-invoice");
         codecept_debug($I->grabFromCurrentUrl()); // output the current url into the debug
         $I->see("Pay Now");
         $I->see("Total Due: \${$this->invoiceData['total']}");
