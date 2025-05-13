@@ -9,8 +9,9 @@ use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\Plugin\PluginHelper;
-use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper; // Import LogHelper
-use TrevorBice\Component\Mothership\Administrator\Service\EmailService; // Import EmailService
+use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper;
+use TrevorBice\Component\Mothership\Administrator\Service\EmailService;
+use TrevorBice\Component\Mothership\Administrator\Helper\ClientHelper;
 use Mpdf\Mpdf;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\Event;
@@ -180,7 +181,6 @@ class InvoiceController extends BaseController
         $invoiceId = $input->getCmd('id');
         $paymentMethod = $input->getCmd('payment_method');
 
-        
 
         if (!$invoiceId || !$paymentMethod) {
             $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVALID_PAYMENT_REQUEST'), 'error');
@@ -211,6 +211,23 @@ class InvoiceController extends BaseController
             return;
         }
 
+        $client = ClientHelper::getClient($payment->client_id);
+        if (!$client) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_CLIENT_NOT_FOUND'), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoice&id=' . $invoiceId, false));
+            return;
+        }
+
+        // Get the company email from the extension settings
+        $componentParams = Factory::getApplication()->getParams('com_mothership');
+        $companyEmail = $componentParams->get('company_email');
+
+        if (!$companyEmail) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_COMPANY_EMAIL_NOT_CONFIGURED'), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoice&id=' . $invoiceId, false));
+            return;
+        }
+
         // Create the invoice payment record
         $invoicePayment = Factory::getApplication()
             ->bootComponent('com_mothership')
@@ -226,7 +243,7 @@ class InvoiceController extends BaseController
         }
 
         EmailService::sendTemplate('payment.admin-pending', 
-        'test.smith@mailinator.com', 
+        $companyEmail, 
         "New Pending Payment for {$paymentMethod}", 
         [
             'admin_fname' => 'Trevor',
