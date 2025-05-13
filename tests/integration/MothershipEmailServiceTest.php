@@ -49,6 +49,10 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
                 'number' => '2023',
                 'amount' => 100.00,
             ],
+            'client' => (object) [
+                'id' => 1,
+                'name' => 'Test Client',
+            ],
             'confirm_link' => 'index.php?option=com_mothership&task=payment.confirm&id=1',
             'view_link' => 'index.php?option=com_mothership&view=invoice&id=1',
         ];
@@ -76,7 +80,7 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
             ['payment.admin-confirmed', 'Hello Admin,'],
             ['payment.admin-confirmed', 'A payment has been confirmed.'],
             ['payment.admin-pending', 'Hello Admin,'],
-            ['payment.admin-pending', 'A new payment is pending your confirmation.'],
+            ['payment.admin-pending', 'A new paybycheck payment for $100.00 has been initiated by Test Client'],
             ['payment.user-confirmed', 'Hello John,'],
             ['payment.user-confirmed', 'Your payment has been confirmed.'],
         ];
@@ -123,8 +127,12 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
                 'number' => '2023',
                 'amount' => 100.00,
             ],
-            'confirm_link' => 'index.php?option=com_mothership&task=payment.confirm&id=1',
-            'view_link' => 'index.php?option=com_mothership&view=invoice&id=1',
+            'client' => (object) [
+                'id' => 1,
+                'name' => 'Test Client',
+            ],
+            'confirm_link' => "http://localhost:8080/administrator/index.php?option=com_mothership&task=payment.confirm&id=1",
+            'view_link' => "http://localhost:8080/administrator/index.php?option=com_mothership&view=invoice&id=1",
         ]);
 
         $email_id = $this->tester->getEmailBySubject("New Pending Payment for Pay By Check");        
