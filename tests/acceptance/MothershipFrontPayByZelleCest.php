@@ -21,6 +21,7 @@ class MothershipFrontPayByZelleCest
 
         $this->mothershipConfig = $I->setMothershipConfig([
             'company_name' => 'Your Company Name',
+            'company_email' => 'company.email@mailinator.com',
             'company_address' => '123 Nowhere St, CA, 12345',
             'company_address_1' => '123 Nowhere St',
             'company_address_2' => '',
