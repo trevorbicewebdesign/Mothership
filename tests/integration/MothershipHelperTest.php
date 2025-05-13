@@ -18,7 +18,10 @@ class MothershipHelperTest extends \Codeception\Test\Unit
 
         $this->tester->setMothershipConfig([
             'company_name' => 'A Fake Company',
+            'company_email' => 'company.email@mailinator.com',
+            'company_address' => '12345 Nowhere St., Nowhere, California, 99999',
             'company_address_1' => '12345 Nowhere St.',
+            'company_address_2' => '',
             'company_city' => 'Nowhere',
             'company_state' => 'California',
             'company_zip' => '99999',
