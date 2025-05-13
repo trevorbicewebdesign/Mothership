@@ -38,6 +38,16 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
         $data = [
             'fname' => 'John',
             'admin_fname' => 'Admin',
+            'payment_id' => '1',
+            'payment_method' => 'paybycheck',
+            'payment_amount' => "100.00",
+            'payment_date' => "2023-10-01",
+            'client_name' => "Test Client",
+            'account_name' => "Test Account",
+            'project_name' => "Test Project",
+            'invoice_number' => "2023",
+            'confirm_link' => 'index.php?option=com_mothership&task=payment.confirm&id=1',
+            'view_link' => 'index.php?option=com_mothership&view=invoice&id=1',
         ];
 
         $results = EmailService::generateBody($template, $data);
@@ -99,6 +109,16 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
         [
             'fname' => 'John',
             'admin_fname' => 'Admin',
+            'payment_id' => '1',
+            'payment_method' => 'paybycheck',
+            'payment_amount' => "100.00",
+            'payment_date' => "2023-10-01",
+            'client_name' => "Test Client",
+            'account_name' => "Test Account",
+            'project_name' => "Test Project",
+            'invoice_number' => "2023",
+            'confirm_link' => 'index.php?option=com_mothership&task=payment.confirm&id=1',
+            'view_link' => 'index.php?option=com_mothership&view=invoice&id=1',
         ]);
 
         $email_id = $this->tester->getEmailBySubject("New Pending Payment for Pay By Check");        
