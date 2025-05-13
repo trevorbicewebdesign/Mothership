@@ -286,10 +286,12 @@ class InvoiceController extends BaseController
         "New Pending Payment for {$paymentMethod}", 
         [
             'admin_fname' => 'Trevor',
+            'admin_email' => $companyEmail,
             'payment' => $payment,
             'invoice' => $invoice,
-            'confirm_link' => Route::_('index.php?option=com_mothership&task=payment.confirm&id=' . $payment->id, false),
-            'view_link' => Route::_('index.php?option=com_mothership&view=invoice&id=' . $invoiceId, false),
+            'client' => $client,
+            'confirm_link' => "http://localhost:8080/administrator/index.php?option=com_mothership&task=payment.confirm&id={$payment->id}",
+            'view_link' => "http://localhost:8080/administrator/index.php?option=com_mothership&view=invoice&id={$invoiceId}",
         ]);
 
         // Log that the payment was initiated
