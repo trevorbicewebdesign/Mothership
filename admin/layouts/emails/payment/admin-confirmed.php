@@ -1,6 +1,6 @@
 <?php
+// This email should be triggered to an admin when a payment is confirmed.
 defined('_JEXEC') or die;
-use Joomla\CMS\Router\Route;
 
 $admin_fname = $displayData['admin_fname'];
 ?>
