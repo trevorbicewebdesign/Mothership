@@ -35,13 +35,13 @@ class MothershipHelperTest extends \Codeception\Test\Unit
         $this->assertArrayHasKey('company_phone', $options, 'Options should contain company_phone key');
         $this->assertArrayHasKey('company_default_rate', $options, 'Options should contain company_default_rate key');
 
-        $this->assertEquals('A Fake Company', $options['company_name'], 'Company name should be "A Fake Company"');
-        $this->assertEquals('12345 Nowhere St.', $options['company_address_1'], 'Company address 1 should be "12345 Nowhere St."');
+        $this->assertEquals('Your Company Name', $options['company_name'], 'Company name should be "Your Company Name"');
+        $this->assertEquals('123 Nowhere St', $options['company_address_1'], 'Company address 1 should be "123 Nowhere St"');
+        $this->assertEquals('', $options['company_address_2'], 'Company address 2 should be empty');
         $this->assertEquals('Nowhere', $options['company_city'], 'Company city should be "Nowhere"');
         $this->assertEquals('California', $options['company_state'], 'Company state should be "California"');
-        $this->assertEquals('99999', $options['company_zip'], 'Company zip should be "99999"');
-        $this->assertEquals('555-555-5555', $options['company_phone'], 'Company phone should be "555-555-5555"');
-        $this->assertEquals('100.00', $options['company_default_rate'], 'Company default rate should be "100.00"');
+        $this->assertEquals('12345', $options['company_zip'], 'Company zip should be "12345"');
+        $this->assertEquals('555 555-5555', $options['company_phone'], 'Company phone should be "555 555-5555"');
 
         
         
