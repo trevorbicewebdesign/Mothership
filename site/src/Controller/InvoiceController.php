@@ -286,14 +286,8 @@ class InvoiceController extends BaseController
         "New Pending Payment for {$paymentMethod}", 
         [
             'admin_fname' => 'Trevor',
-            'payment_id' => $payment->id,
-            'payment_method' => $paymentMethod,
-            'payment_amount' => $invoice->total,
-            'payment_date' => $payment->payment_date,
-            'client_name' => $invoice->client_name,
-            'account_name' => $invoice->account_name,
-            'project_name' => $invoice->project_name,
-            'invoice_number' => $invoice->number,
+            'payment' => $payment,
+            'invoice' => $invoice,
             'confirm_link' => Route::_('index.php?option=com_mothership&task=payment.confirm&id=' . $payment->id, false),
             'view_link' => Route::_('index.php?option=com_mothership&view=invoice&id=' . $invoiceId, false),
         ]);
@@ -315,7 +309,7 @@ class InvoiceController extends BaseController
             if (!method_exists($plugin, 'initiate')) {
                 throw new \RuntimeException("Plugin '{$paymentMethod}' cannot be initiated.");
             }
-            
+
             return $plugin->initiate($payment, $invoice); // Plugin handles redirect or rendering
         } catch (\Exception $e) {
             $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_PAYMENT_PROCESSING_FAILED', $e->getMessage()), 'error');
