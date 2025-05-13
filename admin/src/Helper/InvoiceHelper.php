@@ -24,20 +24,6 @@ use TrevorBice\Component\Mothership\Administrator\Helper\EmailService;
 class InvoiceHelper
 {
 
-    /**
-     * Get the status string corresponding to a given status ID.
-     *
-     * This method transforms a status ID (integer) into its corresponding
-     * status string representation. The possible status strings are:
-     * - 'Draft' for status ID 1
-     * - 'Opened' for status ID 2
-     * - 'Cancelled' for status ID 3
-     * - 'Closed' for status ID 4
-     * - 'Unknown' for any other status ID
-     *
-     * @param int $status_id The status ID to be transformed.
-     * @return string The corresponding status string.
-     */
     public static function getStatus($status_id)
     {
         // Transform the status from integer to string
@@ -137,10 +123,155 @@ class InvoiceHelper
     }
 
 
+    public static function setInvoiceClosed($invoiceId)
+    {
+        self::updateInvoiceStatus($invoiceId, 4);
+    }
+    
+
+    public static function getInvoiceAppliedPayments($invoiceID)
+    {
+        $db = Factory::getContainer()->get(DatabaseDriver::class);
+        $query = $db->getQuery(true)
+            ->select('*')
+            ->from($db->quoteName('#__mothership_invoice_payment'))
+            ->where($db->quoteName('invoice_id') . ' = ' . (int) $invoiceID);
+        $db->setQuery($query);
+        try {
+            $invoicePayments = $db->loadObjectList();
+        }
+        catch (\Exception $e) {
+            throw new \RuntimeException("Failed to get invoice payments: " . $e->getMessage());
+        }
+
+        return $invoicePayments;
+    }
+
+    public static function sumInvoiceAppliedPayments($invoiceId)
+    {
+        $db = Factory::getContainer()->get(DatabaseDriver::class);
+        $query = $db->getQuery(true)
+            ->select('SUM(p.applied_amount)')
+            ->from($db->quoteName('#__mothership_invoice_payment', 'p'))
+            ->join('INNER', $db->quoteName('#__mothership_payments', 'mp') . ' ON ' . $db->quoteName('p.payment_id') . ' = ' . $db->quoteName('mp.id'))
+            ->where($db->quoteName('p.invoice_id') . ' = ' . (int) $invoiceId)
+            ->where($db->quoteName('mp.status') . ' = 2');
+        $db->setQuery($query);
+        try {
+            $total = $db->loadResult();
+        }
+        catch (\Exception $e) {
+            throw new \RuntimeException("Failed to sum invoice payments: " . $e->getMessage());
+        }
+
+        return (float) $total;
+    }
+
     /**
-     * Marks the specified invoice as closed by updating its status.
+     * Updates the status of an invoice in the database.
      *
-     * @param int $invoiceId The ID of the invoice to be marked as closed.
+     * @param int $invoiceId The ID of the invoice to update.
+     * @param int $status The new status to set for the invoice.
+     * 
+     * @return bool Returns true if the update was successful, false otherwise.
+     * 
+     * @throws \Exception If there is an error during the database operation.
+     * 
+     * Logs an error message if the update fails.
+     */
+    public static function updateInvoiceStatus($invoice, $status): bool
+    {
+        $paidDate = null;
+
+        switch ($status) {
+            case 1:
+                // Draft
+                break;
+            case 2:
+                // Opened
+                break;
+            case 3:
+                // Cancelled
+                break;
+            case 4:
+                $paidDate = date('Y-m-d H:i:s');
+                // Closed
+                break;
+            default:
+                throw new \InvalidArgumentException("Invalid status: $status");
+        }
+
+        $db = Factory::getContainer()->get(DatabaseDriver::class);
+        $query = $db->getQuery(true)
+            ->update($db->quoteName('#__mothership_invoices'))
+            ->set($db->quoteName('status') . ' = ' . (int) $status);
+
+        if ($paidDate !== null) {
+            $query->set($db->quoteName('paid_date') . ' = ' . $db->quote($paidDate));
+        }
+
+        $query->where($db->quoteName('id') . ' = ' . (int) $invoice->id);
+        $db->setQuery($query);
+
+        try {
+            $db->execute();
+            $client = ClientHelper::getClient($invoice->client_id);
+            $account = AccountHelper::getAccount($invoice->account_id);
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        if($status == 4) {
+            EmailService::sendTemplate('invoice.user-closed', 
+                $client->email, 
+                'Invoice Closed', 
+                [
+                    'invoice' => $invoice,
+                ]
+            );
+        }
+        else if($status == 2) {
+            EmailService::sendTemplate('invoice.user-opened', 
+                $client->email, 
+                'Invoice Cancelled', 
+                [
+                    'invoice' => $invoice,
+                ]
+            );
+        }
+
+        return true;
+    }
+
+    public static function getInvoice($invoice_id)
+    {
+        $db = Factory::getContainer()->get(\Joomla\Database\DatabaseInterface::class);
+
+        $query = $db->getQuery(true)
+            ->select('*')
+            ->from($db->quoteName('#__mothership_invoices'))
+            ->where($db->quoteName('id') . ' = ' . $db->quote($invoice_id));
+
+        $db->setQuery($query);
+        $invoice = $db->loadObject();
+
+        if (!$invoice) {
+            throw new \RuntimeException("Invoice ID {$invoice_id} not found.");
+        }
+
+        return $invoice;
+    }
+
+    /**
+     * Recalculates the status of an invoice based on the total payments made.
+     *
+     * This method retrieves the total amount paid for a given invoice and compares it to the invoice total.
+     * It then updates the invoice status to one of the following:
+     * - 0: Unpaid
+     * - 1: Partially Paid
+     * - 2: Paid
+     *
+     * @param int $invoiceId The ID of the invoice to recalculate the status for.
      *
      * @return void
      */
