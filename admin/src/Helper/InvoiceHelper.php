@@ -165,24 +165,73 @@ class InvoiceHelper
         return (float) $total;
     }
 
-    public static function updateInvoiceStatus($invoiceId, $status)
+    /**
+     * Updates the status of an invoice in the database.
+     *
+     * @param int $invoiceId The ID of the invoice to update.
+     * @param int $status The new status to set for the invoice.
+     * 
+     * @return bool Returns true if the update was successful, false otherwise.
+     * 
+     * @throws \Exception If there is an error during the database operation.
+     * 
+     * Logs an error message if the update fails.
+     */
+    public static function updateInvoiceStatus($invoice, $status): bool
     {
-        $paidDate = date('Y-m-d H:i:s');
+        $paidDate = null;
+
+        switch ($status) {
+            case 1:
+                // Draft
+                break;
+            case 2:
+                // Opened
+                break;
+            case 3:
+                // Cancelled
+                break;
+            case 4:
+                $paidDate = date('Y-m-d H:i:s');
+                // Closed
+                break;
+            default:
+                throw new \InvalidArgumentException("Invalid status: $status");
+        }
+
         $db = Factory::getContainer()->get(DatabaseDriver::class);
         $query = $db->getQuery(true)
             ->update($db->quoteName('#__mothership_invoices'))
-            ->set($db->quoteName('status') . ' = ' . (int) $status)
-            ->set($db->quoteName('paid_date') . ' = ' . $db->quote($paidDate))
-            ->where($db->quoteName('id') . ' = ' . (int) $invoiceId);
+            ->set($db->quoteName('status') . ' = ' . (int) $status);
+
+        if ($paidDate !== null) {
+            $query->set($db->quoteName('paid_date') . ' = ' . $db->quote($paidDate));
+        }
+
+        $query->where($db->quoteName('id') . ' = ' . (int) $invoice->id);
         $db->setQuery($query);
 
         try {
             $db->execute();
-            return true;
+            $client = ClientHelper::getClient($invoice->client_id);
+            $account = AccountHelper::getAccount($invoice->account_id);
         } catch (\Exception $e) {
-            Log::add("Failed to update invoice ID $invoiceId: " . $e->getMessage(), Log::ERROR, 'payment');
             return false;
         }
+
+        if($status == 4) {
+            EmailService::sendTemplate('invoice.user-closed', 
+            $client->email, 
+            'Payment Completed', 
+            [
+                'payment' => $payment,
+                'client' => $client,
+                'account' => $account,
+            ]
+        );
+        }
+
+        return true;
     }
 
     public static function getInvoice($invoice_id)
