@@ -230,11 +230,16 @@ class InvoiceController extends BaseController
         "New Pending Payment for {$paymentMethod}", 
         [
             'admin_fname' => 'Trevor',
-            'invoice_number' => 'INV-2045',
-            'account_name' => 'Trevor Bice Webdesign',
-            'account_center_url' => 'https://example.com/account',
-            'invoice_due_date' => 'April 30, 2025',
-            'pay_invoice_link' => 'https://example.com/pay?invoice=2045',
+            'payment_id' => $payment->id,
+            'payment_method' => $paymentMethod,
+            'payment_amount' => $invoice->total,
+            'payment_date' => $payment->payment_date,
+            'client_name' => $invoice->client_name,
+            'account_name' => $invoice->account_name,
+            'project_name' => $invoice->project_name,
+            'invoice_number' => $invoice->number,
+            'confirm_link' => Route::_('index.php?option=com_mothership&task=payment.confirm&id=' . $payment->id, false),
+            'view_link' => Route::_('index.php?option=com_mothership&view=invoice&id=' . $invoiceId, false),
         ]);
 
         LogHelper::logPaymentInitiated(
