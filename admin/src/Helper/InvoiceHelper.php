@@ -222,11 +222,9 @@ class InvoiceHelper
         if($status == 4) {
             EmailService::sendTemplate('invoice.user-closed', 
             $client->email, 
-            'Payment Completed', 
+            'Invoice Closed', 
             [
-                'payment' => $payment,
-                'client' => $client,
-                'account' => $account,
+                'invoice' => $invoice,
             ]
         );
         }
