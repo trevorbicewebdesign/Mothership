@@ -570,11 +570,21 @@ The **Payments Helper** provides several methods to manage and update payment re
 
 # Notification Emails
 
-## Invoice Opened
+## User - Invoice Opened
 The invoice has been set from `Draft` to `Opened`. This will send the email template `invoice.opened` to the Client Owner and BCC an administrator.
 
-## Payment Completed
-The payment has been set from `pending` to `completed`. This will send the email template `payment.completed` to the Client Owner and BCC an administrator. This should be sent to the payee whenever the payment cycle has been completed. 
+## User - Invoice Closed 
+The invoice has been set from `Draft` to `Opened`. This will send the email template `invoice.opened` to the Client Owner and BCC an administrator.
+
+## User - Payment Confirmed
+The payment has been updated from `Pending` to `Confirmed` and has been completed.
+
+## Admin - Payment Confirmed
+The Payment has been updated from `Pending` to `Confirmed` and has been completed.
+
+## Admin - Payment Pending
+The user has started a new payment.
+
 
 # Testing
 Mothership is built with stability and confidence in mind. Our automated testing suite uses Codeception to simulate real-world usage across backend and frontend features, ensuring every update works as expected. From invoice lifecycle logic to payment integration and PDF generation, our tests catch regressions early and help maintain a high standard of code quality. Whether you're contributing or deploying, the suite gives you peace of mind that Mothership remains reliable.
