@@ -84,6 +84,7 @@ class PaymentHelper
             $options = MothershipHelper::getMothershipOptions();
             $client = ClientHelper::getClient(client_id: $payment->client_id);
             $account = AccountHelper::getAccount($payment->account_id);
+            
         }
         catch(\Exception $e){
             // error message should bubble up
@@ -91,7 +92,7 @@ class PaymentHelper
         }
 
         // Set the invoice status to be closed
-        InvoiceHelper::updateInvoiceStatus($payment->invoice_id, 4);
+        InvoiceHelper::updateInvoiceStatus($payment, 4);
 
         // Sends an email to the user that the payment has been completed
         EmailService::sendTemplate('payment.user-confirmed', 
@@ -385,8 +386,23 @@ class PaymentHelper
         return $invoice_payment_id;
     }
 
+    /**
+     * Retrieves a list of invoices associated with a specific payment ID.
+     *
+     * This method queries the database to fetch invoice IDs and their applied amounts
+     * for a given payment ID from the `#__mothership_invoice_payment` table.
+     *
+     * @param int $paymentId The ID of the payment for which invoices are to be retrieved.
+     * 
+     * @return array An array of objects, where each object contains:
+     *               - `invoice_id` (int): The ID of the invoice.
+     *               - `applied_amount` (float): The amount applied to the invoice.
+     * 
+     * @throws \RuntimeException If the query fails or an error occurs while fetching data.
+     */
     public function getPaymentInvoices($paymentId)
     {
+        $invoices = [];
         $db = Factory::getContainer()->get(DatabaseDriver::class);
         $query = $db->getQuery(true)
             ->select('invoice_id, applied_amount')
