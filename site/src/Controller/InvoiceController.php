@@ -280,6 +280,7 @@ class InvoiceController extends BaseController
             return;
         }
 
+        // Send the admin an email notification
         EmailService::sendTemplate('payment.admin-pending', 
         $companyEmail, 
         "New Pending Payment for {$paymentMethod}", 
@@ -297,6 +298,7 @@ class InvoiceController extends BaseController
             'view_link' => Route::_('index.php?option=com_mothership&view=invoice&id=' . $invoiceId, false),
         ]);
 
+        // Log that the payment was initiated
         LogHelper::logPaymentInitiated(
             $invoiceId,
             $payment->id,
@@ -313,7 +315,7 @@ class InvoiceController extends BaseController
             if (!method_exists($plugin, 'initiate')) {
                 throw new \RuntimeException("Plugin '{$paymentMethod}' cannot be initiated.");
             }
-
+            
             return $plugin->initiate($payment, $invoice); // Plugin handles redirect or rendering
         } catch (\Exception $e) {
             $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_PAYMENT_PROCESSING_FAILED', $e->getMessage()), 'error');
