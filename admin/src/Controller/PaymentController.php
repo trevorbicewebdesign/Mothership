@@ -55,7 +55,7 @@ class PaymentController extends FormController
             $defaultRedirect = Route::_('index.php?option=com_mothership&view=payments', false);
         }
 
-        if( $new_payment_status === 'Completed') {
+        if( $payment->status === 'Pending' && $new_payment_status === 'Completed') {
             PaymentHelper::onPaymentCompleted($payment);
         }
 
