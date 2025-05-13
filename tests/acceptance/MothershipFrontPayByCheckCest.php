@@ -124,6 +124,8 @@ class MothershipFrontPayByCheckCest
         $I->wait(1);
         $I->waitForText("Thank You", 10, "h1");
         $I->makeScreenshot("account-center-pay-invoice-paybycheck-thank-you");
+        // Once the user clicks `Pay Now` the payment is created and the user is redirected to the thank you page
+        // The Admin should receive an email regarding the pending payment
         $I->getEmailBySubject("New Pending Payment for Pay By Check");
     
         $I->seeInDatabase("jos_mothership_payments", [
