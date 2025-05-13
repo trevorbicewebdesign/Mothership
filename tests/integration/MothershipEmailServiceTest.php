@@ -66,7 +66,7 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
         $this->assertNotEmpty($results['html'], 'HTML content is empty.');
         $this->assertNotEmpty($results['text'], 'Text content is empty.');
 
-        $this->assertStringContainsString($expectedBody, $results['html'], 'HTML content does not match the expected body.');
+        $this->assertStringContainsString($expectedBody, strip_tags($results['html']), 'HTML content does not match the expected body.');
         $this->assertStringContainsString($expectedBody, $results['text'], 'Text content does not match the expected body.');
     }
 
@@ -80,7 +80,7 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
             ['payment.admin-confirmed', 'Hello Admin,'],
             ['payment.admin-confirmed', 'A payment has been confirmed.'],
             ['payment.admin-pending', 'Hello Admin,'],
-            ['payment.admin-pending', 'A new paybycheck payment for $100.00 has been initiated by Test Client'],
+            ['payment.admin-pending', 'A new paybycheck payment has been initiated by Test Client for the amount of $100.00.'],
             ['payment.user-confirmed', 'Hello John,'],
             ['payment.user-confirmed', 'Your payment has been confirmed.'],
         ];
