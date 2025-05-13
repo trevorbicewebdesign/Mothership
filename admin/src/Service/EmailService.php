@@ -63,14 +63,11 @@ class EmailService
             'company_phone' => $params->get('company_phone', ''),
             'company_email' => $params->get('company_email', ''),
         ]);
-
+        $text = strip_tags($html);
         $html = self::renderLayout('emails.wrapper', [
             'content' => $html,
             'data' => $data
         ]);
-
-        // $text should be generated from the HTML layout, but for now, we will just use the HTML content.
-        $text = strip_tags($html);
 
         return [
             'html' => $html,
