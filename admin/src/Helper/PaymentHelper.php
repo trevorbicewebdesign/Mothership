@@ -65,23 +65,40 @@ class PaymentHelper
 
     }
 
+    /**
+     * Handles the actions to be performed when a payment is completed.
+     *
+     * This method performs the following tasks:
+     * - Updates the invoice status to "closed".
+     * - Sends a confirmation email to the user about the completed payment.
+     * - Logs the payment completion in a history or log table.
+     * - Triggers an event for other components to handle the payment completion.
+     *
+     * @param object $payment An object containing payment details, including the invoice ID.
+     *
+     * @return void
+     */
     public static function onPaymentCompleted($payment)
     {
         // Set the invoice status to be closed
         InvoiceHelper::updateInvoiceStatus($payment->invoice_id, 4);
 
+        // Sends an email to the user that the payment has been completed
         EmailService::sendTemplate('payment.user-confirmed', 
             'test.smith@mailinator.com', 
             'Payment Completed', 
-            []
+            [
+                'payment' => $payment,
+            ]
         );
 
-        // Optional: add history or record in a log table
+        // Log the payment completion
         LogHelper::logPaymentCompleted($payment);
-        // LogHelper::logStatusChange($payment, 'Completed');
 
+        // Trigger an event for other components to listen to
         \Joomla\CMS\Factory::getApplication()->triggerEvent('onMothershipPaymentCompleted', [$payment]);
     }
+
     public static function updateStatus($paymentId, $status_id)
     {
         $db = Factory::getContainer()->get(DatabaseDriver::class);
