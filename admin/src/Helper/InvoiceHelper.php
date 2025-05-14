@@ -254,7 +254,7 @@ class InvoiceHelper
         else if($status == 2) {
             EmailService::sendTemplate('invoice.user-opened', 
                 $user_email, 
-                'Invoice OPened', 
+                'Invoice Opened', 
                 [
                     'fname' => $firstName,
                     'lname' => $lastName,
