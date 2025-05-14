@@ -402,4 +402,35 @@ class InvoiceHelper
 
         \Joomla\CMS\Factory::getApplication()->triggerEvent('onMothershipInvoiceOpened', [$invoice]);
     }
+
+    /**
+     * Triggered when an invoice transitions to "Closed".
+     *
+     * @param  \Joomla\CMS\Table\Table  $invoice         The invoice table object.
+     * @param  int                      $previousStatus  The previous status ID.
+     *
+     * @return void
+     */
+    public static function onInvoiceClosed($invoice, int $previousStatus): void
+    {
+        // Send the invoice template to the client
+        // SEnd the invoice template to the client
+        EmailService::sendTemplate('invoice.user-closed', 
+        'test.smith@mailinator.com', 
+        'Invoice Closed', 
+        [
+            'fname' => 'Trevor',
+            'invoice' => $invoice,
+        ]);
+
+        // Optional: add history or record in a log table
+        LogHelper::logInvoiceStatusClosed(
+            $invoice->id, 
+            $invoice->client_id, 
+            $invoice->account_id
+        );
+
+        // Event triggers after the invoice is closed
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onMothershipInvoiceClosed', [$invoice]);
+    }
 }
