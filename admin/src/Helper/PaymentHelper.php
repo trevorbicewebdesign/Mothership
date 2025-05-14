@@ -91,6 +91,8 @@ class PaymentHelper
             throw new \RuntimeException($e->getMessage());
         }
 
+        // Get all invoices associated with the payment
+        // For now it should just be one invoice
         $invoices = PaymentHelper::getPaymentInvoices($payment->id);
         foreach($invoices as $invoice){
             // Recalculate the invoice status don't assume that the invoice is fully paid
