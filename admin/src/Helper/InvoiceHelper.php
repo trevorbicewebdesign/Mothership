@@ -19,7 +19,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\ParameterType;
-use TrevorBice\Component\Mothership\Administrator\Helper\EmailService;
+use TrevorBice\Component\Mothership\Administrator\Service\EmailService;
 
 class InvoiceHelper
 {
