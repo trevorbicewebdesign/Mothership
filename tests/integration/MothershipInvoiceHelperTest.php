@@ -305,7 +305,7 @@ class MothershipInvoiceHelperTest extends \Codeception\Test\Unit
             'account_id' => $this->accountData['id'],
             'total' => $invoiceTotal,
             'number' => uniqid('INV'),
-            'status' => 0, // Default to unpaid
+            'status' => 2,
             'due_date' => date('Y-m-d'),
         ]);
         $invoiceId = $invoiceData['id'];
