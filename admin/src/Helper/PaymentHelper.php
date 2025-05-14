@@ -94,13 +94,13 @@ class PaymentHelper
         // Get all invoices associated with the payment
         // For now it should just be one invoice
         $invoices = PaymentHelper::getPaymentInvoices($payment->id);
-        if( count($invoices) == 0 ){
+        if (count($invoices) == 0) {
             throw new \RuntimeException("No invoices found for payment ID: {$payment->id}");
         }
         foreach($invoices as $invoice){
             // Recalculate the invoice status don't assume that the invoice is fully paid
             $new_invoice_status = InvoiceHelper::recalculateInvoiceStatus($invoice->id);
-            InvoiceHelper::updateInvoiceStatus($invoice->id, $new_invoice_status);
+            InvoiceHelper::updateInvoiceStatus($invoice, $new_invoice_status);
         }
         
         // Sends an email to the user that the payment has been completed
@@ -404,27 +404,23 @@ class PaymentHelper
     }
 
     /**
-     * Retrieves a list of invoices associated with a specific payment ID.
+     * Returns an array of invoice objects associated with a payment.
      *
-     * This method queries the database to fetch invoice IDs and their applied amounts
-     * for a given payment ID from the `#__mothership_invoice_payment` table.
-     *
-     * @param int $paymentId The ID of the payment for which invoices are to be retrieved.
-     * 
-     * @return array An array of objects, where each object contains:
-     *               - `invoice_id` (int): The ID of the invoice.
-     *               - `applied_amount` (float): The amount applied to the invoice.
-     * 
-     * @throws \RuntimeException If the query fails or an error occurs while fetching data.
+     * @param int $paymentId The payment ID.
+     * @return array Array of invoice objects.
      */
-    public static function getPaymentInvoices($paymentId):array
+    public static function getPaymentInvoices($paymentId): array
     {
-        $invoices = [];
         $db = Factory::getContainer()->get(DatabaseDriver::class);
         $query = $db->getQuery(true)
-            ->select('invoice_id, applied_amount')
-            ->from($db->quoteName('#__mothership_invoice_payment'))
-            ->where($db->quoteName('payment_id') . ' = ' . (int) $paymentId);
+            ->select('i.*')
+            ->from($db->quoteName('#__mothership_invoice_payment', 'ip'))
+            ->innerJoin(
+                $db->quoteName('#__mothership_invoices', 'i') .
+                ' ON ' . $db->quoteName('ip.invoice_id') . ' = ' . $db->quoteName('i.id')
+            )
+            ->where($db->quoteName('ip.payment_id') . ' = ' . (int) $paymentId);
+
         $db->setQuery($query);
 
         try {
