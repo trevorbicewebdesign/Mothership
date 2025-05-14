@@ -91,18 +91,6 @@ class PaymentHelper
             throw new \RuntimeException($e->getMessage());
         }
 
-        // Get all invoices associated with the payment
-        // For now it should just be one invoice
-        $invoices = PaymentHelper::getPaymentInvoices($payment->id);
-        if (count($invoices) == 0) {
-            throw new \RuntimeException("No invoices found for payment ID: {$payment->id}");
-        }
-        foreach($invoices as $invoice){
-            // Recalculate the invoice status don't assume that the invoice is fully paid
-            $new_invoice_status = InvoiceHelper::recalculateInvoiceStatus($invoice->id);
-            InvoiceHelper::updateInvoiceStatus($invoice, $new_invoice_status);
-        }
-        
         // Sends an email to the user that the payment has been completed
         EmailService::sendTemplate('payment.user-confirmed', 
             $client->email, 
@@ -130,28 +118,20 @@ class PaymentHelper
         // Log the payment completion
         LogHelper::logPaymentCompleted($payment);
 
+        // Get all invoices associated with the payment
+        // For now it should just be one invoice
+        $invoices = PaymentHelper::getPaymentInvoices($payment->id);
+        if (count($invoices) == 0) {
+            throw new \RuntimeException("No invoices found for payment ID: {$payment->id}");
+        }
+        foreach($invoices as $invoice){
+            // Recalculate the invoice status don't assume that the invoice is fully paid
+            $new_invoice_status = InvoiceHelper::recalculateInvoiceStatus($invoice->id);
+            InvoiceHelper::updateInvoiceStatus($invoice, $new_invoice_status);
+        }
+
         // Trigger an event for other components to listen to
         \Joomla\CMS\Factory::getApplication()->triggerEvent('onMothershipPaymentCompleted', [$payment]);
-    }
-
-    public static function updateStatus($paymentId, $status_id)
-    {
-        $db = Factory::getContainer()->get(DatabaseDriver::class);
-        $query = $db->getQuery(true)
-            ->update($db->quoteName('#__mothership_payments'))
-            ->set($db->quoteName('status') . ' = ' . (int) $status_id)
-            ->where($db->quoteName('id') . ' = ' . (int) $paymentId);
-        $db->setQuery($query);
-        
-        try {
-            $db->execute();
-            
-        } catch (\Exception $e) {
-            Log::add("Failed to update payment ID $paymentId: " . $e->getMessage(), Log::ERROR, 'payment');
-            return false;
-        }
-                
-        
     }
 
     /**
@@ -186,84 +166,6 @@ class PaymentHelper
 
         return $status;
     }
-
-    public static function updatePaymentStatus($paymentId, $status)
-    {
-        try{
-            $payment = self::getPayment($paymentId);
-        } catch (\Exception $e) {
-            throw new \RuntimeException("Failed to get payment record: " . $e->getMessage());
-        }
-        $old_status = $payment->status;
-        $new_status = $status;
-
-        $db = Factory::getContainer()->get(DatabaseDriver::class);
-        $query = $db->getQuery(true)
-            ->update($db->quoteName('#__mothership_payments'))
-            ->set($db->quoteName('status') . ' = ' . (int) $status)
-            ->where($db->quoteName('id') . ' = ' . (int) $paymentId);
-        $db->setQuery($query);
-
-        try {
-            $db->execute();
-            
-        } catch (\Exception $e) {
-            Log::add("Failed to update payment ID $paymentId: " . $e->getMessage(), Log::ERROR, 'payment');
-            return false;
-        }
-
-        if($old_status !== $new_status && $new_status ==2){
-            self::onPaymentCompleted($payment);
-        }
-        return true;
-    }
-
-    public static function updatePayment($paymendId, $data)
-    {
-        $allowedData = ['amount', 'fee', 'date', 'processed_date'];
-        $data = array_intersect_key($data, array_flip($allowedData));
-        if (empty($data)) {
-            throw new \RuntimeException("No valid data provided for update.");
-        }
-
-        $db = Factory::getContainer()->get(DatabaseDriver::class);
-        $query = $db->getQuery(true)
-            ->update($db->quoteName('#__mothership_payments'))
-            ->set($db->quoteName('amount') . ' = ' . (float) $data['amount'])
-            ->set($db->quoteName('fee_amount') . ' = ' . (float) $data['fee'])
-            ->set($db->quoteName('payment_date') . ' = ' . $db->quote($data['date']))
-            ->set($db->quoteName('processed_date') . ' = ' . $db->quote($data['processed_date']))
-            ->where($db->quoteName('id') . ' = ' . (int) $paymendId);
-        $db->setQuery($query);
-
-        try {
-            $db->execute();
-            return true;
-        } catch (\Exception $e) {
-            Log::add("Failed to update payment ID $paymendId: " . $e->getMessage(), Log::ERROR, 'payment');
-            return false;
-        }
-    }
-
-    public static function updateInvoicePayment($paymentId, $invoiceId, $applied_amount)
-    {
-        $db = Factory::getContainer()->get(DatabaseDriver::class);
-        $query = $db->getQuery(true)
-            ->update($db->quoteName('#__mothership_invoice_payment'))
-            ->set($db->quoteName('applied_amount') . ' = ' . (float) $applied_amount)
-            ->where($db->quoteName('payment_id') . ' = ' . (int) $paymentId)
-            ->where($db->quoteName('invoice_id') . ' = ' . (int) $invoiceId);
-        $db->setQuery($query);
-
-        try {
-            $db->execute();
-            return true;
-        } catch (\Exception $e) {
-            Log::add("Failed to update invoice payment ID $paymentId: " . $e->getMessage(), Log::ERROR, 'payment');
-            return false;
-        }
-    }
-
 
     /**
      * Inserts a payment record.
