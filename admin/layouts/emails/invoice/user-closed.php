@@ -9,4 +9,4 @@ $account = $displayData['account'];
 ?>
 <p>Hello <?= htmlspecialchars($fname, ENT_QUOTES, 'UTF-8'); ?>,</p>
 <p>Thank you for your payment.<p>
-<p>Invoice #<?php echo $invoice->number; ?> for Account `<?php echo $account->name; ?>` for <?php echo $invoice->total; ?> has been marked as closed.</p>
+<p>Invoice #<?php echo $invoice->number; ?> for Account `<?php echo $account->name; ?>` for $<?php echo number_format($invoice->total, 2); ?> has been marked as closed.</p>
