@@ -7,5 +7,5 @@ $invoice_number = $displayData['invoice']->number;
 $client_name = $displayData['client']->name;
 ?>
 <p>Hello <?php echo $fname; ?>,</p>
-<p>Invoice <strong>#<?php echo $invoice_number; ?></strong> for <strong>`<?php echo $client_name; ?>`</strong> is ready for your review. Please sign to view
+<p>Invoice <strong>#<?php echo $invoice_number; ?></strong> for <strong>`<?php echo $client_name; ?>`</strong> is ready for your review. Please sign in to view
     details and make a payment. </p>
