@@ -525,6 +525,8 @@ This payment method allows clients to pay invoices by mailing a physical check. 
 - **sumInvoiceAppliedPayments($invoiceId)**: Calculates the total amount of payments applied to the specified invoice.
 - **updateInvoiceStatus($invoiceId, $status)**: Updates the status of the specified invoice.
 - **recalculateInvoiceStatus(int $invoiceId)**: Calculates the status of the specified invoice based on its current payment data and returns the appropriate status; it does not update the invoice record.
+- **onInvoiceOpened($invoice, int $previousStatus): void**: Method called when the invoice status is set to opened. Then calls the event `onInvoiceOpened`.
+- **onInvoiceClosed($invoice, int $previousStatus): void**: Method called when the invoice status is set to closed. Then calls the event `onInvoiceClosed`.
 
 
 ## Payments Helper
@@ -542,6 +544,7 @@ The **Payments Helper** provides several methods to manage and update payment re
 - **setPaymentLocked(int $paymentId)**: Sets the payment record as locked (read-only).
 - **setPaymentUnlocked(int $paymentId)**: Unlocks the payment record for editing.
 - **recalculatePaymentStatus(int $paymentId)**: Calculates and returns the appropriate status for a payment based on its allocations and current state.
+- **onPaymentCompleted($payment)**: Method called when the payment status is set to `Completed`. It process the downstream processes related to payments becoming completed. This method calls the event `onPaymentComplete` which plugins can tie into.
 
 ## Domains Helper
 
