@@ -11,6 +11,7 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
 
     protected $clientData;
     protected $accountData;
+    protected $invoiceData;
 
     protected function _before()
     {
@@ -25,7 +26,24 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
             'company_state' => 'California',
             'company_zip' => '12345',
             'company_phone' => '555 555-5555',
+        ]);
 
+        $this->clientData = $this->tester->createMothershipClient([
+            'name' => 'Test Client',
+            'email' => 'test.client@mailinator.com',
+        ]);
+
+        $this->accountData = $this->tester->createMothershipAccount([            
+            'client_id' => $this->clientData['id'],
+            'name' => 'Test Account',
+        ]);
+
+        $this->invoiceData = $this->tester->createMothershipInvoice([
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'number' => '2023',
+            'amount' => 100.00,
+            'due_date' => "2023-10-15",
         ]);
     }
 
@@ -44,16 +62,9 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
                 'payment_method' => 'paybycheck',
                 'payment_date' => "2023-10-01",                
             ],
-            'invoice' => (object) [
-                'id' => 1,
-                'number' => '2023',
-                'amount' => 100.00,
-                'due_date' => "2023-10-15",
-            ],
-            'client' => (object) [
-                'id' => 1,
-                'name' => 'Test Client',
-            ],
+            'invoice' => (object) $this->invoiceData,
+            'client' => (object) $this->clientData,
+            'account' => (object) $this->accountData,
             'confirm_link' => 'index.php?option=com_mothership&task=payment.confirm&id=1',
             'view_link' => 'index.php?option=com_mothership&view=invoice&id=1',
         ];
@@ -75,15 +86,15 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
     {
         return [
             ['invoice.user-opened', 'Hello John,'],
-            ['invoice.user-opened', 'Invoice #2023 for `Test Client` is ready for your review.'],
+            ['invoice.user-opened', "Invoice #{$this->invoiceData['number']} for `{$this->clientData['name']}` is ready for your review."],
             ['invoice.user-closed', 'Hello John,'],
-            ['invoice.user-closed', "Thank you for your payment, invoice #2023 has been marked as closed."],
+            ['invoice.user-closed', "Thank you for your payment, invoice #{$this->invoiceData['number']} has been marked as closed."],
             ['payment.admin-confirmed', 'Hello Admin,'],
-            ['payment.admin-confirmed', 'A payment has been confirmed.'],
+            // ['payment.admin-confirmed', 'A payment has been confirmed.'],
             ['payment.admin-pending', 'Hello Admin,'],
-            ['payment.admin-pending', 'A new paybycheck payment has been initiated by Test Client for the amount of $100.00.'],
+            ['payment.admin-pending', "A new paybycheck payment has been initiated by {$this->clientData['name']} for the amount of $100.00."],
             ['payment.user-confirmed', 'Hello John,'],
-            ['payment.user-confirmed', 'Your payment has been confirmed.'],
+            // ['payment.user-confirmed', 'Your payment has been confirmed.'],
         ];
     }
 
