@@ -252,49 +252,16 @@ class InvoiceHelper
         $query->where($db->quoteName('id') . ' = ' . (int) $invoice->id);
         $db->setQuery($query);
 
-        try {
-            $db->execute();
-            $client = ClientHelper::getClient($invoice->client_id);
-            $account = AccountHelper::getAccount($invoice->account_id);
-        } catch (\Exception $e) {
-            return false;
-        }
-
-        // Get the owner id and load that user
-        // Then grab the first name of that user
-        $user = Factory::getUser($client->owner_user_id);
-        $name = explode(" ", $user->name);
-        $firstName = $name[0];
-        $lastName = $name[1] ?? '';
-        $user_email = $user->email;
-
         switch($status){
             // Status 4 = Closed
             case 4:
-                EmailService::sendTemplate('invoice.user-closed', 
-                    $user_email, 
-                    'Invoice Closed', 
-                    [
-                        'fname' => $firstName,
-                        'lname' => $lastName,
-                        'invoice' => $invoice,
-                        'client' => $client,
-                    ]
-                );
+                self::onInvoiceClosed($invoice, $invoice->status);
                 break;
             // Status 2 = Opened
             case 2:
-            EmailService::sendTemplate('invoice.user-opened', 
-                $user_email, 
-                'Invoice Opened', 
-                [
-                    'fname' => $firstName,
-                    'lname' => $lastName,
-                    'invoice' => $invoice,
-                    'client' => $client,
-                ]
-            );
-        }
+                self::onInvoiceOpened($invoice, $invoice->status);
+                break;
+            }
 
         return true;
     }
@@ -411,13 +378,30 @@ class InvoiceHelper
      */
     public static function onInvoiceOpened($invoice, int $previousStatus): void
     {
+
+        
+        try {
+            $client = ClientHelper::getClient($invoice->client_id);
+        } catch (\Exception $e) {
+            
+        }
+
+        // Get the owner id and load that user
+        // Then grab the first name of that user
+        $user = Factory::getUser($client->owner_user_id);
+        $name = explode(" ", $user->name);
+        $firstName = $name[0];
+        $lastName = $name[1] ?? '';
+
         // SEnd the invoice template to the client
         EmailService::sendTemplate('invoice.user-opened', 
-        'test.smith@mailinator.com', 
+        $user->email, 
         'New Invoice Opened', 
         [
-            'fname' => 'Trevor',
+            'fname' => $firstName,
+            'lname' => $lastName,
             'invoice' => $invoice,
+            'client' => $client,
         ]);
 
         // Optional: add history or record in a log table
