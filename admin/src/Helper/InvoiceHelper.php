@@ -223,6 +223,12 @@ class InvoiceHelper
     {
         $paidDate = null;
 
+        try {
+            $invoice = self::getInvoice($invoice->id);
+        } catch (\RuntimeException $e) {
+            throw new \RuntimeException($e->getMessage());
+        }
+
         switch ($status) {
             case 1: // Draft
             case 2: // Opened
