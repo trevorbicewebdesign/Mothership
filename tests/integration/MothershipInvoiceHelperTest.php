@@ -4,6 +4,7 @@ namespace Tests\Integration;
 
 use \Tests\Support\IntegrationTester;
 use TrevorBice\Component\Mothership\Administrator\Helper\InvoiceHelper;
+use TrevorBice\Component\Mothership\Administrator\Helper\ClientHelper;
 
 class MothershipInvoiceHelperTest extends \Codeception\Test\Unit
 {
@@ -16,7 +17,11 @@ class MothershipInvoiceHelperTest extends \Codeception\Test\Unit
 
     protected function _before()
     {
+        require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Service/EmailService.php';
         require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Helper/InvoiceHelper.php';
+        require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Helper/ClientHelper.php';
+        require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Helper/AccountHelper.php';
+        
 
         $this->clientData = $this->tester->createMothershipClient([
             'name' => 'Test Client',
@@ -119,7 +124,7 @@ class MothershipInvoiceHelperTest extends \Codeception\Test\Unit
             'status' => 1,
         ]);
 
-        $results = InvoiceHelper::updateInvoiceStatus($invoiceId, $status_id);
+        $results = InvoiceHelper::updateInvoiceStatus((object) $this->invoiceData, $status_id);
 
         codecept_debug($results);
         $this->assertTrue($results);
@@ -152,7 +157,7 @@ class MothershipInvoiceHelperTest extends \Codeception\Test\Unit
             'status' => 1,
         ]);
 
-        $results = InvoiceHelper::setInvoiceClosed($invoiceId);
+        $results = InvoiceHelper::setInvoiceClosed((object) $this->invoiceData);
         codecept_debug($results);
 
         $criteria = [
