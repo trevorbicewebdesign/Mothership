@@ -1,4 +1,5 @@
 <?php
+// This email should be triggered when the client initiates a payment.
 defined('_JEXEC') or die;
 
 $admin_fname   = $displayData['admin_fname'];
