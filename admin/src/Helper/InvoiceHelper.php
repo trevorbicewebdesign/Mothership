@@ -353,6 +353,7 @@ class InvoiceHelper
                 return 2; // opened
             }
         }
+        return $currentStatus; // no change
     }
 
     /**
