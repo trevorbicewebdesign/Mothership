@@ -91,9 +91,14 @@ class PaymentHelper
             throw new \RuntimeException($e->getMessage());
         }
 
-        // Set the invoice status to be closed
-        InvoiceHelper::updateInvoiceStatus($payment, 4);
-
+        $invoices = PaymentHelper::getPaymentInvoices($payment->id);
+        foreach($invoices as $invoice){
+            $new_invoice_status = InvoiceHelper::recalculateInvoiceStatus($invoice->id);
+            if($new_invoice_status === 4){
+                InvoiceHelper::updateInvoiceStatus($invoice->id, 4);
+            }
+        }
+        
         // Sends an email to the user that the payment has been completed
         EmailService::sendTemplate('payment.user-confirmed', 
             $client->email, 
@@ -400,7 +405,7 @@ class PaymentHelper
      * 
      * @throws \RuntimeException If the query fails or an error occurs while fetching data.
      */
-    public function getPaymentInvoices($paymentId)
+    public static function getPaymentInvoices($paymentId):array
     {
         $invoices = [];
         $db = Factory::getContainer()->get(DatabaseDriver::class);
