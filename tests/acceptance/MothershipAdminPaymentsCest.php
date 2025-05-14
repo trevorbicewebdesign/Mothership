@@ -21,8 +21,18 @@ class MothershipAdminPaymentsCest
     {
         $I->resetMothershipTables();
 
+        $I->setMothershipConfig([
+            'company_name' => 'Test Company',
+            'company_address' => '123 Test St, Test City, TX 12345',
+            'company_phone' => '(123) 456-7890',
+            'company_email' => 'test.company@mailinator.com',
+            
+        ]);
+
         $this->clientData = $I->createMothershipClient([
             'name' => 'Test Client',
+            'email' => 'test.client@mailinator.com',
+            'phone' => '(123) 456-7890',
         ]);
 
         $clientData2 = $I->createMothershipClient([
