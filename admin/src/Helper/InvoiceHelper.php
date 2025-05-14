@@ -362,17 +362,20 @@ class InvoiceHelper
         $db->setQuery($query);
         $row = $db->loadAssoc();
 
-        $invoiceTotal = isset($row['total']) ? (float) $row['total'] : 0.0;
-        $currentStatus = isset($row['status']) ? (int) $row['status'] : 2;
+        // Defensive: handle missing or null values
+        $invoiceTotal = isset($row['total']) ? (float)$row['total'] : 0.0;
+        $currentStatus = isset($row['status']) ? (int)$row['status'] : 2;
 
-        // Determine new status
-        if ($totalPaid >= $invoiceTotal && $invoiceTotal > 0) {
-            $status = 4; // Closed
-        } else {
-            $status = $currentStatus;
+        // Invoice total should only be recalculated if the invoice is opened or closed
+        // Cancelled invoices should not be recalculated
+        if( $currentStatus === 2 || $currentStatus === 4){
+            if( $invoiceTotal > 0 && $totalPaid >= $invoiceTotal){
+                return 4; // closed
+            }
+            else {
+                return 2; // opened
+            }
         }
-
-        return $status;
     }
 
     /**
