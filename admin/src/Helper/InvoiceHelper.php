@@ -302,7 +302,7 @@ class InvoiceHelper
      *
      * @return void
      */
-    public static function recalculateInvoiceStatus(int $invoiceId): void
+    public static function recalculateInvoiceStatus(int $invoiceId): int
     {
         $db = Factory::getContainer()->get(DatabaseDriver::class);
 
@@ -334,20 +334,23 @@ class InvoiceHelper
             $status = 4; // Closed
         } 
 
-        // Update invoice status
-        $query = $db->getQuery(true)
-            ->update($db->quoteName('#__mothership_invoices'))
-            ->set($db->quoteName('status') . ' = :status')
-            ->where($db->quoteName('id') . ' = :invoiceId')
-            ->bind(':status', $status, ParameterType::INTEGER)
-            ->bind(':invoiceId', $invoiceId, ParameterType::INTEGER);
-        $db->setQuery($query);
-        $db->execute();
+        return $status;
     }
 
     public function getInvoicePayments($invoiceId)
     {
-        
+        $db = Factory::getContainer()->get(DatabaseDriver::class);
+        $query = $db->getQuery(true)
+            ->select('*')
+            ->from($db->quoteName('#__mothership_invoice_payment'))
+            ->where($db->quoteName('invoice_id') . ' = ' . (int) $invoiceId);
+        $db->setQuery($query);
+
+        try {
+            return $db->loadObjectList();
+        } catch (\Exception $e) {
+            throw new \RuntimeException("Failed to retrieve payments for invoice ID {$invoiceId}: " . $e->getMessage());
+        }
     }
 
     public static function handleInvoicePayment($invoice_id, $payment_id, $applied_amount)
