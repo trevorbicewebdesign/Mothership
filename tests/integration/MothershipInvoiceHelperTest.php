@@ -25,6 +25,7 @@ class MothershipInvoiceHelperTest extends \Codeception\Test\Unit
 
         $this->clientData = $this->tester->createMothershipClient([
             'name' => 'Test Client',
+            'owner_user_id' => 1,
         ]);
 
         $this->accountData = $this->tester->createMothershipAccount([
@@ -142,7 +143,7 @@ class MothershipInvoiceHelperTest extends \Codeception\Test\Unit
     public function testUpdateInvoiceStatusInvalidId()
     {
         try {
-            $results = InvoiceHelper::updateInvoiceStatus(9999, 2);
+            $results = InvoiceHelper::updateInvoiceStatus((object) ['id'=>9999], 2);
         } catch (\Exception $e) {
             $this->assertStringContainsString("Invoice ID 9999 not found.", $e->getMessage());
         }
