@@ -93,10 +93,9 @@ class PaymentHelper
 
         $invoices = PaymentHelper::getPaymentInvoices($payment->id);
         foreach($invoices as $invoice){
+            // Recalculate the invoice status don't assume that the invoice is fully paid
             $new_invoice_status = InvoiceHelper::recalculateInvoiceStatus($invoice->id);
-            if($new_invoice_status === 4){
-                InvoiceHelper::updateInvoiceStatus($invoice->id, 4);
-            }
+            InvoiceHelper::updateInvoiceStatus($invoice->id, $new_invoice_status);
         }
         
         // Sends an email to the user that the payment has been completed
