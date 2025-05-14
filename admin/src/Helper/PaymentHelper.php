@@ -103,7 +103,7 @@ class PaymentHelper
         // Sends an email to the user that the payment has been completed
         EmailService::sendTemplate('payment.user-confirmed', 
             $client->email, 
-            'Payment Completed', 
+            "Payment #{$payment->id} Received", 
             [
                 'fname' => $client->fname,
                 'payment' => $payment,
@@ -115,7 +115,7 @@ class PaymentHelper
         // Send an email to the admin that the payment has been completed
         EmailService::sendTemplate('payment.admin-confirmed', 
             $options['company_email'], 
-            'Payment Completed', 
+            "Payment #{$payment->id} Confirmed", 
             [
                 'admin_fname' => 'Admin',
                 'payment' => $payment,
