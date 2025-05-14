@@ -91,12 +91,20 @@ class PaymentHelper
             throw new \RuntimeException($e->getMessage());
         }
 
+        // Get the owner id and load that user
+        // Then grab the first name of that user
+        $user = Factory::getUser($client->owner_user_id);
+        $name = explode(" ", $user->name);
+        $firstName = $name[0];
+        $lastName = $name[1] ?? '';
+
         // Sends an email to the user that the payment has been completed
         EmailService::sendTemplate('payment.user-confirmed', 
             $client->email, 
             "Payment #{$payment->id} Received", 
             [
-                'fname' => $client->fname,
+                'fname' => $firstName,
+                'lname' => $lastName,
                 'payment' => $payment,
                 'client' => $client,
                 'account' => $account,
