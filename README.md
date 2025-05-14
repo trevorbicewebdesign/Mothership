@@ -524,20 +524,24 @@ This payment method allows clients to pay invoices by mailing a physical check. 
 - **getInvoiceAppliedPayments($invoiceID)**: Retrieves all payments applied to the specified invoice.
 - **sumInvoiceAppliedPayments($invoiceId)**: Calculates the total amount of payments applied to the specified invoice.
 - **updateInvoiceStatus($invoiceId, $status)**: Updates the status of the specified invoice.
-- **getInvoice($invoice_id)**: Retrieves the details of the specified invoice.
-- **recalculateInvoiceStatus(int $invoiceId)**: This method recalculates the status of an invoice based on its current data. If an invoice was set to `Closed` it will be set back to `Opened` due to it no longer being fully paid.
+- **recalculateInvoiceStatus(int $invoiceId)**: Calculates the status of the specified invoice based on its current payment data and returns the appropriate status; it does not update the invoice record.
 
 
 ## Payments Helper
 The **Payments Helper** provides several methods to manage and update payment records and statuses. Below are the methods available:
 
 - **getPayment($paymentId)**: Retrieves the payment details for the given payment ID.
-- **getInvoicePayment($invoiceId, $paymentId)**: Retrieves the payment details associated with a specific invoice and payment ID.
+- **getInvoicePayment($invoiceId, $paymentId)**: Retrieves the payment allocation details for a specific invoice and payment ID.
 - **updateStatus($paymentId, $status_id)**: Updates the status of a payment based on the provided status ID.
 - **getStatus($status_id)**: Retrieves the status details for the given status ID.
 - **updatePaymentStatus($paymentId, $status)**: Updates the payment status with the provided status value.
-- **insertPaymentRecord(int $clientId, int $accountId, float $amount, $paymentDate, float $fee, $feePassedOn, $paymentMethod, $txnId, int $status)**: Inserts a new payment record with the specified details.
-- **insertInvoicePayments($invoiceId, $paymentId, $applied_amount)**: Inserts a payment record for a specific invoice with the applied amount.
+- **insertPaymentRecord(int $clientId, ?int $accountId, float $amount, string $paymentDate, float $fee, bool $feePassedOn, string $paymentMethod, ?string $txnId, int $status)**: Inserts a new payment record with the specified details.
+- **insertInvoicePayments(int $invoiceId, int $paymentId, float $appliedAmount)**: Inserts a payment allocation record for a specific invoice with the applied amount.
+- **sumInvoicePayments(int $invoiceId)**: Returns the total amount of payments applied to a given invoice.
+- **getAppliedPayments(int $invoiceId)**: Retrieves all payment allocations applied to a given invoice.
+- **setPaymentLocked(int $paymentId)**: Sets the payment record as locked (read-only).
+- **setPaymentUnlocked(int $paymentId)**: Unlocks the payment record for editing.
+- **recalculatePaymentStatus(int $paymentId)**: Calculates and returns the appropriate status for a payment based on its allocations and current state.
 
 ## Domains Helper
 
