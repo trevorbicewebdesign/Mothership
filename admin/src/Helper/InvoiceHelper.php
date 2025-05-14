@@ -435,6 +435,7 @@ class InvoiceHelper
     {
         try {
             $client = ClientHelper::getClient($invoice->client_id);
+            $account = AccountHelper::getAccount($invoice->account_id);
         } catch (\Exception $e) {
             
         }
@@ -455,6 +456,7 @@ class InvoiceHelper
             'lname' => $lastName,
             'invoice' => $invoice,
             'client' => $client,
+            'account' => $account,
         ]);
 
         // Optional: add history or record in a log table
