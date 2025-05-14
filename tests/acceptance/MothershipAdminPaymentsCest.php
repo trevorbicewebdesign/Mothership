@@ -703,7 +703,7 @@ class MothershipAdminPaymentsCest
         ]);
         */
 
-        $emailInvoiceClosed = $I->getEmailBySubject("Invoice #{$this->invoiceData['id']} Closed");
+        $emailInvoiceClosed = $I->getEmailBySubject("Invoice #{$invoiceData['number']} Closed");
         $I->assertNotEmpty($emailInvoiceClosed, "Email not received");
     }
 }
