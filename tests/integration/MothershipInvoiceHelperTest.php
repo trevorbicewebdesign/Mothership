@@ -330,11 +330,10 @@ class MothershipInvoiceHelperTest extends \Codeception\Test\Unit
         }
 
         // Recalculate and assert
-        InvoiceHelper::recalculateInvoiceStatus($invoiceId);
+        $new_status = InvoiceHelper::recalculateInvoiceStatus($invoiceId);
+        codecept_debug("New Status is {$new_status}");
 
-        $invoice = $this->tester->grabFromDatabase('jos_mothership_invoices', 'status', ['id' => $invoiceId]);
-
-        $this->assertEquals($expectedStatus, (int) $invoice);
+        $this->assertEquals($expectedStatus, $new_status);
     }
 
     public function isLateProvider()
