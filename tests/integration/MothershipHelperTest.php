@@ -18,6 +18,7 @@ class MothershipHelperTest extends \Codeception\Test\Unit
 
         $this->tester->setMothershipConfig([
             'company_name' => 'Your Company Name',
+            'company_email' => 'company.email.@mailinator.com',
             'company_address' => '123 Nowhere St, CA, 12345',
             'company_address_1' => '123 Nowhere St',
             'company_address_2' => '',
@@ -26,7 +27,7 @@ class MothershipHelperTest extends \Codeception\Test\Unit
             'company_zip' => '12345',
             'company_phone' => '555 555-5555',
         ]);
-        
+
     }
 
     public function testGetMothershipOptions()
