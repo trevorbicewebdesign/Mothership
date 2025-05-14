@@ -42,12 +42,13 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
                 'id' => 1,
                 'amount' => 100.00,
                 'payment_method' => 'paybycheck',
-                'payment_date' => "2023-10-01",
+                'payment_date' => "2023-10-01",                
             ],
             'invoice' => (object) [
                 'id' => 1,
                 'number' => '2023',
                 'amount' => 100.00,
+                'due_date' => "2023-10-15",
             ],
             'client' => (object) [
                 'id' => 1,
@@ -76,7 +77,7 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
             ['invoice.user-opened', 'Hello John,'],
             ['invoice.user-opened', 'You have a new invoice.'],
             ['invoice.user-closed', 'Hello John,'],
-            ['invoice.user-closed', 'Your invoice has been marked as closed.'],
+            ['invoice.user-closed', "Thank you for your payment, invoice #2023 has been marked as closed."],
             ['payment.admin-confirmed', 'Hello Admin,'],
             ['payment.admin-confirmed', 'A payment has been confirmed.'],
             ['payment.admin-pending', 'Hello Admin,'],
