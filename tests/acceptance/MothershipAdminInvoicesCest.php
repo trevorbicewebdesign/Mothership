@@ -734,8 +734,8 @@ class MothershipAdminInvoicesCest
             'object_type' => 'invoice',
         ]);
 
-        $email_id = $I->getEmailBySubject("New Invoice Opened");
-        $I->assertNotEmpty($email_id, "Email with subject 'New Invoice Opened' was not sent.");
+        $email_id = $I->getEmailBySubject("Invoice #{$this->invoiceData['number']} Opened");
+        $I->assertNotEmpty($email_id, "Email with subject 'Invoice #{$this->invoiceData['number']} Opened' was not sent.");
     }
 
     /**
