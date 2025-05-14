@@ -177,6 +177,11 @@ class InvoiceModel extends AdminModel
 
             InvoiceHelper::onInvoiceOpened($table, $previousStatus);
         }
+
+        // Trigger `onInvoiceClosed`event if the invoice is set to closed (4)
+        if (($newStatus == 4 && $previousStatus == 2)) {
+            InvoiceHelper::onInvoiceClosed($table, $previousStatus);
+        }
         
 
         // Delete existing items
