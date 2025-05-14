@@ -94,6 +94,9 @@ class PaymentHelper
         // Get all invoices associated with the payment
         // For now it should just be one invoice
         $invoices = PaymentHelper::getPaymentInvoices($payment->id);
+        if( count($invoices) == 0 ){
+            throw new \RuntimeException("No invoices found for payment ID: {$payment->id}");
+        }
         foreach($invoices as $invoice){
             // Recalculate the invoice status don't assume that the invoice is fully paid
             $new_invoice_status = InvoiceHelper::recalculateInvoiceStatus($invoice->id);
