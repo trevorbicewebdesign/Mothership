@@ -75,7 +75,7 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
     {
         return [
             ['invoice.user-opened', 'Hello John,'],
-            ['invoice.user-opened', 'You have a new invoice.'],
+            ['invoice.user-opened', 'Invoice #2023 for `Test Client` is ready for your review.'],
             ['invoice.user-closed', 'Hello John,'],
             ['invoice.user-closed', "Thank you for your payment, invoice #2023 has been marked as closed."],
             ['payment.admin-confirmed', 'Hello Admin,'],
