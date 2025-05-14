@@ -643,5 +643,33 @@ class MothershipAdminPaymentsCest
             'user_id' => 1, 
         ]);
 
+        $emailReceived = $I->grabEmailBySubject("Payment #{$paymentData['id']} Received");
+        $I->assertNotEmpty($emailReceived, "Email not received");
+        $emailConfimred = $I->grabEmailBySubject("Payment #{$paymentData['id']} Comfirmed");
+        $I->assertNotEmpty($emailConfimred, "Email not received");
+
+        // This should also have updated the invoice status to confirmed
+        $I->seeInDatabase("jos_mothership_invoices", [ 
+            'id' => $this->invoiceData['id'], 
+            'status' => 4 
+        ]);
+
+        $I->seeInDatabase("jos_mothership_invoice_payment", [ 
+            'invoice_id' => $this->invoiceData['id'], 
+            'payment_id' => $paymentData['id'], 
+            'applied_amount' => 103.20 
+        ]);
+
+        $I->seeInDatabase("jos_mothership_logs", [ 
+            'client_id' => $this->clientData['id'], 
+            'account_id' => $this->accountData['id'],
+            'action' => 'invoice_status_changed', 
+            'object_id' => $this->invoiceData['id'], 
+            'object_type' => 'invoice', 
+            'user_id' => 1, 
+        ]);
+
+        $emailInvoiceClosed = $I->grabEmailBySubject("Invoice #{$this->invoiceData['id']} Closed");
+        $I->assertNotEmpty($emailInvoiceClosed, "Email not received");
     }
 }
