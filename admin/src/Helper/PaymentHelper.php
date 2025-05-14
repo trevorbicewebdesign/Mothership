@@ -104,6 +104,7 @@ class PaymentHelper
             $client->email, 
             'Payment Completed', 
             [
+                'fname' => $client->fname,
                 'payment' => $payment,
                 'client' => $client,
                 'account' => $account,
@@ -115,6 +116,7 @@ class PaymentHelper
             $options['company_email'], 
             'Payment Completed', 
             [
+                'admin_fname' => 'Admin',
                 'payment' => $payment,
                 'client' => $client,
                 'account' => $account,
@@ -154,7 +156,7 @@ class PaymentHelper
      * @param int $status_id The status ID to convert (1: Pending, 2: Completed, 3: Failed, 4: Cancelled, 5: Refunded).
      * @return string The corresponding status as a string. Returns 'Unknown' if the status ID is not recognized.
      */
-    public static function getStatus(int $status_id)
+    public static function getStatus($status_id)
     {
         // Transform the status from integer to string
         switch ($status_id) {
