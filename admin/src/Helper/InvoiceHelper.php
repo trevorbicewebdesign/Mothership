@@ -20,6 +20,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\ParameterType;
 use TrevorBice\Component\Mothership\Administrator\Service\EmailService;
+use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper; 
 
 class InvoiceHelper
 {
@@ -378,8 +379,6 @@ class InvoiceHelper
      */
     public static function onInvoiceOpened($invoice, int $previousStatus): void
     {
-
-        
         try {
             $client = ClientHelper::getClient($invoice->client_id);
         } catch (\Exception $e) {
@@ -393,10 +392,10 @@ class InvoiceHelper
         $firstName = $name[0];
         $lastName = $name[1] ?? '';
 
-        // SEnd the invoice template to the client
+        // Send the invoice email to the client
         EmailService::sendTemplate('invoice.user-opened', 
         $user->email, 
-        'New Invoice Opened', 
+        "Invoice #{$invoice->number} Opened", 
         [
             'fname' => $firstName,
             'lname' => $lastName,
@@ -424,14 +423,28 @@ class InvoiceHelper
      */
     public static function onInvoiceClosed($invoice, int $previousStatus): void
     {
+        try {
+            $client = ClientHelper::getClient($invoice->client_id);
+        } catch (\Exception $e) {
+            
+        }
+
+        // Get the owner id and load that user
+        // Then grab the first name of that user
+        $user = Factory::getUser($client->owner_user_id);
+        $name = explode(" ", $user->name);
+        $firstName = $name[0];
+        $lastName = $name[1] ?? '';
+
         // Send the invoice template to the client
-        // SEnd the invoice template to the client
         EmailService::sendTemplate('invoice.user-closed', 
-        'test.smith@mailinator.com', 
+        $user->email, 
         'Invoice Closed', 
         [
-            'fname' => 'Trevor',
+            'fname' => $firstName,
+            'lname' => $lastName,
             'invoice' => $invoice,
+            'client' => $client,
         ]);
 
         // Optional: add history or record in a log table
