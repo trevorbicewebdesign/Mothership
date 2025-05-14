@@ -127,7 +127,6 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
         'test.smith@mailinator.com', 
         'New Pending Payment for Pay By Check', 
         [
-            'fname' => 'John',
             'admin_fname' => 'Admin',
             'payment' => (object) [
                 'id' => 1,
@@ -135,17 +134,9 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
                 'payment_method' => 'paybycheck',
                 'payment_date' => "2023-10-01",
             ],
-            'invoice' => (object) [
-                'id' => 1,
-                'number' => '2023',
-                'amount' => 100.00,
-            ],
-            'client' => (object) [
-                'id' => 1,
-                'name' => 'Test Client',
-            ],
-            'confirm_link' => "http://localhost:8080/administrator/index.php?option=com_mothership&task=payment.confirm&id=1",
-            'view_link' => "http://localhost:8080/administrator/index.php?option=com_mothership&view=invoice&id=1",
+            'invoice' => (object) $this->invoiceData,
+            'client' => (object) $this->clientData,
+            'account' => (object) $this->accountData,
         ]);
 
         $email_id = $this->tester->getEmailBySubject("New Pending Payment for Pay By Check");        
