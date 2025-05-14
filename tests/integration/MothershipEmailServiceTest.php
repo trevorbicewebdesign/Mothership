@@ -86,13 +86,14 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
     {
         return [
             ['invoice.user-opened', 'Hello John,'],
-            ['invoice.user-opened', "Invoice #{$this->invoiceData['number']} for `{$this->clientData['name']}` is ready for your review."],
+            ['invoice.user-opened', "Invoice #2023 for `Test Client` is ready for your review."],
             ['invoice.user-closed', 'Hello John,'],
-            ['invoice.user-closed', "Thank you for your payment, invoice #{$this->invoiceData['number']} has been marked as closed."],
+            ['invoice.user-closed', "Thank you for your payment."],
+            ['invoice.user-closed', "Invoice #2023 for Account `Test Account` for \$100.00 has been marked as closed."],
             ['payment.admin-confirmed', 'Hello Admin,'],
             // ['payment.admin-confirmed', 'A payment has been confirmed.'],
             ['payment.admin-pending', 'Hello Admin,'],
-            ['payment.admin-pending', "A new paybycheck payment has been initiated by {$this->clientData['name']} for the amount of $100.00."],
+            ['payment.admin-pending', "A new paybycheck payment has been initiated by Test Client for the amount of $100.00."],
             ['payment.user-confirmed', 'Hello John,'],
             // ['payment.user-confirmed', 'Your payment has been confirmed.'],
         ];
