@@ -148,7 +148,13 @@ class PaymentHelper
         
     }
 
-    public static function getStatus($status_id)
+    /**
+     * Returns the payment status as a string based on the provided status ID.
+     *
+     * @param int $status_id The status ID to convert (1: Pending, 2: Completed, 3: Failed, 4: Cancelled, 5: Refunded).
+     * @return string The corresponding status as a string. Returns 'Unknown' if the status ID is not recognized.
+     */
+    public static function getStatus(int $status_id)
     {
         // Transform the status from integer to string
         switch ($status_id) {
