@@ -9,6 +9,25 @@ use Joomla\CMS\Language\Text;
     .mt-4 {
         margin-top: 1.5rem;
     }
+    .payment-status {
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+        color: #fff;
+        background-color:rgb(0, 131, 11);
+    }
+    .payment-status.status-pending {
+        background-color: #f39c12;
+    }
+    .payment-status.status-failed{
+        background-color: #e74c3c;
+    }
+    .payment-status.status-cancelled{
+        background-color: #e74c3c;
+    }
+    .payment-status.status-refunded{
+        background-color: #3498db;
+    }
+
 </style>
 <h1>Payments</h1>
 <table class="table paymentsTable" id="paymentsTable">
@@ -29,25 +48,31 @@ use Joomla\CMS\Language\Text;
             <tr>
                 <td colspan="7">No payments found.</td>
             </tr>
+        <?php else : ?>
+            <?php foreach ($this->payments as $payment) : ?>
+                <tr>
+                    <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=payment&id=' . $payment->id); ?>"><?php echo $payment->id; ?></a></td>
+                    <td><?php echo $payment->account_name; ?></td>
+                    <td>$<?php echo number_format($payment->amount, 2); ?></td>
+                    <td>
+                        <?php 
+                        $status = isset($payment->status) ? htmlspecialchars($payment->status, ENT_QUOTES, 'UTF-8') : 'Unknown';
+                        ?>
+                        <span class="payment-status status-<?php echo strtolower($status); ?>"><?php echo $status; ?></span>
+                    </td>
+                    <td>$<?php echo number_format($payment->fee_amount, 2); ?></td>
+                    <td>
+                        <?php 
+                        $plugin = \Joomla\CMS\Plugin\PluginHelper::getPlugin('mothership-payment', $payment->payment_method);
+                        $pluginParams = new \Joomla\Registry\Registry($plugin->params);
+                        echo $pluginParams->get('display_name')?$pluginParams->get('display_name') : $payment->payment_method;
+                        ?>
+                    </td>
+                    <td><?php echo $payment->transaction_id; ?></td>
+                    <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=invoice&id=' . $payment->invoice_ids); ?>" ><?php echo $payment->invoice_ids; ?></a></td>
+                </tr>
+            <?php endforeach; ?>
         <?php endif; ?>
-        <?php foreach ($this->payments as $payment) : ?>
-            <tr>
-                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=payment&id=' . $payment->id); ?>"><?php echo $payment->id; ?></a></td>
-                <td><?php echo $payment->account_name; ?></td>
-                <td>$<?php echo number_format($payment->amount, 2); ?></td>
-                <td><?php echo $payment->status; ?></td>
-                <td>$<?php echo number_format($payment->fee_amount, 2); ?></td>
-                <td>
-                    <?php 
-                    $plugin = \Joomla\CMS\Plugin\PluginHelper::getPlugin('mothership-payment', $payment->payment_method);
-                    $pluginParams = new \Joomla\Registry\Registry($plugin->params);
-                    echo $pluginParams->get('display_name')?$pluginParams->get('display_name') : $payment->payment_method;
-                    ?>
-                </td>
-                <td><?php echo $payment->transaction_id; ?></td>
-                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=invoice&id=' . $payment->invoice_ids); ?>" ><?php echo $payment->invoice_ids; ?></a></td>
-            </tr>
-        <?php endforeach; ?>
     </tbody>
 </table>
 <div class="card mt-4">

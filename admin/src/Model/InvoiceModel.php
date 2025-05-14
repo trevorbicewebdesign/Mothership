@@ -11,6 +11,7 @@ use Joomla\Registry\Registry;
 use Joomla\CMS\Component\ComponentHelper;
 use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper; // Ensure this is the correct namespace for LogHelper
 use TrevorBice\Component\Mothership\Administrator\Service\EmailService; // Ensure this is the correct namespace for EmailService
+use TrevorBice\Component\Mothership\Administrator\Helper\InvoiceHelper; // Ensure this is the correct namespace for InvoiceHelper
 
 \defined('_JEXEC') or die;
 
@@ -124,47 +125,6 @@ class InvoiceModel extends AdminModel
         $table->name = htmlspecialchars_decode($table->name, ENT_QUOTES);
     }
 
-    /**
-     * Triggered when an invoice transitions to "Opened".
-     *
-     * @param  \Joomla\CMS\Table\Table  $invoice         The invoice table object.
-     * @param  int                      $previousStatus  The previous status ID.
-     *
-     * @return void
-     */
-    protected function onInvoiceOpened($invoice, int $previousStatus): void
-    {
-        // Log the event or trigger plugins here
-        \Joomla\CMS\Log\Log::add(
-            sprintf('Invoice #%d status changed from %d to Opened.', $invoice->id, $previousStatus),
-            \Joomla\CMS\Log\Log::INFO,
-            'com_mothership'
-        );
-
-        \Joomla\CMS\Factory::getApplication()->triggerEvent('onMothershipInvoiceOpened', [$invoice]);
-
-        // SEnd the invoice template to the client
-        EmailService::sendTemplate('invoice.opened', 'test.smith@mailinator.com', 'New Invoice Opened', [
-            'fname' => 'Trevor',
-            'invoice_number' => 'INV-2045',
-            'account_name' => 'Trevor Bice Webdesign',
-            'account_center_url' => 'https://example.com/account',
-            'invoice_due_date' => 'April 30, 2025',
-            'pay_invoice_link' => 'https://example.com/pay?invoice=2045',
-            'company_name' => 'Trevor Bice Webdesign',
-            'company_address' => '123 Main St, San Francisco, CA',
-            'company_address_1' => '123 Main St',
-            'company_address_2' => 'Suite 100',
-            'company_city' => 'San Francisco',
-            'company_state' => 'CA',
-            'company_zip' => '94111',
-            'company_phone' => '(555) 555-5555',
-            'company_email' => 'info@trevorbice.com',
-        ]);
-
-        // Optional: add history or record in a log table
-        LogHelper::logInvoiceStatusOpened($invoice->id, $invoice->client_id, $invoice->account_id);
-    }
 
     public function save($data)
     {
@@ -209,11 +169,18 @@ class InvoiceModel extends AdminModel
         $invoiceId = $table->id;
         // 🔔 Trigger when status is set to Opened (1), unless previous was Late (2)
         if ( !$isNew && ($newStatus == 2 && $previousStatus !== 2)) {
-            $this->onInvoiceOpened($table, $previousStatus);
+            
             // Fill in the due date
             $table->due_date = Factory::getDate()->modify('+30 days')->format('Y-m-d');
             $table->locked = 1;
             $table->store();
+
+            InvoiceHelper::onInvoiceOpened($table, $previousStatus);
+        }
+
+        // Trigger `onInvoiceClosed`event if the invoice is set to closed (4)
+        if (($newStatus == 4 && $previousStatus == 2)) {
+            InvoiceHelper::onInvoiceClosed($table, $previousStatus);
         }
         
 
@@ -280,6 +247,15 @@ class InvoiceModel extends AdminModel
         return true;
     }
 
+    /**
+     * Deletes one or more records and their associated invoice items from the database.
+     *
+     * @param   array|int[]  &$pks  An array of primary key IDs of the records to delete.
+     *
+     * @return  bool  True on success, false on failure.
+     *
+     * @throws  Exception  If an error occurs during the database operation.
+     */
     public function delete(&$pks)
     {
         $result = parent::delete($pks);
@@ -296,6 +272,14 @@ class InvoiceModel extends AdminModel
         return $result;
     }
 
+    /**
+     * Locks an invoice by setting its `locked` property to 1.
+     *
+     * @param int $id The ID of the invoice to lock.
+     * 
+     * @return bool Returns false if the invoice is already locked, 
+     *              or true if the lock operation is successful.
+     */
     public function lock($id)
     {
         $table = $this->getTable();
@@ -308,6 +292,18 @@ class InvoiceModel extends AdminModel
         $table->locked = 1;
         return $table->store();
     }
+
+    /**
+     * Unlocks a record by its ID. 
+     *
+     * This method loads a record from the table using the provided ID and checks
+     * if the record is currently locked. If the record is locked, it updates the
+     * `locked` field to 0 (unlocked) and stores the updated record in the database.
+     *
+     * @param int $id The ID of the record to unlock.
+     * @return bool True if the record was successfully unlocked and stored, 
+     *              False if the record was not locked or the operation failed.
+     */
     public function unlock($id)
     {
         $table = $this->getTable();

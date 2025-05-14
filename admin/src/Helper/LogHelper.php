@@ -243,6 +243,20 @@ class LogHelper extends ContentHelper
         ]);
     }
 
+    public static function logInvoiceStatusClosed($invoice_id, $client_id, $account_id): void
+    {
+        self::log([
+            'client_id' => $client_id,
+            'account_id' => $account_id,
+            'object_type' => 'invoice',
+            'object_id' => $invoice_id,
+            'action' => 'status_closed',
+            'meta' => [],
+            'created' => date('Y-m-d H:i:s'),
+        ]);
+    }
+
+
     /**
      * Log a payment status change.
      *

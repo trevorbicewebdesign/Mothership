@@ -20,12 +20,15 @@ class MothershipFrontPayByCheckCest
         $I->resetMothershipTables();
 
         $this->mothershipConfig = $I->setMothershipConfig([
-            'company_name' => 'Trevor Bice Webdesign',
-            'company_address_1' => '370 Garden Lane',
-            'company_city' => 'Bayside',
+            'company_name' => 'Your Company Name',
+            'company_email' => 'company.email@mailinator.com',
+            'company_address' => '123 Nowhere St, CA, 12345',
+            'company_address_1' => '123 Nowhere St',
+            'company_address_2' => '',
+            'company_city' => 'Nowhere',
             'company_state' => 'California',
-            'company_zip' => '95524',
-            'company_phone' => '707-880-0156',
+            'company_zip' => '12345',
+            'company_phone' => '555 555-5555',
 
         ]);
 
@@ -106,29 +109,26 @@ class MothershipFrontPayByCheckCest
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
         $I->waitForText("Invoices", 10, "h1");
 
-        $I->makeScreenshot("account-center-pay-invoice");
-
         $I->see("Pay", "table#invoicesTable tbody tr td:nth-child(8)");
         $I->click("Pay", "table#invoicesTable tbody tr td:nth-child(8)");
         $I->wait(1);
         $I->waitForText("Pay Invoice", 10, "h1");
-
         $I->waitForText("Pay Invoice #{$this->invoiceData['number']}", 10, "h1");
-        // output the current url into the debug
-        codecept_debug($I->grabFromCurrentUrl());
+        $I->makeScreenshot("account-center-pay-invoice");
+        codecept_debug($I->grabFromCurrentUrl()); // output the current url into the debug
         $I->see("Pay Now");
         $I->see("Total Due: \${$this->invoiceData['total']}");
+        // Click Pay By Check
         $I->click("#payment_method_0");
         $I->makeScreenshot("account-center-pay-invoice-paybycheck-instructions");
         $I->click("Pay Now");
         $I->wait(1);
         $I->waitForText("Thank You", 10, "h1");
         $I->makeScreenshot("account-center-pay-invoice-paybycheck-thank-you");
-
-        $I->click("Return to Payments");
-        $I->wait(1);
-        $I->waitForText("Payments", 10, "h1");
-
+        // Once the user clicks `Pay Now` the payment is created and the user is redirected to the thank you page
+        // The Admin should receive an email regarding the pending payment
+        $I->getEmailBySubject("New Pending Payment for paybycheck");
+    
         $I->seeInDatabase("jos_mothership_payments", [
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'], 
@@ -175,5 +175,9 @@ class MothershipFrontPayByCheckCest
         $I->assertEquals($meta->invoice_id,  $this->invoiceData['id']);
         $I->assertEquals($meta->payment_method, "paybycheck");
         $I->assertEquals($meta->amount, $this->invoiceData['total']);
+
+        $I->click("Return to Payments");
+        $I->wait(1);
+        $I->waitForText("Payments", 10, "h1");
     }
 }

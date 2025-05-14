@@ -32,9 +32,7 @@ use Joomla\CMS\Language\Text;
         <?php endif; ?>
         <?php foreach ($this->invoices as $invoice) : ?>
             <tr>
-                <td>    
-                    <a href="<?php echo Route::_('index.php?option=com_mothership&task=invoice.downloadPdf&id=' . $invoice->id); ?>" target="_blank">PDF</a>
-                </td>
+                <td><a href="<?php echo Route::_('index.php?option=com_mothership&task=invoice.downloadPdf&id=' . $invoice->id); ?>" target="_blank">PDF</a></td>
                 <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=invoice&id=' . $invoice->id); ?>"><?php echo $invoice->number; ?></a></td>
                 <td><?php echo $invoice->account_name; ?></td>
                 <td>$<?php echo number_format($invoice->total, 2); ?></td>

@@ -9,25 +9,32 @@ use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\Plugin\PluginHelper;
-use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper; // Import LogHelper
+use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper;
+use TrevorBice\Component\Mothership\Administrator\Service\EmailService;
+use TrevorBice\Component\Mothership\Administrator\Helper\ClientHelper;
 use Mpdf\Mpdf;
-use Joomla\Event\DispatcherInterface;
-use Joomla\Event\Event;
-
 
 // Load all enabled payment plugins
 PluginHelper::importPlugin('mothership-payment');
 
 class InvoiceController extends BaseController
 {
-
-
     public function display($cachable = false, $urlparams = [])
     {
         $this->input->set('view', $this->input->getCmd('view', 'invoice'));
         parent::display($cachable, $urlparams);
     }
 
+    /**
+     * Handles the download of an invoice as a PDF file.
+     *
+     * This method retrieves an invoice by its ID, generates a PDF representation
+     * of the invoice, and streams it to the browser for download or inline viewing.
+     *
+     * @return void
+     *
+     * @throws Exception If there is an issue with output buffering or PDF generation.
+     */
     public function downloadPdf()
     {
         $app = Factory::getApplication();
@@ -53,8 +60,6 @@ class InvoiceController extends BaseController
         $layout = new FileLayout('pdf', JPATH_ROOT . '/components/com_mothership/layouts');
         $html = $layout->render(['invoice' => $invoice]);
 
-
-
         // Turn off Joomla's output
         ob_end_clean();
         header('Content-Type: application/pdf');
@@ -70,6 +75,18 @@ class InvoiceController extends BaseController
         $app->close();
     }
 
+    /**
+     * Handles the payment process for an invoice.
+     *
+     * This method retrieves the invoice ID from the request input, validates it,
+     * and fetches the corresponding invoice. It then loads all enabled payment
+     * plugins, retrieves their payment options, and prepares the data to be
+     * displayed in the payment view.
+     *
+     * @return void
+     *
+     * @throws \RuntimeException If a plugin's layout file or required method is missing.
+     */
     public function payment()
     {
         $app = Factory::getApplication();
@@ -130,8 +147,6 @@ class InvoiceController extends BaseController
                 'display_fee' => $display_fee,
                 'instructions_html' => $instructionsHtml,
             ];
-            
-
         }
 
         // Correct way to pass data to the view:
@@ -143,6 +158,21 @@ class InvoiceController extends BaseController
         $view->display();
     }
 
+    /**
+     * Retrieves an instance of a payment plugin by its name.
+     *
+     * This method normalizes the plugin name to lowercase, loads the 
+     * 'mothership-payment' plugin group, and searches for the specified plugin.
+     * If the plugin is found, it constructs the expected class name, verifies 
+     * its existence, and instantiates the plugin class.
+     *
+     * @param string $pluginName The name of the payment plugin to retrieve.
+     * 
+     * @return object An instance of the specified payment plugin.
+     * 
+     * @throws \RuntimeException If the plugin class is not found or the plugin 
+     *                           is not enabled.
+     */
     protected function getPluginInstance(string $pluginName)
     {
         // Normalize plugin name casing
@@ -171,6 +201,16 @@ class InvoiceController extends BaseController
         throw new \RuntimeException("Payment plugin '$pluginName' not found or not enabled. ".json_encode($plugins));
     }
 
+    /**
+     * Processes a payment for an invoice.
+     *
+     * This method handles the payment process by validating input, creating payment records,
+     * sending notifications, and invoking the appropriate payment plugin for further processing.
+     *
+     * @return void
+     *
+     * @throws \RuntimeException If the payment plugin cannot be initiated.
+     */
     public function processPayment()
     {
         $app = Factory::getApplication();
@@ -179,7 +219,6 @@ class InvoiceController extends BaseController
         $invoiceId = $input->getCmd('id');
         $paymentMethod = $input->getCmd('payment_method');
 
-        
 
         if (!$invoiceId || !$paymentMethod) {
             $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVALID_PAYMENT_REQUEST'), 'error');
@@ -210,6 +249,23 @@ class InvoiceController extends BaseController
             return;
         }
 
+        $client = ClientHelper::getClient($payment->client_id);
+        if (!$client) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_CLIENT_NOT_FOUND'), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoice&id=' . $invoiceId, false));
+            return;
+        }
+
+        // Get the company email from the extension settings
+        $componentParams = Factory::getApplication()->getParams('com_mothership');
+        $companyEmail = $componentParams->get('company_email');
+
+        if (!$companyEmail) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_COMPANY_EMAIL_NOT_CONFIGURED'), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoice&id=' . $invoiceId, false));
+            return;
+        }
+
         // Create the invoice payment record
         $invoicePayment = Factory::getApplication()
             ->bootComponent('com_mothership')
@@ -224,6 +280,21 @@ class InvoiceController extends BaseController
             return;
         }
 
+        // Send the admin an email notification
+        EmailService::sendTemplate('payment.admin-pending', 
+        $companyEmail, 
+        "New Pending Payment for {$paymentMethod}", 
+        [
+            'admin_fname' => 'Trevor',
+            'admin_email' => $companyEmail,
+            'payment' => $payment,
+            'invoice' => $invoice,
+            'client' => $client,
+            'confirm_link' => "http://localhost:8080/administrator/index.php?option=com_mothership&task=payment.confirm&id={$payment->id}",
+            'view_link' => "http://localhost:8080/administrator/index.php?option=com_mothership&view=invoice&id={$invoiceId}",
+        ]);
+
+        // Log that the payment was initiated
         LogHelper::logPaymentInitiated(
             $invoiceId,
             $payment->id,
