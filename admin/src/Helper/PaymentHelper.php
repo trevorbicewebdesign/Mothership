@@ -21,8 +21,8 @@ use Joomla\Database\DatabaseDriver;
 use TrevorBice\Component\Mothership\Administrator\Helper\ClientHelper;
 use TrevorBice\Component\Mothership\Administrator\Helper\AccountHelper;
 use TrevorBice\Component\Mothership\Administrator\Helper\InvoiceHelper;
-use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper; // Ensure this is the correct namespace for LogHelper
-use TrevorBice\Component\Mothership\Administrator\Service\EmailService; // Ensure this is the correct namespace for EmailService
+use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper; 
+use TrevorBice\Component\Mothership\Administrator\Service\EmailService;
 
 class PaymentHelper
 {
