@@ -91,11 +91,11 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
             ['invoice.user-closed', "Thank you for your payment."],
             ['invoice.user-closed', "Invoice #2023 for Account `Test Account` for \$100.00 has been marked as closed."],
             ['payment.admin-confirmed', 'Hello Admin,'],
-            // ['payment.admin-confirmed', 'A payment has been confirmed.'],
+            ['payment.admin-confirmed', '`Test Client` payment #1 for $100.00 with payment method `paybycheck` has been received and confirmed by an admin.'],
             ['payment.admin-pending', 'Hello Admin,'],
             ['payment.admin-pending', "A new paybycheck payment has been initiated by Test Client for the amount of $100.00."],
             ['payment.user-confirmed', 'Hello John,'],
-            // ['payment.user-confirmed', 'Your payment has been confirmed.'],
+            ['payment.user-confirmed', 'Your payment #1 for $100.00 with payment method `paybycheck` has been received and confirmed by an admin.'],
         ];
     }
 
