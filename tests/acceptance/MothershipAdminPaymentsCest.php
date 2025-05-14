@@ -655,8 +655,8 @@ class MothershipAdminPaymentsCest
         ]);
 
         $emailReceived = $I->getEmailBySubject("Payment #{$paymentData['id']} Received");
-        $I->assertNotEmpty($emailReceived, "Email not received");
-        $emailConfimred = $I->getEmailBySubject("Payment #{$paymentData['id']} Comfirmed");
+        $I->assertNotEmpty($emailReceived, "Email not received"); 
+        $emailConfimred = $I->getEmailBySubject("Payment #{$paymentData['id']} Confirmed");
         $I->assertNotEmpty($emailConfimred, "Email not received");
 
         // This should also have updated the invoice status to confirmed
