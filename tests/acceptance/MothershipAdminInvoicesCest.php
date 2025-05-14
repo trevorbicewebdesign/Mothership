@@ -34,11 +34,13 @@ class MothershipAdminInvoicesCest
 
         $this->clientData = $I->createMothershipClient([
             'name' => 'Test Client',
+            'email' => 'test.client@mailinator.com',
             'default_rate' => '111.00',
+            'owner_user_id' => '1',
         ]);
 
         $this->userData = $I->createMothershipUser([
-            'user_id' => '43',
+            'user_id' => '1',
             'client_id' => $this->clientData['id'],
         ]);
 
