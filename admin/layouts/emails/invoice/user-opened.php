@@ -3,9 +3,9 @@
 defined('_JEXEC') or die;
 
 $fname = $displayData['fname'];
-$invoice_number = $displayData['invoice']['invoice_number'];
-$client_name = $displayData['client']['client_name'];
+$invoice_number = $displayData['invoice']->number;
+$client_name = $displayData['client']->name;
 ?>
-<p>Hello <?= $fname; ?>,</p>
-<p>Invoice #<?php echo $invoice_number; ?> for <?php echo $client_name; ?> is ready for your review. Please sign to view
+<p>Hello <?php echo $fname; ?>,</p>
+<p>Invoice <strong>#<?php echo $invoice_number; ?></strong> for <strong>`<?php echo $client_name; ?>`</strong> is ready for your review. Please sign to view
     details and make a payment. </p>
