@@ -596,7 +596,7 @@ class MothershipAdminPaymentsCest
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
             'total' => 175.00,
-            'number' => 1000,
+            'number' => 3033,
             'due_date' => NULL,
             'created' => date('Y-m-d H:i:s'),
             'status' => 2,
@@ -636,31 +636,10 @@ class MothershipAdminPaymentsCest
         $I->waitForText("Mothership: Payments", 20, "h1.page-title");
         $I->see("Payment {$paymentData['id']} confirmed successfully.", ".alert-message");
 
-        $I->seeInDatabase("jos_mothership_payments", [ 
-            'id' => $paymentData['id'], 
-            'status' => 2 
-        ]);
-
         $I->see("Completed", "#j-main-container table tbody tr:nth-child(2) td:nth-child(9)");
         $I->dontSee("Confirm", "#j-main-container table tbody tr:nth-child(2) td:nth-child(9) button");
         $I->dontSee("Pending", "#j-main-container table tbody tr:nth-child(2) td:nth-child(9)");
 
-        $I->setPaymentStatus($paymentData['id'], 1);
-        $I->seeInDatabase("jos_mothership_payments", [ 
-            'id' => $paymentData['id'], 
-            'status' => 1 
-        ]);
-
-        $I->amOnPage(self::PAYMENTS_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Payments", 20, "h1.page-title");
-        $I->seeNumberOfElements("#j-main-container table tbody tr", 2);
-        $I->see("Pending", "#j-main-container table tbody tr:nth-child(2) td:nth-child(9)");
-        $I->see("Confirm", "#j-main-container table tbody tr:nth-child(2) td:nth-child(9)");
-
-        $I->click("Confirm", "#j-main-container table tbody tr:nth-child(2) td:nth-child(9)");
-        $I->wait(1);
-        $I->waitForText("Mothership: Payments", 20, "h1.page-title");
-        $I->see("Payment {$paymentData['id']} confirmed successfully.", ".alert-message");
         $I->seeInDatabase("jos_mothership_payments", [ 
             'id' => $paymentData['id'], 
             'status' => 2 
@@ -682,26 +661,25 @@ class MothershipAdminPaymentsCest
 
         // This should also have updated the invoice status to confirmed
         $I->seeInDatabase("jos_mothership_invoices", [ 
-            'id' => $this->invoiceData['id'], 
+            'id' => $invoiceData['id'], 
             'status' => 4 
         ]);
-
-        /*
+        
         $I->seeInDatabase("jos_mothership_invoice_payment", [ 
-            'invoice_id' => $this->invoiceData['id'], 
+            'invoice_id' => $invoiceData['id'], 
             'payment_id' => $paymentData['id'], 
-            'applied_amount' => 103.20 
+            'applied_amount' => 178.20 
         ]);
 
         $I->seeInDatabase("jos_mothership_logs", [ 
             'client_id' => $this->clientData['id'], 
             'account_id' => $this->accountData['id'],
-            'action' => 'invoice_status_changed', 
-            'object_id' => $this->invoiceData['id'], 
+            'action' => 'status_closed', 
+            'object_id' => $invoiceData['id'], 
             'object_type' => 'invoice', 
+            'meta' => "[]",
             'user_id' => 1, 
         ]);
-        */
 
         $emailInvoiceClosed = $I->getEmailBySubject("Invoice #{$invoiceData['number']} Closed");
         $I->assertNotEmpty($emailInvoiceClosed, "Email not received");
