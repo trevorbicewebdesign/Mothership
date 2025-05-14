@@ -27,7 +27,6 @@ class MothershipHelperTest extends \Codeception\Test\Unit
             'company_zip' => '12345',
             'company_phone' => '555 555-5555',
         ]);
-
     }
 
     public function testGetMothershipOptions()
