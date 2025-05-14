@@ -26,7 +26,6 @@ class MothershipAdminPaymentsCest
             'company_address' => '123 Test St, Test City, TX 12345',
             'company_phone' => '(123) 456-7890',
             'company_email' => 'test.company@mailinator.com',
-            
         ]);
 
         $this->clientData = $I->createMothershipClient([
