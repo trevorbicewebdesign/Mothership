@@ -46,11 +46,6 @@ class MothershipAdminPaymentsCest
             'name' => 'Roadrunner Products',
         ]);
 
-        $this->userData = $I->createMothershipUser([
-            'user_id' => '43',
-            'client_id' => $this->clientData['id'],
-        ]);
-
         $this->accountData = $I->createMothershipAccount([
             'client_id' => $this->clientData['id'],
             'name' => 'Test Account',
@@ -677,7 +672,6 @@ class MothershipAdminPaymentsCest
             'action' => 'status_closed', 
             'object_id' => $invoiceData['id'], 
             'object_type' => 'invoice', 
-            'meta' => "[]",
             'user_id' => 1, 
         ]);
 
