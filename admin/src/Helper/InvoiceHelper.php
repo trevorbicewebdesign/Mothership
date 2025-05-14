@@ -23,7 +23,6 @@ use TrevorBice\Component\Mothership\Administrator\Service\EmailService;
 
 class InvoiceHelper
 {
-
     public static function getStatus($status_id)
     {
         // Transform the status from integer to string
@@ -92,6 +91,17 @@ class InvoiceHelper
         return self::getDueStringFromDate($dueDate);
     }
 
+    /**
+     * Generates a human-readable string indicating the time difference between the current date
+     * and a given due date. The output varies depending on the time difference:
+     * - If no due date is provided, it returns "No due date".
+     * - If the difference is 23.5 hours or more, it shows the difference in days.
+     * - If the difference is 30 minutes or more but less than 23.5 hours, it shows the difference in hours.
+     * - If the difference is less than 30 minutes, it returns "Due soon" for future dates or "Just now" for past dates.
+     * 
+     * @param string|null $dueDate The due date in a string format. Can be null.
+     * @return string A human-readable string describing the time difference.
+     */
     public static function getDueStringFromDate(?string $dueDate): string
     {
         if (!$dueDate) {
