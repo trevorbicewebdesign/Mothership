@@ -290,17 +290,15 @@ class InvoiceHelper
     }
 
     /**
-     * Recalculates the status of an invoice based on the total payments made.
+     * Recalculates and returns the status of an invoice based on the total payments made.
      *
      * This method retrieves the total amount paid for a given invoice and compares it to the invoice total.
-     * It then updates the invoice status to one of the following:
-     * - 0: Unpaid
-     * - 1: Partially Paid
-     * - 2: Paid
+     * It returns the status code:
+     * - 2: Opened (default)
+     * - 4: Closed (if fully paid)
      *
      * @param int $invoiceId The ID of the invoice to recalculate the status for.
-     *
-     * @return void
+     * @return int The new status code for the invoice.
      */
     public static function recalculateInvoiceStatus(int $invoiceId): int
     {
@@ -318,21 +316,25 @@ class InvoiceHelper
         $db->setQuery($query);
         $totalPaid = (float) $db->loadResult();
 
-        // Load invoice total
+        // Load invoice total and current status
         $query = $db->getQuery(true)
-            ->select('total')
+            ->select('total, status')
             ->from($db->quoteName('#__mothership_invoices'))
             ->where($db->quoteName('id') . ' = :invoiceId')
             ->bind(':invoiceId', $invoiceId, ParameterType::INTEGER);
 
         $db->setQuery($query);
-        $invoiceTotal = (float) $db->loadResult();
+        $row = $db->loadAssoc();
+
+        $invoiceTotal = isset($row['total']) ? (float) $row['total'] : 0.0;
+        $currentStatus = isset($row['status']) ? (int) $row['status'] : 2;
 
         // Determine new status
-        $status = 2; // e.g. 0 = Opened
-        if ($totalPaid >= $invoiceTotal) {
+        if ($totalPaid >= $invoiceTotal && $invoiceTotal > 0) {
             $status = 4; // Closed
-        } 
+        } else {
+            $status = $currentStatus;
+        }
 
         return $status;
     }
@@ -351,30 +353,6 @@ class InvoiceHelper
         } catch (\Exception $e) {
             throw new \RuntimeException("Failed to retrieve payments for invoice ID {$invoiceId}: " . $e->getMessage());
         }
-    }
-
-    public static function handleInvoicePayment($invoice_id, $payment_id, $applied_amount)
-    {
-        $db = Factory::getContainer()->get(DatabaseDriver::class);
-
-        // Insert the invoice_payment record
-        $query = $db->getQuery(true)
-            ->insert($db->quoteName('#__mothership_invoice_payment'))
-            ->columns([
-                'invoice_id',
-                'payment_id',
-                'applied_amount',
-            ])
-            ->values(implode(',', [
-                $db->quote($invoice_id),
-                $db->quote($payment_id),
-                $db->quote($applied_amount),
-            ]));
-        $db->setQuery($query);
-        $db->execute();
-
-        // Recalculate the invoice status
-        self::recalculateInvoiceStatus($invoice_id);
     }
 
      /**
