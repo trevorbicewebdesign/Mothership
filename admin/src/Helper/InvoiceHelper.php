@@ -239,19 +239,22 @@ class InvoiceHelper
         $lastName = $name[1] ?? '';
         $user_email = $user->email;
 
-        if($status == 4) {
-            EmailService::sendTemplate('invoice.user-closed', 
-                $user_email, 
-                'Invoice Closed', 
-                [
-                    'fname' => $firstName,
-                    'lname' => $lastName,
-                    'invoice' => $invoice,
-                    'client' => $client,
-                ]
-            );
-        }
-        else if($status == 2) {
+        switch($status){
+            // Status 4 = Closed
+            case 4:
+                EmailService::sendTemplate('invoice.user-closed', 
+                    $user_email, 
+                    'Invoice Closed', 
+                    [
+                        'fname' => $firstName,
+                        'lname' => $lastName,
+                        'invoice' => $invoice,
+                        'client' => $client,
+                    ]
+                );
+                break;
+            // Status 2 = Opened
+            case 2:
             EmailService::sendTemplate('invoice.user-opened', 
                 $user_email, 
                 'Invoice Opened', 
