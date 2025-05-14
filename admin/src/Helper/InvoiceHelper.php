@@ -23,6 +23,16 @@ use TrevorBice\Component\Mothership\Administrator\Service\EmailService;
 
 class InvoiceHelper
 {
+    /**
+     * Returns the invoice status as a string based on the provided status ID.
+     *
+     * @param int $status_id The status ID of the invoice.
+     *                      1 = Draft
+     *                      2 = Opened
+     *                      3 = Cancelled
+     *                      4 = Closed
+     * @return string The corresponding status as a string. Returns 'Unknown' if the status ID does not match any known status.
+     */
     public static function getStatus($status_id)
     {
         // Transform the status from integer to string
@@ -47,6 +57,18 @@ class InvoiceHelper
         return $status;
     }
 
+    /**
+     * Determines if the invoice with the given ID is late based on its due date.
+     *
+     * Retrieves the due date for the specified invoice from the database and compares it
+     * to the current date and time in the 'America/Los_Angeles' timezone. If the due date
+     * is not found or cannot be parsed, the method returns false. If the current date and
+     * time is after the due date, the invoice is considered late.
+     *
+     * @param int $invoiceId The ID of the invoice to check.
+     *
+     * @return bool True if the invoice is late, false otherwise.
+     */
     public static function isLate(int $invoiceId): bool
     {
         $db = Factory::getContainer()->get(DatabaseDriver::class);
@@ -76,8 +98,15 @@ class InvoiceHelper
         return $now > $due;
     }
 
-
-
+    /**
+     * Retrieves the due date string for a given invoice ID.
+     *
+     * This method queries the database for the due date of the specified invoice,
+     * then formats and returns it as a string using the getDueStringFromDate method.
+     *
+     * @param int $invoice_id The ID of the invoice to retrieve the due date for.
+     * @return string The formatted due date string.
+     */
     public static function getDueString(int $invoice_id): string
     {
         $db = Factory::getContainer()->get(DatabaseDriver::class);
@@ -270,6 +299,13 @@ class InvoiceHelper
         return true;
     }
 
+    /**
+     * Retrieves an invoice object from the database by its ID.
+     *
+     * @param  int  $invoice_id  The ID of the invoice to retrieve.
+     * @return object            The invoice object.
+     * @throws \RuntimeException If the invoice with the given ID is not found.
+     */
     public static function getInvoice($invoice_id)
     {
         $db = Factory::getContainer()->get(\Joomla\Database\DatabaseInterface::class);
@@ -339,6 +375,13 @@ class InvoiceHelper
         return $status;
     }
 
+    /**
+     * Retrieves the list of payments associated with a specific invoice.
+     *
+     * @param int $invoiceId The ID of the invoice for which to retrieve payments.
+     * @return array|null An array of payment objects associated with the invoice, or null if none found.
+     * @throws \RuntimeException If there is an error retrieving the payments from the database.
+     */
     public function getInvoicePayments($invoiceId)
     {
         $db = Factory::getContainer()->get(DatabaseDriver::class);
