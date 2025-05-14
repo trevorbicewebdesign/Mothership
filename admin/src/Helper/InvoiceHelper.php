@@ -224,18 +224,12 @@ class InvoiceHelper
         $paidDate = null;
 
         switch ($status) {
-            case 1:
-                // Draft
+            case 1: // Draft
+            case 2: // Opened
+            case 3: // Cancelled
                 break;
-            case 2:
-                // Opened
-                break;
-            case 3:
-                // Cancelled
-                break;
-            case 4:
+            case 4: // Closed
                 $paidDate = date('Y-m-d H:i:s');
-                // Closed
                 break;
             default:
                 throw new \InvalidArgumentException("Invalid status: $status");
@@ -251,21 +245,30 @@ class InvoiceHelper
         }
 
         $query->where($db->quoteName('id') . ' = ' . (int) $invoice->id);
-        $db->setQuery($query);
 
-        switch($status){
-            // Status 4 = Closed
-            case 4:
-                self::onInvoiceClosed($invoice, $invoice->status);
-                break;
-            // Status 2 = Opened
-            case 2:
-                self::onInvoiceOpened($invoice, $invoice->status);
-                break;
+        $db->transactionStart();
+
+        try {
+            $db->setQuery($query)->execute();
+
+            // Update object & run hooks
+            $invoice->status = $status;
+
+            if ($status === 4) {
+                self::onInvoiceClosed($invoice, $status);
+            } elseif ($status === 2) {
+                self::onInvoiceOpened($invoice, $status);
             }
+
+            $db->transactionCommit();
+        } catch (\Exception $e) {
+            $db->transactionRollback();
+            throw $e;
+        }
 
         return true;
     }
+
 
     /**
      * Retrieves an invoice object from the database by its ID.
@@ -439,7 +442,7 @@ class InvoiceHelper
         // Send the invoice template to the client
         EmailService::sendTemplate('invoice.user-closed', 
         $user->email, 
-        'Invoice Closed', 
+        "Invoice #{$invoice->number} Closed", 
         [
             'fname' => $firstName,
             'lname' => $lastName,
