@@ -429,35 +429,4 @@ class PaymentHelper
 
         return $invoices;
     }
-
-    public static function handlePaymentCompleted(int $payment_id, string $txnId, float $amount, float $fee): void
-    {
-        $payment = self::getPayment($payment_id);
-        $invoice = InvoiceHelper::getInvoice($payment->invoice_id);
-
-        // Update payment details
-        self::updatePayment($payment_id, [
-            'transaction_id' => $txnId,
-            'amount' => $amount,
-            'fee' => $fee,
-            'date' => date('Y-m-d H:i:s'),
-            'processed_date' => date('Y-m-d H:i:s'),
-            'status' => 2,
-        ]);
-
-        // Log the event
-        LogHelper::logPaymentCompleted( $invoice->id );
-
-        // Send email
-        EmailService::sendTemplate('payment.user-completed', 
-        $invoice->email, 
-        'Payment Completed', 
-        [
-            'payment' => $payment,
-            'invoice' => $invoice,
-        ]);
-    }
-
-
-
 }
