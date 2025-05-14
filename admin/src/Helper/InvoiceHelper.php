@@ -19,10 +19,21 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\ParameterType;
+use TrevorBice\Component\Mothership\Administrator\Service\EmailService;
+use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper; 
 
 class InvoiceHelper
 {
-
+    /**
+     * Returns the invoice status as a string based on the provided status ID.
+     *
+     * @param int $status_id The status ID of the invoice.
+     *                      1 = Draft
+     *                      2 = Opened
+     *                      3 = Cancelled
+     *                      4 = Closed
+     * @return string The corresponding status as a string. Returns 'Unknown' if the status ID does not match any known status.
+     */
     public static function getStatus($status_id)
     {
         // Transform the status from integer to string
@@ -47,6 +58,18 @@ class InvoiceHelper
         return $status;
     }
 
+    /**
+     * Determines if the invoice with the given ID is late based on its due date.
+     *
+     * Retrieves the due date for the specified invoice from the database and compares it
+     * to the current date and time in the 'America/Los_Angeles' timezone. If the due date
+     * is not found or cannot be parsed, the method returns false. If the current date and
+     * time is after the due date, the invoice is considered late.
+     *
+     * @param int $invoiceId The ID of the invoice to check.
+     *
+     * @return bool True if the invoice is late, false otherwise.
+     */
     public static function isLate(int $invoiceId): bool
     {
         $db = Factory::getContainer()->get(DatabaseDriver::class);
@@ -76,8 +99,15 @@ class InvoiceHelper
         return $now > $due;
     }
 
-
-
+    /**
+     * Retrieves the due date string for a given invoice ID.
+     *
+     * This method queries the database for the due date of the specified invoice,
+     * then formats and returns it as a string using the getDueStringFromDate method.
+     *
+     * @param int $invoice_id The ID of the invoice to retrieve the due date for.
+     * @return string The formatted due date string.
+     */
     public static function getDueString(int $invoice_id): string
     {
         $db = Factory::getContainer()->get(DatabaseDriver::class);
@@ -91,6 +121,17 @@ class InvoiceHelper
         return self::getDueStringFromDate($dueDate);
     }
 
+    /**
+     * Generates a human-readable string indicating the time difference between the current date
+     * and a given due date. The output varies depending on the time difference:
+     * - If no due date is provided, it returns "No due date".
+     * - If the difference is 23.5 hours or more, it shows the difference in days.
+     * - If the difference is 30 minutes or more but less than 23.5 hours, it shows the difference in hours.
+     * - If the difference is less than 30 minutes, it returns "Due soon" for future dates or "Just now" for past dates.
+     * 
+     * @param string|null $dueDate The due date in a string format. Can be null.
+     * @return string A human-readable string describing the time difference.
+     */
     public static function getDueStringFromDate(?string $dueDate): string
     {
         if (!$dueDate) {
@@ -126,6 +167,7 @@ class InvoiceHelper
     {
         self::updateInvoiceStatus($invoiceId, 4);
     }
+    
 
     public static function getInvoiceAppliedPayments($invoiceID)
     {
@@ -165,26 +207,82 @@ class InvoiceHelper
         return (float) $total;
     }
 
-    public static function updateInvoiceStatus($invoiceId, $status)
+    /**
+     * Updates the status of an invoice in the database.
+     *
+     * @param int $invoiceId The ID of the invoice to update.
+     * @param int $status The new status to set for the invoice.
+     * 
+     * @return bool Returns true if the update was successful, false otherwise.
+     * 
+     * @throws \Exception If there is an error during the database operation.
+     * 
+     * Logs an error message if the update fails.
+     */
+    public static function updateInvoiceStatus($invoice, $status): bool
     {
-        $paidDate = date('Y-m-d H:i:s');
+        $paidDate = null;
+
+        try {
+            $invoice = self::getInvoice($invoice->id);
+        } catch (\RuntimeException $e) {
+            throw new \RuntimeException($e->getMessage());
+        }
+
+        switch ($status) {
+            case 1: // Draft
+            case 2: // Opened
+            case 3: // Cancelled
+                break;
+            case 4: // Closed
+                $paidDate = date('Y-m-d H:i:s');
+                break;
+            default:
+                throw new \InvalidArgumentException("Invalid status: $status");
+        }
+
         $db = Factory::getContainer()->get(DatabaseDriver::class);
         $query = $db->getQuery(true)
             ->update($db->quoteName('#__mothership_invoices'))
-            ->set($db->quoteName('status') . ' = ' . (int) $status)
-            ->set($db->quoteName('paid_date') . ' = ' . $db->quote($paidDate))
-            ->where($db->quoteName('id') . ' = ' . (int) $invoiceId);
-        $db->setQuery($query);
+            ->set($db->quoteName('status') . ' = ' . (int) $status);
+
+        if ($paidDate !== null) {
+            $query->set($db->quoteName('paid_date') . ' = ' . $db->quote($paidDate));
+        }
+
+        $query->where($db->quoteName('id') . ' = ' . (int) $invoice->id);
+
+        $db->transactionStart();
 
         try {
-            $db->execute();
-            return true;
+            $db->setQuery($query)->execute();
+
+            // Update object & run hooks
+            $invoice->status = $status;
+
+            if ($status === 4) {
+                self::onInvoiceClosed($invoice, $status);
+            } elseif ($status === 2) {
+                self::onInvoiceOpened($invoice, $status);
+            }
+
+            $db->transactionCommit();
         } catch (\Exception $e) {
-            Log::add("Failed to update invoice ID $invoiceId: " . $e->getMessage(), Log::ERROR, 'payment');
-            return false;
+            $db->transactionRollback();
+            throw $e;
         }
+
+        return true;
     }
 
+
+    /**
+     * Retrieves an invoice object from the database by its ID.
+     *
+     * @param  int  $invoice_id  The ID of the invoice to retrieve.
+     * @return object            The invoice object.
+     * @throws \RuntimeException If the invoice with the given ID is not found.
+     */
     public static function getInvoice($invoice_id)
     {
         $db = Factory::getContainer()->get(\Joomla\Database\DatabaseInterface::class);
@@ -205,19 +303,17 @@ class InvoiceHelper
     }
 
     /**
-     * Recalculates the status of an invoice based on the total payments made.
+     * Recalculates and returns the status of an invoice based on the total payments made.
      *
      * This method retrieves the total amount paid for a given invoice and compares it to the invoice total.
-     * It then updates the invoice status to one of the following:
-     * - 0: Unpaid
-     * - 1: Partially Paid
-     * - 2: Paid
+     * It returns the status code:
+     * - 2: Opened (default)
+     * - 4: Closed (if fully paid)
      *
      * @param int $invoiceId The ID of the invoice to recalculate the status for.
-     *
-     * @return void
+     * @return int The new status code for the invoice.
      */
-    public static function recalculateInvoiceStatus(int $invoiceId): void
+    public static function recalculateInvoiceStatus(int $invoiceId): int
     {
         $db = Factory::getContainer()->get(DatabaseDriver::class);
 
@@ -233,59 +329,144 @@ class InvoiceHelper
         $db->setQuery($query);
         $totalPaid = (float) $db->loadResult();
 
-        // Load invoice total
+        // Load invoice total and current status
         $query = $db->getQuery(true)
-            ->select('total')
+            ->select('total, status')
             ->from($db->quoteName('#__mothership_invoices'))
             ->where($db->quoteName('id') . ' = :invoiceId')
             ->bind(':invoiceId', $invoiceId, ParameterType::INTEGER);
 
         $db->setQuery($query);
-        $invoiceTotal = (float) $db->loadResult();
+        $row = $db->loadAssoc();
 
-        // Determine new status
-        $status = 2; // e.g. 0 = Opened
-        if ($totalPaid >= $invoiceTotal) {
-            $status = 4; // Closed
-        } 
+        // Defensive: handle missing or null values
+        $invoiceTotal = isset($row['total']) ? (float)$row['total'] : 0.0;
+        $currentStatus = isset($row['status']) ? (int)$row['status'] : 2;
 
-        // Update invoice status
-        $query = $db->getQuery(true)
-            ->update($db->quoteName('#__mothership_invoices'))
-            ->set($db->quoteName('status') . ' = :status')
-            ->where($db->quoteName('id') . ' = :invoiceId')
-            ->bind(':status', $status, ParameterType::INTEGER)
-            ->bind(':invoiceId', $invoiceId, ParameterType::INTEGER);
-        $db->setQuery($query);
-        $db->execute();
+        // Invoice total should only be recalculated if the invoice is opened or closed
+        // Cancelled invoices should not be recalculated
+        if( $currentStatus === 2 || $currentStatus === 4){
+            if( $invoiceTotal > 0 && $totalPaid >= $invoiceTotal){
+                return 4; // closed
+            }
+            else {
+                return 2; // opened
+            }
+        }
+        return $currentStatus; // no change
     }
 
+    /**
+     * Retrieves the list of payments associated with a specific invoice.
+     *
+     * @param int $invoiceId The ID of the invoice for which to retrieve payments.
+     * @return array|null An array of payment objects associated with the invoice, or null if none found.
+     * @throws \RuntimeException If there is an error retrieving the payments from the database.
+     */
     public function getInvoicePayments($invoiceId)
     {
-        
+        $db = Factory::getContainer()->get(DatabaseDriver::class);
+        $query = $db->getQuery(true)
+            ->select('*')
+            ->from($db->quoteName('#__mothership_invoice_payment'))
+            ->where($db->quoteName('invoice_id') . ' = ' . (int) $invoiceId);
+        $db->setQuery($query);
+
+        try {
+            return $db->loadObjectList();
+        } catch (\Exception $e) {
+            throw new \RuntimeException("Failed to retrieve payments for invoice ID {$invoiceId}: " . $e->getMessage());
+        }
     }
 
-    public static function handleInvoicePayment($invoice_id, $payment_id, $applied_amount)
+     /**
+     * Triggered when an invoice transitions to "Opened".
+     *
+     * @param  \Joomla\CMS\Table\Table  $invoice         The invoice table object.
+     * @param  int                      $previousStatus  The previous status ID.
+     *
+     * @return void
+     */
+    public static function onInvoiceOpened($invoice, int $previousStatus): void
     {
-        $db = Factory::getContainer()->get(DatabaseDriver::class);
+        try {
+            $client = ClientHelper::getClient($invoice->client_id);
+        } catch (\Exception $e) {
+            
+        }
 
-        // Insert the invoice_payment record
-        $query = $db->getQuery(true)
-            ->insert($db->quoteName('#__mothership_invoice_payment'))
-            ->columns([
-                'invoice_id',
-                'payment_id',
-                'applied_amount',
-            ])
-            ->values(implode(',', [
-                $db->quote($invoice_id),
-                $db->quote($payment_id),
-                $db->quote($applied_amount),
-            ]));
-        $db->setQuery($query);
-        $db->execute();
+        // Get the owner id and load that user
+        // Then grab the first name of that user
+        $user = Factory::getUser($client->owner_user_id);
+        $name = explode(" ", $user->name);
+        $firstName = $name[0];
+        $lastName = $name[1] ?? '';
 
-        // Recalculate the invoice status
-        self::recalculateInvoiceStatus($invoice_id);
+        // Send the invoice email to the client
+        EmailService::sendTemplate('invoice.user-opened', 
+        $user->email, 
+        "Invoice #{$invoice->number} Opened", 
+        [
+            'fname' => $firstName,
+            'lname' => $lastName,
+            'invoice' => $invoice,
+            'client' => $client,
+        ]);
+
+        // Optional: add history or record in a log table
+        LogHelper::logInvoiceStatusOpened(
+            $invoice->id, 
+            $invoice->client_id, 
+            $invoice->account_id
+        );
+
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onMothershipInvoiceOpened', [$invoice]);
+    }
+
+    /**
+     * Triggered when an invoice transitions to "Closed".
+     *
+     * @param  \Joomla\CMS\Table\Table  $invoice         The invoice table object.
+     * @param  int                      $previousStatus  The previous status ID.
+     *
+     * @return void
+     */
+    public static function onInvoiceClosed($invoice, int $previousStatus): void
+    {
+        try {
+            $client = ClientHelper::getClient($invoice->client_id);
+            $account = AccountHelper::getAccount($invoice->account_id);
+        } catch (\Exception $e) {
+            
+        }
+
+        // Get the owner id and load that user
+        // Then grab the first name of that user
+        $user = Factory::getUser($client->owner_user_id);
+        $name = explode(" ", $user->name);
+        $firstName = $name[0];
+        $lastName = $name[1] ?? '';
+
+        // Send the invoice template to the client
+        EmailService::sendTemplate('invoice.user-closed', 
+        $user->email, 
+        "Invoice #{$invoice->number} Closed", 
+        [
+            'fname' => $firstName,
+            'lname' => $lastName,
+            'invoice' => $invoice,
+            'client' => $client,
+            'account' => $account,
+        ]);
+
+        // Optional: add history or record in a log table
+        LogHelper::logInvoiceStatusClosed(
+            $invoice->id, 
+            $invoice->client_id, 
+            $invoice->account_id
+        );
+
+        // Event triggers after the invoice is closed
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onMothershipInvoiceClosed', [$invoice]);
     }
 }

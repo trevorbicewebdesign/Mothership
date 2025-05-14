@@ -34,11 +34,13 @@ class MothershipAdminInvoicesCest
 
         $this->clientData = $I->createMothershipClient([
             'name' => 'Test Client',
+            'email' => 'test.client@mailinator.com',
             'default_rate' => '111.00',
+            'owner_user_id' => '1',
         ]);
 
         $this->userData = $I->createMothershipUser([
-            'user_id' => '43',
+            'user_id' => '1',
             'client_id' => $this->clientData['id'],
         ]);
 
@@ -732,9 +734,8 @@ class MothershipAdminInvoicesCest
             'object_type' => 'invoice',
         ]);
 
-        $email_id = $I->getLastEmailId(); 
-        codecept_debug($email_id);
-        $I->assertEmailSubjectEquals($email_id, "New Invoice Opened");
+        $email_id = $I->getEmailBySubject("Invoice #{$this->invoiceData['number']} Opened");
+        $I->assertNotEmpty($email_id, "Email with subject 'Invoice #{$this->invoiceData['number']} Opened' was not sent.");
     }
 
     /**
