@@ -102,6 +102,8 @@ class MothershipAdminPaymentsCest
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
 
+
+
         // Navigate to the login page
         $I->amOnPage("/administrator/");
 
@@ -579,7 +581,7 @@ class MothershipAdminPaymentsCest
         $paymentData = $I->createMothershipPayment([
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
-            'amount' => 103.2,
+            'amount' => 178.20,
             'fee_amount' => 3.2,
             'fee_passed_on' => FALSE,
             'payment_method' => 'paypal',
@@ -588,6 +590,33 @@ class MothershipAdminPaymentsCest
             'processed_date' => date('Y-m-d H:i:s'),
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
+        ]);
+
+        $invoiceData = $I->createMothershipInvoice([
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'total' => 175.00,
+            'number' => 1000,
+            'due_date' => NULL,
+            'created' => date('Y-m-d H:i:s'),
+            'status' => 2,
+        ]);
+
+        $invoiceItemData[] = $I->createMothershipInvoiceItem([
+            'invoice_id' => $invoiceData['id'],
+            'name' => 'Test Item 1',
+            'description' => 'Test Description 1',
+            'hours' => 1,
+            'minutes' => 30,
+            'quantity' => 1.75,
+            'rate' => 100.00,
+            'subtotal' => 175.00,
+        ]);
+
+        $invoicePaymentData = $I->createMothershipInvoicePayment([
+            'invoice_id' => $invoiceData['id'],
+            'payment_id' => $paymentData['id'],
+            'applied_amount' => 178.20,
         ]);
 
         $I->seeInDatabase("jos_mothership_payments", [ 
