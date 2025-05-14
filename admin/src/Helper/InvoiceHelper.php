@@ -373,4 +373,33 @@ class InvoiceHelper
         // Recalculate the invoice status
         self::recalculateInvoiceStatus($invoice_id);
     }
+
+     /**
+     * Triggered when an invoice transitions to "Opened".
+     *
+     * @param  \Joomla\CMS\Table\Table  $invoice         The invoice table object.
+     * @param  int                      $previousStatus  The previous status ID.
+     *
+     * @return void
+     */
+    public static function onInvoiceOpened($invoice, int $previousStatus): void
+    {
+        // SEnd the invoice template to the client
+        EmailService::sendTemplate('invoice.user-opened', 
+        'test.smith@mailinator.com', 
+        'New Invoice Opened', 
+        [
+            'fname' => 'Trevor',
+            'invoice' => $invoice,
+        ]);
+
+        // Optional: add history or record in a log table
+        LogHelper::logInvoiceStatusOpened(
+            $invoice->id, 
+            $invoice->client_id, 
+            $invoice->account_id
+        );
+
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onMothershipInvoiceOpened', [$invoice]);
+    }
 }
