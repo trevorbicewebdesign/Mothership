@@ -5,7 +5,7 @@ defined('_JEXEC') or die;
 $fname = $displayData['fname'];
 $invoice = $displayData['invoice'];
 $client = $displayData['client'];
-
+$account = $displayData['account'];
 ?>
 <p>Hello <?= htmlspecialchars($fname, ENT_QUOTES, 'UTF-8'); ?>,</p>
-<p>Thank you for your payment, invoice #<?php echo $invoice->number; ?> has been marked as closed.</p>
+<p>Thank you for your payment, invoice #<?php echo $invoice->number; ?> for Account `<?php echo $account->name; ?>` has been marked as closed.</p>
