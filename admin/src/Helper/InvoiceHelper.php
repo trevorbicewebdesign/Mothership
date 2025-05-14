@@ -231,21 +231,35 @@ class InvoiceHelper
             return false;
         }
 
+        // Get the owner id and load that user
+        // Then grab the first name of that user
+        $user = Factory::getUser($client->owner_user_id);
+        $name = explode(" ", $user->name);
+        $firstName = $name[0];
+        $lastName = $name[1] ?? '';
+        $user_email = $user->email;
+
         if($status == 4) {
             EmailService::sendTemplate('invoice.user-closed', 
-                $client->email, 
+                $user_email, 
                 'Invoice Closed', 
                 [
+                    'fname' => $firstName,
+                    'lname' => $lastName,
                     'invoice' => $invoice,
+                    'client' => $client,
                 ]
             );
         }
         else if($status == 2) {
             EmailService::sendTemplate('invoice.user-opened', 
-                $client->email, 
-                'Invoice Cancelled', 
+                $user_email, 
+                'Invoice OPened', 
                 [
+                    'fname' => $firstName,
+                    'lname' => $lastName,
                     'invoice' => $invoice,
+                    'client' => $client,
                 ]
             );
         }
