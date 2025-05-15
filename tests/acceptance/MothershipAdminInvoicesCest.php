@@ -28,7 +28,7 @@ class MothershipAdminInvoicesCest
             'company_city' => 'Nowhere',
             'company_state' => 'California',
             'company_zip' => '99999',
-            'company_phone' => '555-555-5555',
+            'company_phone' => '555 555-5555',
             'company_default_rate' => '100.00',
         ]);
 
@@ -899,20 +899,45 @@ class MothershipAdminInvoicesCest
      */
     public function invoiceViewPdfTemplate(AcceptanceTester $I)
     {
+        $due_date = date('Y-m-d', strtotime('+30 days'));
+        $invoiceData = $I->createMothershipInvoice([
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'number' => 9000,
+            'status' => 2,
+            'total' => '123.45',
+            'due_date' => $due_date,
+        ]);
+
+        $invoiceItemData = [];
+        $invoiceItemData[] = $I->createMothershipInvoiceItem([
+            'invoice_id' => $invoiceData['id'],
+            'name' => 'Test Item',
+            'description' => 'Test Description',
+            'hours' => 1,
+            'minutes' => 0,
+            'quantity' => 1.00,
+            'rate' => $this->clientData['default_rate'],
+            'subtotal' => $this->clientData['default_rate'] * 1,
+        ]);
+
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
         $I->waitForText("Mothership: Invoices", 20, "h1.page-title");
 
-        $I->seeElement("#j-main-container table.itemList tbody tr:first-child a.previewPdf");
+        $I->seeElement("#j-main-container table.itemList tbody tr:nth-child(2) a.previewPdf");
 
         // I want to grab the html from the 4th child td element which has an a tag in it
-        $html = $I->grabAttributeFrom("#j-main-container table.itemList tbody tr:first-child a.previewPdf", 'href');
+        $html = $I->grabAttributeFrom("#j-main-container table.itemList tbody tr:nth-child(2) a.previewPdf", 'href');
         codecept_debug($html);
         // Click on the 4th child td element which has an a tag in it
-        $I->click("#j-main-container table.itemList tbody tr:first-child a.previewPdf");
+        $I->click("#j-main-container table.itemList tbody tr:nth-child(2) a.previewPdf");
         $I->amOnPage($html);
         $I->wait(1);
         // take a screen shot
-        $I->see("Invoice #{$this->invoiceData['number']}");
+        $I->see("Invoice Number: #{$invoiceData['number']}");
+        $I->see("Invoice Status: Opened");
+        $I->see("Invoice Due: " . $due_date);
+
     }
 
 }
