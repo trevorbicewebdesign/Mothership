@@ -51,7 +51,7 @@ class InvoiceController extends BaseController
         $invoice = $model->getItem($id);
         $client = ClientHelper::getClient($invoice->client_id);
         $account = AccountHelper::getAccount($invoice->account_id);
-        $business = MothershipHelper::getMothesrshipOptions();
+        $business = MothershipHelper::getMothershipOptions();
 
         if (!$invoice) {
             $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVOICE_NOT_FOUND'), 'error');
