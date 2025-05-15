@@ -17,102 +17,94 @@ $items    = $invoice->items ?? [];
     <meta charset="UTF-8">
     <title>Invoice #<?php echo htmlspecialchars($invoice->number); ?></title>
     <style>
-        body {
-            font-family: 'Open Sans', sans-serif;
-            font-size: 10pt;
-            color: #3A3A3A;
-            margin: 20mm;
-        }
+       body {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 10pt;
+    color: #3A3A3A;
+    margin: 20mm;
+}
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 10mm;
-        }
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8mm;
+}
 
-        .header-left {
-            display: flex;
-            flex-direction: column;
-            width: 55%;
-        }
+.logo-company-block {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    margin-bottom: 5mm;
+}
 
-        .logo-company-block {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            margin-bottom: 6mm;
-        }
+.company-info,
+.client-info {
+    font-size: 8pt;
+    line-height: 1.5;
+}
 
-        .company-info,
-        .client-info {
-            font-size: 8pt;
-            line-height: 1.4;
-        }
+.header-right h1 {
+    margin: 0 0 4mm 0;
+    font-size: 20pt;
+    color: #539CCD;
+}
 
-        .header-right {
-            width: 40%;
-            text-align: right;
-        }
+.invoice-meta p {
+    margin: 1mm 0;
+    font-size: 9pt;
+}
 
-        .header-right h1 {
-            margin: 0 0 6mm 0;
-            font-size: 20pt;
-            color: #539CCD;
-        }
+.section {
+    margin-top: 10mm;
+}
 
-        .invoice-meta p {
-            margin: 0;
-            font-size: 9pt;
-        }
+.account-heading {
+    font-size: 13pt;
+    font-weight: bold;
+    margin: 6mm 0 4mm;
+}
 
-        .section {
-            margin-top: 12mm;
-        }
+.items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 4mm;
+}
 
-        .account-heading {
-            font-size: 14pt;
-            font-weight: bold;
-            margin: 0;
-        }
+.items-table th,
+.items-table td {
+    padding: 4px 6px;
+}
 
-        .items-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 5mm;
-        }
+.items-table th {
+    background: #FFFFFF;
+    text-align: left;
+    border-bottom: 1px solid #ccc;
+}
 
-        .items-table th,
-        .items-table td {
-            padding: 6px 8px;
-        }
+.total {
+    text-align: right;
+    margin-top: 6mm;
+    font-size: 12pt;
+    font-weight: bold;
+    color: #539CCD;
+}
 
-        .items-table th {
-            background: #FFFFFF;
-            text-align: left;
-            border-bottom: 1px solid #ccc;
-        }
+.footer {
+    font-size: 9pt;
+    font-weight: normal;
+    margin-top: 10mm;
+    line-height: 1.4;
+}
 
-        .total {
-            text-align: right;
-            margin-top: 8mm;
-            font-size: 12pt;
-            font-weight: bold;
-            color: #539CCD;
-        }
+.final-company-info {
+    text-align: center;
+    margin-top: 16mm;
+    font-size: 10pt;
+    color: #444;
+    line-height: 1.4;
+}
 
-        .footer {
-            margin-top: 15mm;
-            font-size: 8pt;
-            text-align: center;
-            color: #999;
-        }
-
-        hr {
-            border: none;
-            border-top: 1px solid #ccc;
-            margin: 8mm 0 4mm;
-        }
     </style>
 </head>
 <body>
@@ -128,6 +120,7 @@ $items    = $invoice->items ?? [];
             <?php if (!empty($business['company_address_1'])): ?>
                 <p><?php echo nl2br(htmlspecialchars($business['company_address_1'])); ?></p>
             <?php endif; ?>
+            <p><?php echo nl2br(htmlspecialchars($business['company_city'])); ?>, <?php echo nl2br(htmlspecialchars($business['company_city'])); ?></p>
             <?php if (!empty($business['company_phone'])): ?>
                 <p><?php echo htmlspecialchars($business['company_phone']); ?></p>
             <?php endif; ?>
@@ -200,19 +193,26 @@ $items    = $invoice->items ?? [];
     </table>
 </div>
 
-<div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 0mm;">
-    <div class="footer" style="text-align: left; color: #000; font-size: 12pt; font-weight: bold;">
-        Have Questions? Get in touch —<br/>
-        <?php echo htmlspecialchars($business['email'] ?? ''); ?> |
-        <?php echo htmlspecialchars($business['phone'] ?? ''); ?>
+<div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 6mm;">
+    <div class="footer" style="text-align: left;">
+        <strong>Have Questions? Get in touch —</strong><br>
+        <?php if (!empty($business['company_email'])) : ?>
+            <?php echo htmlspecialchars($business['company_email']); ?>
+        <?php endif; ?>
+        <?php if (!empty($business['company_email']) && !empty($business['company_phone'])) : ?>
+            &nbsp;|&nbsp;
+        <?php endif; ?>
+        <?php if (!empty($business['company_phone'])) : ?>
+            <?php echo htmlspecialchars($business['company_phone']); ?>
+        <?php endif; ?>
     </div>
-    <div class="total" style="text-align: right;">
+    <div class="total">
         AMOUNT DUE: $<?php echo number_format((float)($invoice->total ?? 0), 2); ?><br>
         <span style="font-size: 10pt; font-weight: normal; color: #777;">Due upon receipt of invoice</span>
     </div>
 </div>
 
-<div style="text-align: center; margin-top: 18mm; font-size: 12pt; color: #444;">
+<div class="final-company-info">
     <?php if (!empty($business['company_name'])): ?>
         <div style="font-weight: bold;"><?php echo htmlspecialchars($business['company_name']); ?></div>
     <?php endif; ?>
@@ -228,6 +228,9 @@ $items    = $invoice->items ?? [];
             <?php echo !empty($business['company_state']) ? ', ' . htmlspecialchars($business['company_state']) : ''; ?>
             <?php echo htmlspecialchars($business['company_zip'] ?? ''); ?>
         </div>
+    <?php endif; ?>
+    <?php if (!empty($business['company_phone'])): ?>
+        <div><?php echo htmlspecialchars($business['company_phone']); ?></div>
     <?php endif; ?>
 </div>
 
