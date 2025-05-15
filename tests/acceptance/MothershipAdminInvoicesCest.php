@@ -708,6 +708,7 @@ class MothershipAdminInvoicesCest
     public function MothershipEditInvalidInvoice(AcceptanceTester $I)
     {
         $I->amOnPage(sprintf(self::INVOICE_EDIT_URL, "9999"));
+        $I->wait(1);
         $I->waitForText("Invoice not found. Please select a valid invoice.", 10, "#system-message-container .alert-message");
     }
 
