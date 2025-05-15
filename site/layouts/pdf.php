@@ -26,28 +26,42 @@ $items    = $invoice->items ?? [];
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            padding-bottom: 10px;
+            margin-bottom: 10mm;
         }
 
         .header-left {
             display: flex;
+            flex-direction: column;
+            width: 55%;
+        }
+
+        .logo-company-block {
+            display: flex;
+            flex-direction: column;
             align-items: flex-start;
+            margin-bottom: 6mm;
         }
 
-        .logo {
-            margin-right: 12px;
-        }
-
-        .company-info {
+        .company-info,
+        .client-info {
             font-size: 8pt;
-            line-height: 1.3;
+            line-height: 1.4;
         }
 
-        .branding h1 {
-            margin: 0;
+        .header-right {
+            width: 40%;
+            text-align: right;
+        }
+
+        .header-right h1 {
+            margin: 0 0 6mm 0;
             font-size: 20pt;
             color: #539CCD;
-            text-align: right;
+        }
+
+        .invoice-meta p {
+            margin: 0;
+            font-size: 9pt;
         }
 
         .section {
@@ -57,22 +71,7 @@ $items    = $invoice->items ?? [];
         .account-heading {
             font-size: 14pt;
             font-weight: bold;
-            margin: 6mm 0 6mm;
-        }
-
-        .details-row {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .client-info {
-            font-size: 9pt;
-            line-height: 1.4;
-        }
-
-        .invoice-meta {
-            font-size: 9pt;
-            text-align: right;
+            margin: 6mm 0;
         }
 
         .items-table {
@@ -89,6 +88,7 @@ $items    = $invoice->items ?? [];
         .items-table th {
             background: #FFFFFF;
             text-align: left;
+            border-bottom: 1px solid #ccc;
         }
 
         .total {
@@ -117,49 +117,46 @@ $items    = $invoice->items ?? [];
 
 <div class="header">
     <div class="header-left">
-        <div class="logo">
-            <img src="https://via.placeholder.com/120x48?text=Logo" alt="Company Logo" style="height:48px; max-width:120px;">
+        <div class="logo-company-block" style="display: flex; flex-direction: column; align-items: flex-start;">
+            <img src="https://via.placeholder.com/120x48?text=Logo" alt="Company Logo" style="height:48px; max-width:120px; margin-bottom: 4mm;">
+            <div class="company-info">
+                <?php if (!empty($business['company_name'])): ?>
+                    <p><?php echo nl2br(htmlspecialchars($business['company_name'])); ?></p>
+                <?php endif; ?>
+                <?php if (!empty($business['company_address_1'])): ?>
+                    <p><?php echo nl2br(htmlspecialchars($business['company_address_1'])); ?></p>
+                <?php endif; ?>
+                <?php if (!empty($business['company_phone'])): ?>
+                    <p><?php echo htmlspecialchars($business['company_phone']); ?></p>
+                <?php endif; ?>
+            </div>
         </div>
-        <div class="company-info">
-            <?php if (!empty($business['company_name'])): ?>
-                <p><?php echo nl2br(htmlspecialchars($business['company_name'])); ?></p>
+
+        <div class="client-info" style="margin-top: 6mm;">
+            <p><?php echo htmlspecialchars($client->name ?? $invoice->client_name ?? ''); ?></p>
+            <?php if (!empty($client->address_1)): ?>
+                <p><?php echo htmlspecialchars($client->address_1); ?></p>
             <?php endif; ?>
-            <?php if (!empty($business['company_address_1'])): ?>
-                <p><?php echo nl2br(htmlspecialchars($business['company_address_1'])); ?></p>
+            <?php if (!empty($client->address_2)): ?>
+                <p><?php echo htmlspecialchars($client->address_2); ?></p>
             <?php endif; ?>
-            <?php if (!empty($business['company_phone'])): ?>
-                <p><?php echo htmlspecialchars($business['company_phone']); ?></p>
+            <?php if (!empty($client->city) || !empty($client->state) || !empty($client->zip)): ?>
+                <p>
+                    <?php echo htmlspecialchars($client->city ?? ''); ?>
+                    <?php echo !empty($client->state) ? ', ' . htmlspecialchars($client->state) : ''; ?>
+                    <?php echo htmlspecialchars($client->zip ?? ''); ?>
+                </p>
             <?php endif; ?>
         </div>
     </div>
-    <div class="branding">
+
+    <div class="header-right">
         <h1>Invoice of Services</h1>
-    </div>
-</div>
-
-
-<div class="section details-row">
-    <div class="client-info">
-        <p><?php echo htmlspecialchars($client->name ?? $invoice->client_name ?? ''); ?></p>
-        <?php if (!empty($client->address_1)): ?>
-            <p><?php echo htmlspecialchars($client->address_1); ?></p>
-        <?php endif; ?>
-        <?php if (!empty($client->address_2)): ?>
-            <p><?php echo htmlspecialchars($client->address_2); ?></p>
-        <?php endif; ?>
-        <?php if (!empty($client->city) || !empty($client->state) || !empty($client->zip)): ?>
-            <p>
-                <?php echo htmlspecialchars($client->city ?? ''); ?>
-                <?php echo !empty($client->state) ? ', ' . htmlspecialchars($client->state) : ''; ?>
-                <?php echo htmlspecialchars($client->zip ?? ''); ?>
-            </p>
-        <?php endif; ?>
-    </div>
-
-    <div class="invoice-meta">
-        <p><strong>Invoice Number:</strong> <?php echo htmlspecialchars($invoice->number); ?></p>
-        <p><strong>Invoice Status:</strong> <?php echo htmlspecialchars($invoice->status); ?></p>
-        <p><strong>Invoice Due:</strong> <?php echo htmlspecialchars($invoice->due_date ?? '—'); ?></p>
+        <div class="invoice-meta">
+            <p><strong>Invoice Number:</strong> <?php echo htmlspecialchars($invoice->number); ?></p>
+            <p><strong>Invoice Status:</strong> <?php echo htmlspecialchars($invoice->status); ?></p>
+            <p><strong>Invoice Due:</strong> <?php echo htmlspecialchars($invoice->due_date ?? '—'); ?></p>
+        </div>
     </div>
 </div>
 
@@ -197,7 +194,6 @@ $items    = $invoice->items ?? [];
                 <td style="text-align: right;">$<?php echo number_format((float)($item['subtotal'] ?? 0), 2); ?></td>
             </tr>
         <?php endforeach; ?>
-
         </tbody>
     </table>
 </div>
