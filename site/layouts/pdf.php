@@ -117,18 +117,18 @@ $items    = $invoice->items ?? [];
 
 <div class="header">
     <div class="header-left">
-        <div class="logo-company-block" style="display: flex; flex-direction: column; align-items: flex-start;">
-            <img src="https://via.placeholder.com/120x48?text=Logo" alt="Company Logo" style="height:48px; max-width:120px; margin-bottom: 4mm;">
-            <div class="company-info">
-                <?php if (!empty($business['company_name'])): ?>
-                    <p><?php echo nl2br(htmlspecialchars($business['company_name'])); ?></p>
-                <?php endif; ?>
-                <?php if (!empty($business['company_address_1'])): ?>
-                    <p><?php echo nl2br(htmlspecialchars($business['company_address_1'])); ?></p>
-                <?php endif; ?>
-                <?php if (!empty($business['company_phone'])): ?>
-                    <p><?php echo htmlspecialchars($business['company_phone']); ?></p>
-                <?php endif; ?>
+        <div class="logo-company-block" style="display: flex; flex-direction: row; align-items: flex-start;">
+            <img src="https://via.placeholder.com/120x48?text=Logo" alt="Company Logo" style="height:48px; max-width:120px; margin-right: 10px; margin-bottom: 0;">
+            <div class="company-info" style="text-align: left;">
+            <?php if (!empty($business['company_name'])): ?>
+                <p><?php echo nl2br(htmlspecialchars($business['company_name'])); ?></p>
+            <?php endif; ?>
+            <?php if (!empty($business['company_address_1'])): ?>
+                <p><?php echo nl2br(htmlspecialchars($business['company_address_1'])); ?></p>
+            <?php endif; ?>
+            <?php if (!empty($business['company_phone'])): ?>
+                <p><?php echo htmlspecialchars($business['company_phone']); ?></p>
+            <?php endif; ?>
             </div>
         </div>
 
@@ -169,7 +169,7 @@ $items    = $invoice->items ?? [];
 <div class="section">
     <table class="items-table">
         <thead>
-            <tr>
+            <tr style="background-color: #f5f5f5;">
                 <th style="width: 16px;"></th>
                 <th>SERVICES RENDERED</th>
                 <th style="width: 50px;">Hours</th>
@@ -198,15 +198,35 @@ $items    = $invoice->items ?? [];
     </table>
 </div>
 
-<div class="total">
-    AMOUNT DUE: $<?php echo number_format((float)($invoice->total ?? 0), 2); ?><br>
-    <span style="font-size: 10pt; font-weight: normal; color: #777;">Due upon receipt of invoice</span>
+<div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 15mm;">
+    <div class="footer" style="text-align: left; color: #000; font-size: 18pt; font-weight: normal;">
+        Have Questions? Get in touch —<br/>
+        <?php echo htmlspecialchars($business['email'] ?? 'trevorbicewebdesign@gmail.com'); ?> |
+        <?php echo htmlspecialchars($business['phone'] ?? '707-880-0156'); ?>
+    </div>
+    <div class="total" style="text-align: right;">
+        AMOUNT DUE: $<?php echo number_format((float)($invoice->total ?? 0), 2); ?><br>
+        <span style="font-size: 10pt; font-weight: normal; color: #777;">Due upon receipt of invoice</span>
+    </div>
 </div>
 
-<div class="footer">
-    Have Questions? Get in touch —
-    <?php echo htmlspecialchars($business['email'] ?? 'trevorbicewebdesign@gmail.com'); ?> |
-    <?php echo htmlspecialchars($business['phone'] ?? '707-880-0156'); ?>
+<div style="text-align: center; margin-top: 18mm; font-size: 9pt; color: #444;">
+    <?php if (!empty($business['company_name'])): ?>
+        <div style="font-weight: bold;"><?php echo htmlspecialchars($business['company_name']); ?></div>
+    <?php endif; ?>
+    <?php if (!empty($business['company_address_1'])): ?>
+        <div><?php echo htmlspecialchars($business['company_address_1']); ?></div>
+    <?php endif; ?>
+    <?php if (!empty($business['company_address_2'])): ?>
+        <div><?php echo htmlspecialchars($business['company_address_2']); ?></div>
+    <?php endif; ?>
+    <?php if (!empty($business['company_city']) || !empty($business['company_state']) || !empty($business['company_zip'])): ?>
+        <div>
+            <?php echo htmlspecialchars($business['company_city'] ?? ''); ?>
+            <?php echo !empty($business['company_state']) ? ', ' . htmlspecialchars($business['company_state']) : ''; ?>
+            <?php echo htmlspecialchars($business['company_zip'] ?? ''); ?>
+        </div>
+    <?php endif; ?>
 </div>
 
 </body>
