@@ -166,14 +166,52 @@ class MothershipFrontInvoicesCest
     public function ViewInvoicePage(AcceptanceTester $I)
     {
         $I->amOnPage(sprintf(self::INVOICE_VIEW_URL, $this->invoiceData['id']));
+        $log_created = date('Y-m-d H:i:s');
         $I->wait(1);
         $I->waitForText("Invoice of Services", 10, "h1");
-        $log_created = date('Y-m-d H:i:s');
+                
+        // Check all the elements in the PDF
+        $I->see("{$this->mothershipConfig['company_name']}");
+        $I->see("{$this->mothershipConfig['company_address_1']}");
+        $I->see("{$this->mothershipConfig['company_address_2']}");
+        $I->see("{$this->mothershipConfig['company_city']}");
+        $I->see("{$this->mothershipConfig['company_state']}");
+        $I->see("{$this->mothershipConfig['company_zip']}");
+        $I->see("{$this->mothershipConfig['company_phone']}");
+        $I->see("{$this->mothershipConfig['company_email']}");
+    
+        // Check for the invoice meta data
+        $I->see("Invoice of Services");
+        $I->see("Invoice Number: #{$this->invoiceData['number']}");
+        $I->see("Invoice Status: Opened");
+        $I->see("Invoice Due:");
 
-        $I->see("Test Item 1");
-        $I->see("Test Item 2");
+        // Check the client data is displayed 
+        $I->see("{$this->clientData['name']}");
+        $I->see("{$this->clientData['address_1']}");
+        $I->see("{$this->clientData['address_2']}");
+        $I->see("{$this->clientData['city']}");
+        $I->see("{$this->clientData['state']}");
+        $I->see("{$this->clientData['zip']}");
 
-        $I->makeScreenshot("account-center-view-invoice");
+        // Check the account name is displayed
+        $I->see($this->accountData['name']);
+
+        $I->see("SERVICES RENDERED");
+        $I->see("Hours");
+        // $I->see("Minutes");
+        // $I->see("Quantity");
+        $I->see("Rate");
+        $I->see("Subtotal");
+
+
+        $I->see("{$this->invoiceItemData[0]['name']}");
+        // $I->see("{$this->invoiceItemData[0]['description']}");
+        $I->see("{$this->invoiceItemData[0]['quantity']}");
+        // $I->see("{$this->invoiceItemData[0]['minutes']}");
+        // $I->see("{$this->invoiceItemData[0]['quantity']}");
+        $I->see("{$this->invoiceItemData[0]['rate']}");
+        $I->see("{$this->invoiceItemData[0]['subtotal']}");
 
         $created = $I->grabFromDatabase("jos_mothership_logs", "created", [
             'client_id' => $this->clientData['id'],
