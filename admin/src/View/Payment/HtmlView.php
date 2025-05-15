@@ -82,8 +82,14 @@ class HtmlView extends BaseHtmlView
     {
         /** @var PaymentModel $model */
         $model = $this->getModel();
-        $this->form = $model->getForm();
         $this->item = $model->getItem();
+        if ($this->item === false) {
+            // Redirect to the list view if no item is found
+            $app = Factory::getApplication();
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_PAYMENT_NOT_FOUND'), 'error');
+            $app->redirect(Factory::getApplication()->input->get('return', 'index.php?option=com_mothership&view=payments', 'raw'));    
+        }
+        $this->form = $model->getForm();
         $this->state = $model->getState();
         $this->helper = new MothershipHelper;
         $this->canDo = ContentHelper::getActions('com_mothership');
@@ -103,9 +109,11 @@ class HtmlView extends BaseHtmlView
             }
         }
 
-        // ✅ Use WebAssetManager to load the script
         $wa = $this->getDocument()->getWebAssetManager();
-        $wa->registerAndUseScript('com_mothership.payment-edit', 'media/com_mothership/js/payment-edit.js', [], ['defer' => true]);
+        $jsPath = JPATH_ROOT . '/administrator/components/com_mothership/assets/js/payment-edit.js';
+        $jsVersion = filemtime($jsPath);
+        $wa->useScript('jquery');
+        $wa->registerAndUseScript('com_mothership.payment-edit', 'administrator/components/com_mothership/assets/js/payment-edit.js', [], ['defer' => true, 'version' => $jsVersion]);
         $wa->registerAndUseStyle('com_mothership.payment-edit', 'media/com_mothership/css/payment-edit.css');
 
         // Check for errors.
@@ -137,6 +145,7 @@ class HtmlView extends BaseHtmlView
         $canDo = $this->canDo;
         $isLocked = $this->item->locked;
         $toolbar = $this->getDocument()->getToolbar();
+
 
         ToolbarHelper::title(
             $isLocked 
@@ -175,6 +184,11 @@ class HtmlView extends BaseHtmlView
             ToolbarHelper::custom('payment.unlock', 'unlock', 'unlock', 'COM_MOTHERSHIP_UNLOCK', false);
         } else {
             ToolbarHelper::custom('payment.lock', 'lock', 'lock', 'COM_MOTHERSHIP_LOCK', false);
+        }
+
+        // Make a Confirm Payment button below
+        if ($this->item->status == '1' && $canDo->get('core.edit')) {
+            ToolbarHelper::custom('payment.confirm', 'vcard', 'vcard', 'COM_MOTHERSHIP_CONFIRM_PAYMENT', false);
         }
 
 

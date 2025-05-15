@@ -131,22 +131,22 @@ jQuery(document).ready(function ($) {
      * ------------------
      * - On initial page load:
      *   - If no client is selected (value is ''), the Account field (.account_id_wrapper) is hidden.
-     *   - The loading spinner (.account-loading-spinner) is also hidden.
+     *   - The loading accountSpinner (.account-loading-spinner) is also hidden.
      *
      * - When a client is selected:
      *   1. The Account field slides open over 200ms.
-     *   2. A loading spinner fades in over 200ms, centered in the account container.
+     *   2. A loading accountSpinner fades in over 200ms, centered in the account container.
      *   3. An AJAX request is sent to:
      *      /administrator/index.php?option=com_mothership&task=invoice.getAccountsList&client_id={clientId}
      *   4. While waiting, the Account dropdown is hidden.
      *   5. On AJAX success:
      *      - The Account dropdown is cleared and populated with the returned list.
      *      - Each item is an object with { value, text, disable }.
-     *      - The spinner fades out (200ms), and the dropdown fades in (200ms).
+     *      - The accountSpinner fades out (200ms), and the dropdown fades in (200ms).
      *
      * - If the user selects a blank client:
      *   - The Account section fades out and slides closed over 200ms.
-     *   - The spinner is reset and hidden.
+     *   - The accountSpinner is reset and hidden.
      *
      * Expected JSON response format:
      * ------------------------------
@@ -171,16 +171,17 @@ jQuery(document).ready(function ($) {
 
     const clientSelect = $('#jform_client_id');
     const accountWrapper = $('.account_id_wrapper');
-    const spinner = $('.account-loading-spinner');
+    const projectWrapper = $('.project_id_wrapper');
+    const accountSpinner = $('.account-loading-spinner');
+    const projectSpinner = $('.project-loading-spinner');
     const accountSelect = $('#jform_account_id');
+    const projectSelect = $('#jform_project_id');
 
     function isNewInvoice() {
         return clientSelect.val() === '';
     }
 
     function revealAccountField(clientId) {
-        if (accountWrapper.is(':visible')) return;
-
         // Initial state
         accountWrapper.css({
             display: 'block',
@@ -188,7 +189,7 @@ jQuery(document).ready(function ($) {
             height: 0,
             opacity: 0
         });
-        spinner.css({
+        accountSpinner.css({
             display: 'block',
             opacity: 0
         });
@@ -213,11 +214,58 @@ jQuery(document).ready(function ($) {
                 easing: 'swing',
                 complete: function () {
                     // Fade in spinner
-                    spinner.animate({ opacity: 1 }, {
+                    accountSpinner.animate({ opacity: 1 }, {
                         duration: 200,
                         easing: 'swing',
                         complete: function () {
                             loadAccountsForClient(clientId);
+                        }
+                    });
+                }
+            }
+        );
+    }
+
+    function revealProjectField(accountId) {
+        if (projectWrapper.is(':visible')) return;
+
+        // Initial state
+        projectWrapper.css({
+            display: 'block',
+            overflow: 'hidden',
+            height: 0,
+            opacity: 0
+        });
+        projectWrapper.css({
+            display: 'block',
+            opacity: 0
+        });
+
+        projectWrapper.css('opacity', 0);
+
+        const clone = projectWrapper.clone().css({
+            visibility: 'hidden',
+            height: 'auto',
+            display: 'block',
+            position: 'absolute',
+            left: -9999
+        }).appendTo('body');
+
+        const targetHeight = clone.outerHeight();
+        clone.remove();
+
+        projectWrapper.animate(
+            { height: targetHeight },
+            {
+                duration: 200,
+                easing: 'swing',
+                complete: function () {
+                    // Fade in spinner
+                    projectSpinner.animate({ opacity: 1 }, {
+                        duration: 200,
+                        easing: 'swing',
+                        complete: function () {
+                            loadProjectsForAccount(accountId);
                         }
                     });
                 }
@@ -247,7 +295,38 @@ jQuery(document).ready(function ($) {
                         opacity: ''
                     });
 
-                    spinner.css({
+                    accountSpinner.css({
+                        display: 'none',
+                        opacity: ''
+                    });
+                }
+            }
+        );
+    }
+
+    function hideProjectsField() {
+        const currentHeight = projectWrapper.outerHeight();
+
+        projectWrapper.css({
+            overflow: 'hidden',
+            height: currentHeight,
+            opacity: 1
+        });
+
+        projectWrapper.animate(
+            { height: 0, opacity: 0 },
+            {
+                duration: 200,
+                easing: 'swing',
+                complete: function () {
+                    projectWrapper.css({
+                        display: 'none',
+                        height: '',
+                        overflow: '',
+                        opacity: ''
+                    });
+
+                    projectSpinner.css({
                         display: 'none',
                         opacity: ''
                     });
@@ -277,11 +356,11 @@ jQuery(document).ready(function ($) {
                 });
     
                 // Fade out spinner, fade in dropdown
-                spinner.animate({ opacity: 0 }, {
+                accountSpinner.animate({ opacity: 0 }, {
                     duration: 200,
                     easing: 'swing',
                     complete: function () {
-                        spinner.css('display', 'none');
+                        accountSpinner.css('display', 'none');
     
                         accountWrapper.animate({ opacity: 1 }, {
                             duration: 200,
@@ -301,7 +380,57 @@ jQuery(document).ready(function ($) {
                 console.error('Failed to fetch accounts for client_id=' + clientId);
                 alert('Error loading accounts. Please try again.');
     
-                spinner.fadeOut(200);
+                accountSpinner.fadeOut(200);
+            }
+        });
+    }
+
+    function loadProjectsForAccount(accountId) {
+        const ajaxUrl = '/administrator/index.php?option=com_mothership&task=invoice.getProjectsList&account_id=' + accountId;
+    
+        $.ajax({
+            url: ajaxUrl,
+            method: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                // Clear and populate account dropdown
+                projectSelect.empty();
+    
+                $.each(response, function (index, item) {
+                    const option = $('<option>', {
+                        value: item.value,
+                        text: item.text,
+                        disabled: item.disable === true
+                    });
+                    projectSelect.append(option);
+                });
+    
+                // Fade out spinner, fade in dropdown
+                projectSpinner.animate({ opacity: 0 }, {
+                    duration: 200,
+                    easing: 'swing',
+                    complete: function () {
+                        projectSpinner.css('display', 'none');
+    
+                        projectWrapper.animate({ opacity: 1 }, {
+                            duration: 200,
+                            easing: 'swing',
+                            complete: function () {
+                                projectWrapper.css({
+                                    height: '',
+                                    overflow: '',
+                                    opacity: ''
+                                });
+                            }
+                        });
+                    }
+                });
+            },
+            error: function () {
+                console.error('Failed to fetch projects for account_id =' + accountId);
+                alert('Error loading projects. Please try again.');
+    
+                projectSpinner.fadeOut(200);
             }
         });
     }
@@ -309,17 +438,32 @@ jQuery(document).ready(function ($) {
     // On page load
     if (isNewInvoice()) {
         accountWrapper.hide();
-        spinner.hide();
+        accountSpinner.hide();
+        projectWrapper.hide();
+        projectSpinner.hide();
     }
 
     // On client change
     clientSelect.on('change', function () {
+        hideProjectsField();
         const selectedVal = $(this).val();
-
-        if (selectedVal === '') {
-            hideAccountField();
-        } else {
+        
+        if (selectedVal) {
             revealAccountField(selectedVal);
+        }
+        else {
+            hideAccountField();
+        }
+    });
+
+    accountSelect.on('change', function () {
+        const selectedVal = $(this).val();
+        
+        if (selectedVal) {
+            revealProjectField(selectedVal);
+        }
+        else {
+            hideProjectField();
         }
     });
 

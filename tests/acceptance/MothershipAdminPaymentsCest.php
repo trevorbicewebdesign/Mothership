@@ -21,22 +21,29 @@ class MothershipAdminPaymentsCest
     {
         $I->resetMothershipTables();
 
+        $I->setMothershipConfig([
+            'company_name' => 'Test Company',
+            'company_address' => '123 Test St, Test City, TX 12345',
+            'company_phone' => '(123) 456-7890',
+            'company_email' => 'test.company@mailinator.com',
+        ]);
+
         $this->clientData = $I->createMothershipClient([
             'name' => 'Test Client',
+            'email' => 'test.client@mailinator.com',
+            'phone' => '(123) 456-7890',
+            'owner_user_id' => 1,
         ]);
 
         $clientData2 = $I->createMothershipClient([
             'name' => 'Acme Inc.',
+            'email' => 'test.acme.inc@mailinator.com',
+            'owner_user_id' => 1,
         ]);
 
         $accountData2 = $I->createMothershipAccount([
             'client_id' => $clientData2['id'],
             'name' => 'Roadrunner Products',
-        ]);
-
-        $this->userData = $I->createMothershipUser([
-            'user_id' => '43',
-            'client_id' => $this->clientData['id'],
         ]);
 
         $this->accountData = $I->createMothershipAccount([
@@ -82,13 +89,15 @@ class MothershipAdminPaymentsCest
             'amount' => 103.2,
             'fee_amount' => 3.2,
             'fee_passed_on' => FALSE,
-            'payment_method' => 'paypal',
+            'payment_method' => 'paybycheck',
             'transaction_id' => '123456',
             'status' => 2,
             'processed_date' => date('Y-m-d H:i:s'),
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
+
+
 
         // Navigate to the login page
         $I->amOnPage("/administrator/");
@@ -104,20 +113,20 @@ class MothershipAdminPaymentsCest
     /**
      * @group backend
      * @group payment
-     * @group account
+     * @group client
      * @group backend-payment
      */
     public function MothershipCancelClientEdit(AcceptanceTester $I)
     {
         $I->amOnPage( self::PAYMENTS_VIEW_ALL_URL);
+        $I->wait(1);
         $I->waitForText("Mothership: Payments", 20, "h1.page-title");
-
         $I->click("Test Client");
+        $I->wait(1);
         $I->waitForText("Mothership: Edit Client", 20, "h1.page-title");
-        $I->wait(1);
         $I->click("Close", "#toolbar");
-        $I->waitForText("Mothership: Payments", 20, "h1.page-title");
         $I->wait(1);
+        $I->waitForText("Mothership: Payments", 20, "h1.page-title");
         $I->seeCurrentUrlEquals(self::PAYMENTS_VIEW_ALL_URL);
     }
 
@@ -144,7 +153,7 @@ class MothershipAdminPaymentsCest
     /**
      * @group backend
      * @group payment
-     * @group account
+     * @group invoice
      * @group backend-payment
      */
     public function MothershipCancelInvoiceEdit(AcceptanceTester $I)
@@ -155,7 +164,7 @@ class MothershipAdminPaymentsCest
             'amount' => 103.2,
             'fee_amount' => 3.2,
             'fee_passed_on' => FALSE,
-            'payment_method' => 'paypal',
+            'payment_method' => 'paybycheck',
             'transaction_id' => '123456',
             'status' => 2,
             'processed_date' => date('Y-m-d H:i:s'),
@@ -184,7 +193,7 @@ class MothershipAdminPaymentsCest
      * @group payment
      * @group backend-payment
      */
-    public function MothershipViewPayments(AcceptanceTester $I)
+    public function MothershipViewAllPayments(AcceptanceTester $I)
     {
         $paymentData = $I->createMothershipPayment([
             'client_id' => $this->clientData['id'],
@@ -192,7 +201,7 @@ class MothershipAdminPaymentsCest
             'amount' => 103.2,
             'fee_amount' => 3.2,
             'fee_passed_on' => FALSE,
-            'payment_method' => 'paypal',
+            'payment_method' => 'paybycheck',
             'transaction_id' => '123456',
             'status' => 2,
             'processed_date' => date('Y-m-d H:i:s'),
@@ -211,6 +220,8 @@ class MothershipAdminPaymentsCest
 
         $I->makeScreenshot("mothership-view-payments");
 
+        $I->dontSee("Warning");
+
         $toolbar = "#toolbar";
         $toolbarNew = "#toolbar-new";
         $toolbarStatusGroup = "#toolbar-status-group";
@@ -228,7 +239,6 @@ class MothershipAdminPaymentsCest
         $I->see("Account", "#j-main-container table thead tr th:nth-child(7)");
         $I->see("Created", "#j-main-container table thead tr th:nth-child(8)");
         $I->see("Status", "#j-main-container table thead tr th:nth-child(9)");
-        $I->see("Allocations", "#j-main-container table thead tr th:nth-child(10)");
 
         $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 2);
 
@@ -334,7 +344,7 @@ class MothershipAdminPaymentsCest
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
             'amount' => 80.00,
-            'payment_method' => 'paypal',
+            'payment_method' => 'paybycheck',
             'status' => 2,
         ]);
 
@@ -367,6 +377,7 @@ class MothershipAdminPaymentsCest
     public function MothershipAddPayment(AcceptanceTester $I)
     {
         $I->amOnPage(self::PAYMENTS_VIEW_ALL_URL);
+        $I->wait(1);
         $I->waitForText("Mothership: Payments", 20, "h1.page-title");
 
         $toolbar = "#toolbar";
@@ -375,16 +386,20 @@ class MothershipAdminPaymentsCest
         $I->seeElement("{$toolbar} {$toolbarNew}");
         $I->see("New", "{$toolbar} {$toolbarNew} .btn.button-new");
         $I->click("{$toolbar} {$toolbarNew} .btn.button-new");
+        $I->wait(1);
         $I->waitForText("Mothership: New Payment", 20, "h1.page-title");
 
         $I->makeScreenshot("mothership-add-payment");
+
+        $I->dontSee("Warning");
 
         $I->see("Save", "#toolbar");
         $I->see("Save & Close", "#toolbar");
         $I->see("Cancel", "#toolbar");
 
         $I->seeElement("select#jform_client_id");
-        $I->seeElement("select#jform_account_id");
+        $I->dontSeeElement("select#jform_account_id");
+
         $I->seeElement("input#jform_amount");
         $I->seeElement("input#jform_fee_amount");
         $I->seeElement("#jform_fee_passed_on");
@@ -401,13 +416,16 @@ class MothershipAdminPaymentsCest
         $I->see("Please correct the marked fields and try again.");
         
         $I->see("One of the options must be selected", "label#jform_client_id-lbl .form-control-feedback");
-        $I->see("One of the options must be selected", "label#jform_account_id-lbl .form-control-feedback");
         
         $I->amGoingTo("Fill out the form");
 
         $I->selectOption("select#jform_client_id", $this->clientData['id']);
-        $I->waitForElementVisible("select#jform_account_id", 5); // Wait for the spinner
+        $I->wait(1);
+        $I->seeOptionIsSelected("select#jform_client_id", "{$this->clientData['name']}");
         $I->selectOption("select#jform_account_id", $this->accountData['id']);
+        $I->wait(1);
+        $I->seeOptionIsSelected("select#jform_account_id", "{$this->accountData['name']}");
+
         $I->fillFIeld("input#jform_amount", "103.20");
         $I->fillFIeld("input#jform_fee_amount", "3.20");
         $I->fillFIeld("input#jform_payment_method", "PayPal");
@@ -444,6 +462,17 @@ class MothershipAdminPaymentsCest
 
     /**
      * @group backend
+     * @group payment
+     * @group backend-payment
+     */
+    public function MothershipEditInvalidPayment(AcceptanceTester $I)
+    {
+        $I->amOnPage(sprintf(self::PAYMENT_EDIT_URL, "9999"));
+        $I->waitForText("Payment not found. Please select a valid payment.", 10, "#system-message-container .alert-message");
+    }
+
+    /**
+     * @group backend
      * @group invoice
      * @group backend-payment
      */
@@ -455,7 +484,7 @@ class MothershipAdminPaymentsCest
             'amount' => 103.2,
             'fee_amount' => 3.2,
             'fee_passed_on' => FALSE,
-            'payment_method' => 'paypal',
+            'payment_method' => 'paybycheck',
             'transaction_id' => '123456',
             'status' => 1,
             'processed_date' => date('Y-m-d H:i:s'),
@@ -466,6 +495,7 @@ class MothershipAdminPaymentsCest
         // Set the invoice to the locked state
         $I->setPaymentLocked($paymentData['id']);
         $I->amOnPage(sprintf(self::PAYMENT_EDIT_URL, $paymentData['id']));
+        $I->wait(1);
         $I->waitForText("Mothership: View Payment", 20, "h1.page-title");
 
         $I->seeElement("#jform_client_id");
@@ -474,6 +504,7 @@ class MothershipAdminPaymentsCest
         $I->assertEquals("true", $I->grabAttributeFrom("#jform_account_id", "disabled"));
 
         $I->click("Unlock", "#toolbar");
+        $I->wait(1);
         $I->waitForText("Mothership: Edit Payment", 20, "h1.page-title");
         $I->waitForText("Payment unlocked successfully.", 20, "#system-message-container .alert-message");
 
@@ -483,6 +514,7 @@ class MothershipAdminPaymentsCest
         $I->assertEquals(NULL, $I->grabAttributeFrom("#jform_account_id", "disabled"));
 
         $I->click("Lock", "#toolbar");
+        $I->wait(1);
         $I->waitForText("Mothership: View Payment", 20, "h1.page-title");
         $I->waitForText("Payment locked successfully.", 20, "#system-message-container .alert-message");
     }
@@ -509,7 +541,7 @@ class MothershipAdminPaymentsCest
             'amount' => 103.2,
             'fee_amount' => 3.2,
             'fee_passed_on' => FALSE,
-            'payment_method' => 'paypal',
+            'payment_method' => 'paybycheck',
             'transaction_id' => '123456',
             'status' => 1,
             'processed_date' => date('Y-m-d H:i:s'),
@@ -543,5 +575,118 @@ class MothershipAdminPaymentsCest
         $I->seeNumberOfElements("#j-main-container table tbody tr", 0);
 
         $I->dontSeeInDatabase("jos_mothership_payments", [ 'id' => $paymentData['id'] ]);
+    }
+
+    /**
+     * @group backend
+     * @group payment
+     * @group backend-payment
+     */
+    public function ManuallyConfirmPendingPayment(AcceptanceTester $I)
+    {
+        $paymentData = $I->createMothershipPayment([
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'amount' => 178.20,
+            'fee_amount' => 3.2,
+            'fee_passed_on' => FALSE,
+            'payment_method' => 'paybycheck',
+            'transaction_id' => '123456',
+            'status' => 1,
+            'processed_date' => date('Y-m-d H:i:s'),
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s'),
+        ]);
+
+        $invoiceData = $I->createMothershipInvoice([
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'total' => 175.00,
+            'number' => 3033,
+            'due_date' => NULL,
+            'created' => date('Y-m-d H:i:s'),
+            'status' => 2,
+        ]);
+
+        $invoiceItemData[] = $I->createMothershipInvoiceItem([
+            'invoice_id' => $invoiceData['id'],
+            'name' => 'Test Item 1',
+            'description' => 'Test Description 1',
+            'hours' => 1,
+            'minutes' => 30,
+            'quantity' => 1.75,
+            'rate' => 100.00,
+            'subtotal' => 175.00,
+        ]);
+
+        $invoicePaymentData = $I->createMothershipInvoicePayment([
+            'invoice_id' => $invoiceData['id'],
+            'payment_id' => $paymentData['id'],
+            'applied_amount' => 178.20,
+        ]);
+
+        $I->seeInDatabase("jos_mothership_payments", [ 
+            'id' => $paymentData['id'], 
+            'status' => 1 
+        ]);
+
+        $I->amOnPage(sprintf(self::PAYMENT_EDIT_URL, $paymentData['id']));
+        $I->wait(1);
+        $I->waitForText("Mothership: Edit Payment", 20, "h1.page-title");
+
+        $I->see("Confirm Payment", "#toolbar");
+        $I->seeElement("joomla-toolbar-button#toolbar-vcard", ['task' => "payment.confirm"]);
+
+        $I->click("Confirm Payment", "#toolbar");
+        $I->wait(1);
+        $I->waitForText("Mothership: Payments", 20, "h1.page-title");
+        $I->see("Payment {$paymentData['id']} confirmed successfully.", ".alert-message");
+
+        $I->see("Completed", "#j-main-container table tbody tr:nth-child(2) td:nth-child(9)");
+        $I->dontSee("Confirm", "#j-main-container table tbody tr:nth-child(2) td:nth-child(9) button");
+        $I->dontSee("Pending", "#j-main-container table tbody tr:nth-child(2) td:nth-child(9)");
+
+        $I->seeInDatabase("jos_mothership_payments", [ 
+            'id' => $paymentData['id'], 
+            'status' => 2 
+        ]);
+
+        $I->seeInDatabase("jos_mothership_logs", [ 
+            'client_id' => $this->clientData['id'], 
+            'account_id' => $this->accountData['id'],
+            'action' => 'payment_status_changed', 
+            'object_id' => $paymentData['id'], 
+            'object_type' => 'payment', 
+            'user_id' => 1, 
+        ]);
+
+        $emailReceived = $I->getEmailBySubject("Payment #{$paymentData['id']} Received");
+        $I->assertNotEmpty($emailReceived, "Email not received"); 
+        $emailConfimred = $I->getEmailBySubject("Payment #{$paymentData['id']} Confirmed");
+        $I->assertNotEmpty($emailConfimred, "Email not received");
+
+        // This should also have updated the invoice status to confirmed
+        $I->seeInDatabase("jos_mothership_invoices", [ 
+            'id' => $invoiceData['id'], 
+            'status' => 4 
+        ]);
+        
+        $I->seeInDatabase("jos_mothership_invoice_payment", [ 
+            'invoice_id' => $invoiceData['id'], 
+            'payment_id' => $paymentData['id'], 
+            'applied_amount' => 178.20 
+        ]);
+
+        $I->seeInDatabase("jos_mothership_logs", [ 
+            'client_id' => $this->clientData['id'], 
+            'account_id' => $this->accountData['id'],
+            'action' => 'status_closed', 
+            'object_id' => $invoiceData['id'], 
+            'object_type' => 'invoice', 
+            'user_id' => 1, 
+        ]);
+
+        $emailInvoiceClosed = $I->getEmailBySubject("Invoice #{$invoiceData['number']} Closed");
+        $I->assertNotEmpty($emailInvoiceClosed, "Email not received");
     }
 }

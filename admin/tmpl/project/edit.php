@@ -31,7 +31,12 @@ $userId = $user->id;
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
 ?>
-
+<style>
+ .account-loading-spinner,
+ .project-loading-spinner {
+    display:none;
+ }
+</style>
 <form action="<?php echo Route::_('index.php?option=com_mothership&layout=edit&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" id="project-form" aria-label="<?php echo Text::_('COM_MOTHERSHIP_PROJECT_' . ((int) $this->item->id === 0 ? 'NEW' : 'EDIT'), true); ?>" class="form-validate">
     <div class="main-card">
         <?php echo HTMLHelper::_('uitab.startTabSet', 'myTab', ['active' => 'details', 'recall' => true, 'breakpoint' => 768]); ?>
@@ -41,7 +46,16 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                 <div>
                     <fieldset class="adminform">
                     <?php echo $this->form->renderField('client_id'); ?>
-                    <?php echo $this->form->renderField('account_id'); ?>
+                    <div class="account-container">
+                        <div class="account-loading-spinner">
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            <?php echo Text::_('Loading accounts...'); ?>
+                        </div>
+                        <div class="account_id_wrapper" style="opacity: 1;">
+                            <?php echo $this->form->renderField('account_id'); ?>
+                        </div>
+                    </div>
+
                     <?php echo $this->form->renderField('type'); ?>
                     <?php echo $this->form->renderField('name'); ?>
                     <?php echo $this->form->renderField('rate'); ?>
@@ -61,7 +75,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
     </div>
 
     <input type="hidden" name="jform[id]" value="<?php echo (isset($this->item->id) && $this->item->id > 0) ? (int) $this->item->id : ""; ?>" />
-    <input type="hidden" name="jform[return]" value="<?php echo $_REQUEST['return']; ?>" />
+    <input type="hidden" name="jform[return]" value="<?php echo isset($_REQUEST['return'])?$_REQUEST['return']:''; ?>" />
     <input type="hidden" name="task" value="" />
     <?php echo JHtml::_('form.token'); ?>
 </form>

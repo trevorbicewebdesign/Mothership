@@ -61,6 +61,7 @@ class MothershipAdminClientsCest
     /**
      * @group backend
      * @group client
+     * @group backend-client
      */
     public function MothershipViewClients(AcceptanceTester $I)
     {
@@ -100,10 +101,12 @@ class MothershipAdminClientsCest
     /**
      * @group backend
      * @group client
+     * @group backend-client
      */
     public function MothershipAddClient(AcceptanceTester $I)
     {
         $I->amOnPage(self::CLIENTS_VIEW_ALL_URL);
+        $I->wait(1);
         $I->waitForText("Mothership: Clients", 20, "h1.page-title");
 
         $toolbar = "#toolbar";
@@ -113,9 +116,11 @@ class MothershipAdminClientsCest
         $I->see("New", "{$toolbar} {$toolbarNew} .btn.button-new");
 
         $I->click("{$toolbar} {$toolbarNew} .btn.button-new");
+        $I->wait(1);
         $I->waitForText("Mothership: New Client", 20, "h1.page-title");
 
         $I->makeScreenshot("mothership-client-add-details");
+        $I->dontSee("Warning");
 
         $I->see("Save", "#toolbar");
         $I->see("Save & Close", "#toolbar");
@@ -159,7 +164,7 @@ class MothershipAdminClientsCest
         $I->switchToIFrame();
 
         $I->click("Save & Close", "#toolbar");
-        $I->wait(3);
+        $I->waitForText("Mothership: Clients", 20, "h1.page-title");
         $I->seeInCurrentUrl(("/administrator/index.php?option=com_mothership&view=clients"));
         $I->see("Client saved", ".alert-message");
 
@@ -192,9 +197,21 @@ class MothershipAdminClientsCest
         // Confirm the value in jform_number is correct
         $I->seeInField("input#jform_name", "Another Client");
         $I->click("Save", "#toolbar");
+        $I->wait(1);
         $I->waitForText("Mothership: Edit Client", 20, "h1.page-title");
         $I->seeCurrentUrlEquals(sprintf(self::CLIENT_EDIT_URL, $client_id));
         $I->waitForText("Client Another Client saved successfully.", 20, ".alert-message");
+    }
+
+    /**
+     * @group backend
+     * @group client
+     * @group backend-client
+     */
+    public function MothershipEditInvalidClient(AcceptanceTester $I)
+    {
+        $I->amOnPage(sprintf(self::CLIENT_EDIT_URL, "9999"));
+        $I->waitForText("Client not found. Please select a valid client.", 10, "#system-message-container .alert-message");
     }
 
     /**

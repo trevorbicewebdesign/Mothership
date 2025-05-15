@@ -81,15 +81,24 @@ class HtmlView extends BaseHtmlView
     {
         /** @var ProjectModel $model */
         $model = $this->getModel();
-        $this->form = $model->getForm();
         $this->item = $model->getItem();
+        if ($this->item === false) {
+            // Redirect to the list view if no item is found
+            $app = Factory::getApplication();
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_PROJECT_NOT_FOUND'), 'error');
+            $app->redirect(Factory::getApplication()->input->get('return', 'index.php?option=com_mothership&view=projects', 'raw'));    
+        }
+        $this->form = $model->getForm();
         $this->state = $model->getState();
         $this->helper = new MothershipHelper;
         $this->canDo = ContentHelper::getActions('com_mothership');
 
-        // ✅ Use WebAssetManager to load the script
         $wa = $this->getDocument()->getWebAssetManager();
-        $wa->registerAndUseScript('com_mothership.project-edit', 'media/com_mothership/js/project-edit.js', [], ['defer' => true]);
+        $jsPath = JPATH_ROOT . '/administrator/components/com_mothership/assets/js/project-edit.js';
+        $jsVersion = filemtime($jsPath);
+        $wa->useScript('jquery');
+        $wa->registerAndUseScript('com_mothership.invoice-edit', 'administrator/components/com_mothership/assets/js/project-edit.js', [], ['defer' => true, 'version' => $jsVersion]);
+
         $wa->registerAndUseStyle('com_mothership.project-edit', 'media/com_mothership/css/project-edit.css');
 
         // Check for errors.

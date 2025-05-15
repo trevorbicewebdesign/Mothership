@@ -81,15 +81,24 @@ class HtmlView extends BaseHtmlView
     {
         /** @var DomainModel $model */
         $model = $this->getModel();
-        $this->form = $model->getForm();
         $this->item = $model->getItem();
+        if ($this->item === false) {
+            // Redirect to the list view if no item is found
+            $app = Factory::getApplication();
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_DOMAIN_NOT_FOUND'), 'error');
+            $app->redirect(Factory::getApplication()->input->get('return', 'index.php?option=com_mothership&view=domains', 'raw'));    
+        }
+        $this->form = $model->getForm();
         $this->state = $model->getState();
         $this->helper = new MothershipHelper;
         $this->canDo = ContentHelper::getActions('com_mothership');
 
-        // ✅ Use WebAssetManager to load the script
         $wa = $this->getDocument()->getWebAssetManager();
-        $wa->registerAndUseScript('com_mothership.domain-edit', 'media/com_mothership/js/domain-edit.js', [], ['defer' => true]);
+        $jsPath = JPATH_ROOT . '/administrator/components/com_mothership/assets/js/domain-edit.js';
+        $jsVersion = filemtime($jsPath);
+        $wa->useScript('jquery');
+        $wa->registerAndUseScript('com_mothership.domain-edit', 'administrator/components/com_mothership/assets/js/domain-edit.js', [], ['defer' => true, 'version' => $jsVersion]);
+
         $wa->registerAndUseStyle('com_mothership.domain-edit', 'media/com_mothership/css/domain-edit.css');
 
         // Check for errors.

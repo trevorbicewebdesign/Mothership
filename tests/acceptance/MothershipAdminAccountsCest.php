@@ -87,6 +87,8 @@ class MothershipAdminAccountsCest
         
         $I->makeScreenshot("mothership-accounts-view-all");
 
+        $I->dontSee("Warning");
+
         $toolbar = "#toolbar";
         $toolbarNew = "#toolbar-new";
         $toolbarStatusGroup = "#toolbar-status-group";
@@ -162,6 +164,17 @@ class MothershipAdminAccountsCest
             // 'created' => date("Y-m-d 00:00:00"),
         ]);
 
+    }
+
+    /**
+     * @group backend
+     * @group account
+     * @group backend-account
+     */
+    public function MothershipEditInvalidAccount(AcceptanceTester $I)
+    {
+        $I->amOnPage(sprintf(self::ACCOUNT_EDIT_URL, "9999"));
+        $I->waitForText("Account not found. Please select a valid account.", 10, "#system-message-container .alert-message");
     }
 
     /**

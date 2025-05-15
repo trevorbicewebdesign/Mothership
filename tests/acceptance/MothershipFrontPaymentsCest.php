@@ -18,8 +18,6 @@ class MothershipFrontPaymentsCest
     private $invoiceItemData = [];
     const PAYMENTS_VIEW_ALL_URL= "index.php?option=com_mothership&view=payments";
     const PAYMENT_VIEW_URL= "index.php?option=com_mothership&view=payment&id=%s";
-    const PAYMENTS_VIEW_ALL_SEF_URL = "/account-center/billing/payments";
-    const PAY_INVOICE_URL= "index.php?option=com_mothership&controller=payments&task=processPayment&id=%s&pactiontype=processPayment";
 
     public function _before(AcceptanceTester $I)
     {

@@ -7,6 +7,7 @@ namespace TrevorBice\Component\Mothership\Administrator\Service;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\Mail\Mail;
+use Joomla\CMS\Component\ComponentHelper;
 
 class EmailService
 {
@@ -49,9 +50,24 @@ class EmailService
     public static function generateBody(string $template, array $data = []): array
     {
         $html = self::renderLayout("emails.$template", $data);
-
-        // $text should be generated from the HTML layout, but for now, we will just use the HTML content.
+        $params = ComponentHelper::getParams('com_mothership');
+        
+        $data = array_merge($data, [
+            'company_name' => $params->get('company_name', ''),
+            'company_address' => $params->get('company_address', ''),
+            'company_address_1' => $params->get('company_address_1', ''),
+            'company_address_2' => $params->get('company_address_2', ''),
+            'company_city' => $params->get('company_city', ''),
+            'company_state' => $params->get('company_state', ''),
+            'company_zip' => $params->get('company_zip', ''),
+            'company_phone' => $params->get('company_phone', ''),
+            'company_email' => $params->get('company_email', ''),
+        ]);
         $text = strip_tags($html);
+        $html = self::renderLayout('emails.wrapper', [
+            'content' => $html,
+            'data' => $data
+        ]);
 
         return [
             'html' => $html,

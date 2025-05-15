@@ -9,6 +9,7 @@ use Joomla\CMS\Language\Text;
 use Mpdf\Mpdf;
 use Joomla\CMS\Layout\FileLayout;
 use TrevorBice\Component\Mothership\Administrator\Helper\AccountHelper;
+use TrevorBice\Component\Mothership\Administrator\Helper\ProjectHelper;
 use TrevorBice\Component\Mothership\Administrator\Helper\MothershipHelper;
 
 
@@ -33,6 +34,14 @@ class InvoiceController extends FormController
         $client_id = Factory::getApplication()->input->getInt('client_id');
         $accountList = AccountHelper::getAccountListOptions($client_id);
         echo json_encode($accountList);
+        Factory::getApplication()->close();
+    }
+
+    public function getProjectsList()
+    {
+        $account_id = Factory::getApplication()->input->getInt('account_id');
+        $projectList = ProjectHelper::getProjectListOptions($account_id);
+        echo json_encode($projectList);
         Factory::getApplication()->close();
     }
 

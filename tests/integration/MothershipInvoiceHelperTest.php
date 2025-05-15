@@ -16,10 +16,16 @@ class MothershipInvoiceHelperTest extends \Codeception\Test\Unit
 
     protected function _before()
     {
+        require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Service/EmailService.php';
         require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Helper/InvoiceHelper.php';
+        require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Helper/ClientHelper.php';
+        require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Helper/AccountHelper.php';
+        require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Helper/LogHelper.php';
+        
 
         $this->clientData = $this->tester->createMothershipClient([
             'name' => 'Test Client',
+            'owner_user_id' => 1,
         ]);
 
         $this->accountData = $this->tester->createMothershipAccount([
@@ -119,7 +125,7 @@ class MothershipInvoiceHelperTest extends \Codeception\Test\Unit
             'status' => 1,
         ]);
 
-        $results = InvoiceHelper::updateInvoiceStatus($invoiceId, $status_id);
+        $results = InvoiceHelper::updateInvoiceStatus((object) $this->invoiceData, $status_id);
 
         codecept_debug($results);
         $this->assertTrue($results);
@@ -137,7 +143,7 @@ class MothershipInvoiceHelperTest extends \Codeception\Test\Unit
     public function testUpdateInvoiceStatusInvalidId()
     {
         try {
-            $results = InvoiceHelper::updateInvoiceStatus(9999, 2);
+            $results = InvoiceHelper::updateInvoiceStatus((object) ['id'=>9999], 2);
         } catch (\Exception $e) {
             $this->assertStringContainsString("Invoice ID 9999 not found.", $e->getMessage());
         }
@@ -152,7 +158,7 @@ class MothershipInvoiceHelperTest extends \Codeception\Test\Unit
             'status' => 1,
         ]);
 
-        $results = InvoiceHelper::setInvoiceClosed($invoiceId);
+        $results = InvoiceHelper::setInvoiceClosed((object) $this->invoiceData);
         codecept_debug($results);
 
         $criteria = [
@@ -299,7 +305,7 @@ class MothershipInvoiceHelperTest extends \Codeception\Test\Unit
             'account_id' => $this->accountData['id'],
             'total' => $invoiceTotal,
             'number' => uniqid('INV'),
-            'status' => 0, // Default to unpaid
+            'status' => 2,
             'due_date' => date('Y-m-d'),
         ]);
         $invoiceId = $invoiceData['id'];
@@ -324,11 +330,10 @@ class MothershipInvoiceHelperTest extends \Codeception\Test\Unit
         }
 
         // Recalculate and assert
-        InvoiceHelper::recalculateInvoiceStatus($invoiceId);
+        $new_status = InvoiceHelper::recalculateInvoiceStatus($invoiceId);
+        codecept_debug("New Status is {$new_status}");
 
-        $invoice = $this->tester->grabFromDatabase('jos_mothership_invoices', 'status', ['id' => $invoiceId]);
-
-        $this->assertEquals($expectedStatus, (int) $invoice);
+        $this->assertEquals($expectedStatus, $new_status);
     }
 
     public function isLateProvider()

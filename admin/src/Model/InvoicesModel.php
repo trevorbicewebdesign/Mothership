@@ -35,6 +35,7 @@ class InvoicesModel extends ListModel
                 'locked', 'i.locked',
                 'checked_out', 'i.checked_out',
                 'checked_out_time', 'i.checked_out_time',
+                'created', 'i.created',
             ];
         }
 
@@ -84,7 +85,10 @@ class InvoicesModel extends ListModel
                     $db->quoteName('i.checked_out'),
                     $db->quoteName('i.locked'),
                     $db->quoteName('pay.payment_ids'),
-                    
+                    $db->quoteName('i.created'),
+                    $db->quoteName('i.created_by'),      
+                    $db->quoteName('i.project_id'),
+                    $db->quoteName('p.name', 'project_name'),
 
                     // Invoice status (Draft, Opened, etc.)
                     'CASE ' . $db->quoteName('i.status') . 
@@ -108,6 +112,7 @@ class InvoicesModel extends ListModel
         $query->from($db->quoteName('#__mothership_invoices', 'i'))
             ->join('LEFT', $db->quoteName('#__mothership_clients', 'c') . ' ON ' . $db->quoteName('i.client_id') . ' = ' . $db->quoteName('c.id'))
             ->join('LEFT', $db->quoteName('#__mothership_accounts', 'a') . ' ON ' . $db->quoteName('i.account_id') . ' = ' . $db->quoteName('a.id'))
+            ->join('LEFT', $db->quoteName('#__mothership_projects', 'p') . ' ON ' . $db->quoteName('i.project_id') . ' = ' . $db->quoteName('p.id'))
 
             // 👇 JOIN: Pull total completed payments per invoice
             ->join(

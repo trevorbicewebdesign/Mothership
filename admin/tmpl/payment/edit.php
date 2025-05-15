@@ -26,7 +26,12 @@ $wa->useScript('table.columns')
 
 $user = $this->getCurrentUser();
 ?>
-
+<style>
+ .account-loading-spinner,
+ .project-loading-spinner {
+    display:none;
+ }
+</style>
 <form action="<?php echo Route::_('index.php?option=com_mothership&layout=edit&id=' . (int) $this->item->id); ?>"
       method="post"
       name="adminForm"
@@ -40,7 +45,15 @@ $user = $this->getCurrentUser();
             <div class="col-lg-8">
                 <fieldset class="adminform">
                     <?php echo $this->form->renderField('client_id'); ?>
-                    <?php echo $this->form->renderField('account_id'); ?>
+                    <div class="account-container">
+                        <div class="account-loading-spinner">
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            <?php echo Text::_('Loading accounts...'); ?>
+                        </div>
+                        <div class="account_id_wrapper" style="opacity: 1;">
+                            <?php echo $this->form->renderField('account_id'); ?>
+                        </div>
+                    </div>
                     <?php echo $this->form->renderField('amount'); ?>
                     <?php echo $this->form->renderField('payment_date'); ?>
                     <?php echo $this->form->renderField('fee_amount'); ?>
@@ -62,8 +75,8 @@ $user = $this->getCurrentUser();
         <?php echo HTMLHelper::_('uitab.endTabSet'); ?>
     </div>
 
-    <input type="hidden" name="jform[id]" value="<?php echo (int) $this->item->id; ?>" />
-    <input type="hidden" name="jform[return]" value="<?php echo isset($_REQUEST['return']) ? $_REQUEST['return'] : ''; ?>" />
+    <input type="hidden" name="jform[id]" value="<?php echo (isset($this->item->id) && $this->item->id > 0) ? (int) $this->item->id : ""; ?>" />
+    <input type="hidden" name="jform[return]" value="<?php echo isset($_REQUEST['return'])?$_REQUEST['return']:''; ?>" />
     <input type="hidden" name="task" value="" />
     <?php echo HTMLHelper::_('form.token'); ?>
 </form>

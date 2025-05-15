@@ -146,10 +146,16 @@ class MothershipAdminDomainsCest
         $I->see("Domain Details", "#myTab button[aria-controls=details]");
 
         $I->seeElement("select#jform_client_id");
+        $I->dontSee("select#jform_account_id");
         $I->seeElement("input#jform_name");
 
-        $I->selectOption("select#jform_client_id", "Test Client");
-        $I->selectOption("select#jform_account_id", "Test Account");
+        $I->selectOption("select#jform_client_id", $this->clientData['id']);
+        $I->wait(1);
+        $I->seeOptionIsSelected("select#jform_client_id", "{$this->clientData['name']}");
+        $I->selectOption("select#jform_account_id", $this->accountData['id']);
+        $I->wait(1);
+        $I->seeOptionIsSelected("select#jform_account_id", "{$this->accountData['name']}");
+        
         $I->fillField("input#jform_name", "example.com");
         $I->fillField("input#jform_registrar", "GoDaddy");
         $I->fillField("input#jform_reseller", "GoDaddy");
@@ -159,6 +165,7 @@ class MothershipAdminDomainsCest
         $I->click("Save", "#toolbar");
         $I->wait(1);
         $I->waitForText("Mothership: Edit Domain", 10, "h1.page-title");
+        $I->dontSee("Warning");
 
         $I->waitForText("Domain example.com saved successfully.", 10, ".alert-message");
 
@@ -175,6 +182,17 @@ class MothershipAdminDomainsCest
             'purchase_date' => '2020-01-01 00:00:00',
         ]);
 
+    }
+
+    /**
+     * @group backend
+     * @group domain
+     * @group backend-domain
+     */
+    public function MothershipEditInvalidDomain(AcceptanceTester $I)
+    {
+        $I->amOnPage(sprintf(self::DOMAIN_EDIT_URL, "9999"));
+        $I->waitForText("Domain not found. Please select a valid domain.", 10, "#system-message-container .alert-message");
     }
 
     /**

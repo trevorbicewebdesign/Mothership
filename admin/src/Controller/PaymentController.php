@@ -8,6 +8,9 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use TrevorBice\Component\Mothership\Administrator\Helper\MothershipHelper;
 use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper;
+use TrevorBice\Component\Mothership\Administrator\Helper\PaymentHelper;
+use TrevorBice\Component\Mothership\Administrator\Helper\InvoiceHelper;
+use TrevorBice\Component\Mothership\Administrator\Service\EmailService; // Ensure this is the correct namespace for EmailService
 
 \defined('_JEXEC') or die;
 
@@ -52,13 +55,40 @@ class PaymentController extends FormController
             $defaultRedirect = Route::_('index.php?option=com_mothership&view=payments', false);
         }
 
+        if( $payment->status === 'Pending' && $new_payment_status === 'Completed') {
+            PaymentHelper::onPaymentCompleted($payment);
+        }
+
         LogHelper::logStatusChange($payment, $new_payment_status);
 
         $this->setRedirect($defaultRedirect);
         return true;
     }
 
+    public function confirm($key = null)
+    {
+        $app = Factory::getApplication();
+        $input = $app->input;
+        $model = $this->getModel('Payment');
+        $id = $input->getInt('id');
 
+        $payment = $model->getItem($id);
+        
+        if ($model->confirm($id)) {
+            $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_PAYMENT_CONFIRMED_SUCCESSFULLY', $id), 'message');
+        } else {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_PAYMENT_CONFIRM_FAILED'), 'error');
+        }
+
+        $defaultRedirect = Route::_('index.php?option=com_mothership&view=payments', false);
+        $redirect = MothershipHelper::getReturnRedirect($defaultRedirect);
+
+        PaymentHelper::onPaymentCompleted($payment);
+
+        $this->setRedirect($redirect);
+
+        return true;
+    }
 
     public function cancel($key = null)
     {
@@ -72,7 +102,6 @@ class PaymentController extends FormController
 
         return true;
     }
-
 
     public function delete()
     {

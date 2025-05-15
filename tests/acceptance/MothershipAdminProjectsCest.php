@@ -142,7 +142,8 @@ class MothershipAdminProjectsCest
         $I->see("Cancel", "#toolbar");
 
         $I->seeElement("select#jform_client_id");
-        $I->seeElement("select#jform_account_id");
+        $I->dontSeeElement("select#jform_account_id");
+        
         $I->seeElement("input#jform_name");
         $I->seeElement("#jform_metadata_primary_url");
         $I->seeElement("input#jform_metadata_primary_domain");
@@ -162,13 +163,16 @@ class MothershipAdminProjectsCest
         $I->see("Please correct the marked fields and try again.");
         
         $I->see("One of the options must be selected", "label#jform_client_id-lbl .form-control-feedback");
-        $I->see("One of the options must be selected", "label#jform_account_id-lbl .form-control-feedback");
         
         $I->amGoingTo("Fill out the form");
 
         $I->selectOption("select#jform_client_id", $this->clientData['id']);
-        $I->waitForElementVisible("select#jform_account_id", 5); // Wait for the spinner
+        $I->wait(1);
+        $I->seeOptionIsSelected("select#jform_client_id", "{$this->clientData['name']}");
         $I->selectOption("select#jform_account_id", $this->accountData['id']);
+        $I->wait(1);
+        $I->seeOptionIsSelected("select#jform_account_id", "{$this->accountData['name']}");
+
         $I->fillField("input#jform_name", "Example Website 2");
         $I->fillFIeld("input#jform_metadata_primary_url", "https://example.com");
         $I->fillFIeld("input#jform_metadata_primary_domain", "example.com");
@@ -212,6 +216,17 @@ class MothershipAdminProjectsCest
             $I->assertEquals("5.3.0", $metadata['cms_version']);
             $I->assertEquals("online", $metadata['status']);
         }
+    }
+
+    /**
+     * @group backend
+     * @group project
+     * @group backend-project
+     */
+    public function MothershipEditInvalidProject(AcceptanceTester $I)
+    {
+        $I->amOnPage(sprintf(self::PROJECT_EDIT_URL, "9999"));
+        $I->waitForText("Project not found. Please select a valid project.", 10, "#system-message-container .alert-message");
     }
 
     /**

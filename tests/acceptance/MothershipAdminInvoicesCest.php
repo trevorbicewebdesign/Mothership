@@ -12,6 +12,7 @@ class MothershipAdminInvoicesCest
     private $userData;
     private $accountData;
     private $invoiceData;
+    private $projectData;
     private $invoiceItemData = [];
     private $mothershipConfig = [];
 
@@ -33,17 +34,25 @@ class MothershipAdminInvoicesCest
 
         $this->clientData = $I->createMothershipClient([
             'name' => 'Test Client',
+            'email' => 'test.client@mailinator.com',
             'default_rate' => '111.00',
+            'owner_user_id' => '1',
         ]);
 
         $this->userData = $I->createMothershipUser([
-            'user_id' => '43',
+            'user_id' => '1',
             'client_id' => $this->clientData['id'],
         ]);
 
         $this->accountData = $I->createMothershipAccount([
             'client_id' => $this->clientData['id'],
             'name' => 'Test Account',
+        ]);
+
+        $this->projectData = $I->createMothershipProject([
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'name' => 'Test Project',
         ]);
 
         $clientData2 = $I->createMothershipClient([
@@ -58,6 +67,7 @@ class MothershipAdminInvoicesCest
         $this->invoiceData = $I->createMothershipInvoice([
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
+            'project_id' => $this->projectData['id'],   
             'total' => '175.00',
             'number' => 1000,
             'due_date' => NULL,
@@ -111,7 +121,7 @@ class MothershipAdminInvoicesCest
         $I->click("Test Client");
         $I->waitForText("Mothership: Edit Client", 10, "h1.page-title");
         $I->click("Close", "#toolbar");
-        $I->waitForText("Mothership: Invoices", 20, "h1.page-title");
+        $I->waitForText("Mothership: Invoices", 10, "h1.page-title");
     }
 
     /**
@@ -123,13 +133,13 @@ class MothershipAdminInvoicesCest
     public function MothershipCancelAccountEdit(AcceptanceTester $I)
     {
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Invoices", 20, "h1.page-title");
+        $I->waitForText("Mothership: Invoices", 10, "h1.page-title");
 
         $I->click("Test Account");
         $I->wait(1);
          $I->waitForText("Mothership: Edit Account", 10, "h1.page-title");
         $I->click("Close", "#toolbar");
-        $I->waitForText("Mothership: Invoices", 20, "h1.page-title");
+        $I->waitForText("Mothership: Invoices", 10, "h1.page-title");
     }
 
     /**
@@ -154,7 +164,7 @@ class MothershipAdminInvoicesCest
         ]);
 
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Invoices", 20, "h1.page-title");
+        $I->waitForText("Mothership: Invoices", 10, "h1.page-title");
 
         $I->click("Payment #{$paymentData['id']}");
         $I->waitForText("Mothership: Edit Payment", 10, "h1.page-title");
@@ -175,6 +185,7 @@ class MothershipAdminInvoicesCest
         $invoiceData = $I->createMothershipInvoice([
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
+            'project_id' => NULL,
             'total' => '475.00',
             'number' => 1004,
             'created' => date('Y-m-d H:i:s'),
@@ -220,9 +231,11 @@ class MothershipAdminInvoicesCest
         ]);
 
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Invoices", 20, "h1.page-title");
+        $I->waitForText("Mothership: Invoices", 10, "h1.page-title");
 
         $I->makeScreenshot("mothership-view-invoices");
+
+        $I->dontSee("Warning");
 
         $toolbar = "#toolbar";
         $toolbarNew = "#toolbar-new";
@@ -238,11 +251,12 @@ class MothershipAdminInvoicesCest
         $I->see("PDF", "#j-main-container table thead tr th:nth-child(4)");
         $I->see("Client", "#j-main-container table thead tr th:nth-child(5)");
         $I->see("Account", "#j-main-container table thead tr th:nth-child(6)");
-        $I->see("Total", "#j-main-container table thead tr th:nth-child(7)");
-        $I->see("Status", "#j-main-container table thead tr th:nth-child(8)");
-        $I->see("Payment Status", "#j-main-container table thead tr th:nth-child(9)");
-        $I->see("Due", "#j-main-container table thead tr th:nth-child(10)");
-        $I->see("Created", "#j-main-container table thead tr th:nth-child(11)");
+        $I->see("Project", "#j-main-container table thead tr th:nth-child(7)");
+        $I->see("Total", "#j-main-container table thead tr th:nth-child(8)");
+        $I->see("Status", "#j-main-container table thead tr th:nth-child(9)");
+        $I->see("Payment Status", "#j-main-container table thead tr th:nth-child(10)");
+        $I->see("Due", "#j-main-container table thead tr th:nth-child(11)");
+        $I->see("Created", "#j-main-container table thead tr th:nth-child(12)");
 
         $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 2);
 
@@ -263,10 +277,11 @@ class MothershipAdminInvoicesCest
 
         $I->see("{$this->clientData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5)");
         $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(6)");
-        $I->see("{$this->invoiceData['total']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(7)");
-        $I->see("Draft", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(8)");
-        $I->see("Unpaid", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(9)");
-        $I->see(date('Y-m-d'), "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(11)");
+        $I->see("{$this->projectData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(7)");
+        $I->see("{$this->invoiceData['total']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(8)");
+        $I->see("Draft", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(9)");
+        $I->see("Unpaid", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(10)");
+        $I->see(date('Y-m-d'), "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(12)");
 
         $row = 2;
         // This invoice IS not locked, so it SHOULD have the lock icon
@@ -285,11 +300,11 @@ class MothershipAdminInvoicesCest
 
         $I->see("{$this->clientData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5)");
         $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(6)");
-        $I->see("{$invoiceData['total']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(7)");
-        $I->see("Closed", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(8)");
-        $I->see("Paid", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(9)");
-        $I->see("Payment #{$paymentData['id']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(9)"); 
-        $I->see(date('Y-m-d'), "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(11)");
+        $I->see("{$invoiceData['total']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(8)");
+        $I->see("Closed", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(9)");
+        $I->see("Paid", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(10)");
+        $I->see("Payment #{$paymentData['id']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(10)"); 
+        $I->see(date('Y-m-d'), "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(12)");
 
         $I->see("1 - 2 / 2 items", "#j-main-container .pagination__wrapper");
     }
@@ -306,7 +321,7 @@ class MothershipAdminInvoicesCest
         $I->seeInDatabase('jos_mothership_invoices', ['id' => $this->invoiceData['id']]);
 
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Invoices", 20, "h1.page-title");
+        $I->waitForText("Mothership: Invoices", 10, "h1.page-title");
 
         $I->seeElement(".btn-toolbar");
 
@@ -392,7 +407,7 @@ class MothershipAdminInvoicesCest
         $I->seeInDatabase('jos_mothership_invoices', ['id' => $closedInvoiceData['id'], 'status' => 4]);
 
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Invoices", 20, "h1.page-title");
+        $I->waitForText("Mothership: Invoices", 10, "h1.page-title");
 
         // Select both invoices
         $I->click("input[name=checkall-toggle]");
@@ -408,7 +423,7 @@ class MothershipAdminInvoicesCest
         // Confirm only the closed one remains
         $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 1);
         $I->see("{$closedInvoiceData['number']}", "#j-main-container table.itemList tbody tr td:nth-child(3)");
-        $I->see("Closed", "#j-main-container table.itemList tbody tr td:nth-child(8)");
+        $I->see("Closed", "#j-main-container table.itemList tbody tr td:nth-child(9)");
 
         // Database cleanup checks
         $I->dontSeeInDatabase('jos_mothership_invoices', ['id' => $draftInvoiceData['id']]);
@@ -454,7 +469,7 @@ class MothershipAdminInvoicesCest
         ]);
 
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Invoices", 20, "h1.page-title");
+        $I->waitForText("Mothership: Invoices", 10, "h1.page-title");
 
         // Select the invoice row
         $I->see((string) $invoice['number'], "#j-main-container table.itemList tbody tr td:nth-child(3)");
@@ -482,7 +497,7 @@ class MothershipAdminInvoicesCest
     public function MothershipAddInvoice(AcceptanceTester $I)
     {
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Invoices", 20, "h1.page-title");
+        $I->waitForText("Mothership: Invoices", 10, "h1.page-title");
 
         $toolbar = "#toolbar";
         $toolbarNew = "#toolbar-new";
@@ -490,7 +505,7 @@ class MothershipAdminInvoicesCest
         $I->seeElement("{$toolbar} {$toolbarNew}");
         $I->see("New", "{$toolbar} {$toolbarNew} .btn.button-new");
         $I->click("{$toolbar} {$toolbarNew} .btn.button-new");
-        $I->waitForText("Mothership: New Invoice", 20, "h1.page-title");
+        $I->waitForText("Mothership: New Invoice", 10, "h1.page-title");
         $I->wait(5);
 
         $I->see("Save", "#toolbar");
@@ -499,6 +514,7 @@ class MothershipAdminInvoicesCest
 
         $I->seeElement("select#jform_client_id");
         $I->dontSeeElement("select#jform_account_id");
+        $I->dontSeeElement("select#jform_project_id");
         $I->seeElement("input#jform_number");
         $I->seeElement("input#jform_created");
         $I->seeElement("input#jform_due_date");
@@ -521,7 +537,15 @@ class MothershipAdminInvoicesCest
 
         $I->selectOption("select#jform_client_id", $this->clientData['id']);
         $I->wait(1);
+        $I->seeOptionIsSelected("select#jform_client_id", "{$this->clientData['name']}");
         $I->selectOption("select#jform_account_id", $this->accountData['id']);
+        $I->dontSeeElement("select#jform_project_id");
+        $I->wait(1);
+        $I->seeOptionIsSelected("select#jform_account_id", "{$this->accountData['name']}");
+        $I->wait(5);
+        $I->selectOption("select#jform_project_id", "{$this->projectData['id']}");
+        $I->wait(1);
+        $I->seeOptionIsSelected("select#jform_project_id", "{$this->projectData['name']}");
 
         $I->fillFIeld("input#jform_number", "1001");
         $I->seeInField("input#jform_rate", $this->clientData['default_rate']);
@@ -572,9 +596,10 @@ class MothershipAdminInvoicesCest
         $I->seeInField("#invoice-items-table input[name='jform[items][0][rate]']", "70.00");
         $I->seeInField("#invoice-items-table input[name='jform[items][0][subtotal]']", "140.00");
 
-        $I->seeInFIeld("input#jform_total", "140.00");
+        $I->seeInField("input#jform_total", "140.00");
 
-        $I->scrollTo("#add-invoice-item");
+        $I->executeJS("document.querySelector('#add-invoice-item').scrollIntoView({ behavior: 'instant', block: 'center' });");
+        $I->wait(1);
         $I->click("#add-invoice-item");
 
         $I->dontSee("#invoice-items-table input[name='jform[items][2][name]']");
@@ -629,14 +654,14 @@ class MothershipAdminInvoicesCest
             ['name' => 'A different Item', 'description' => 'Test Description', 'hours' => 3, 'minutes' => 45, 'quantity' => 3.75, 'rate' => 70.0, 'subtotal' => 262.50],
         ]);
 
-        $I->waitForText("Mothership: Invoices", 20, "h1.page-title");
+        $I->waitForText("Mothership: Invoices", 10, "h1.page-title");
 
         $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 2);
 
         $I->see("1001", "#j-main-container table.itemList tbody tr td:nth-child(3)");
         $I->see("Test Client", "#j-main-container table.itemList tbody tr td:nth-child(5)");
         $I->see("Test Account", "#j-main-container table.itemList tbody tr td:nth-child(6)");
-        $I->see(date("Y-m-d"), "#j-main-container table.itemList tbody tr td:nth-child(11)");
+        $I->see(date("Y-m-d"), "#j-main-container table.itemList tbody tr td:nth-child(12)");
 
         // Open the Invoice again and confirm the data is correct
         $I->amOnPage(sprintf(self::INVOICE_EDIT_URL, ($this->invoiceData['id'] + 1)));
@@ -678,6 +703,17 @@ class MothershipAdminInvoicesCest
      * @group invoice
      * @group backend-invoice
      */
+    public function MothershipEditInvalidInvoice(AcceptanceTester $I)
+    {
+        $I->amOnPage(sprintf(self::INVOICE_EDIT_URL, "9999"));
+        $I->waitForText("Invoice not found. Please select a valid invoice.", 10, "#system-message-container .alert-message");
+    }
+
+    /**
+     * @group backend
+     * @group invoice
+     * @group backend-invoice
+     */
     public function SetInvoiceOpened(AcceptanceTester $I)
     {
         $I->seeInDatabase("jos_mothership_invoices", [
@@ -686,7 +722,7 @@ class MothershipAdminInvoicesCest
             'status' => 1,
         ]);   
         $I->amOnPage(sprintf(self::INVOICE_EDIT_URL, $this->invoiceData['id']));
-        $I->waitForText("Mothership: Edit Invoice", 20, "h1.page-title");
+        $I->waitForText("Mothership: Edit Invoice", 10, "h1.page-title");
 
         $I->seeOptionIsSelected("select#jform_status", "Draft");
         $I->selectOption("select#jform_status", "Opened");
@@ -709,9 +745,8 @@ class MothershipAdminInvoicesCest
             'object_type' => 'invoice',
         ]);
 
-        $email_id = $I->getLastEmailId(); 
-        codecept_debug($email_id);
-        $I->assertEmailSubjectEquals($email_id, "New Invoice Opened");
+        $email_id = $I->getEmailBySubject("Invoice #{$this->invoiceData['number']} Opened");
+        $I->assertNotEmpty($email_id, "Email with subject 'Invoice #{$this->invoiceData['number']} Opened' was not sent.");
     }
 
     /**
