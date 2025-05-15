@@ -973,7 +973,7 @@ class MothershipAdminInvoicesCest
 
         $I->see($invoiceItemData[0]['name']);
         // $I->see($this->invoiceItemData[0]['description']);
-        $I->see($invoiceItemData[0]['hours']);
+        $I->see($invoiceItemData[0]['quantity']);
         // $I->see($this->invoiceItemData[0]['minutes']);
         // $I->see($this->invoiceItemData[0]['quantity']);
         $I->see($invoiceItemData[0]['rate']);
