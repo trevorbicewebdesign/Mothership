@@ -105,6 +105,10 @@ class InvoiceModel extends AdminModel
     {
         $item = parent::getItem($pk);
 
+        if(!is_object($item)) {
+            return false;
+        }
+
         if ($item && $item->id) {
             $db = $this->getDatabase();
             $query = $db->getQuery(true)
