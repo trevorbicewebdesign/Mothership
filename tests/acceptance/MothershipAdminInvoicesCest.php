@@ -25,6 +25,7 @@ class MothershipAdminInvoicesCest
         $this->mothershipConfig = $I->setMothershipConfig([
             'company_name' => 'A Fake Company',
             'company_address_1' => '12345 Nowhere St.',
+            'company_address_2' => 'Unit 555',
             'company_city' => 'Nowhere',
             'company_state' => 'California',
             'company_zip' => '99999',
@@ -934,11 +935,49 @@ class MothershipAdminInvoicesCest
         $I->click("#j-main-container table.itemList tbody tr:nth-child(2) a.previewPdf");
         $I->amOnPage($html);
         $I->wait(1);
-        // take a screen shot
+        
+        // Check all the elements in the PDF
+        $I->see($this->mothershipConfig['company_name']);
+        $I->see($this->mothershipConfig['company_address_1']);
+        $I->see($this->mothershipConfig['company_address_2']);
+        $I->see($this->mothershipConfig['company_city']);
+        $I->see($this->mothershipConfig['company_state']);
+        $I->see($this->mothershipConfig['company_zip']);
+        $I->see($this->mothershipConfig['company_phone']);
+        $I->see($this->mothershipConfig['company_email']);
+    
+        // Check for the invoice meta data
+        $I->see("Invoice of Services");
         $I->see("Invoice Number: #{$invoiceData['number']}");
         $I->see("Invoice Status: Opened");
-        $I->see("Invoice Due: " . $due_date);
+        $I->see("Invoice Due: {$due_date}");
+
+        // Check the client data is displayed 
+        $I->see($this->clientData['name']);
+        $I->see($this->clientData['address_1']);
+        $I->see($this->clientData['address_2']);
+        $I->see($this->clientData['city']);
+        $I->see($this->clientData['state']);
+        $I->see($this->clientData['zip']);
+
+        // Check the account name is displayed
+        $I->see($this->accountData['name']);
+
+        $I->see("SERVICES RENDERED");
+        $I->see("Hours");
+        // $I->see("Minutes");
+        // $I->see("Quantity");
+        $I->see("Rate");
+        $I->see("Subtotal");
+
+
+        $I->see($invoiceItemData[0]['name']);
+        // $I->see($this->invoiceItemData[0]['description']);
+        $I->see($invoiceItemData[0]['hours']);
+        // $I->see($this->invoiceItemData[0]['minutes']);
+        // $I->see($this->invoiceItemData[0]['quantity']);
+        $I->see($invoiceItemData[0]['rate']);
+        $I->see($invoiceItemData[0]['subtotal']);
 
     }
-
 }
