@@ -32,6 +32,7 @@ class MothershipAdminOptionsCest
     /**
      * @group backend
      * @group options
+     * @group backend-options
      */
     public function MothershipViewOptions(AcceptanceTester $I)
     {
