@@ -140,27 +140,6 @@ class DomainModel extends AdminModel
         $table->name = htmlspecialchars_decode($table->name, ENT_QUOTES);
     }
 
-    public function validate($form, $data, $group = null)
-    {
-        // Run the parent validation first
-        $validated = parent::validate($form, $data, $group);
-
-        if ($validated === false) {
-            return false; // Parent will already have set errors
-        }
-
-        $domain = trim($data['domain_name'] ?? '');
-
-        // Basic domain format check
-        if (!preg_match('/^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$/i', $domain)) {
-            $this->setError('Please enter a valid domain name, like example.com.');
-            return false;
-        }
-
-        return $validated;
-    }
-
-
     public function save($data)
     {
         $table = $this->getTable();
