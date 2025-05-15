@@ -937,14 +937,14 @@ class MothershipAdminInvoicesCest
         $I->wait(1);
         
         // Check all the elements in the PDF
-        $I->see($this->mothershipConfig['company_name']);
-        $I->see($this->mothershipConfig['company_address_1']);
-        $I->see($this->mothershipConfig['company_address_2']);
-        $I->see($this->mothershipConfig['company_city']);
-        $I->see($this->mothershipConfig['company_state']);
-        $I->see($this->mothershipConfig['company_zip']);
-        $I->see($this->mothershipConfig['company_phone']);
-        $I->see($this->mothershipConfig['company_email']);
+        $I->see("{$this->mothershipConfig['company_name']}");
+        $I->see("{$this->mothershipConfig['company_address_1']}");
+        $I->see("{$this->mothershipConfig['company_address_2']}");
+        $I->see("{$this->mothershipConfig['company_city']}");
+        $I->see("{$this->mothershipConfig['company_state']}");
+        $I->see("{$this->mothershipConfig['company_zip']}");
+        $I->see("{$this->mothershipConfig['company_phone']}");
+        $I->see("{$this->mothershipConfig['company_email']}");
     
         // Check for the invoice meta data
         $I->see("Invoice of Services");
