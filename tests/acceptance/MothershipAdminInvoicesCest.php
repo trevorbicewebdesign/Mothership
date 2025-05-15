@@ -953,12 +953,12 @@ class MothershipAdminInvoicesCest
         $I->see("Invoice Due: {$due_date}");
 
         // Check the client data is displayed 
-        $I->see($this->clientData['name']);
-        $I->see($this->clientData['address_1']);
-        $I->see($this->clientData['address_2']);
-        $I->see($this->clientData['city']);
-        $I->see($this->clientData['state']);
-        $I->see($this->clientData['zip']);
+        $I->see("{$this->clientData['name']}");
+        $I->see("{$this->clientData['address_1']}");
+        $I->see("{$this->clientData['address_2']}");
+        $I->see("{$this->clientData['city']}");
+        $I->see("{$this->clientData['state']}");
+        $I->see("{$this->clientData['zip']}");
 
         // Check the account name is displayed
         $I->see($this->accountData['name']);
@@ -971,13 +971,13 @@ class MothershipAdminInvoicesCest
         $I->see("Subtotal");
 
 
-        $I->see($invoiceItemData[0]['name']);
-        // $I->see($this->invoiceItemData[0]['description']);
-        $I->see($invoiceItemData[0]['quantity']);
-        // $I->see($this->invoiceItemData[0]['minutes']);
-        // $I->see($this->invoiceItemData[0]['quantity']);
-        $I->see($invoiceItemData[0]['rate']);
-        $I->see($invoiceItemData[0]['subtotal']);
+        $I->see("{$invoiceItemData[0]['name']}");
+        // $I->see("{$this->invoiceItemData[0]['description']}");
+        $I->see("{$invoiceItemData[0]['quantity']}");
+        // $I->see("{$this->invoiceItemData[0]['minutes']}");
+        // $I->see("{$this->invoiceItemData[0]['quantity']}");
+        $I->see("{$invoiceItemData[0]['rate']}");
+        $I->see("{$invoiceItemData[0]['subtotal']}");
 
     }
 }
