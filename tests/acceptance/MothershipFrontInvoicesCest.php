@@ -166,6 +166,7 @@ class MothershipFrontInvoicesCest
     public function ViewInvoicePage(AcceptanceTester $I)
     {
         $I->amOnPage(sprintf(self::INVOICE_VIEW_URL, $this->invoiceData['id']));
+        $I->wait(1);
         $log_created = date('Y-m-d H:i:s');
         $I->waitForText("Invoice #{$this->invoiceData['number']}", 10, "h1");
 
