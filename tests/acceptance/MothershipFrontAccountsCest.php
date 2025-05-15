@@ -100,6 +100,7 @@ class MothershipFrontAccountsCest
     {
         // Verify redirection to account center
         $I->amOnPage(self::ACCOUNTS_VIEW_ALL_URL);
+        $I->wait(1);
         $I->waitForText("Accounts", 10, "h1");
 
         $I->makeScreenshot("account-center-view-all-accounts");
@@ -124,6 +125,7 @@ class MothershipFrontAccountsCest
     public function ViewAccountPage(AcceptanceTester $I)
     {
         $I->amOnPage(sprintf(self::ACCOUNT_VIEW_URL, $this->accountData['id']));
+        $I->wait(1);
         $log_created = date('Y-m-d H:i:s');
         $I->waitForText($this->accountData['name'], 10, "h1");
 

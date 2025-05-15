@@ -105,6 +105,7 @@ class MothershipFrontInvoicesCest
     {
         // Verify redirection to account center
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
+        $I->wait(1);
         $I->waitForText("Invoices", 10, "h1");
 
         $I->makeScreenshot("account-center-view-all-invoices");
