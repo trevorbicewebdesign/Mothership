@@ -100,17 +100,6 @@ class DomainController extends FormController
         $data  = $input->get('jform', [], 'array');
         $model = $this->getModel('Domain');
 
-        $validatedData = $model->validate($form, $data);
-
-        if ($validatedData === false) {
-            // Store form data in session so it's not lost
-            $app->setUserState('com_mothership.edit.domain.data', $data);
-
-            // Redirect back to the edit form
-            $this->setRedirect(JRoute::_('index.php?option=com_mothership&view=domain&layout=edit', false));
-            return false;
-        }
-
         if (!$model->save($data)) {
             $app->enqueueMessage(Text::_('COM_MOTHERSHIP_DOMAIN_SAVE_FAILED'), 'error');
             $app->enqueueMessage($model->getError(), 'error');
