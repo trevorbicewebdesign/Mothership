@@ -71,7 +71,7 @@ $items    = $invoice->items ?? [];
         .account-heading {
             font-size: 14pt;
             font-weight: bold;
-            margin: 6mm 0;
+            margin: 0;
         }
 
         .items-table {
@@ -118,7 +118,7 @@ $items    = $invoice->items ?? [];
 <div class="header">
     <div class="header-left">
         <div class="logo-company-block" style="display: flex; flex-direction: row; align-items: flex-start;">
-            <img src="https://via.placeholder.com/120x48?text=Logo" alt="Company Logo" style="height:48px; max-width:120px; margin-right: 10px; margin-bottom: 0;">
+            <img src="/components/com_mothership/assets/images/gears.png" alt="Company Logo" style="height:120px; max-width:120px; margin-right: 10px; margin-bottom: 0;">
             <div class="company-info" style="text-align: left;">
             <?php if (!empty($business['company_name'])): ?>
                 <p><?php echo nl2br(htmlspecialchars($business['company_name'])); ?></p>
@@ -132,7 +132,7 @@ $items    = $invoice->items ?? [];
             </div>
         </div>
 
-        <div class="client-info" style="margin-top: 6mm;">
+        <div class="client-info" style="margin-top: 0;">
             <p><?php echo htmlspecialchars($client->name ?? $invoice->client_name ?? ''); ?></p>
             <?php if (!empty($client->address_1)): ?>
                 <p><?php echo htmlspecialchars($client->address_1); ?></p>
@@ -198,8 +198,8 @@ $items    = $invoice->items ?? [];
     </table>
 </div>
 
-<div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 15mm;">
-    <div class="footer" style="text-align: left; color: #000; font-size: 18pt; font-weight: normal;">
+<div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 0mm;">
+    <div class="footer" style="text-align: left; color: #000; font-size: 12pt; font-weight: bold;">
         Have Questions? Get in touch —<br/>
         <?php echo htmlspecialchars($business['email'] ?? 'trevorbicewebdesign@gmail.com'); ?> |
         <?php echo htmlspecialchars($business['phone'] ?? '707-880-0156'); ?>
@@ -210,7 +210,7 @@ $items    = $invoice->items ?? [];
     </div>
 </div>
 
-<div style="text-align: center; margin-top: 18mm; font-size: 9pt; color: #444;">
+<div style="text-align: center; margin-top: 18mm; font-size: 12pt; color: #444;">
     <?php if (!empty($business['company_name'])): ?>
         <div style="font-weight: bold;"><?php echo htmlspecialchars($business['company_name']); ?></div>
     <?php endif; ?>
