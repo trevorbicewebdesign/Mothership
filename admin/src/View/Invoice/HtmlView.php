@@ -81,8 +81,14 @@ class HtmlView extends BaseHtmlView
     {
         /** @var InvoiceModel $model */
         $model = $this->getModel();
-        $this->form = $model->getForm();
         $this->item = $model->getItem();
+        if ($this->item === false) {
+            // Redirect to the list view if no item is found
+            $app = Factory::getApplication();
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVOICE_NOT_FOUND'), 'error');
+            $app->redirect(Factory::getApplication()->input->get('return', 'index.php?option=com_mothership&view=invoices', 'raw'));    
+        }
+        $this->form = $model->getForm();
         $this->state = $model->getState();
         $this->helper = new MothershipHelper;
         $this->canDo = ContentHelper::getActions('com_mothership');

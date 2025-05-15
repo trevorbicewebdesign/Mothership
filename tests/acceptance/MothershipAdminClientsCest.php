@@ -206,6 +206,17 @@ class MothershipAdminClientsCest
     /**
      * @group backend
      * @group client
+     * @group backend-client
+     */
+    public function MothershipEditInvalidClient(AcceptanceTester $I)
+    {
+        $I->amOnPage(sprintf(self::CLIENT_EDIT_URL, "9999"));
+        $I->waitForText("Client not found. Please select a valid client.", 10, "#system-message-container .alert-message");
+    }
+
+    /**
+     * @group backend
+     * @group client
      * @group delete
      * @group backend-client
      */

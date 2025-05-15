@@ -169,6 +169,17 @@ class MothershipAdminAccountsCest
     /**
      * @group backend
      * @group account
+     * @group backend-account
+     */
+    public function MothershipEditInvalidAccount(AcceptanceTester $I)
+    {
+        $I->amOnPage(sprintf(self::ACCOUNT_EDIT_URL, "9999"));
+        $I->waitForText("Account not found. Please select a valid account.", 10, "#system-message-container .alert-message");
+    }
+
+    /**
+     * @group backend
+     * @group account
      * @group delete
      * @group backend-account
      */
