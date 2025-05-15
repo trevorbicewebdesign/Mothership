@@ -246,6 +246,8 @@ class DbHelper extends Db
         try {
             $id = $this->Db->haveInDatabase("{$this->prefix}mothership_invoice_items", $data);
             $data['id'] = $id;
+            $data['quantity'] = number_format($data['quantity'], 2);
+            $data['rate'] = number_format($data['rate'], 2);
         } catch (Exception $e) {
             codecept_debug("Error creating invoice item: " . $e->getMessage());
         }

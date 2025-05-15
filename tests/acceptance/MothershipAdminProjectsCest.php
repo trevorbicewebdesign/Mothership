@@ -83,6 +83,7 @@ class MothershipAdminProjectsCest
     public function MothershipViewProjects(AcceptanceTester $I)
     {
         $I->amOnPage(self::PROJECTS_VIEW_ALL_URL);
+        $I->wait(1);
         $I->waitForText("Mothership: Projects", 20, "h1.page-title");
 
         $I->makeScreenshot("mothership-view-projects");
@@ -226,6 +227,7 @@ class MothershipAdminProjectsCest
     public function MothershipEditInvalidProject(AcceptanceTester $I)
     {
         $I->amOnPage(sprintf(self::PROJECT_EDIT_URL, "9999"));
+        $I->wait(1);
         $I->waitForText("Project not found. Please select a valid project.", 10, "#system-message-container .alert-message");
     }
 
@@ -237,10 +239,10 @@ class MothershipAdminProjectsCest
      */
     public function MothershipScanProject(AcceptanceTester $I)
     {
-       
         $I->seeInDatabase("jos_mothership_projects", [ 'id' => $this->projectData['id'] ]);
 
         $I->amOnPage( sprintf(self::PROJECT_EDIT_URL, $this->projectData['id']) );
+        $I->wait(1);
         $I->waitForText("Mothership: Edit Project", 10, "h1.page-title");
 
         $I->see("Project Scan & Update", "joomla-toolbar-button#toolbar-refresh");
@@ -299,6 +301,7 @@ class MothershipAdminProjectsCest
         ]);
         $I->seeInDatabase("jos_mothership_projects", [ 'id' => $projectData['id'] ]);
         $I->amOnPage(self::PROJECTS_VIEW_ALL_URL);
+        $I->wait(1);
         $I->waitForText("Mothership: Projects", 20, "h1.page-title");
 
         $I->seeNumberOfElements("#j-main-container table tbody tr", 2);

@@ -211,6 +211,7 @@ class MothershipAdminClientsCest
     public function MothershipEditInvalidClient(AcceptanceTester $I)
     {
         $I->amOnPage(sprintf(self::CLIENT_EDIT_URL, "9999"));
+        $I->wait(1);
         $I->waitForText("Client not found. Please select a valid client.", 10, "#system-message-container .alert-message");
     }
 

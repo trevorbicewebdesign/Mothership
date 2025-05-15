@@ -25,10 +25,12 @@ class MothershipAdminInvoicesCest
         $this->mothershipConfig = $I->setMothershipConfig([
             'company_name' => 'A Fake Company',
             'company_address_1' => '12345 Nowhere St.',
+            'company_address_2' => 'Unit 555',
             'company_city' => 'Nowhere',
             'company_state' => 'California',
             'company_zip' => '99999',
-            'company_phone' => '555-555-5555',
+            'company_email' => 'test.company@mailinator.com',
+            'company_phone' => '555 555-5555',
             'company_default_rate' => '100.00',
         ]);
 
@@ -706,6 +708,7 @@ class MothershipAdminInvoicesCest
     public function MothershipEditInvalidInvoice(AcceptanceTester $I)
     {
         $I->amOnPage(sprintf(self::INVOICE_EDIT_URL, "9999"));
+        $I->wait(1);
         $I->waitForText("Invoice not found. Please select a valid invoice.", 10, "#system-message-container .alert-message");
     }
 
@@ -899,20 +902,83 @@ class MothershipAdminInvoicesCest
      */
     public function invoiceViewPdfTemplate(AcceptanceTester $I)
     {
+        $due_date = date('Y-m-d', strtotime('+30 days'));
+        $invoiceData = $I->createMothershipInvoice([
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'number' => 9000,
+            'status' => 2,
+            'total' => '123.45',
+            'due_date' => $due_date,
+        ]);
+
+        $invoiceItemData = [];
+        $invoiceItemData[] = $I->createMothershipInvoiceItem([
+            'invoice_id' => $invoiceData['id'],
+            'name' => 'Test Item',
+            'description' => 'Test Description',
+            'hours' => 1,
+            'minutes' => 0,
+            'quantity' => 1.00,
+            'rate' => $this->clientData['default_rate'],
+            'subtotal' => $this->clientData['default_rate'] * 1,
+        ]);
+
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
         $I->waitForText("Mothership: Invoices", 20, "h1.page-title");
 
-        $I->seeElement("#j-main-container table.itemList tbody tr:first-child a.previewPdf");
+        $I->seeElement("#j-main-container table.itemList tbody tr:nth-child(2) a.previewPdf");
 
         // I want to grab the html from the 4th child td element which has an a tag in it
-        $html = $I->grabAttributeFrom("#j-main-container table.itemList tbody tr:first-child a.previewPdf", 'href');
+        $html = $I->grabAttributeFrom("#j-main-container table.itemList tbody tr:nth-child(2) a.previewPdf", 'href');
         codecept_debug($html);
         // Click on the 4th child td element which has an a tag in it
-        $I->click("#j-main-container table.itemList tbody tr:first-child a.previewPdf");
+        $I->click("#j-main-container table.itemList tbody tr:nth-child(2) a.previewPdf");
         $I->amOnPage($html);
         $I->wait(1);
-        // take a screen shot
-        $I->see("Invoice #{$this->invoiceData['number']}");
-    }
+        
+        // Check all the elements in the PDF
+        $I->see("{$this->mothershipConfig['company_name']}");
+        $I->see("{$this->mothershipConfig['company_address_1']}");
+        $I->see("{$this->mothershipConfig['company_address_2']}");
+        $I->see("{$this->mothershipConfig['company_city']}");
+        $I->see("{$this->mothershipConfig['company_state']}");
+        $I->see("{$this->mothershipConfig['company_zip']}");
+        $I->see("{$this->mothershipConfig['company_phone']}");
+        $I->see("{$this->mothershipConfig['company_email']}");
+    
+        // Check for the invoice meta data
+        $I->see("Invoice of Services");
+        $I->see("Invoice Number: #{$invoiceData['number']}");
+        $I->see("Invoice Status: Opened");
+        $I->see("Invoice Due: {$due_date}");
 
+        // Check the client data is displayed 
+        $I->see("{$this->clientData['name']}");
+        $I->see("{$this->clientData['address_1']}");
+        $I->see("{$this->clientData['address_2']}");
+        $I->see("{$this->clientData['city']}");
+        $I->see("{$this->clientData['state']}");
+        $I->see("{$this->clientData['zip']}");
+
+        // Check the account name is displayed
+        $I->see($this->accountData['name']);
+
+        $I->see("SERVICES RENDERED");
+        $I->see("Hours");
+        // $I->see("Minutes");
+        // $I->see("Quantity");
+        $I->see("Rate");
+        $I->see("Subtotal");
+
+
+        $I->see("{$invoiceItemData[0]['name']}");
+        // $I->see("{$this->invoiceItemData[0]['description']}");
+        $I->see("{$invoiceItemData[0]['quantity']}");
+        // $I->see("{$this->invoiceItemData[0]['minutes']}");
+        // $I->see("{$this->invoiceItemData[0]['quantity']}");
+        $I->see("{$invoiceItemData[0]['rate']}");
+        $I->see("{$invoiceItemData[0]['subtotal']}");
+
+    }
 }

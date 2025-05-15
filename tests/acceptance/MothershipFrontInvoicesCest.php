@@ -31,13 +31,15 @@ class MothershipFrontInvoicesCest
         $I->resetMothershipTables();
 
         $this->mothershipConfig = $I->setMothershipConfig([
-            'company_name' => 'Trevor Bice Webdesign',
-            'company_address_1' => '370 Garden Lane',
-            'company_city' => 'Bayside',
+            'company_name' => 'A Fake Company',
+            'company_address_1' => '12345 Nowhere St.',
+            'company_address_2' => 'Unit 555',
+            'company_city' => 'Nowhere',
             'company_state' => 'California',
-            'company_zip' => '95524',
-            'company_phone' => '707-880-0156',
-
+            'company_zip' => '99999',
+            'company_email' => 'test.company@mailinator.com',
+            'company_phone' => '555 555-5555',
+            'company_default_rate' => '100.00',
         ]);
 
         $this->joomlaUserData = $I->createJoomlaUser([], 10);
@@ -103,6 +105,7 @@ class MothershipFrontInvoicesCest
     {
         // Verify redirection to account center
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
+        $I->wait(1);
         $I->waitForText("Invoices", 10, "h1");
 
         $I->makeScreenshot("account-center-view-all-invoices");
@@ -164,12 +167,51 @@ class MothershipFrontInvoicesCest
     {
         $I->amOnPage(sprintf(self::INVOICE_VIEW_URL, $this->invoiceData['id']));
         $log_created = date('Y-m-d H:i:s');
-        $I->waitForText("Invoice #{$this->invoiceData['number']}", 10, "h1");
+        $I->wait(1);
+        $I->waitForText("Invoice of Services", 10, "h1");
+                
+        // Check all the elements in the PDF
+        $I->see("{$this->mothershipConfig['company_name']}");
+        $I->see("{$this->mothershipConfig['company_address_1']}");
+        $I->see("{$this->mothershipConfig['company_address_2']}");
+        $I->see("{$this->mothershipConfig['company_city']}");
+        $I->see("{$this->mothershipConfig['company_state']}");
+        $I->see("{$this->mothershipConfig['company_zip']}");
+        $I->see("{$this->mothershipConfig['company_phone']}");
+        $I->see("{$this->mothershipConfig['company_email']}");
+    
+        // Check for the invoice meta data
+        $I->see("Invoice of Services");
+        $I->see("Invoice Number: #{$this->invoiceData['number']}");
+        $I->see("Invoice Status: Opened");
+        $I->see("Invoice Due:");
 
-        $I->see("Test Item 1");
-        $I->see("Test Item 2");
+        // Check the client data is displayed 
+        $I->see("{$this->clientData['name']}");
+        $I->see("{$this->clientData['address_1']}");
+        $I->see("{$this->clientData['address_2']}");
+        $I->see("{$this->clientData['city']}");
+        $I->see("{$this->clientData['state']}");
+        $I->see("{$this->clientData['zip']}");
 
-        $I->makeScreenshot("account-center-view-invoice");
+        // Check the account name is displayed
+        $I->see($this->accountData['name']);
+
+        $I->see("SERVICES RENDERED");
+        $I->see("Hours");
+        // $I->see("Minutes");
+        // $I->see("Quantity");
+        $I->see("Rate");
+        $I->see("Subtotal");
+
+
+        $I->see("{$this->invoiceItemData[0]['name']}");
+        // $I->see("{$this->invoiceItemData[0]['description']}");
+        $I->see("{$this->invoiceItemData[0]['quantity']}");
+        // $I->see("{$this->invoiceItemData[0]['minutes']}");
+        // $I->see("{$this->invoiceItemData[0]['quantity']}");
+        $I->see("{$this->invoiceItemData[0]['rate']}");
+        $I->see("{$this->invoiceItemData[0]['subtotal']}");
 
         $created = $I->grabFromDatabase("jos_mothership_logs", "created", [
             'client_id' => $this->clientData['id'],
