@@ -145,6 +145,12 @@ class MothershipAdminDomainsCest
         $I->seeElement("#myTab");
         $I->see("Domain Details", "#myTab button[aria-controls=details]");
 
+        $I->click("Save", "#toolbar");
+        $I->wait(1);
+        $I->see("One of the options must be selected", "label#jform_client_id-lbl .form-control-feedback");
+
+        $I->makeScreenshot("mothership-domain-add-details");
+
         $I->seeElement("select#jform_client_id");
         $I->dontSee("select#jform_account_id");
         $I->seeElement("input#jform_name");
@@ -156,7 +162,7 @@ class MothershipAdminDomainsCest
         $I->wait(1);
         $I->seeOptionIsSelected("select#jform_account_id", "{$this->accountData['name']}");
         
-        $I->fillField("input#jform_name", "example.com");
+        $I->fillField("input#jform_name", "not a valid domain");
         $I->fillField("input#jform_registrar", "GoDaddy");
         $I->fillField("input#jform_reseller", "GoDaddy");
         $I->selectOption("select#jform_dns_provider", "cloudflare");
