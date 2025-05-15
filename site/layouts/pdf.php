@@ -1,6 +1,7 @@
 <?php
-// Ensure Joomla context
 defined('_JEXEC') or die;
+
+use TrevorBice\Component\Mothership\Administrator\Helper\InvoiceHelper;
 
 /** @var array $displayData */
 $invoice  = $displayData['invoice'];
@@ -27,7 +28,7 @@ $items    = $invoice->items ?? [];
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 6mm;
+            margin-bottom: 10mm;
         }
 
         .header-left {
@@ -40,14 +41,13 @@ $items    = $invoice->items ?? [];
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            margin-bottom: 4mm;
+            margin-bottom: 6mm;
         }
 
-        .company-info p,
-        .client-info p {
+        .company-info,
+        .client-info {
             font-size: 8pt;
             line-height: 1.4;
-            margin: 0 0 2mm 0;
         }
 
         .header-right {
@@ -56,7 +56,7 @@ $items    = $invoice->items ?? [];
         }
 
         .header-right h1 {
-            margin: 0 0 2mm 0;
+            margin: 0 0 6mm 0;
             font-size: 20pt;
             color: #539CCD;
         }
@@ -67,24 +67,24 @@ $items    = $invoice->items ?? [];
         }
 
         .section {
-            margin-top: 6mm;
+            margin-top: 12mm;
         }
 
         .account-heading {
             font-size: 14pt;
             font-weight: bold;
-            margin: 4mm 0;
+            margin: 0;
         }
 
         .items-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 4mm;
+            margin-top: 5mm;
         }
 
         .items-table th,
         .items-table td {
-            padding: 4px 6px;
+            padding: 6px 8px;
         }
 
         .items-table th {
@@ -95,14 +95,14 @@ $items    = $invoice->items ?? [];
 
         .total {
             text-align: right;
-            margin-top: 6mm;
+            margin-top: 8mm;
             font-size: 12pt;
             font-weight: bold;
             color: #539CCD;
         }
 
         .footer {
-            margin-top: 10mm;
+            margin-top: 15mm;
             font-size: 8pt;
             text-align: center;
             color: #999;
@@ -111,7 +111,7 @@ $items    = $invoice->items ?? [];
         hr {
             border: none;
             border-top: 1px solid #ccc;
-            margin: 6mm 0 4mm;
+            margin: 8mm 0 4mm;
         }
     </style>
 </head>
@@ -119,22 +119,22 @@ $items    = $invoice->items ?? [];
 
 <div class="header">
     <div class="header-left">
-        <div class="logo-company-block" style="display: flex; flex-direction: column; align-items: flex-start;">
-            <img src="https://via.placeholder.com/120x48?text=Logo" alt="Company Logo" style="height:48px; max-width:120px; margin-bottom: 4mm;">
-            <div class="company-info">
-                <?php if (!empty($business['company_name'])): ?>
-                    <p><?php echo nl2br(htmlspecialchars($business['company_name'])); ?></p>
-                <?php endif; ?>
-                <?php if (!empty($business['company_address_1'])): ?>
-                    <p><?php echo nl2br(htmlspecialchars($business['company_address_1'])); ?></p>
-                <?php endif; ?>
-                <?php if (!empty($business['company_phone'])): ?>
-                    <p><?php echo htmlspecialchars($business['company_phone']); ?></p>
-                <?php endif; ?>
+        <div class="logo-company-block" style="display: flex; flex-direction: row; align-items: flex-start;">
+            <img src="/components/com_mothership/assets/images/gears.png" alt="Company Logo" style="height:120px; max-width:120px; margin-right: 10px; margin-bottom: 0;">
+            <div class="company-info" style="text-align: left;">
+            <?php if (!empty($business['company_name'])): ?>
+                <p><?php echo nl2br(htmlspecialchars($business['company_name'])); ?></p>
+            <?php endif; ?>
+            <?php if (!empty($business['company_address_1'])): ?>
+                <p><?php echo nl2br(htmlspecialchars($business['company_address_1'])); ?></p>
+            <?php endif; ?>
+            <?php if (!empty($business['company_phone'])): ?>
+                <p><?php echo htmlspecialchars($business['company_phone']); ?></p>
+            <?php endif; ?>
             </div>
         </div>
 
-        <div class="client-info" style="margin-top: 4mm;">
+        <div class="client-info" style="margin-top: 0;">
             <p><?php echo htmlspecialchars($client->name ?? $invoice->client_name ?? ''); ?></p>
             <?php if (!empty($client->address_1)): ?>
                 <p><?php echo htmlspecialchars($client->address_1); ?></p>
@@ -155,8 +155,8 @@ $items    = $invoice->items ?? [];
     <div class="header-right">
         <h1>Invoice of Services</h1>
         <div class="invoice-meta">
-            <p><strong>Invoice Number:</strong> <?php echo htmlspecialchars($invoice->number); ?></p>
-            <p><strong>Invoice Status:</strong> <?php echo htmlspecialchars($invoice->status); ?></p>
+            <p><strong>Invoice Number: </strong> #<?php echo htmlspecialchars($invoice->number); ?></p>
+            <p><strong>Invoice Status:</strong> <?php echo htmlspecialchars(InvoiceHelper::getStatus($invoice->status)); ?></p>
             <p><strong>Invoice Due:</strong> <?php echo htmlspecialchars($invoice->due_date ?? '—'); ?></p>
         </div>
     </div>
@@ -171,7 +171,7 @@ $items    = $invoice->items ?? [];
 <div class="section">
     <table class="items-table">
         <thead>
-            <tr>
+            <tr style="background-color: #f5f5f5;">
                 <th style="width: 16px;"></th>
                 <th>SERVICES RENDERED</th>
                 <th style="width: 50px;">Hours</th>
@@ -203,8 +203,8 @@ $items    = $invoice->items ?? [];
 <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 0mm;">
     <div class="footer" style="text-align: left; color: #000; font-size: 12pt; font-weight: bold;">
         Have Questions? Get in touch —<br/>
-        <?php echo htmlspecialchars($business['email'] ?? 'trevorbicewebdesign@gmail.com'); ?> |
-        <?php echo htmlspecialchars($business['phone'] ?? '707-880-0156'); ?>
+        <?php echo htmlspecialchars($business['email'] ?? ''); ?> |
+        <?php echo htmlspecialchars($business['phone'] ?? ''); ?>
     </div>
     <div class="total" style="text-align: right;">
         AMOUNT DUE: $<?php echo number_format((float)($invoice->total ?? 0), 2); ?><br>
