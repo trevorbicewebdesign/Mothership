@@ -221,6 +221,17 @@ class MothershipAdminProjectsCest
     /**
      * @group backend
      * @group project
+     * @group backend-project
+     */
+    public function MothershipEditInvalidProject(AcceptanceTester $I)
+    {
+        $I->amOnPage(sprintf(self::PROJECT_EDIT_URL, "9999"));
+        $I->waitForText("Project not found. Please select a valid project.", 10, "#system-message-container .alert-message");
+    }
+
+    /**
+     * @group backend
+     * @group project
      * @group scan
      * @group backend-project
      */
