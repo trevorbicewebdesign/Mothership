@@ -28,6 +28,7 @@ class MothershipAdminInvoicesCest
             'company_city' => 'Nowhere',
             'company_state' => 'California',
             'company_zip' => '99999',
+            'company_email' => 'test.company@mailinator.com',
             'company_phone' => '555 555-5555',
             'company_default_rate' => '100.00',
         ]);
