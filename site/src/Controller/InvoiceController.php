@@ -12,6 +12,8 @@ use Joomla\CMS\Plugin\PluginHelper;
 use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper;
 use TrevorBice\Component\Mothership\Administrator\Service\EmailService;
 use TrevorBice\Component\Mothership\Administrator\Helper\ClientHelper;
+use TrevorBice\Component\Mothership\Administrator\Helper\AccountHelper;
+use TrevorBice\Component\Mothership\Administrator\Helper\MothershipHelper;
 use Mpdf\Mpdf;
 
 // Load all enabled payment plugins
