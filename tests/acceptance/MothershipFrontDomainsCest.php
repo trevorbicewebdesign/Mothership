@@ -26,12 +26,15 @@ class MothershipFrontDomainsCest
         $I->resetMothershipTables();
 
         $this->mothershipConfig = $I->setMothershipConfig([
-            'company_name' => 'Trevor Bice Webdesign',
-            'company_address_1' => '370 Garden Lane',
-            'company_city' => 'Bayside',
+            'company_name' => 'A Fake Company',
+            'company_address_1' => '12345 Nowhere St.',
+            'company_address_2' => 'Unit 555',
+            'company_city' => 'Nowhere',
             'company_state' => 'California',
-            'company_zip' => '95524',
-            'company_phone' => '707-880-0156',
+            'company_zip' => '99999',
+            'company_email' => 'test.company@mailinator.com',
+            'company_phone' => '555 555-5555',
+            'company_default_rate' => '100.00',
         ]);
 
         $this->joomlaUserData = $I->createJoomlaUser([], 10);

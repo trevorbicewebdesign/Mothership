@@ -9,6 +9,7 @@ use Joomla\CMS\Language\Text;
 use Mpdf\Mpdf;
 use Joomla\CMS\Layout\FileLayout;
 use TrevorBice\Component\Mothership\Administrator\Helper\AccountHelper;
+use TrevorBice\Component\Mothership\Administrator\Helper\ClientHelper;
 use TrevorBice\Component\Mothership\Administrator\Helper\ProjectHelper;
 use TrevorBice\Component\Mothership\Administrator\Helper\MothershipHelper;
 
@@ -58,6 +59,9 @@ class InvoiceController extends FormController
 
         $model = $this->getModel('Invoice');
         $invoice = $model->getItem($id);
+        $client = ClientHelper::getClient($invoice->client_id);
+        $account = AccountHelper::getAccount($invoice->account_id);
+        $business = MothershipHelper::getMothershipOptions();
 
         if (!$invoice) {
             $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVOICE_NOT_FOUND'), 'error');
@@ -66,7 +70,12 @@ class InvoiceController extends FormController
         }
 
         $layout = new FileLayout('pdf', JPATH_ROOT . '/components/com_mothership/layouts');
-        echo $layout->render(['invoice' => $invoice]);
+        echo $layout->render([
+            'invoice' => $invoice,
+            'client' => $client,
+            'account' => $account,
+            'business' => $business
+        ]);
 
         $app->close();
     }
@@ -85,6 +94,9 @@ class InvoiceController extends FormController
 
         $model = $this->getModel('Invoice');
         $invoice = $model->getItem($id);
+        $client = ClientHelper::getClient($invoice->client_id);
+        $account = AccountHelper::getAccount($invoice->account_id);
+        $business = MothershipHelper::getMothesrshipOptions();
 
         if (!$invoice) {
             $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVOICE_NOT_FOUND'), 'error');
@@ -94,6 +106,13 @@ class InvoiceController extends FormController
 
         ob_start();
         $layout = new FileLayout('pdf', JPATH_ROOT . '/components/com_mothership/layouts');
+        echo $layout->render([
+            'invoice' => $invoice,
+            'client' => $client,
+            'account' => $account,
+            'business' => $business
+        ]);
+
         echo $layout->render(['invoice' => $invoice]);
         $html = ob_get_clean();
 

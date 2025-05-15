@@ -246,6 +246,8 @@ class DbHelper extends Db
         try {
             $id = $this->Db->haveInDatabase("{$this->prefix}mothership_invoice_items", $data);
             $data['id'] = $id;
+            $data['quantity'] = number_format($data['quantity'], 2);
+            $data['rate'] = number_format($data['rate'], 2);
         } catch (Exception $e) {
             codecept_debug("Error creating invoice item: " . $e->getMessage());
         }
@@ -297,7 +299,7 @@ class DbHelper extends Db
     {
         $faker = Faker\Factory::create();
 
-        $domain_name = $faker->domainName;
+        $domain_name = $faker->domainName();
         $primary_url = "https://{$domain_name}";
         // Default values for the project
 
@@ -456,43 +458,43 @@ class DbHelper extends Db
     public function clearClientsTable()
     {
         codecept_debug("Clearing clients table");
-        $this->Db->driver->executeQuery("TRUNCATE TABLE {$this->prefix}mothership_clients", []);
+        $this->Db->_getDriver()->executeQuery("TRUNCATE TABLE {$this->prefix}mothership_clients", []);
     }
 
     public function clearAccountsTable()
     {
         codecept_debug("Clearing accounts table");
-        $this->Db->driver->executeQuery("TRUNCATE TABLE {$this->prefix}mothership_accounts", []);
+        $this->Db->_getDriver()->executeQuery("TRUNCATE TABLE {$this->prefix}mothership_accounts", []);
     }
 
     public function clearUsersTable()
     {
         codecept_debug("Clearing users table");
-        $this->Db->driver->executeQuery("TRUNCATE TABLE {$this->prefix}mothership_users", []);
+        $this->Db->_getDriver()->executeQuery("TRUNCATE TABLE {$this->prefix}mothership_users", []);
     }
 
     public function clearInvoicesTable()
     {
         codecept_debug("Clearing invoices table");
-        $this->Db->driver->executeQuery("TRUNCATE TABLE {$this->prefix}mothership_invoices", []);
+        $this->Db->_getDriver()->executeQuery("TRUNCATE TABLE {$this->prefix}mothership_invoices", []);
     }
 
     public function clearInvoicePaymentTable()
     {
         codecept_debug("Clearing invoice payment table");
-        $this->Db->driver->executeQuery("TRUNCATE TABLE {$this->prefix}mothership_invoice_payment", []);
+        $this->Db->_getDriver()->executeQuery("TRUNCATE TABLE {$this->prefix}mothership_invoice_payment", []);
     }
 
     public function clearInvoiceItemsTable()
     {
         codecept_debug("Clearing invoice items table");
-        $this->Db->driver->executeQuery("TRUNCATE TABLE {$this->prefix}mothership_invoice_items", []);
+        $this->Db->_getDriver()->executeQuery("TRUNCATE TABLE {$this->prefix}mothership_invoice_items", []);
     }
 
     public function clearPaymentsTable()
     {
         codecept_debug("Clearing payments table");
-        $this->Db->driver->executeQuery("TRUNCATE TABLE {$this->prefix}mothership_payments", []);
+        $this->Db->_getDriver()->executeQuery("TRUNCATE TABLE {$this->prefix}mothership_payments", []);
     }
 
     public function resetMothershipTables()
@@ -500,7 +502,7 @@ class DbHelper extends Db
         codecept_debug("Resetting Mothership tables");
 
          // Turn off foreign key checks
-         $this->Db->driver->executeQuery("SET FOREIGN_KEY_CHECKS = 0", []);
+         $this->Db->_getDriver()->executeQuery("SET FOREIGN_KEY_CHECKS = 0", []);
 
          // Truncate everything
          $this->clearInvoiceItemsTable();
@@ -512,7 +514,7 @@ class DbHelper extends Db
          $this->clearUsersTable();
  
          // Turn it back on
-         $this->Db->driver->executeQuery("SET FOREIGN_KEY_CHECKS = 1", []);
+         $this->Db->_getDriver()->executeQuery("SET FOREIGN_KEY_CHECKS = 1", []);
     }
 
 
