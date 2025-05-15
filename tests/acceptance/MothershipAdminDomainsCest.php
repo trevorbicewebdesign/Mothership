@@ -187,6 +187,17 @@ class MothershipAdminDomainsCest
     /**
      * @group backend
      * @group domain
+     * @group backend-domain
+     */
+    public function MothershipEditInvalidDomain(AcceptanceTester $I)
+    {
+        $I->amOnPage(sprintf(self::DOMAIN_EDIT_URL, "9999"));
+        $I->waitForText("Domain not found. Please select a valid domain.", 10, "#system-message-container .alert-error");
+    }
+
+    /**
+     * @group backend
+     * @group domain
      * @group delete
      * @group backend-domain
      */
