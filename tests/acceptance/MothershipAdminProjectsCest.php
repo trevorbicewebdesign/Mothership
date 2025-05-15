@@ -226,7 +226,7 @@ class MothershipAdminProjectsCest
     public function MothershipEditInvalidProject(AcceptanceTester $I)
     {
         $I->amOnPage(sprintf(self::PROJECT_EDIT_URL, "9999"));
-        $I->waitForText("Project not found. Please select a valid project.", 10, "#system-message-container .alert-error");
+        $I->waitForText("Project not found. Please select a valid project.", 10, "#system-message-container .alert-message");
     }
 
     /**

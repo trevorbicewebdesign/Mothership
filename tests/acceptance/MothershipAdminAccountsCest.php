@@ -174,7 +174,7 @@ class MothershipAdminAccountsCest
     public function MothershipEditInvalidAccount(AcceptanceTester $I)
     {
         $I->amOnPage(sprintf(self::ACCOUNT_EDIT_URL, "9999"));
-        $I->waitForText("Account not found. Please select a valid account.", 10, "#system-message-container .alert-error");
+        $I->waitForText("Account not found. Please select a valid account.", 10, "#system-message-container .alert-message");
     }
 
     /**

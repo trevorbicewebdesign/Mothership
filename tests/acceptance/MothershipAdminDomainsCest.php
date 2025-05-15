@@ -192,7 +192,7 @@ class MothershipAdminDomainsCest
     public function MothershipEditInvalidDomain(AcceptanceTester $I)
     {
         $I->amOnPage(sprintf(self::DOMAIN_EDIT_URL, "9999"));
-        $I->waitForText("Domain not found. Please select a valid domain.", 10, "#system-message-container .alert-error");
+        $I->waitForText("Domain not found. Please select a valid domain.", 10, "#system-message-container .alert-message");
     }
 
     /**
