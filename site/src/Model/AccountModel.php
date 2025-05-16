@@ -31,10 +31,30 @@ class AccountModel extends BaseDatabaseModel
             return null;
         }
 
-        // Load associated invoices 
-        $query = $db->getQuery(true)
-            ->select(['i.*'])
-            ->from($db->quoteName('#__mothership_invoices', 'i'))
+         $query = $db->getQuery(true)
+            ->select([
+                
+                'i.*, payment_ids',
+                'COALESCE(pay.applied_amount, 0) AS applied_amount',
+                'CASE' .
+                    ' WHEN COALESCE(pay.applied_amount, 0) <= 0 THEN ' . $db->quote('Unpaid') .
+                    ' WHEN COALESCE(pay.applied_amount, 0) < i.total THEN ' . $db->quote('Partially Paid') .
+                    ' ELSE ' . $db->quote('Paid') .
+                ' END AS payment_status'
+            ])
+            ->from('#__mothership_invoices AS i')
+            ->leftJoin('#__mothership_invoice_payment AS pay ON pay.invoice_id = i.id')
+            ->join(
+                'LEFT',
+                '(SELECT ip.invoice_id,
+                         SUM(ip.applied_amount) AS total_paid,
+                         GROUP_CONCAT(p.id ORDER BY p.payment_date) AS payment_ids
+                  FROM ' . $db->quoteName('#__mothership_invoice_payment', 'ip') . '
+                  JOIN ' . $db->quoteName('#__mothership_payments', 'p') . ' ON ip.payment_id = p.id
+                  WHERE p.status = 2
+                  GROUP BY ip.invoice_id) AS pay2
+                ON pay2.invoice_id = i.id'
+            )
             ->where('account_id = :accountId')
             ->where('i.status != 1')
             ->bind(':accountId', $id, \Joomla\Database\ParameterType::INTEGER);
