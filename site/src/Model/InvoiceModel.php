@@ -19,16 +19,16 @@ class InvoiceModel extends BaseDatabaseModel
 
         // Load the invoice
         $query = $db->getQuery(true)
-            ->select([
-                'i.*',
-                'pay.payment_ids',
-                'COALESCE(pay.applied_amount, 0) AS applied_amount',
-                'CASE' .
-                    ' WHEN COALESCE(pay.applied_amount, 0) <= 0 THEN ' . $db->quote('Unpaid') .
-                    ' WHEN COALESCE(pay.applied_amount, 0) < i.total THEN ' . $db->quote('Partially Paid') .
-                    ' ELSE ' . $db->quote('Paid') .
-                ' END AS payment_status'
-            ])
+            ->select(
+                'i.*, ' .
+                'pay.payment_ids, ' .
+                'COALESCE(pay.applied_amount, 0) AS applied_amount, ' .
+                'CASE ' .
+                    'WHEN COALESCE(pay.applied_amount, 0) <= 0 THEN ' . $db->quote('Unpaid') . ' ' .
+                    'WHEN COALESCE(pay.applied_amount, 0) < i.total THEN ' . $db->quote('Partially Paid') . ' ' .
+                    'ELSE ' . $db->quote('Paid') . ' ' .
+                'END AS payment_status'
+            )
             ->from('#__mothership_invoices AS i')
             ->leftJoin('#__mothership_invoice_payment AS pay ON pay.invoice_id = i.id')
             ->where('i.id = ' . (int) $id)
