@@ -20,7 +20,7 @@ class InvoiceModel extends BaseDatabaseModel
         // Load the invoice
         $query = $db->getQuery(true)
             ->select([
-                'p.*',
+                'i.*',
                 'pay.payment_ids',
                 'COALESCE(pay.applied_amount, 0) AS applied_amount',
                 'CASE' .
@@ -32,7 +32,7 @@ class InvoiceModel extends BaseDatabaseModel
             ->from('#__mothership_invoices AS i')
             ->leftJoin('#__mothership_invoice_payment AS pay ON pay.invoice_id = i.id')
             ->where('i.id = ' . (int) $id)
-            ->where('i.status != -1');
+            ->where('i.status != 1');
         $db->setQuery($query);
         $invoice = $db->loadObject();
 
