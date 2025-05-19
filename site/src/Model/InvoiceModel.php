@@ -30,7 +30,7 @@ class InvoiceModel extends BaseDatabaseModel
                 ' END AS payment_status'
             ])
             ->from('#__mothership_invoices AS i')
-            ->leftJoin('#__mothership_invoice_payments AS pay ON pay.invoice_id = i.id')
+            ->leftJoin('#__mothership_invoice_payment AS pay ON pay.invoice_id = i.id')
             ->where('i.id = ' . (int) $id)
             ->where('i.status != -1');
         $db->setQuery($query);
