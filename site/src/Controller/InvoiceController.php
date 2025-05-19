@@ -12,6 +12,8 @@ use Joomla\CMS\Plugin\PluginHelper;
 use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper;
 use TrevorBice\Component\Mothership\Administrator\Service\EmailService;
 use TrevorBice\Component\Mothership\Administrator\Helper\ClientHelper;
+use TrevorBice\Component\Mothership\Administrator\Helper\AccountHelper;
+use TrevorBice\Component\Mothership\Administrator\Helper\MothershipHelper;
 use Mpdf\Mpdf;
 
 // Load all enabled payment plugins
@@ -51,7 +53,7 @@ class InvoiceController extends BaseController
         $invoice = $model->getItem($id);
         $client = ClientHelper::getClient($invoice->client_id);
         $account = AccountHelper::getAccount($invoice->account_id);
-        $business = MothershipHelper::getMothesrshipOptions();
+        $business = MothershipHelper::getMothershipOptions();
 
         if (!$invoice) {
             $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVOICE_NOT_FOUND'), 'error');
