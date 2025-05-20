@@ -440,6 +440,14 @@ class MothershipInvoiceHelperTest extends \Codeception\Test\Unit
         codecept_debug($results);
 
         $email_id = $this->tester->getEmailBySubject("Invoice #{$this->invoiceData['number']} Opened"); 
-        $this->assertNotEmpty($email_id, "Email with subject 'Invoice #{$this->invoiceData['number']} Opened' not found in the database.");    
+
+        $this->tester->seeInDatabase('jos_mothership_logs', [
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'action' => 'status_opened',
+            'object_type' => 'invoice',
+            'object_id' => $this->invoiceData['id'],
+        ]);
+            
     }
 }
