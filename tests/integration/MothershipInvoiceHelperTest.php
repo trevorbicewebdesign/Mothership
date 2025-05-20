@@ -427,7 +427,7 @@ class MothershipInvoiceHelperTest extends \Codeception\Test\Unit
         $this->assertStringContainsString($expectedResult, $results);
     }
 
-    public function testOnInvoiceOpened()
+    public function testOnInvoiceOpenedSuccess()
     {
         $invoiceId = $this->invoiceData['id'];
 
@@ -448,6 +448,22 @@ class MothershipInvoiceHelperTest extends \Codeception\Test\Unit
             'object_type' => 'invoice',
             'object_id' => $this->invoiceData['id'],
         ]);
+            
+    }
+
+    public function testOnInvoiceOpenedInvalidObject()
+    {
+        $invoiceId = $this->invoiceData['id'];
+
+        $this->tester->seeInDatabase('jos_mothership_invoices', [
+            'id' => $invoiceId,
+            'status' => 1,
+        ]);
+
+        // OnInvoiceOpened should be throwing an exception
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Failed to get client');
+        InvoiceHelper::onInvoiceOpened("", 1);
             
     }
 }
