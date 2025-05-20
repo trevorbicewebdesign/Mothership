@@ -142,6 +142,13 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
         $email_id = $this->tester->getEmailBySubject("New Pending Payment for Pay By Check");        
         $email = $this->tester->getEmailById($email_id);
         $this->assertEquals($email['Subject'], "New Pending Payment for Pay By Check", 'Email subject does not match.');
-    }
 
+        $this->tester->seeInDatabase('#__mothership_logs', [
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'object_type' => 'invoice',
+            'object_id' => $this->invoiceData['id'],
+            'action' => 'invoice_status_changed',
+        ]);
+    }
 }

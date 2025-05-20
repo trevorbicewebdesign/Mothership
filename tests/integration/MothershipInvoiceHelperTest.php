@@ -426,4 +426,44 @@ class MothershipInvoiceHelperTest extends \Codeception\Test\Unit
         $this->assertIsString($results);
         $this->assertStringContainsString($expectedResult, $results);
     }
+
+    public function testOnInvoiceOpenedSuccess()
+    {
+        $invoiceId = $this->invoiceData['id'];
+
+        $this->tester->seeInDatabase('jos_mothership_invoices', [
+            'id' => $invoiceId,
+            'status' => 1,
+        ]);
+
+        $results = InvoiceHelper::onInvoiceOpened((object) $this->invoiceData, 1);
+        codecept_debug($results);
+
+        $email_id = $this->tester->getEmailBySubject("Invoice #{$this->invoiceData['number']} Opened"); 
+
+        $this->tester->seeInDatabase('jos_mothership_logs', [
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'action' => 'status_opened',
+            'object_type' => 'invoice',
+            'object_id' => $this->invoiceData['id'],
+        ]);
+            
+    }
+
+    public function testOnInvoiceOpenedInvalidObject()
+    {
+        $invoiceId = $this->invoiceData['id'];
+
+        $this->tester->seeInDatabase('jos_mothership_invoices', [
+            'id' => $invoiceId,
+            'status' => 1,
+        ]);
+
+        // OnInvoiceOpened should be throwing an exception
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Failed to get client');
+        InvoiceHelper::onInvoiceOpened("", 1);
+            
+    }
 }

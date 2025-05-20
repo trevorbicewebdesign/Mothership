@@ -392,7 +392,8 @@ class InvoiceHelper
         try {
             $client = ClientHelper::getClient($invoice->client_id);
         } catch (\Exception $e) {
-            
+            // bubble up the exception
+            throw new \RuntimeException("Failed to get client: " . $e->getMessage());
         }
 
         // Get the owner id and load that user
