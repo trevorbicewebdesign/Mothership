@@ -426,4 +426,25 @@ class MothershipInvoiceHelperTest extends \Codeception\Test\Unit
         $this->assertIsString($results);
         $this->assertStringContainsString($expectedResult, $results);
     }
+
+    public function testOnInvoiceOpened()
+    {
+        $invoiceId = $this->invoiceData['id'];
+
+        $this->tester->seeInDatabase('jos_mothership_invoices', [
+            'id' => $invoiceId,
+            'status' => 1,
+        ]);
+
+        $results = InvoiceHelper::onInvoiceOpened((object) $this->invoiceData, 1);
+        codecept_debug($results);
+
+        $criteria = [
+            'id' => $invoiceId,
+            'status' => 2,
+        ];
+        codecept_debug($criteria);
+
+        $this->tester->seeInDatabase('jos_mothership_invoices', $criteria);
+    }
 }
