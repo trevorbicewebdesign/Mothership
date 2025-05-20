@@ -20,14 +20,15 @@ class InvoiceModel extends BaseDatabaseModel
         // Load the invoice
         $query = $db->getQuery(true)
             ->select(
-                'i.*, ' .
-                'pay.payment_ids, ' .
-                'COALESCE(pay.applied_amount, 0) AS applied_amount, ' .
-                'CASE ' .
-                    'WHEN COALESCE(pay.applied_amount, 0) <= 0 THEN ' . $db->quote('Unpaid') . ' ' .
-                    'WHEN COALESCE(pay.applied_amount, 0) < i.total THEN ' . $db->quote('Partially Paid') . ' ' .
-                    'ELSE ' . $db->quote('Paid') . ' ' .
-                'END AS payment_status'
+            'i.*, ' .
+            // Get a comma-separated list of payment IDs for this invoice
+            '(SELECT GROUP_CONCAT(ip.payment_id) FROM #__mothership_invoice_payment AS ip WHERE ip.invoice_id = i.id) AS payment_ids, ' .
+            'COALESCE(pay.applied_amount, 0) AS applied_amount, ' .
+            'CASE ' .
+                'WHEN COALESCE(pay.applied_amount, 0) <= 0 THEN ' . $db->quote('Unpaid') . ' ' .
+                'WHEN COALESCE(pay.applied_amount, 0) < i.total THEN ' . $db->quote('Partially Paid') . ' ' .
+                'ELSE ' . $db->quote('Paid') . ' ' .
+            'END AS payment_status'
             )
             ->from('#__mothership_invoices AS i')
             ->leftJoin('#__mothership_invoice_payment AS pay ON pay.invoice_id = i.id')
