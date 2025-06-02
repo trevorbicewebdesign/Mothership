@@ -210,7 +210,7 @@ class DbHelper extends Db
             $id = $this->Db->haveInDatabase("{$this->prefix}mothership_invoices", $data);
             $data['id'] = $id;
         } catch (Exception $e) {
-            codecept_debug("Error creating invoice: " . $e->getMessage());
+            throw new Exception("Failed to create invoice: " . $e->getMessage());
         }
         codecept_debug($data);
         // Return the ID of the newly created invoice
