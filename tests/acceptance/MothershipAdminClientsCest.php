@@ -41,7 +41,7 @@ class MothershipAdminClientsCest
             'account_id' => $this->accountData['id'],
             'total' => '100.00',
             'number' => 1000,
-            'invoice_date' => date('Y-m-d'),
+            'created' => date('Y-m-d'),
             'status' => 1,
         ]);
 
