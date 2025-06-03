@@ -16,6 +16,7 @@ use Joomla\CMS\Table\Table;
 use Joomla\CMS\Versioning\VersionableModelTrait;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Form\Form;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -95,8 +96,12 @@ class DomainModel extends AdminModel
      */
     public function getForm($data = [], $loadData = true)
     {
-        // Get the form.
-        $form = $this->loadForm('com_mothership.domain', 'domain', ['control' => 'jform', 'load_data' => $loadData]);
+        // Now load the XML form
+        $form = $this->loadForm(
+            'com_mothership.domain',
+            'domain',
+            ['control' => 'jform', 'load_data' => $loadData]
+        );
 
         if (empty($form)) {
             return false;
@@ -144,6 +149,7 @@ class DomainModel extends AdminModel
     {
         $table = $this->getTable();
 
+        
         Log::add('Data received for saving: ' . json_encode($data), Log::DEBUG, 'com_mothership');
 
         if (!$table->bind($data)) {
@@ -156,6 +162,15 @@ class DomainModel extends AdminModel
         // Set created date if empty
         if (empty($table->created)) {
             $table->created = Factory::getDate()->toSql();
+        }
+        // Validate the 'name' field
+        // Validate the 'name' field to ensure it matches a domain name format (e.g., example.com)
+        if (!preg_match('/^(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/', $data['name'])) {
+            // Store the submitted data in the session so the form is repopulated
+            Factory::getApplication()->setUserState('com_mothership.edit.domain.data', $data);
+
+            $this->setError('Invalid domain name. Please enter a valid domain name.');
+            return false;
         }
 
         if (!$table->check()) {
