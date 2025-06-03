@@ -42,7 +42,7 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
             'number' => '2023',
-            'amount' => 100.00,
+            'total' => 100.00,
             'due_date' => "2023-10-15",
         ]);
     }
@@ -143,5 +143,4 @@ class MothershipEmailServiceTest extends \Codeception\Test\Unit
         $email = $this->tester->getEmailById($email_id);
         $this->assertEquals($email['Subject'], "New Pending Payment for Pay By Check", 'Email subject does not match.');
     }
-
 }
