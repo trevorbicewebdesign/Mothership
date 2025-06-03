@@ -66,11 +66,14 @@ class MothershipAdminAccountsCest
     public function MothershipCancelClientEdit(AcceptanceTester $I)
     {   
         $I->amOnPage( self::ACCOUNTS_VIEW_ALL_URL);
+        $I->wait(1);
         $I->waitForText("Mothership: Accounts", 20, "h1.page-title");
 
         $I->click("Test Client");
+        $I->wait(1);
         $I->waitForText("Mothership: Edit Client", 20, "h1.page-title");
         $I->click("Close", "#toolbar");
+        $I->wait(1);
         $I->waitForText("Mothership: Accounts", 20, "h1.page-title");
         $I->seeCurrentUrlEquals(self::ACCOUNTS_VIEW_ALL_URL);
     }
@@ -83,6 +86,7 @@ class MothershipAdminAccountsCest
     public function MothershipViewAccounts(AcceptanceTester $I)
     {
         $I->amOnPage(self::ACCOUNTS_VIEW_ALL_URL);
+        $I->wait(1);
         $I->waitForText("Mothership: Accounts", 20, "h1.page-title");
         
         $I->makeScreenshot("mothership-accounts-view-all");
@@ -174,6 +178,7 @@ class MothershipAdminAccountsCest
     public function MothershipEditInvalidAccount(AcceptanceTester $I)
     {
         $I->amOnPage(sprintf(self::ACCOUNT_EDIT_URL, "9999"));
+        $I->wait(1);
         $I->waitForText("Account not found. Please select a valid account.", 10, "#system-message-container .alert-message");
     }
 
@@ -194,6 +199,7 @@ class MothershipAdminAccountsCest
         ]);
         $I->seeInDatabase("jos_mothership_accounts", [ 'id' => $accountData['id'] ]);
         $I->amOnPage(self::ACCOUNTS_VIEW_ALL_URL);
+        $I->wait(1);
         $I->waitForText("Mothership: Accounts", 20, "h1.page-title");
 
         $I->seeNumberOfElements("#j-main-container table tbody tr", 2);
@@ -230,6 +236,7 @@ class MothershipAdminAccountsCest
     {
         $I->seeInDatabase("jos_mothership_accounts", [ 'id' => $this->accountData['id'] ]);
         $I->amOnPage(self::ACCOUNTS_VIEW_ALL_URL);
+        $I->wait(1);
         $I->waitForText("Mothership: Accounts", 20, "h1.page-title");
 
         $I->seeNumberOfElements("#j-main-container table tbody tr", 1);
@@ -278,6 +285,7 @@ class MothershipAdminAccountsCest
         ]);
 
         $I->amOnPage(self::ACCOUNTS_VIEW_ALL_URL);
+        $I->wait(1);
         $I->waitForText("Mothership: Accounts", 20, "h1.page-title");
 
         $I->seeNumberOfElements("#j-main-container table tbody tr", 2);
