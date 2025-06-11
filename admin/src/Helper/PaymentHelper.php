@@ -341,4 +341,28 @@ class PaymentHelper
 
         return $invoices;
     }
+
+    public static function getPendingPayments($invoiceId)
+    {
+        $db = Factory::getContainer()->get(DatabaseDriver::class);
+
+        $query = $db->getQuery(true)
+            ->select('p.*')
+            ->from($db->quoteName('#__mothership_payments', 'p'))
+            ->join('INNER', $db->quoteName('#__mothership_invoice_payment', 'ip') . ' ON ' . $db->quoteName('ip.payment_id') . ' = ' . $db->quoteName('p.id'))
+            ->where($db->quoteName('ip.invoice_id') . ' = :invoice_id')
+            ->where($db->quoteName('p.status') . ' = 1') // Pending
+            ->order($db->quoteName('p.created_at') . ' DESC')
+            ->bind(':invoice_id', $invoiceId);
+
+        $db->setQuery($query);
+
+        try {
+            $payments = $db->loadObjectList();
+        } catch (\Exception $e) {
+            throw new \RuntimeException("Failed to get pending payments: " . $e->getMessage());
+        }
+
+        return $payments;
+    }
 }
