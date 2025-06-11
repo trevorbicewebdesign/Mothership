@@ -234,4 +234,42 @@ class MothershipPaymentHelperTest extends \Codeception\Test\Unit
         }
 
     }
+
+    public function testGetPendingPayments()
+    {
+        $invoiceData = $this->tester->createMothershipInvoice([
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'total' => 100.00,
+            'number' => '1000',
+            'status' => 2,
+            'due_date' => date('Y-m-d', strtotime('-1 day')),
+        ]);
+        $invoiceId = $invoiceData['id'];
+        $paymentData = $this->tester->createMothershipPayment([
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'amount' => 100.00,
+            'payment_date' => date('Y-m-d H:i:s'),
+            'fee_amount' => 6.00,
+            'fee_passed_on' => 0,
+            'payment_method' => 'paypal',
+            'transaction_id' => '123456',
+            'status' => 1,
+        ]);
+        $paymentId = $paymentData['id'];
+        $invoicePaymentData = $this->tester->createMothershipInvoicePayment([
+            'invoice_id' => $invoiceId,
+            'payment_id' => $paymentId,
+            'applied_amount' => 100.00,
+        ]);
+
+        $payments = PaymentHelper::getPendingPayments($invoiceData['id']);
+        codecept_debug("PENDING PAYMENTS");
+        codecept_debug($payments);
+
+        $this->assertIsArray($payments);
+        $this->assertNotEmpty($payments);
+
+    }
 }
