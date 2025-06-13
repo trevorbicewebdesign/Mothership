@@ -3,18 +3,22 @@ namespace TrevorBice\Component\Mothership\Site\Controller;
 
 \defined('_JEXEC') or die;
 
-use Joomla\CMS\Router\Route;
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Controller\BaseController;
-use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\Database\DatabaseDriver;
 use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper;
 use TrevorBice\Component\Mothership\Administrator\Service\EmailService;
 use TrevorBice\Component\Mothership\Administrator\Helper\ClientHelper;
 use TrevorBice\Component\Mothership\Administrator\Helper\AccountHelper;
 use TrevorBice\Component\Mothership\Administrator\Helper\MothershipHelper;
+use TrevorBice\Component\Mothership\Administrator\Helper\PaymentHelper;
 use Mpdf\Mpdf;
+
+// Add missing imports
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Router\Route;
 
 // Load all enabled payment plugins
 PluginHelper::importPlugin('mothership-payment');
@@ -115,6 +119,21 @@ class InvoiceController extends BaseController
         if (!$invoice) {
             $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVOICE_NOT_FOUND'), 'error');
             $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoices', false));
+            return;
+        }
+
+        // Check for existing pending payment
+        try {
+            $existingPending = PaymentHelper::getPendingPayments($invoice->id);
+        } catch (\Exception $e) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_CHECKING_PENDING_PAYMENTS') . ' ' . $e->getMessage(), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoice&id=' . $invoice->id, false));
+            return;
+        }
+
+        if ($existingPending) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_PENDING_PAYMENT_EXISTS'), 'warning');
+            $this->setRedirect(Route::_("index.php?option=com_mothership&view=invoice&id={$invoice->id}", false));
             return;
         }
 
@@ -229,7 +248,6 @@ class InvoiceController extends BaseController
         $invoiceId = $input->getCmd('id');
         $paymentMethod = $input->getCmd('payment_method');
 
-
         if (!$invoiceId || !$paymentMethod) {
             $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVALID_PAYMENT_REQUEST'), 'error');
             $this->setRedirect("index.php?option=com_mothership&view=invoice&id={$invoiceId}");
@@ -275,7 +293,7 @@ class InvoiceController extends BaseController
             $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoice&id=' . $invoiceId, false));
             return;
         }
-
+       
         // Create the invoice payment record
         $invoicePayment = Factory::getApplication()
             ->bootComponent('com_mothership')
