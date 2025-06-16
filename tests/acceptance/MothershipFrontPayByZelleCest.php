@@ -189,23 +189,18 @@ class MothershipFrontPayByZelleCest
     public function PayInvoiceWithZelleExistingPayment(AcceptanceTester $I)
     {
 
-        $invoiceData = $I->createMothershipInvoice([
+        $paymentData = $I->createMothershipPayment([
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
-            'total' => '105.00',
-            'number' => '3001',
+            'amount' => $this->invoiceData['total'],
+            'payment_method' => 'zelle',
+            'fee_amount' => 0,
             'status' => 1,
         ]);
-
-        $invoiceItemData = $I->createMothershipInvoiceItem([
-            'invoice_id' => $invoiceData['id'],
-            'name' => 'Test Item 1',
-            'description' => 'Test Description 1',
-            'hours' => '1',
-            'minutes' => '30',
-            'quantity' => '1.5',
-            'rate' => '70.00',
-            'subtotal' => '105.00',
+        $invoicePaymentData = $I->createMothershipInvoicePayment([
+            'invoice_id' => $this->invoiceData['id'],
+            'payment_id' => $paymentData['id'],
+            'applied_amount' => $this->invoiceData['total'],
         ]);
 
         $I->updateInDatabase("jos_extensions", [
@@ -222,8 +217,8 @@ class MothershipFrontPayByZelleCest
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
         $I->waitForText("Invoices", 10, "h1");
 
-        $I->see("Pay", "table#invoicesTable tbody tr td:nth-child(8)");
-        $I->click("Pay", "table#invoicesTable tbody tr td:nth-child(8)");
+        $I->see("Cancel Pending Payment", "table#invoicesTable tbody tr td:nth-child(8)");
+        $I->click("Cancel Pending Payment", "table#invoicesTable tbody tr td:nth-child(8)");
         $I->wait(1);
         $I->waitForText("Pay Invoice", 10, "h1");
         $I->waitForText("Pay Invoice #{$this->invoiceData['number']}", 10, "h1");
