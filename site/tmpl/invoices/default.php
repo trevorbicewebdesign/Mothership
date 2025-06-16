@@ -66,7 +66,7 @@ use Joomla\CMS\Language\Text;
                         <li><a href="<?php echo Route::_('index.php?option=com_mothership&task=invoice.edit&id=' . $invoice->id); ?>">View</a></li>
                         <?php if($invoice->status === 'Opened' && $invoice->payment_status != 'Pending Confirmation'): ?>
                         <li><a href="<?php echo Route::_("index.php?option=com_mothership&task=invoice.payment&id={$invoice->id}"); ?>">Pay</a></li>
-                        <?php elseif($invoice->status ==='Pending Confirmation'):?>
+                        <?php elseif($invoice->payment_status ==='Pending Confirmation'):?>
                         <li><a href="<?php echo Route::_("index.php?option=com_mothership&task=invoice.payment&id={$invoice->id}"); ?>">Cancel Pending Payment</a></li>
                         <?php endif; ?>
                     </ul>
