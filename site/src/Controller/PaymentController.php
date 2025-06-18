@@ -51,4 +51,21 @@ class PaymentController extends BaseController
         // Redirect to the thank you page layout with the correct payment id and invoice id
         $this->setRedirect(Route::_("index.php?option=com_mothership&view=payment&layout=thank-you&id={$payment->id}&invoice_id={$invoice_id}", false));
     }
+
+    public function cancel()
+    {
+        $app = Factory::getApplication();
+        $input = $app->getInput();
+        
+        $id = $input->getInt('id');
+
+        if (!$id) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVALID_PAYMENT_ID'), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=payments', false));
+            return;
+        }
+
+        // Redirect to the cancel page layout with the correct payment id and invoice id
+        $this->setRedirect(Route::_("index.php?option=com_mothership&view=payment&layout=cancel&id={$id}", false));
+    }
 }
