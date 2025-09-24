@@ -159,7 +159,7 @@ class MothershipFrontPayByZelleCest
             'user_id' => $this->joomlaUserData['id'],            
             'action' => 'initiated',
             'object_type' => 'payment',
-            'object_id' => $this->accountData['id'], 
+            'object_id' => $payment_id,
         ]);
         
         $meta = json_decode($I->grabFromDatabase("jos_mothership_logs", "meta", [
@@ -168,7 +168,7 @@ class MothershipFrontPayByZelleCest
             'user_id' => $this->joomlaUserData['id'],            
             'action' => 'initiated',
             'object_type' => 'payment',
-            'object_id' => $this->accountData['id'], 
+            'object_id' => $payment_id,
         ]));
         codecept_debug($meta);
         $I->assertEquals($meta->invoice_id,  $this->invoiceData['id']);
@@ -270,7 +270,7 @@ class MothershipFrontPayByZelleCest
             'user_id' => $this->joomlaUserData['id'],            
             'action' => 'initiated',
             'object_type' => 'payment',
-            //'object_id' => $this->accountData['id'], 
+            'object_id' => $payment_id, 
         ]);
         
         $meta = json_decode($I->grabFromDatabase("jos_mothership_logs", "meta", [
@@ -279,8 +279,9 @@ class MothershipFrontPayByZelleCest
             'user_id' => $this->joomlaUserData['id'],            
             'action' => 'initiated',
             'object_type' => 'payment',
-            'object_id' => $this->accountData['id'], 
+            'object_id' => $payment_id, 
         ]));
+
         codecept_debug($meta);
         $I->assertEquals($meta->invoice_id,  $this->invoiceData['id']);
         $I->assertEquals($meta->payment_method, "zelle");
