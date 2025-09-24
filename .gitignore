@@ -1,5 +1,2 @@
-/vendor/
-/admin/mothership.xml
-/tests/.env
-/tests/_output/
-/tests/_support/
+node_modules/
+.env
