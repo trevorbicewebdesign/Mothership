@@ -78,11 +78,12 @@ class PaymentController extends BaseController
             }
 
             $model = $this->getModel('Payment');
+            $payment = $model->getItem($id);
 
             try {
                 $model->cancelPayment($id); // implemented below
                 $app->enqueueMessage(Text::_('COM_MOTHERSHIP_PAYMENT_CANCELED_SUCCESSFULLY'), 'message');
-                $this->setRedirect(Route::_('index.php?option=com_mothership&view=payments', false));
+                $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoices', false));
                 return;
             } catch (\Throwable $e) {
                 // Be explicit so we don’t mask useful messages in dev
