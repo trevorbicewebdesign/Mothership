@@ -65,7 +65,7 @@ class InvoicesModel extends ListModel
                         GROUP_CONCAT(p.id ORDER BY p.payment_date) AS payment_ids
                 FROM ' . $db->quoteName('#__mothership_invoice_payment', 'ip') . '
                 JOIN ' . $db->quoteName('#__mothership_payments', 'p') . ' ON ip.payment_id = p.id
-                WHERE p.status = 2
+                WHERE ( p.status = 2 OR p.status = 1 )
                 GROUP BY ip.invoice_id) AS pay
                 ON pay.invoice_id = i.id'
             )

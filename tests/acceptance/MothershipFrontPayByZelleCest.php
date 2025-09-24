@@ -119,8 +119,8 @@ class MothershipFrontPayByZelleCest
         $I->see("Pay Now");
         $I->see("Total Due: \${$this->invoiceData['total']}");
         // Click Pay By Check
-        $I->click("#payment_method_1");
-        $I->makeScreenshot("account-center-pay-invoice-paybycheck-instructions");
+        $I->selectOption(['css' => 'input[name="payment_method"]'], 'zelle');
+        $I->makeScreenshot("account-center-pay-invoice-zelle-instructions");
         $I->click("Pay Now");
         $I->wait(1);
         $I->waitForText("Thank You", 10, "h1");
@@ -159,7 +159,7 @@ class MothershipFrontPayByZelleCest
             'user_id' => $this->joomlaUserData['id'],            
             'action' => 'initiated',
             'object_type' => 'payment',
-            'object_id' => $this->accountData['id'], 
+            'object_id' => $payment_id,
         ]);
         
         $meta = json_decode($I->grabFromDatabase("jos_mothership_logs", "meta", [
@@ -168,13 +168,125 @@ class MothershipFrontPayByZelleCest
             'user_id' => $this->joomlaUserData['id'],            
             'action' => 'initiated',
             'object_type' => 'payment',
-            'object_id' => $this->accountData['id'], 
+            'object_id' => $payment_id,
         ]));
         codecept_debug($meta);
         $I->assertEquals($meta->invoice_id,  $this->invoiceData['id']);
         $I->assertEquals($meta->payment_method, "zelle");
         $I->assertEquals($meta->amount, $this->invoiceData['total']);
 
+        $I->click("Return to Payments");
+        $I->wait(1);
+        $I->waitForText("Payments", 10, "h1");
+    }
+
+    /**
+     * @group frontend
+     * @group payment
+     * @group zelle
+     * @group payment-end-to-end
+     */
+    public function PayInvoiceWithZelleExistingPayment(AcceptanceTester $I)
+    {
+
+        $paymentData = $I->createMothershipPayment([
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'amount' => $this->invoiceData['total'],
+            'payment_method' => 'zelle',
+            'fee_amount' => 0,
+            'status' => 1,
+        ]);
+        $invoicePaymentData = $I->createMothershipInvoicePayment([
+            'invoice_id' => $this->invoiceData['id'],
+            'payment_id' => $paymentData['id'],
+            'applied_amount' => $this->invoiceData['total'],
+        ]);
+
+        $I->updateInDatabase("jos_extensions", [
+            'params' => '{"display_name":"Zelle","zelle_email":"test.smith@mailinator.com","zelle_phone":"555 555-5555","instructions":""}',
+        ], [
+            'name' => 'COM_MOTHERSHIP_ZELLE_PLUGIN',
+        ]);
+        $I->updateInDatabase("jos_extensions", [
+            'params' => '{"display_name":"Pay By Check","checkpayee":"Your Company Name"}',
+        ], [
+            'name' => 'COM_MOTHERSHIP_PAYBYCHECK_PLUGIN',
+        ]);
+        // Verify redirection to account center
+        $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
+        $I->waitForText("Invoices", 10, "h1");
+
+        $I->see("Cancel Pending Payment", "table#invoicesTable tbody tr td:nth-child(8)");
+        $I->click("Cancel Pending Payment", "table#invoicesTable tbody tr td:nth-child(8)");
+        $I->wait(1);
+        $I->waitForText("Cancel Payment", 10, "h4");
+        $I->makeScreenshot("account-center-pay-invoice-zelle");
+        codecept_debug($I->grabFromCurrentUrl()); // output the current url into the debug
+        $I->click("Cancel Payment");
+        // Accept javascript confirm
+        $I->acceptPopup();
+        $I->wait(2);
+        codecept_debug($I->grabFromCurrentUrl()); // output the current url into the debug
+        $I->see("Pay", "table#invoicesTable tbody tr td:nth-child(8)");
+        $I->click("Pay", "table#invoicesTable tbody tr td:nth-child(8)");
+        $I->wait(1);
+        $I->selectOption(['css' => 'input[name="payment_method"]'], 'zelle');
+        $I->click("Pay Now");
+        $I->wait(1);
+        $I->waitForText("Thank You", 10, "h1");
+        $I->makeScreenshot("account-center-pay-invoice-zelle-thank-you");
+        // Once the user clicks `Pay Now` the payment is created and the user is redirected to the thank you page
+        // The Admin should receive an email regarding the pending payment
+        $I->getEmailBySubject("New Pending Payment for zelle");
+
+        $I->seeInDatabase("jos_mothership_payments", [
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'], 
+            'amount' => $this->invoiceData['total'],
+            'payment_method' => 'zelle',
+            'fee_amount' => 0,
+            'status' => 1,
+        ]);
+
+        $payment_id = $I->grabFromDatabase("jos_mothership_payments", "id", [
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'], 
+            'amount' => $this->invoiceData['total'],
+            'payment_method' => 'zelle',
+            'fee_amount' => 0,
+            'status' => 1,
+        ]);
+
+        $I->seeInDatabase("jos_mothership_invoice_payment", [
+            'invoice_id' => $this->invoiceData['id'],
+            'payment_id' => $payment_id, 
+            'applied_amount' => $this->invoiceData['total'],
+        ]);
+        
+        $I->seeInDatabase("jos_mothership_logs", [
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'user_id' => $this->joomlaUserData['id'],            
+            'action' => 'initiated',
+            'object_type' => 'payment',
+            'object_id' => $payment_id, 
+        ]);
+        
+        $meta = json_decode($I->grabFromDatabase("jos_mothership_logs", "meta", [
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'user_id' => $this->joomlaUserData['id'],            
+            'action' => 'initiated',
+            'object_type' => 'payment',
+            'object_id' => $payment_id, 
+        ]));
+
+        codecept_debug($meta);
+        $I->assertEquals($meta->invoice_id,  $this->invoiceData['id']);
+        $I->assertEquals($meta->payment_method, "zelle");
+        $I->assertEquals($meta->amount, $this->invoiceData['total']);
+        
         $I->click("Return to Payments");
         $I->wait(1);
         $I->waitForText("Payments", 10, "h1");
