@@ -7,7 +7,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\Database\DatabaseInterface;
 use Joomla\CMS\Language\Text;
-use TrevorBice\Component\Mothership\Site\Helper\LogHelper;
+use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper;
 
 class PaymentModel extends BaseDatabaseModel
 {
@@ -112,24 +112,27 @@ class PaymentModel extends BaseDatabaseModel
             $db->setQuery($query)->execute();
 
             // 3) Log it
-            //$userId = (int) Factory::getApplication()->getIdentity()->id ?: 0;
-
             $meta = [
                 'invoice_id'     => $invoiceId ?: null,
                 'amount'         => (float) $payment->amount,
                 'payment_method' => (string) $payment->payment_method,
             ];
-            /*
-            LogHelper::add(
-                (int) $payment->client_id,
-                (int) $payment->account_id,
-                $userId,
-                'canceled',
-                'payment',
-                (int) $paymentId,
-                json_encode($meta)
-            );
-            */
+
+            // Get current user ID
+            $user = Factory::getUser();
+            $userId = $user ? (int) $user->id : 0;
+
+            $params = [
+                'client_id'   => isset($payment->client_id) ? (int) $payment->client_id : null,
+                'account_id'  => isset($payment->account_id) ? (int) $payment->account_id : null,
+                'object_type' => 'invoice',
+                'object_id'   => $invoiceId ?: null,
+                'action'      => 'canceled',
+                'meta'        => $meta,
+                'user_id'     => $userId,
+            ];
+
+            $result = LogHelper::log($params);
 
             $db->transactionCommit();
         } catch (\Throwable $e) {
