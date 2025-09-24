@@ -221,14 +221,14 @@ class MothershipFrontPayByZelleCest
         $I->click("Cancel Pending Payment", "table#invoicesTable tbody tr td:nth-child(8)");
         $I->wait(1);
         $I->waitForText("Cancel Payment", 10, "h4");
-        $I->makeScreenshot("account-center-pay-invoice");
+        $I->makeScreenshot("account-center-pay-invoice-zelle");
         codecept_debug($I->grabFromCurrentUrl()); // output the current url into the debug
-        $I->see("Pay Now");
-        $I->see("Total Due: \${$this->invoiceData['total']}");
-        // Click Pay By Check
-        $I->click("#payment_method_1");
-        $I->makeScreenshot("account-center-pay-invoice-paybycheck-instructions");
-        $I->click("Pay Now");
+        $I->click("Cancel Payment");
+        // Accept javascript confirm
+        $I->acceptPopup();
+        $I->wait(2);
+        codecept_debug($I->grabFromCurrentUrl()); // output the current url into the debug
+        $I->click("Pay Now", "#selected-instructions button");
         $I->wait(1);
         $I->waitForText("Thank You", 10, "h1");
         $I->makeScreenshot("account-center-pay-invoice-zelle-thank-you");
