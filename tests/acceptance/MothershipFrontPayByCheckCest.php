@@ -119,7 +119,7 @@ class MothershipFrontPayByCheckCest
         $I->see("Pay Now");
         $I->see("Total Due: \${$this->invoiceData['total']}");
         // Click Pay By Check
-        $I->click("#payment_method_0");
+        $I->selectOption(['css' => 'input[name="payment_method"]'], 'paybycheck');
         $I->makeScreenshot("account-center-pay-invoice-paybycheck-instructions");
         $I->click("Pay Now");
         $I->wait(1);

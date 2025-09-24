@@ -5,6 +5,9 @@ namespace TrevorBice\Component\Mothership\Site\Model;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
+use Joomla\Database\DatabaseInterface;
+use Joomla\CMS\Language\Text;
+use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper;
 
 class PaymentModel extends BaseDatabaseModel
 {
@@ -65,6 +68,77 @@ class PaymentModel extends BaseDatabaseModel
         $app = \Joomla\CMS\Factory::getApplication();
         $id = $app->input->getInt('id');
         $this->setState('payment.id', $id);
+    }
+
+    public function cancelPayment(int $paymentId): void
+    {
+        $db = $this->getDatabase();
+
+        // Load the payment
+        $payment = $this->getItem($paymentId);
+
+        if (!$payment) {
+            throw new \RuntimeException("Payment Not Found");
+        }
+
+        // Only pending (1) can be canceled
+        if ((int) $payment->status !== 1) {
+            throw new \RuntimeException("Only Pending Payments Can Be Canceled");
+        }
+
+        // Fetch any linked invoice BEFORE unlinking so we can log it
+        $query = $db->getQuery(true)
+            ->select($db->quoteName('invoice_id'))
+            ->from($db->quoteName('#__mothership_invoice_payment'))
+            ->where($db->quoteName('payment_id') . ' = ' . (int) $paymentId)
+            ->setLimit(1);
+        $invoiceId = (int) $db->setQuery($query)->loadResult();
+
+        $db->transactionStart();
+
+        try {
+            // 1) Update status -> 3 (Canceled)
+            $query = $db->getQuery(true)
+                ->update($db->quoteName('#__mothership_payments'))
+                ->set($db->quoteName('status') . ' = 4')
+                //->set($db->quoteName('modified') . ' = ' . $db->quote(Factory::getDate()->toSql()))
+                ->where($db->quoteName('id') . ' = ' . (int) $paymentId);
+            $db->setQuery($query)->execute();
+
+            // 2) Unlink from invoice(s)
+            $query = $db->getQuery(true)
+                ->delete($db->quoteName('#__mothership_invoice_payment'))
+                ->where($db->quoteName('payment_id') . ' = ' . (int) $paymentId);
+            $db->setQuery($query)->execute();
+
+            // 3) Log it
+            $meta = [
+                'invoice_id'     => $invoiceId ?: null,
+                'amount'         => (float) $payment->amount,
+                'payment_method' => (string) $payment->payment_method,
+            ];
+
+            // Get current user ID
+            $user = Factory::getUser();
+            $userId = $user ? (int) $user->id : 0;
+
+            $params = [
+                'client_id'   => isset($payment->client_id) ? (int) $payment->client_id : null,
+                'account_id'  => isset($payment->account_id) ? (int) $payment->account_id : null,
+                'object_type' => 'invoice',
+                'object_id'   => $invoiceId ?: null,
+                'action'      => 'canceled',
+                'meta'        => $meta,
+                'user_id'     => $userId,
+            ];
+
+            $result = LogHelper::log($params);
+
+            $db->transactionCommit();
+        } catch (\Throwable $e) {
+            $db->transactionRollback();
+            throw $e;
+        }
     }
 
 }
