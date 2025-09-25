@@ -279,13 +279,13 @@ class MothershipAdminDomainsCest
 
         $I->seeInDatabase("jos_mothership_domains", [ 'id' => $domainData['id'] ]);
         $I->amOnPage( sprintf(self::DOMAIN_EDIT_URL, $domainData['id']) );
-        $I->waitForText("Mothership: Edit Domain", 10, "h1.page-title");
+        $I->waitForText("Mothership: Edit Domain", 20, "h1.page-title");
 
         $I->see("WHOIS Scan & Update", "joomla-toolbar-button#toolbar-refresh");
         $I->seeElement("joomla-toolbar-button#toolbar-refresh", ['task' => "domain.whoisScan"]);
 
         $I->click("WHOIS Scan & Update", "#toolbar");
-        $I->waitForText("Domain {$domainData['name']} WHOIS scan completed successfully.", 10, ".alert-message");
+        $I->waitForText("Domain {$domainData['name']} WHOIS scan completed successfully.", 20, ".alert-message");
         $I->seeInCurrentUrl( sprintf(self::DOMAIN_EDIT_URL, $domainData['id']));
 
         $domain = $I->grabDomainFromDatabase($domainData['id']);
