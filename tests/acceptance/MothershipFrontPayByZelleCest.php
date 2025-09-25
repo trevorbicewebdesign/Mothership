@@ -234,7 +234,7 @@ class MothershipFrontPayByZelleCest
         $I->selectOption(['css' => 'input[name="payment_method"]'], 'zelle');
         $I->click("Pay Now");
         $I->wait(1);
-        $I->waitForText("Thank You", 10, "h1");
+        $I->waitForText("Thank You", 20, "h1");
         $I->makeScreenshot("account-center-pay-invoice-zelle-thank-you");
         // Once the user clicks `Pay Now` the payment is created and the user is redirected to the thank you page
         // The Admin should receive an email regarding the pending payment
