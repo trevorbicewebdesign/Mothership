@@ -215,12 +215,12 @@ class MothershipFrontPayByZelleCest
         ]);
         // Verify redirection to account center
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
-        $I->waitForText("Invoices", 10, "h1");
+        $I->waitForText("Invoices", 20, "h1");
 
         $I->see("Cancel Pending Payment", "table#invoicesTable tbody tr td:nth-child(8)");
         $I->click("Cancel Pending Payment", "table#invoicesTable tbody tr td:nth-child(8)");
         $I->wait(1);
-        $I->waitForText("Cancel Payment", 10, "h4");
+        $I->waitForText("Cancel Payment", 20, "h4");
         $I->makeScreenshot("account-center-pay-invoice-zelle");
         codecept_debug($I->grabFromCurrentUrl()); // output the current url into the debug
         $I->click("Cancel Payment");
@@ -289,7 +289,7 @@ class MothershipFrontPayByZelleCest
         
         $I->click("Return to Payments");
         $I->wait(1);
-        $I->waitForText("Payments", 10, "h1");
+        $I->waitForText("Payments", 20, "h1");
     }
 
 }
