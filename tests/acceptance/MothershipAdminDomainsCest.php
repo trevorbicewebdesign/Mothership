@@ -285,7 +285,7 @@ class MothershipAdminDomainsCest
         $I->seeElement("joomla-toolbar-button#toolbar-refresh", ['task' => "domain.whoisScan"]);
 
         $I->click("WHOIS Scan & Update", "#toolbar");
-        $I->waitForText("Domain {$domainData['name']} WHOIS scan completed successfully.", 60, ".alert-message");
+        $I->waitForText("Domain {$domainData['name']} WHOIS scan completed successfully.", 10, ".alert-message");
         $I->seeInCurrentUrl( sprintf(self::DOMAIN_EDIT_URL, $domainData['id']));
 
         $domain = $I->grabDomainFromDatabase($domainData['id']);
