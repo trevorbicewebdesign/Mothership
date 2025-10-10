@@ -170,10 +170,16 @@ class MothershipAdminDomainsCest
 
         $I->click("Save", "#toolbar");
         $I->wait(1);
-        $I->waitForText("Mothership: Edit Domain", 10, "h1.page-title");
-        $I->dontSee("Warning");
+        $I->waitForText("Mothership: New Domain", 20, "h1.page-title");
+        $I->see("Domain Save failed", "#system-message-container .alert-message");
+        $I->see("Invalid domain name. Please enter a valid domain name.", "#system-message-container .alert-message");
 
-        $I->waitForText("Domain example.com saved successfully.", 10, ".alert-message");
+        $I->fillField("input#jform_name", "example.com");
+        $I->click("Save", "#toolbar");
+        $I->wait(1);
+        $I->waitForText("Mothership: Edit Domain", 20, "h1.page-title");
+
+        $I->waitForText("Domain example.com saved successfully.", 20, ".alert-message");
 
         $I->seeInField("input#jform_name", "example.com");
         $I->seeOptionIsSelected("select#jform_client_id", "Test Client");
