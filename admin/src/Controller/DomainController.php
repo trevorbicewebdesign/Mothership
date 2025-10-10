@@ -75,8 +75,8 @@ class DomainController extends FormController
 
         $domain->last_scan = date('Y-m-d H:i:s');
 
-        $model = $this->getModel('Domain');
-        if (!$model->save($domain)) {
+        $domainArray = is_object($domain) ? get_object_vars($domain) : (array) $domain;
+        if (!$model->save($domainArray)) {
             $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_DOMAIN_WHOIS_SCAN_UPDATE_FAILED', "<strong>{$domain->name}</strong>"), 'message');
             $app->enqueueMessage($model->getError(), 'error');
             $this->setRedirect(Route::_("index.php?option=com_mothership&view=domain&layout=edit&id={$domain->id}", false));
