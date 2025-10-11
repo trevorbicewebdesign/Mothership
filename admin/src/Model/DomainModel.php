@@ -187,6 +187,9 @@ class DomainModel extends AdminModel
             return false;
         }
 
+        // ✅ Clear sticky form data after a successful save
+        Factory::getApplication()->setUserState('com_mothership.edit.domain.data', null);
+
         // Set the new record ID into the model state
         $this->setState($this->getName() . '.id', $table->id);
 
