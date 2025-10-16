@@ -103,7 +103,10 @@ class DomainController extends FormController
         if (!$model->save($data)) {
             $app->enqueueMessage(Text::_('COM_MOTHERSHIP_DOMAIN_SAVE_FAILED'), 'error');
             $app->enqueueMessage($model->getError(), 'error');
-            $this->setRedirect(Route::_('index.php?option=com_mothership&view=domain&layout=edit', false));
+            $id = !empty($data['id']) ? $data['id'] : $model->getState($model->getName() . '.id');
+            // Clear the model state for id and name to avoid retaining invalid domain
+            Factory::getApplication()->setUserState('com_mothership.edit.domain.data', null);
+            $this->setRedirect(Route::_("index.php?option=com_mothership&view=domain&layout=edit&id={$id}", false));
             return false;
         }
 
