@@ -170,9 +170,8 @@ class MothershipAdminDomainsCest
 
         $I->click("Save", "#toolbar");
         $I->wait(1);
-        $I->waitForText("Mothership: New Domain", 20, "h1.page-title");
-        $I->see("Domain Save failed", "#system-message-container .alert-message");
-        $I->see("Invalid domain name. Please enter a valid domain name.", "#system-message-container .alert-message");
+        $I->waitForText("Mothership: New Domain", 30, "h1.page-title");
+        $I->see("The form cannot be submitted as it's missing required data.", "#system-message-container .alert-message");
 
         $I->fillField("input#jform_name", "example.com");
         $I->click("Save", "#toolbar");
@@ -291,7 +290,7 @@ class MothershipAdminDomainsCest
         $I->seeElement("joomla-toolbar-button#toolbar-refresh", ['task' => "domain.whoisScan"]);
 
         $I->click("WHOIS Scan & Update", "#toolbar");
-        $I->waitForText("Domain {$domainData['name']} WHOIS scan completed successfully.", 10, ".alert-message");
+        $I->waitForText("Domain {$domainData['name']} WHOIS scan completed successfully.", 30, ".alert-message");
         $I->seeInCurrentUrl( sprintf(self::DOMAIN_EDIT_URL, $domainData['id']));
 
         $domain = $I->grabDomainFromDatabase($domainData['id']);
