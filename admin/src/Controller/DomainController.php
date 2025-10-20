@@ -125,9 +125,11 @@ class DomainController extends FormController
 
     public function cancel($key = null)
     {
-        $model = $this->getModel('Domain');
-        $id    = $this->input->getInt('id');
-        $model->cancelEdit($id);
+        $result = parent::cancel($key);
+
+        $app = \Joomla\CMS\Factory::getApplication();
+        $app->setUserState('com_mothership.edit.domain.data', null);
+        $app->setUserState('com_mothership.edit.domain.invalid', null);
 
         $defaultRedirect = Route::_('index.php?option=com_mothership&view=domains', false);
         $redirect = MothershipHelper::getReturnRedirect($defaultRedirect);
