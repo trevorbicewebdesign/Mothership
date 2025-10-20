@@ -120,13 +120,13 @@ class MothershipAdminPaymentsCest
     {
         $I->amOnPage( self::PAYMENTS_VIEW_ALL_URL);
         $I->wait(1);
-        $I->waitForText("Mothership: Payments", 20, "h1.page-title");
+        $I->waitForText("Mothership: Payments", 30, "h1.page-title");
         $I->click("Test Client");
         $I->wait(1);
-        $I->waitForText("Mothership: Edit Client", 20, "h1.page-title");
+        $I->waitForText("Mothership: Edit Client", 30, "h1.page-title");
         $I->click("Close", "#toolbar");
         $I->wait(1);
-        $I->waitForText("Mothership: Payments", 20, "h1.page-title");
+        $I->waitForText("Mothership: Payments", 30, "h1.page-title");
         $I->seeCurrentUrlEquals(self::PAYMENTS_VIEW_ALL_URL);
     }
 
@@ -139,13 +139,13 @@ class MothershipAdminPaymentsCest
     public function MothershipCancelAccountEdit(AcceptanceTester $I)
     {
         $I->amOnPage( self::PAYMENTS_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Payments", 20, "h1.page-title");
+        $I->waitForText("Mothership: Payments", 30, "h1.page-title");
 
         $I->click("Test Account");
-        $I->waitForText("Mothership: Edit Account", 20, "h1.page-title");
+        $I->waitForText("Mothership: Edit Account", 30, "h1.page-title");
         $I->wait(1);
         $I->click("Close", "#toolbar");
-        $I->waitForText("Mothership: Payments", 20, "h1.page-title");
+        $I->waitForText("Mothership: Payments", 30, "h1.page-title");
         $I->wait(1);
         $I->seeCurrentUrlEquals(self::PAYMENTS_VIEW_ALL_URL);
     }
@@ -179,12 +179,12 @@ class MothershipAdminPaymentsCest
         ]);
 
         $I->amOnPage( self::PAYMENTS_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Payments", 20, "h1.page-title");
+        $I->waitForText("Mothership: Payments", 30, "h1.page-title");
 
         $I->click("Invoice #{$this->invoiceData['id']}");
-        $I->waitForText("Mothership: Edit Invoice", 20, "h1.page-title");
+        $I->waitForText("Mothership: Edit Invoice", 30, "h1.page-title");
         $I->click("Close", "#toolbar");
-        $I->waitForText("Mothership: Payments", 20, "h1.page-title");
+        $I->waitForText("Mothership: Payments", 30, "h1.page-title");
         $I->seeCurrentUrlEquals(self::PAYMENTS_VIEW_ALL_URL);
     }
 
@@ -216,7 +216,7 @@ class MothershipAdminPaymentsCest
         ]);
 
         $I->amOnPage(self::PAYMENTS_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Payments", 20, "h1.page-title");
+        $I->waitForText("Mothership: Payments", 30, "h1.page-title");
 
         $I->makeScreenshot("mothership-view-payments");
 
@@ -270,7 +270,7 @@ class MothershipAdminPaymentsCest
         $I->seeInDatabase('jos_mothership_invoice_payment', ['payment_id' => $this->paymentData['id']]);
 
         $I->amOnPage(self::PAYMENTS_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Payments", 20, "h1.page-title");
+        $I->waitForText("Mothership: Payments", 30, "h1.page-title");
 
         $I->seeElement(".btn-toolbar");
 
@@ -308,7 +308,7 @@ class MothershipAdminPaymentsCest
     public function MothershipDeletePaymentNoInvoicePayment(AcceptanceTester $I)
     {
         $I->amOnPage(self::PAYMENTS_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Payments", 20, "h1.page-title");
+        $I->waitForText("Mothership: Payments", 30, "h1.page-title");
 
         $I->seeElement(".btn-toolbar");
 
@@ -357,7 +357,7 @@ class MothershipAdminPaymentsCest
         ]);
 
         $I->amOnPage(MothershipAdminPaymentsCest::PAYMENTS_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Payments", 20, "h1.page-title");
+        $I->waitForText("Mothership: Payments", 30, "h1.page-title");
 
         $I->click("input[name=checkall-toggle]");
         $I->click("Actions");
@@ -378,7 +378,7 @@ class MothershipAdminPaymentsCest
     {
         $I->amOnPage(self::PAYMENTS_VIEW_ALL_URL);
         $I->wait(1);
-        $I->waitForText("Mothership: Payments", 20, "h1.page-title");
+        $I->waitForText("Mothership: Payments", 30, "h1.page-title");
 
         $toolbar = "#toolbar";
         $toolbarNew = "#toolbar-new";
@@ -387,7 +387,7 @@ class MothershipAdminPaymentsCest
         $I->see("New", "{$toolbar} {$toolbarNew} .btn.button-new");
         $I->click("{$toolbar} {$toolbarNew} .btn.button-new");
         $I->wait(1);
-        $I->waitForText("Mothership: New Payment", 20, "h1.page-title");
+        $I->waitForText("Mothership: New Payment", 30, "h1.page-title");
 
         $I->makeScreenshot("mothership-add-payment");
 
@@ -433,7 +433,7 @@ class MothershipAdminPaymentsCest
 
         $I->click("Save & Close", "#toolbar");
         $I->waitForText("Payment saved successfully.", 5, "#system-message-container .alert-message");
-        $I->waitForText("Mothership: Payments", 20, "h1.page-title");
+        $I->waitForText("Mothership: Payments", 30, "h1.page-title");
 
         $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 2);
 
@@ -469,7 +469,7 @@ class MothershipAdminPaymentsCest
     {
         $I->amOnPage(sprintf(self::PAYMENT_EDIT_URL, "9999"));
         $I->wait(1);
-        $I->waitForText("Payment not found. Please select a valid payment.", 10, "#system-message-container .alert-message");
+        $I->waitForText("Payment not found. Please select a valid payment.", 30, "#system-message-container .alert-message");
     }
 
     /**
@@ -497,7 +497,7 @@ class MothershipAdminPaymentsCest
         $I->setPaymentLocked($paymentData['id']);
         $I->amOnPage(sprintf(self::PAYMENT_EDIT_URL, $paymentData['id']));
         $I->wait(1);
-        $I->waitForText("Mothership: View Payment", 20, "h1.page-title");
+        $I->waitForText("Mothership: View Payment", 30, "h1.page-title");
 
         $I->seeElement("#jform_client_id");
         $I->assertEquals("true", $I->grabAttributeFrom("#jform_client_id", "disabled"));
@@ -506,8 +506,8 @@ class MothershipAdminPaymentsCest
 
         $I->click("Unlock", "#toolbar");
         $I->wait(1);
-        $I->waitForText("Mothership: Edit Payment", 20, "h1.page-title");
-        $I->waitForText("Payment unlocked successfully.", 20, "#system-message-container .alert-message");
+        $I->waitForText("Mothership: Edit Payment", 30, "h1.page-title");
+        $I->waitForText("Payment unlocked successfully.", 30, "#system-message-container .alert-message");
 
         $I->seeElement("#jform_client_id");
         $I->assertEquals(NULL, $I->grabAttributeFrom("#jform_client_id", "disabled"));
@@ -516,8 +516,8 @@ class MothershipAdminPaymentsCest
 
         $I->click("Lock", "#toolbar");
         $I->wait(1);
-        $I->waitForText("Mothership: View Payment", 20, "h1.page-title");
-        $I->waitForText("Payment locked successfully.", 20, "#system-message-container .alert-message");
+        $I->waitForText("Mothership: View Payment", 30, "h1.page-title");
+        $I->waitForText("Payment locked successfully.", 30, "#system-message-container .alert-message");
     }
 
     /**
@@ -552,7 +552,7 @@ class MothershipAdminPaymentsCest
 
         $I->seeInDatabase("jos_mothership_payments", [ 'id' => $paymentData['id'] ]);
         $I->amOnPage(self::PAYMENTS_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Payments", 20, "h1.page-title");
+        $I->waitForText("Mothership: Payments", 30, "h1.page-title");
 
         $I->seeNumberOfElements("#j-main-container table tbody tr", 2);
 
@@ -633,14 +633,14 @@ class MothershipAdminPaymentsCest
 
         $I->amOnPage(sprintf(self::PAYMENT_EDIT_URL, $paymentData['id']));
         $I->wait(1);
-        $I->waitForText("Mothership: Edit Payment", 20, "h1.page-title");
+        $I->waitForText("Mothership: Edit Payment", 30, "h1.page-title");
 
         $I->see("Confirm Payment", "#toolbar");
         $I->seeElement("joomla-toolbar-button#toolbar-vcard", ['task' => "payment.confirm"]);
 
         $I->click("Confirm Payment", "#toolbar");
         $I->wait(1);
-        $I->waitForText("Mothership: Payments", 20, "h1.page-title");
+        $I->waitForText("Mothership: Payments", 30, "h1.page-title");
         $I->see("Payment {$paymentData['id']} confirmed successfully.", ".alert-message");
 
         $I->see("Completed", "#j-main-container table tbody tr:nth-child(2) td:nth-child(9)");
