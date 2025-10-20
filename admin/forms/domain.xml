@@ -7,13 +7,14 @@
 		<field
 			name="name" 
 			type="text" 
-			validate="email" 
+			validate="domain" 
 			default="" 
 			readonly="" 
 			class="input-xxlarge input-large-text" 
 			label="COM_MOTHERSHIP_FIELD_DOMAIN_NAME_LABEL" 
 			description="COM_MOTHERSHIP_FIELD_DOMAIN_NAME_DESC" 
 			required="true"
+			pattern="(?=.{1,253}$)(?!\-)(?:[A-Za-z0-9](?:[A-Za-z0-9\-]{0,61}[A-Za-z0-9])?\.)+[A-Za-z]{2,63}"
 		/>
 		<field name="client_id" type="clientlist" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_CLIENT_ID_LABEL" description="COM_MOTHERSHIP_FIELD_CLIENT_NAME_DESC" required="true"/>
 		<field name="account_id" type="accountlist" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_ACCOUNT_ID_LABEL" description="COM_MOTHERSHIP_FIELD_ACCOUNT_NAME_DESC" />
