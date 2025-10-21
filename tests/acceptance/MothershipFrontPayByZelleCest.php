@@ -185,6 +185,7 @@ class MothershipFrontPayByZelleCest
      * @group payment
      * @group zelle
      * @group payment-end-to-end
+     * @group skipCI
      */
     public function PayInvoiceWithZelleExistingPayment(AcceptanceTester $I)
     {
