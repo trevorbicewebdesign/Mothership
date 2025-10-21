@@ -4,16 +4,16 @@
         <description>Mothership update server</description>
         <element>com_mothership</element>
         <type>component</type>
-        <version>0.0.19</version>
+        <version>0.0.21</version>
         <infourl title="Mothership on GitHub">https://github.com/trevorbice/mothership</infourl>
         <downloads>
-            <downloadurl type="full" format="zip">https://github.com/trevorbicewebdesign/Mothership/releases/download/0.0.19/Mothership-0.0.19.zip</downloadurl>
+            <downloadurl type="full" format="zip">https://github.com/trevorbicewebdesign/Mothership/releases/download/0.0.21/Mothership-0.0.21.zip</downloadurl>
         </downloads>
         <tags>
             <tag>stable</tag>
         </tags>
         <enclosure 
-            url="https://github.com/trevorbicewebdesign/Mothership/releases/download/0.0.19/Mothership-0.0.19.zip" 
+            url="https://github.com/trevorbicewebdesign/Mothership/releases/download/0.0.21/Mothership-0.0.19.zip" 
             length="47548014" 
             type="application/zip" 
             hash="9472F3960877B6723ED0A2487E8B895517906780CBA0DBE8069ED52574780F58" />
