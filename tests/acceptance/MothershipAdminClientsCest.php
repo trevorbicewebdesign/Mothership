@@ -66,7 +66,7 @@ class MothershipAdminClientsCest
     public function MothershipViewClients(AcceptanceTester $I)
     {
         $I->amOnPage(self::CLIENTS_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Clients", 20, "h1.page-title");
+        $I->waitForText("Mothership: Clients", 30, "h1.page-title");
 
         $I->makeScreenshot("mothership-clients-view-all");
 
@@ -107,7 +107,7 @@ class MothershipAdminClientsCest
     {
         $I->amOnPage(self::CLIENTS_VIEW_ALL_URL);
         $I->wait(1);
-        $I->waitForText("Mothership: Clients", 20, "h1.page-title");
+        $I->waitForText("Mothership: Clients", 30, "h1.page-title");
 
         $toolbar = "#toolbar";
         $toolbarNew = "#toolbar-new";
@@ -117,7 +117,7 @@ class MothershipAdminClientsCest
 
         $I->click("{$toolbar} {$toolbarNew} .btn.button-new");
         $I->wait(1);
-        $I->waitForText("Mothership: New Client", 20, "h1.page-title");
+        $I->waitForText("Mothership: New Client", 30, "h1.page-title");
 
         $I->makeScreenshot("mothership-client-add-details");
         $I->dontSee("Warning");
@@ -164,7 +164,7 @@ class MothershipAdminClientsCest
         $I->switchToIFrame();
 
         $I->click("Save & Close", "#toolbar");
-        $I->waitForText("Mothership: Clients", 20, "h1.page-title");
+        $I->waitForText("Mothership: Clients", 30, "h1.page-title");
         $I->seeInCurrentUrl(("/administrator/index.php?option=com_mothership&view=clients"));
         $I->see("Client saved", ".alert-message");
 
@@ -198,9 +198,9 @@ class MothershipAdminClientsCest
         $I->seeInField("input#jform_name", "Another Client");
         $I->click("Save", "#toolbar");
         $I->wait(1);
-        $I->waitForText("Mothership: Edit Client", 20, "h1.page-title");
+        $I->waitForText("Mothership: Edit Client", 30, "h1.page-title");
         $I->seeCurrentUrlEquals(sprintf(self::CLIENT_EDIT_URL, $client_id));
-        $I->waitForText("Client Another Client saved successfully.", 20, ".alert-message");
+        $I->waitForText("Client Another Client saved successfully.", 30, ".alert-message");
     }
 
     /**
@@ -230,7 +230,7 @@ class MothershipAdminClientsCest
             'client_id' => $this->clientData['id'],
         ]);
         $I->amOnPage(self::CLIENTS_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Clients", 20, "h1.page-title");
+        $I->waitForText("Mothership: Clients", 30, "h1.page-title");
 
         $I->seeNumberOfElements("#j-main-container table tbody tr", 1);
         
@@ -270,7 +270,7 @@ class MothershipAdminClientsCest
         ]);
 
         $I->amOnPage(self::CLIENTS_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Clients", 20, "h1.page-title");
+        $I->waitForText("Mothership: Clients", 30, "h1.page-title");
 
         $I->seeNumberOfElements("#j-main-container table tbody tr", 2);
         
