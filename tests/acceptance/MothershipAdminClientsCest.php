@@ -163,6 +163,11 @@ class MothershipAdminClientsCest
         $I->wait(1);
         $I->switchToIFrame();
 
+        $I->click("Save", "#toolbar");
+        $I->wait(1);
+        $I->waitForText("Mothership: Edit Client", 30, "h1.page-title");
+        $I->waitForText("Client Another Client saved successfully.", 30, ".alert-message");
+
         $I->click("Save & Close", "#toolbar");
         $I->waitForText("Mothership: Clients", 30, "h1.page-title");
         $I->seeInCurrentUrl(("/administrator/index.php?option=com_mothership&view=clients"));
