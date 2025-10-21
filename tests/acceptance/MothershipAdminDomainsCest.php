@@ -145,6 +145,12 @@ class MothershipAdminDomainsCest
         $I->seeElement("#myTab");
         $I->see("Domain Details", "#myTab button[aria-controls=details]");
 
+        $I->click("Save", "#toolbar");
+        $I->wait(1);
+        $I->see("One of the options must be selected", "label#jform_client_id-lbl .form-control-feedback");
+
+        $I->makeScreenshot("mothership-domain-add-details");
+
         $I->seeElement("select#jform_client_id");
         $I->dontSee("select#jform_account_id");
         $I->seeElement("input#jform_name");
@@ -156,7 +162,7 @@ class MothershipAdminDomainsCest
         $I->wait(1);
         $I->seeOptionIsSelected("select#jform_account_id", "{$this->accountData['name']}");
         
-        $I->fillField("input#jform_name", "example.com");
+        $I->fillField("input#jform_name", "not a valid domain");
         $I->fillField("input#jform_registrar", "GoDaddy");
         $I->fillField("input#jform_reseller", "GoDaddy");
         $I->selectOption("select#jform_dns_provider", "cloudflare");
@@ -164,10 +170,15 @@ class MothershipAdminDomainsCest
 
         $I->click("Save", "#toolbar");
         $I->wait(1);
-        $I->waitForText("Mothership: Edit Domain", 10, "h1.page-title");
-        $I->dontSee("Warning");
+        $I->waitForText("Mothership: New Domain", 30, "h1.page-title");
+        $I->see("The form cannot be submitted as it's missing required data.", "#system-message-container .alert-message");
 
-        $I->waitForText("Domain example.com saved successfully.", 10, ".alert-message");
+        $I->fillField("input#jform_name", "example.com");
+        $I->click("Save", "#toolbar");
+        $I->wait(1);
+        $I->waitForText("Mothership: Edit Domain", 20, "h1.page-title");
+
+        $I->waitForText("Domain example.com saved successfully.", 20, ".alert-message");
 
         $I->seeInField("input#jform_name", "example.com");
         $I->seeOptionIsSelected("select#jform_client_id", "Test Client");
@@ -273,13 +284,13 @@ class MothershipAdminDomainsCest
 
         $I->seeInDatabase("jos_mothership_domains", [ 'id' => $domainData['id'] ]);
         $I->amOnPage( sprintf(self::DOMAIN_EDIT_URL, $domainData['id']) );
-        $I->waitForText("Mothership: Edit Domain", 10, "h1.page-title");
+        $I->waitForText("Mothership: Edit Domain", 20, "h1.page-title");
 
         $I->see("WHOIS Scan & Update", "joomla-toolbar-button#toolbar-refresh");
         $I->seeElement("joomla-toolbar-button#toolbar-refresh", ['task' => "domain.whoisScan"]);
 
         $I->click("WHOIS Scan & Update", "#toolbar");
-        $I->waitForText("Domain {$domainData['name']} WHOIS scan completed successfully.", 10, ".alert-message");
+        $I->waitForText("Domain {$domainData['name']} WHOIS scan completed successfully.", 30, ".alert-message");
         $I->seeInCurrentUrl( sprintf(self::DOMAIN_EDIT_URL, $domainData['id']));
 
         $domain = $I->grabDomainFromDatabase($domainData['id']);

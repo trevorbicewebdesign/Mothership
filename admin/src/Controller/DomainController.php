@@ -75,8 +75,8 @@ class DomainController extends FormController
 
         $domain->last_scan = date('Y-m-d H:i:s');
 
-        $model = $this->getModel('Domain');
-        if (!$model->save($domain)) {
+        $domainArray = is_object($domain) ? get_object_vars($domain) : (array) $domain;
+        if (!$model->save($domainArray)) {
             $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_DOMAIN_WHOIS_SCAN_UPDATE_FAILED', "<strong>{$domain->name}</strong>"), 'message');
             $app->enqueueMessage($model->getError(), 'error');
             $this->setRedirect(Route::_("index.php?option=com_mothership&view=domain&layout=edit&id={$domain->id}", false));
@@ -103,7 +103,8 @@ class DomainController extends FormController
         if (!$model->save($data)) {
             $app->enqueueMessage(Text::_('COM_MOTHERSHIP_DOMAIN_SAVE_FAILED'), 'error');
             $app->enqueueMessage($model->getError(), 'error');
-            $this->setRedirect(Route::_('index.php?option=com_mothership&view=domain&layout=edit', false));
+            // Clear the model state for id and name to avoid retaining invalid domain
+            $this->setRedirect(Route::_("index.php?option=com_mothership&view=domain&layout=edit&id={$id}", false));
             return false;
         }
 
@@ -124,9 +125,11 @@ class DomainController extends FormController
 
     public function cancel($key = null)
     {
-        $model = $this->getModel('Domain');
-        $id    = $this->input->getInt('id');
-        $model->cancelEdit($id);
+        $result = parent::cancel($key);
+
+        $app = \Joomla\CMS\Factory::getApplication();
+        $app->setUserState('com_mothership.edit.domain.data', null);
+        $app->setUserState('com_mothership.edit.domain.invalid', null);
 
         $defaultRedirect = Route::_('index.php?option=com_mothership&view=domains', false);
         $redirect = MothershipHelper::getReturnRedirect($defaultRedirect);

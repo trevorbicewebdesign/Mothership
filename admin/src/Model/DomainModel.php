@@ -16,6 +16,7 @@ use Joomla\CMS\Table\Table;
 use Joomla\CMS\Versioning\VersionableModelTrait;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Form\Form;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -95,8 +96,12 @@ class DomainModel extends AdminModel
      */
     public function getForm($data = [], $loadData = true)
     {
-        // Get the form.
-        $form = $this->loadForm('com_mothership.domain', 'domain', ['control' => 'jform', 'load_data' => $loadData]);
+        // Now load the XML form
+        $form = $this->loadForm(
+            'com_mothership.domain',
+            'domain',
+            ['control' => 'jform', 'load_data' => $loadData]
+        );
 
         if (empty($form)) {
             return false;
@@ -144,6 +149,7 @@ class DomainModel extends AdminModel
     {
         $table = $this->getTable();
 
+        
         Log::add('Data received for saving: ' . json_encode($data), Log::DEBUG, 'com_mothership');
 
         if (!$table->bind($data)) {
@@ -156,6 +162,15 @@ class DomainModel extends AdminModel
         // Set created date if empty
         if (empty($table->created)) {
             $table->created = Factory::getDate()->toSql();
+        }
+        // Validate the 'name' field
+        // Validate the 'name' field to ensure it matches a domain name format (e.g., example.com)
+        if (!preg_match('/^(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/', $data['name'])) {
+            // Store the submitted data in the session so the form is repopulated
+            Factory::getApplication()->setUserState('com_mothership.edit.domain.data', $data);
+
+            $this->setError('Invalid domain name. Please enter a valid domain name.');
+            return false;
         }
 
         if (!$table->check()) {
@@ -172,33 +187,12 @@ class DomainModel extends AdminModel
             return false;
         }
 
+        // ✅ Clear sticky form data after a successful save
+        Factory::getApplication()->setUserState('com_mothership.edit.domain.data', null);
+
         // Set the new record ID into the model state
         $this->setState($this->getName() . '.id', $table->id);
 
         return true;
     }
-
-    /**
-     * Cancel editing by checking in the record.
-     *
-     * @param   int|null  $pk  The primary key of the record to check in. If null, it attempts to load it from the state.
-     *
-     * @return  bool  True on success, false on failure.
-     */
-    public function cancelEdit($pk = null)
-    {
-        // Use the provided primary key or retrieve it from the model state
-        $pk = $pk ? $pk : (int) $this->getState($this->getName() . '.id');
-
-        if ($pk) {
-            $table = $this->getTable();
-            if (!$table->checkin($pk)) {
-                $this->setError($table->getError());
-                return false;
-            }
-        }
-
-        return true;
-    }
-
 }
