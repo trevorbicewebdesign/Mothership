@@ -26,30 +26,37 @@ class ClientController extends FormController
 
     public function save($key = null, $urlVar = null)
     {
-        $app = Factory::getApplication();
+        $app   = Factory::getApplication();
         $input = $app->input;
-        $data = $input->get('jform', [], 'array');
+        $data  = $input->get('jform', [], 'array');
         $model = $this->getModel('Client');
+        $task  = $input->getCmd('task');
 
         if (!$model->save($data)) {
             $app->enqueueMessage(Text::_('COM_MOTHERSHIP_CLIENT_SAVE_FAILED'), 'error');
             $app->enqueueMessage($model->getError(), 'error');
-            $this->setRedirect(Route::_('index.php?option=com_mothership&view=client&layout=edit', false));
+
+            if ($task === 'apply') {
+                $id = (int) ($model->getState($model->getName() . '.id') ?: ($data['id'] ?? 0));
+                $this->setRedirect(Route::_('index.php?option=com_mothership&view=client&layout=edit&id=' . $id, false));
+                return false;
+            }
+
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=clients', false));
             return false;
         }
 
         $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_CLIENT_SAVED_SUCCESSFULLY', "<strong>{$data['name']}</strong>"), 'message');
 
-        $task = $input->getCmd('task');
+        // Always fetch the freshly saved ID from the model state
+        $id = (int) ($model->getState($model->getName() . '.id') ?: ($data['id'] ?? 0));
 
         if ($task === 'apply') {
-            $id = isset($data['id']) ? $data['id'] : $model->getState($model->getName() . '.id');
-            $defaultRedirect = Route::_('index.php?option=com_mothership&view=client&layout=edit&id=' . $id, false);
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=client&layout=edit&id=' . $id, false));
         } else {
-            $defaultRedirect = Route::_('index.php?option=com_mothership&view=clients', false);
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=clients', false));
         }
-        $returnRedirect = MothershipHelper::getReturnRedirect($defaultRedirect);
-        $this->setRedirect($returnRedirect);
+
         return true;
     }
 
