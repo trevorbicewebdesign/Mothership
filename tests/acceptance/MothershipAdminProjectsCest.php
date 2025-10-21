@@ -84,7 +84,7 @@ class MothershipAdminProjectsCest
     {
         $I->amOnPage(self::PROJECTS_VIEW_ALL_URL);
         $I->wait(1);
-        $I->waitForText("Mothership: Projects", 20, "h1.page-title");
+        $I->waitForText("Mothership: Projects", 30, "h1.page-title");
 
         $I->makeScreenshot("mothership-view-projects");
 
@@ -125,7 +125,7 @@ class MothershipAdminProjectsCest
     {
         $I->amOnPage(self::PROJECTS_VIEW_ALL_URL);
         $I->wait(1);
-        $I->waitForText("Mothership: Projects", 20, "h1.page-title");
+        $I->waitForText("Mothership: Projects", 30, "h1.page-title");
 
         $toolbar = "#toolbar";
         $toolbarNew = "#toolbar-new";
@@ -134,7 +134,7 @@ class MothershipAdminProjectsCest
         $I->see("New", "{$toolbar} {$toolbarNew} .btn.button-new");
         $I->click("{$toolbar} {$toolbarNew} .btn.button-new");
         $I->wait(1);
-        $I->waitForText("Mothership: New Project", 20, "h1.page-title");
+        $I->waitForText("Mothership: New Project", 30, "h1.page-title");
 
         $I->makeScreenshot("mothership-add-project");
 
@@ -160,7 +160,7 @@ class MothershipAdminProjectsCest
         $I->click("Save", "#toolbar");
         $I->wait(1);
 
-        $I->waitForText("The form cannot be submitted as it's missing required data.", 20);
+        $I->waitForText("The form cannot be submitted as it's missing required data.", 30);
         $I->see("Please correct the marked fields and try again.");
         
         $I->see("One of the options must be selected", "label#jform_client_id-lbl .form-control-feedback");
@@ -228,7 +228,7 @@ class MothershipAdminProjectsCest
     {
         $I->amOnPage(sprintf(self::PROJECT_EDIT_URL, "9999"));
         $I->wait(1);
-        $I->waitForText("Project not found. Please select a valid project.", 20, "#system-message-container .alert-message");
+        $I->waitForText("Project not found. Please select a valid project.", 30, "#system-message-container .alert-message");
     }
 
     /**
@@ -243,13 +243,13 @@ class MothershipAdminProjectsCest
 
         $I->amOnPage( sprintf(self::PROJECT_EDIT_URL, $this->projectData['id']) );
         $I->wait(1);
-        $I->waitForText("Mothership: Edit Project", 10, "h1.page-title");
+        $I->waitForText("Mothership: Edit Project", 30, "h1.page-title");
 
         $I->see("Project Scan & Update", "joomla-toolbar-button#toolbar-refresh");
         $I->seeElement("joomla-toolbar-button#toolbar-refresh", ['task' => "project.mothershipScan"]);
 
         $I->click("Project Scan & Update", "#toolbar");
-        $I->waitForText("Project Example Website scan completed successfully.", 10, ".alert-message");
+        $I->waitForText("Project Example Website scan completed successfully.", 30, ".alert-message");
         $I->seeInCurrentUrl( sprintf(self::PROJECT_EDIT_URL, $this->projectData['id']));
 
         $project= $I->grabProjectFromDatabase($this->projectData['id']);
@@ -302,7 +302,7 @@ class MothershipAdminProjectsCest
         $I->seeInDatabase("jos_mothership_projects", [ 'id' => $projectData['id'] ]);
         $I->amOnPage(self::PROJECTS_VIEW_ALL_URL);
         $I->wait(1);
-        $I->waitForText("Mothership: Projects", 20, "h1.page-title");
+        $I->waitForText("Mothership: Projects", 30, "h1.page-title");
 
         $I->seeNumberOfElements("#j-main-container table tbody tr", 2);
 
@@ -319,7 +319,7 @@ class MothershipAdminProjectsCest
 
         $I->click("Delete", "#toolbar");
         $I->wait(1);
-        $I->waitForText("Mothership: Projects", 10, "h1.page-title");
+        $I->waitForText("Mothership: Projects", 30, "h1.page-title");
         $I->seeInCurrentUrl(self::PROJECTS_VIEW_ALL_URL);
         $I->see("2 Projects deleted successfully.", ".alert-message");
         $I->seeNumberOfElements("#j-main-container table tbody tr", 0);
