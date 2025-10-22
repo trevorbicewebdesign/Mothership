@@ -8,9 +8,9 @@ class AccountsModel extends ListModel
 {
     public function getItems()
     {
-        $clientId = MothershipHelper::getUserClientId();
+        $clientIds = MothershipHelper::getUserClientIds();
 
-        if (!$clientId) {
+        if ($clientIds == null) {
             return [];
         }
 
@@ -18,9 +18,10 @@ class AccountsModel extends ListModel
         $id = $id ?? (int) $this->getState('account.id');
 
         $query = $db->getQuery(true)
-            ->select('a.*, a.name AS account_name')
+            ->select('a.*, a.name AS account_name, c.name AS client_name')
             ->from('#__mothership_accounts AS a')
-            ->where("a.client_id = '{$clientId}'"); // Ensure account belongs to the client
+            ->join('INNER', '#__mothership_clients AS c ON c.id = a.client_id')
+            ->where($db->quoteName('a.client_id') . ' IN (' . implode(',', array_map([$db, 'quote'], $clientIds)) . ')');
         $db->setQuery($query);
         $items = $db->loadObjectList();
 
