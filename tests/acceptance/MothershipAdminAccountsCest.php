@@ -169,6 +169,10 @@ class MothershipAdminAccountsCest
         $I->click("Save & Close", "#toolbar");
         $I->wait(1);
         $I->waitForText("Mothership: Accounts", 30, "h1.page-title");
+        $I->seeCurrentUrlEquals(self::ACCOUNTS_VIEW_ALL_URL);
+        $I->see("Account saved", ".alert-message");
+        $I->seeNumberOfElements("#j-main-container table tbody tr", 2);
+
 
     }
 
