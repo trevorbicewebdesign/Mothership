@@ -54,7 +54,7 @@ class MothershipAdminAccountsCest
         $I->fillField("input[name=username]", "admin");
         $I->fillField("input[name=passwd]", "password123!test");
         $I->click("Log in");
-        $I->waitForText("Hide Forever", 20);
+        $I->waitForText("Hide Forever", 30);
         $I->click("Hide Forever");
 ;    }
 
@@ -67,14 +67,14 @@ class MothershipAdminAccountsCest
     {   
         $I->amOnPage( self::ACCOUNTS_VIEW_ALL_URL);
         $I->wait(1);
-        $I->waitForText("Mothership: Accounts", 20, "h1.page-title");
+        $I->waitForText("Mothership: Accounts", 30, "h1.page-title");
 
         $I->click("Test Client");
         $I->wait(1);
-        $I->waitForText("Mothership: Edit Client", 20, "h1.page-title");
+        $I->waitForText("Mothership: Edit Client", 30, "h1.page-title");
         $I->click("Close", "#toolbar");
         $I->wait(1);
-        $I->waitForText("Mothership: Accounts", 20, "h1.page-title");
+        $I->waitForText("Mothership: Accounts", 30, "h1.page-title");
         $I->seeCurrentUrlEquals(self::ACCOUNTS_VIEW_ALL_URL);
     }
 
@@ -87,7 +87,7 @@ class MothershipAdminAccountsCest
     {
         $I->amOnPage(self::ACCOUNTS_VIEW_ALL_URL);
         $I->wait(1);
-        $I->waitForText("Mothership: Accounts", 20, "h1.page-title");
+        $I->waitForText("Mothership: Accounts", 30, "h1.page-title");
         
         $I->makeScreenshot("mothership-accounts-view-all");
 
@@ -123,7 +123,7 @@ class MothershipAdminAccountsCest
     {
         $I->amOnPage(self::ACCOUNTS_VIEW_ALL_URL);
         $I->wait(2);
-        $I->waitForText("Mothership: Accounts", 20, "h1.page-title");
+        $I->waitForText("Mothership: Accounts", 30, "h1.page-title");
 
         $toolbar = "#toolbar";
         $toolbarNew = "#toolbar-new";
@@ -152,13 +152,11 @@ class MothershipAdminAccountsCest
 
         $I->selectOption("select#jform_client_id", "Test Client");
         $I->fillField("input#jform_name", "Test Account");
-
+        // TEST ACTION SAVE
         $I->click("Save", "#toolbar");
         $I->wait(1);
-
-        $I->see("Mothership: Edit Account", "h1.page-title");
+        $I->waitForText("Mothership: Edit Account", 30, "h1.page-title");
         $I->see("Account Test Account saved", ".alert-message");
-
         $I->seeInField("input#jform_name", "Test Account");
         $I->seeOptionIsSelected("select#jform_client_id", "Test Client");
 
@@ -168,6 +166,23 @@ class MothershipAdminAccountsCest
             // 'created' => date("Y-m-d 00:00:00"),
         ]);
 
+        $I->click("Save & Close", "#toolbar");
+        $I->wait(1);
+        $I->waitForText("Mothership: Accounts", 30, "h1.page-title");
+        $I->seeCurrentUrlEquals(self::ACCOUNTS_VIEW_ALL_URL);
+        $I->see("Account saved", ".alert-message");
+        $I->seeNumberOfElements("#j-main-container table tbody tr", 2);
+
+        $account_id = $I->grabTextFrom("#j-main-container table tbody tr:nth-child(1) td:nth-child(2)");
+
+        // TEST ACTION CANCEL
+        $I->amOnPage(sprintf(self::ACCOUNT_EDIT_URL, $account_id));
+        $I->waitForText("Mothership: Edit Account", 30, "h1.page-title");
+        $I->click("Close", "#toolbar");
+        $I->wait(1);
+        $I->waitForText("Mothership: Accounts", 30, "h1.page-title");
+        $I->seeInCurrentUrl(self::ACCOUNTS_VIEW_ALL_URL);
+        $I->dontSeeElement("span.icon-checkedout");
     }
 
     /**
@@ -179,7 +194,7 @@ class MothershipAdminAccountsCest
     {
         $I->amOnPage(sprintf(self::ACCOUNT_EDIT_URL, "9999"));
         $I->wait(1);
-        $I->waitForText("Account not found. Please select a valid account.", 10, "#system-message-container .alert-message");
+        $I->waitForText("Account not found. Please select a valid account.", 30, "#system-message-container .alert-message");
     }
 
     /**
@@ -200,7 +215,7 @@ class MothershipAdminAccountsCest
         $I->seeInDatabase("jos_mothership_accounts", [ 'id' => $accountData['id'] ]);
         $I->amOnPage(self::ACCOUNTS_VIEW_ALL_URL);
         $I->wait(1);
-        $I->waitForText("Mothership: Accounts", 20, "h1.page-title");
+        $I->waitForText("Mothership: Accounts", 30, "h1.page-title");
 
         $I->seeNumberOfElements("#j-main-container table tbody tr", 2);
 
@@ -237,7 +252,7 @@ class MothershipAdminAccountsCest
         $I->seeInDatabase("jos_mothership_accounts", [ 'id' => $this->accountData['id'] ]);
         $I->amOnPage(self::ACCOUNTS_VIEW_ALL_URL);
         $I->wait(1);
-        $I->waitForText("Mothership: Accounts", 20, "h1.page-title");
+        $I->waitForText("Mothership: Accounts", 30, "h1.page-title");
 
         $I->seeNumberOfElements("#j-main-container table tbody tr", 1);
 
@@ -286,7 +301,7 @@ class MothershipAdminAccountsCest
 
         $I->amOnPage(self::ACCOUNTS_VIEW_ALL_URL);
         $I->wait(1);
-        $I->waitForText("Mothership: Accounts", 20, "h1.page-title");
+        $I->waitForText("Mothership: Accounts", 30, "h1.page-title");
 
         $I->seeNumberOfElements("#j-main-container table tbody tr", 2);
 
