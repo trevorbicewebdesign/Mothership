@@ -173,7 +173,15 @@ class MothershipAdminAccountsCest
         $I->see("Account saved", ".alert-message");
         $I->seeNumberOfElements("#j-main-container table tbody tr", 2);
 
+        $account_id = $I->grabTextFrom("#j-main-container table tbody tr:nth-child(1) td:nth-child(2)");
 
+        $I->amOnPage(sprintf(self::ACCOUNT_EDIT_URL, $account_id));
+        $I->waitForText("Mothership: Edit Account", 30, "h1.page-title");
+         $I->click("Close", "#toolbar");
+        $I->wait(1);
+        $I->waitForText("Mothership: Accounts", 30, "h1.page-title");
+        $I->seeInCurrentUrl(self::ACCOUNTS_VIEW_ALL_URL);
+        $I->dontSeeElement("span.icon-checkedout");
     }
 
     /**
