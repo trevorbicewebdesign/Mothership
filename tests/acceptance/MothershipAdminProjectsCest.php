@@ -217,6 +217,12 @@ class MothershipAdminProjectsCest
             $I->assertEquals("5.3.0", $metadata['cms_version']);
             $I->assertEquals("online", $metadata['status']);
         }
+
+        $I->click("Close", "#toolbar");
+        $I->wait(1);
+        $I->waitForText("Mothership: Projects", 30, "h1.page-title");
+        $I->seeInCurrentUrl(self::PROJECTS_VIEW_ALL_URL);
+        $I->dontSeeElement("span.icon-checkedout");
     }
 
     /**
