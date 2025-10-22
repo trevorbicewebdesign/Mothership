@@ -145,12 +145,12 @@ class MothershipAdminDomainsCest
         $I->seeElement("#myTab");
         $I->see("Domain Details", "#myTab button[aria-controls=details]");
 
+        // SAVE WITHOUT ENTERING DATA
         $I->click("Save", "#toolbar");
         $I->wait(1);
         $I->see("One of the options must be selected", "label#jform_client_id-lbl .form-control-feedback");
-
         $I->makeScreenshot("mothership-domain-add-details");
-
+        // VERIFY & FILL FORM FIELDS
         $I->seeElement("select#jform_client_id");
         $I->dontSee("select#jform_account_id");
         $I->seeElement("input#jform_name");
@@ -174,10 +174,10 @@ class MothershipAdminDomainsCest
         $I->see("The form cannot be submitted as it's missing required data.", "#system-message-container .alert-message");
 
         $I->fillField("input#jform_name", "example.com");
+        // VERIFY SAVE ACTION SUCCESS
         $I->click("Save", "#toolbar");
         $I->wait(1);
         $I->waitForText("Mothership: Edit Domain", 20, "h1.page-title");
-
         $I->waitForText("Domain example.com saved successfully.", 20, ".alert-message");
 
         $I->seeInField("input#jform_name", "example.com");
@@ -192,6 +192,37 @@ class MothershipAdminDomainsCest
             'dns_provider' => 'cloudflare',
             'purchase_date' => '2020-01-01 00:00:00',
         ]);
+
+        $domain_id = $I->grabFromDatabase("jos_mothership_domains", 'id',[
+            'name' => 'example.com',
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'registrar' => 'godaddy',
+            'reseller' => 'godaddy',
+            'dns_provider' => 'cloudflare',
+            'purchase_date' => '2020-01-01 00:00:00',
+        ]);
+
+        // VERIFY CLOSE ACTION SUCCESS
+        $I->click("Close", "#toolbar");
+        $I->wait(1);
+        $I->waitForText("Mothership: Domains", 20, "h1.page-title");
+        $I->seeInCurrentUrl(self::DOMAINS_VIEW_ALL_URL);
+        $I->seeNumberOfElements("#j-main-container table tbody tr", 1);
+
+        // VERIFY SAVE AND CLOSE ACTION SUCCESS
+        $I->amOnPage( sprintf(self::DOMAIN_EDIT_URL, $domain_id) );
+        $I->wait(1);
+        $I->waitForText("Mothership: Edit Domain", 20, "h1.page-title");
+        $I->seeInField("input#jform_name", "example.com");
+        $I->seeOptionIsSelected("select#jform_client_id", "Test Client");
+        $I->seeOptionIsSelected("select#jform_account_id", "Test Account");
+
+        $I->click("Save & Close", "#toolbar");
+        $I->wait(1);
+        $I->waitForText("Mothership: Domains", 20, "h1.page-title");
+        $I->seeInCurrentUrl(self::DOMAINS_VIEW_ALL_URL);
+        $I->seeNumberOfElements("#j-main-container table tbody tr", 1);
 
     }
 
