@@ -137,23 +137,24 @@ class MothershipFrontPaymentsCest
 
         // Confirm the table headers
         $I->see("#", "main table thead tr th:nth-child(1)");
-        $I->see("Account", "main table thead tr th:nth-child(2)");
-        $I->see("Amount", "main table thead tr th:nth-child(3)");
-        $I->see("Status", "main table thead tr th:nth-child(4)");
-        $I->see("Fee Amount", "main table thead tr th:nth-child(5)");        
-        $I->see("Payment Method", "main table thead tr th:nth-child(6)");
-        $I->see("Transaction Id", "main table thead tr th:nth-child(7)");
-        $I->see("Invoices", "main table thead tr th:nth-child(8)");
+        $I->see("Client", "main table thead tr th:nth-child(2)");
+        $I->see("Account", "main table thead tr th:nth-child(3)");
+        $I->see("Amount", "main table thead tr th:nth-child(4)");
+        $I->see("Status", "main table thead tr th:nth-child(5)");
+        $I->see("Fee Amount", "main table thead tr th:nth-child(6)");        
+        $I->see("Payment Method", "main table thead tr th:nth-child(7)");
+        $I->see("Transaction Id", "main table thead tr th:nth-child(8)");
+        $I->see("Invoices", "main table thead tr th:nth-child(9)");
 
         // Confirm the table data
-        $I->see("Test Account", "main table tbody tr:nth-child(1) td:nth-child(2)");
-        $I->see("100.00", "main table tbody tr:nth-child(1) td:nth-child(3)");
-        $I->see("Pending", "main table tbody tr:nth-child(1) td:nth-child(4)");
-        $I->see("6.00", "main table tbody tr:nth-child(1) td:nth-child(5)");        
-        $I->see("PayPal", "main table tbody tr:nth-child(1) td:nth-child(6)");
-        $I->see("123456", "main table tbody tr:nth-child(1) td:nth-child(7)");
-        $I->see("{$this->invoiceData['id']}", "main table tbody tr:nth-child(1) td:nth-child(8)");
-        $I->see("{$this->invoiceData['id']}", "main table tbody tr:nth-child(1) td:nth-child(8)");
+        $I->see("{$this->clientData['name']}", "main table tbody tr:nth-child(1) td:nth-child(2)");
+        $I->see("Test Account", "main table tbody tr:nth-child(1) td:nth-child(3)");
+        $I->see("100.00", "main table tbody tr:nth-child(1) td:nth-child(4)");
+        $I->see("Pending", "main table tbody tr:nth-child(1) td:nth-child(5)");
+        $I->see("6.00", "main table tbody tr:nth-child(1) td:nth-child(6)");
+        $I->see("PayPal", "main table tbody tr:nth-child(1) td:nth-child(7)");
+        $I->see("123456", "main table tbody tr:nth-child(1) td:nth-child(8)");
+        $I->see("{$this->invoiceData['id']}", "main table tbody tr:nth-child(1) td:nth-child(9)");
 
         $invoiceUrl = $I->grabAttributeFrom("main table tbody tr:nth-child(1) td:nth-child(8) a", "href");
         $I->seeLink("{$this->invoiceData['id']}", $invoiceUrl);
