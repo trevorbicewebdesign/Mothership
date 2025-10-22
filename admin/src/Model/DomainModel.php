@@ -149,8 +149,25 @@ class DomainModel extends AdminModel
     {
         $table = $this->getTable();
 
-        
         Log::add('Data received for saving: ' . json_encode($data), Log::DEBUG, 'com_mothership');
+
+        if( !empty($data['purchase_date'])) {
+            $data['purchase_date'] = Factory::getDate($data['purchase_date'] . ' 00:00:00')->toSql();
+        }
+        else {
+            $data['purchase_date'] = null;
+        }
+
+        if( !empty($data['expiration_date'])) {
+            $data['expiration_date'] = Factory::getDate($data['expiration_date']. ' 00:00:00')->toSql();
+        }
+        else {
+            $data['expiration_date'] = null;
+        }
+
+        if( !empty($data['created'])) {
+            $data['created'] = Factory::getDate($data['created'] . ' 00:00:00')->toSql();
+        }
 
         if (!$table->bind($data)) {
             $error = $table->getError();
@@ -163,7 +180,8 @@ class DomainModel extends AdminModel
         if (empty($table->created)) {
             $table->created = Factory::getDate()->toSql();
         }
-        // Validate the 'name' field
+
+        
         // Validate the 'name' field to ensure it matches a domain name format (e.g., example.com)
         if (!preg_match('/^(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/', $data['name'])) {
             // Store the submitted data in the session so the form is repopulated
