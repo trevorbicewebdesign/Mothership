@@ -8,20 +8,23 @@ class DomainsModel extends ListModel
 {
     public function getItems()
     {
-        $clientId = MothershipHelper::getUserClientId();
+        $clientIds = MothershipHelper::getUserClientIds();
 
-        if (!$clientId) {
+        if (!$clientIds) {
             return [];
         }
 
         $db = $this->getDatabase();
+
+        // Build a comma-separated list of integer client IDs for the query
+        $clientIdsList = implode(',', array_map('intval', (array) $clientIds));
 
         $query = $db->getQuery(true)
             ->select('d.*,d.reseller, c.name AS client_name, a.name AS account_name')
             ->from('#__mothership_domains AS d')
             ->join('LEFT', '#__mothership_clients AS c ON d.client_id = c.id')
             ->join('LEFT', '#__mothership_accounts AS a ON d.account_id = a.id')
-            ->where("d.client_id = '{$clientId}'")
+            ->where("d.client_id IN ($clientIdsList)")
             ->order('d.name ASC');
         $db->setQuery($query);
         $items = $db->loadObjectList();

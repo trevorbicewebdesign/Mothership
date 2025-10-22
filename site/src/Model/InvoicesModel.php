@@ -9,11 +9,9 @@ class InvoicesModel extends ListModel
 {
     public function getItems()
     {
-        $user = \Joomla\CMS\Factory::getUser();
-        $userId = $user->id;
-        $clientId = \TrevorBice\Component\Mothership\Site\Helper\MothershipHelper::getUserClientId($userId);
+        $clientIds = \TrevorBice\Component\Mothership\Site\Helper\MothershipHelper::getUserClientIds();
 
-        if (!$clientId) {
+        if (!$clientIds) {
             $app = \Joomla\CMS\Factory::getApplication();
             $app->enqueueMessage("You do not have an associated client.", 'danger');
             return [];
@@ -71,8 +69,7 @@ class InvoicesModel extends ListModel
             )
 
             ->where($db->quoteName('i.status') . ' != 1')
-            ->where($db->quoteName('i.client_id') . ' = :clientId')
-            ->bind(':clientId', $clientId, \Joomla\Database\ParameterType::INTEGER);
+            ->where($db->quoteName('i.client_id') . ' IN (' . implode(',', array_map('intval', $clientIds)) . ')');
 
         $db->setQuery($query);
 
