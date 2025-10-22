@@ -103,7 +103,7 @@ class DomainController extends FormController
         if (!$model->save($data)) {
             $app->enqueueMessage(Text::_('COM_MOTHERSHIP_DOMAIN_SAVE_FAILED'), 'error');
             $app->enqueueMessage($model->getError(), 'error');
-            // Clear the model state for id and name to avoid retaining invalid domain
+            $id = !empty($data['id']) ? (int) $data['id'] : (int) $model->getState($model->getName() . '.id');
             $this->setRedirect(Route::_("index.php?option=com_mothership&view=domain&layout=edit&id={$id}", false));
             return false;
         }
@@ -111,18 +111,35 @@ class DomainController extends FormController
         $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_DOMAIN_SAVED_SUCCESSFULLY', "<strong>{$data['name']}</strong>"), 'message');
 
         $task = $input->getCmd('task');
+        $id   = !empty($data['id']) ? (int) $data['id'] : (int) $model->getState($model->getName() . '.id');
 
-        if ($task === 'apply') {
-            $id = !empty($data['id']) ? $data['id'] : $model->getState($model->getName() . '.id');
-            $defaultRedirect = Route::_("index.php?option=com_mothership&view=domain&layout=edit&id={$id}", false);
-        } else {
-            $defaultRedirect = Route::_('index.php?option=com_mothership&view=domains', false);
+        // ✅ Check the item back in if we're leaving the edit screen
+        if ($task !== 'apply' && $id) {
+            // JModelAdmin provides checkin($pk) if the table has checked_out/checked_out_time
+            if (method_exists($model, 'checkin')) {
+                if (!$model->checkin($id)) {
+                    // Not fatal, but let us know
+                    $app->enqueueMessage(
+                        Text::sprintf('JLIB_APPLICATION_CHECKIN_FAILED', htmlspecialchars($model->getError(), ENT_QUOTES, 'UTF-8')),
+                        'warning'
+                    );
+                }
+            }
         }
 
-        $this->setRedirect($defaultRedirect);
+        // Clear any stale form data from session
+        $app->setUserState('com_mothership.edit.domain.data', null);
+        $app->setUserState('com_mothership.edit.domain.invalid', null);
+
+        // Redirect
+        if ($task === 'apply') {
+            $this->setRedirect(Route::_("index.php?option=com_mothership&view=domain&layout=edit&id={$id}", false));
+        } else {
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=domains', false));
+        }
+
         return true;
     }
-
     public function cancel($key = null)
     {
         $result = parent::cancel($key);
