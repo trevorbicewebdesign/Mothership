@@ -201,6 +201,7 @@ class MothershipAdminClientsCest
         $I->click("Details");
         // Confirm the value in jform_number is correct
         $I->seeInField("input#jform_name", "Another Client");
+        // TEST ACTION Close
         $I->click("Close", "#toolbar");
         $I->wait(1);
         $I->waitForText("Mothership: Clients", 30, "h1.page-title");
