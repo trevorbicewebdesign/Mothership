@@ -201,11 +201,12 @@ class MothershipAdminClientsCest
         $I->click("Details");
         // Confirm the value in jform_number is correct
         $I->seeInField("input#jform_name", "Another Client");
-        $I->click("Save", "#toolbar");
+        $I->click("Close", "#toolbar");
         $I->wait(1);
-        $I->waitForText("Mothership: Edit Client", 30, "h1.page-title");
-        $I->seeCurrentUrlEquals(sprintf(self::CLIENT_EDIT_URL, $client_id));
-        $I->waitForText("Client Another Client saved successfully.", 30, ".alert-message");
+        $I->waitForText("Mothership: Clients", 30, "h1.page-title");
+        $I->seeInCurrentUrl(self::CLIENTS_VIEW_ALL_URL);
+        $I->dontSeeElement("span.icon-checkedout");
+
     }
 
     /**
