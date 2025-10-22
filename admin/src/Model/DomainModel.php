@@ -145,34 +145,52 @@ class DomainModel extends AdminModel
         $table->name = htmlspecialchars_decode($table->name, ENT_QUOTES);
     }
 
+    private function normalizeDateToSql($value, string $defaultTime = '00:00:00'): ?string
+    {
+        if ($value === null || $value === '' ) {
+            return null;
+        }
+
+        // Already a DateTime-ish?
+        if ($value instanceof \DateTimeInterface) {
+            return \Joomla\CMS\Factory::getDate($value)->toSql(); // toSql() outputs UTC
+        }
+
+        $v = trim((string) $value);
+
+        // Accept ISO-8601 and replace 'T' with space for consistency
+        $v = str_replace('T', ' ', $v);
+
+        // If it's just YYYY-MM-DD, add a time
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $v)) {
+            $v .= ' ' . $defaultTime;
+        }
+        // If it's YYYY-MM-DD HH:MM, add seconds
+        elseif (preg_match('/^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}$/', $v)) {
+            $v .= ':00';
+        }
+        // If it's a pure Unix timestamp
+        elseif (ctype_digit($v)) {
+            return \Joomla\CMS\Factory::getDate('@' . $v)->toSql();
+        }
+
+        // Let Joomla parse anything else (including timezone offsets and 'Z')
+        return \Joomla\CMS\Factory::getDate($v)->toSql();
+    }
+
     public function save($data)
     {
         $table = $this->getTable();
 
+        // Normalize consistently no matter the source (form or scanDomain)
+        $data['purchase_date']   = $this->normalizeDateToSql($data['purchase_date'] ?? null);
+        $data['expiration_date'] = $this->normalizeDateToSql($data['expiration_date'] ?? null);
+        $data['created']         = $this->normalizeDateToSql($data['created'] ?? null);
+
         Log::add('Data received for saving: ' . json_encode($data), Log::DEBUG, 'com_mothership');
 
-        if( !empty($data['purchase_date'])) {
-            $data['purchase_date'] = Factory::getDate($data['purchase_date'] . ' 00:00:00')->toSql();
-        }
-        else {
-            $data['purchase_date'] = null;
-        }
-
-        if( !empty($data['expiration_date'])) {
-            $data['expiration_date'] = Factory::getDate($data['expiration_date']. ' 00:00:00')->toSql();
-        }
-        else {
-            $data['expiration_date'] = null;
-        }
-
-        if( !empty($data['created'])) {
-            $data['created'] = Factory::getDate($data['created'] . ' 00:00:00')->toSql();
-        }
-
         if (!$table->bind($data)) {
-            $error = $table->getError();
-            Log::add("Bind failed: {$error}", Log::ERROR, 'com_mothership');
-            $this->setError($error);
+            $this->setError($table->getError());
             return false;
         }
 
@@ -181,7 +199,6 @@ class DomainModel extends AdminModel
             $table->created = Factory::getDate()->toSql();
         }
 
-        
         // Validate the 'name' field to ensure it matches a domain name format (e.g., example.com)
         if (!preg_match('/^(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/', $data['name'])) {
             // Store the submitted data in the session so the form is repopulated
