@@ -152,7 +152,7 @@ class MothershipAdminAccountsCest
 
         $I->selectOption("select#jform_client_id", "Test Client");
         $I->fillField("input#jform_name", "Test Account");
-
+        // TEST ACTION SAVE
         $I->click("Save", "#toolbar");
         $I->wait(1);
         $I->waitForText("Mothership: Edit Account", 30, "h1.page-title");
@@ -175,9 +175,10 @@ class MothershipAdminAccountsCest
 
         $account_id = $I->grabTextFrom("#j-main-container table tbody tr:nth-child(1) td:nth-child(2)");
 
+        // TEST ACTION CANCEL
         $I->amOnPage(sprintf(self::ACCOUNT_EDIT_URL, $account_id));
         $I->waitForText("Mothership: Edit Account", 30, "h1.page-title");
-         $I->click("Close", "#toolbar");
+        $I->click("Close", "#toolbar");
         $I->wait(1);
         $I->waitForText("Mothership: Accounts", 30, "h1.page-title");
         $I->seeInCurrentUrl(self::ACCOUNTS_VIEW_ALL_URL);
