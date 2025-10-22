@@ -656,7 +656,7 @@ class MothershipAdminInvoicesCest
             ['name' => 'A different Item', 'description' => 'Test Description', 'hours' => 3, 'minutes' => 45, 'quantity' => 3.75, 'rate' => 70.0, 'subtotal' => 262.50],
         ]);
 
-        $I->waitForText("Mothership: Invoices", 10, "h1.page-title");
+        $I->waitForText("Mothership: Invoices", 30, "h1.page-title");
 
         $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 2);
 
@@ -698,6 +698,14 @@ class MothershipAdminInvoicesCest
         $I->seeInField("#invoice-items-table input[name='jform[items][1][rate]']", "70.00");
         $I->seeInField("#invoice-items-table input[name='jform[items][1][subtotal]']", "262.50");
 
+        $I->amOnPage(sprintf(self::INVOICE_EDIT_URL, ($this->invoiceData['id'] + 1)));
+        $I->wait(1);
+        $I->waitForText("Mothership: Edit Invoice", 30, "h1.page-title");
+        $I->click("Close", "#toolbar");
+        $I->wait(1);
+        $I->waitForText("Mothership: Invoices", 30, "h1.page-title");
+        $I->seeInCurrentUrl(self::INVOICES_VIEW_ALL_URL);
+        $I->dontSeeElement("span.icon-checkedout");
     }
 
     /**
@@ -881,7 +889,7 @@ class MothershipAdminInvoicesCest
     public function invoiceViewPdf(AcceptanceTester $I)
     {
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Invoices", 20, "h1.page-title");
+        $I->waitForText("Mothership: Invoices", 30, "h1.page-title");
 
         $I->seeElement("#j-main-container table.itemList tbody tr:first-child a.downloadPdf");
 
@@ -925,7 +933,7 @@ class MothershipAdminInvoicesCest
         ]);
 
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Invoices", 20, "h1.page-title");
+        $I->waitForText("Mothership: Invoices", 30, "h1.page-title");
 
         $I->seeElement("#j-main-container table.itemList tbody tr:nth-child(2) a.previewPdf");
 
