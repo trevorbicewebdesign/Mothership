@@ -219,6 +219,8 @@ class MothershipAdminClientsCest
     {
         $I->amOnPage(sprintf(self::CLIENT_EDIT_URL, "9999"));
         $I->wait(1);
+        $I->waitForText('Mothership: Clients', 30, 'h1.page-title');
+        $I->seeInCurrentUrl(self::CLIENTS_VIEW_ALL_URL);
         $I->waitForText("Client not found. Please select a valid client.", 30, "#system-message-container .alert-message");
     }
 
