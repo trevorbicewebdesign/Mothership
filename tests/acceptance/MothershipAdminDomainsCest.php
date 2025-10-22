@@ -223,7 +223,7 @@ class MothershipAdminDomainsCest
         $I->waitForText("Mothership: Domains", 20, "h1.page-title");
         $I->seeInCurrentUrl(self::DOMAINS_VIEW_ALL_URL);
         $I->seeNumberOfElements("#j-main-container table tbody tr", 1);
-
+        $I->dontSeeElement("span.icon-checkedout");
     }
 
     /**
