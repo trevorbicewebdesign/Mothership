@@ -9,7 +9,7 @@ class InvoicesModel extends ListModel
 {
     public function getItems()
     {
-        $clientIds = \TrevorBice\Component\Mothership\Site\Helper\MothershipHelper::getUserClientIds();
+        $clientIds = MothershipHelper::getUserClientIds();
 
         if (!$clientIds) {
             $app = \Joomla\CMS\Factory::getApplication();
@@ -23,6 +23,7 @@ class InvoicesModel extends ListModel
         $query->select([
             'i.*',
             'a.name AS account_name',
+            'c.name AS client_name',
 
             // Lifecycle status
             'CASE ' . $db->quoteName('i.status') .
@@ -54,6 +55,7 @@ class InvoicesModel extends ListModel
 
         $query->from($db->quoteName('#__mothership_invoices', 'i'))
             ->join('LEFT', '#__mothership_accounts AS a ON i.account_id = a.id')
+            ->join('LEFT', '#__mothership_clients AS c ON i.client_id = c.id')
 
             // Join payment aggregation
             ->join(
