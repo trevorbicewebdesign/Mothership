@@ -154,11 +154,11 @@ class MothershipFrontInvoicesCest
         $I->waitForText("Invoices", 10, "h1");
 
         // When the invoice status is 'paid' or 4 the 'Pay' link should not be displayed and the Due Date should not be displayed
-        $I->see("Closed", "table#invoicesTable tbody tr td:nth-child(5)");
-        $I->see("Paid", "table#invoicesTable tbody tr td:nth-child(6)");
-        $I->dontSee("Due in 30 days", "table#invoicesTable tbody tr td:nth-child(7)");
-        $I->see("View", "table#invoicesTable tbody tr td:nth-child(8) ul li");
-        $I->dontSee("Pay", "table#invoicesTable tbody tr td:nth-child(8) ul li");
+        $I->see("Closed", "table#invoicesTable tbody tr td:nth-child(6)");
+        $I->see("Paid", "table#invoicesTable tbody tr td:nth-child(7)");
+        $I->dontSee("Due in 30 days", "table#invoicesTable tbody tr td:nth-child(8)");
+        $I->see("View", "table#invoicesTable tbody tr td:nth-child(9) ul li");
+        $I->dontSee("Pay", "table#invoicesTable tbody tr td:nth-child(9) ul li");
     }
 
     /**
