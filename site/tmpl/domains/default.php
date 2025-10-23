@@ -34,7 +34,7 @@ use Joomla\CMS\Language\Text;
         <?php foreach ($this->domains as $domains) : ?>
             <tr>
                 <td><?php echo $domains->id; ?></td>
-                <td><?php echo $domains->name; ?></td>
+                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=domain&id=' . $domains->id); ?>"><?php echo $domains->name; ?></a></td>
                 <td><?php echo $domains->client_name; ?></td>
                 <td><?php echo $domains->account_name; ?></td>
                 <td><?php echo $domains->registrar; ?></td>
