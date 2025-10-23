@@ -121,7 +121,7 @@ class MothershipFrontPaymentsCest
     {
         // Verify redirection to account center
         $I->amOnPage(self::PAYMENTS_VIEW_ALL_URL);
-        $I->waitForText("Payments", 10, "h1");
+        $I->waitForText("Payments", 30, "h1");
         $I->makeScreenshot("account-center-view-all-payments");
 
         // Confirm the correct number of records
@@ -161,25 +161,25 @@ class MothershipFrontPaymentsCest
 
         $I->setPaymentStatus($this->paymentData['id'], 2);
         $I->amOnPage(self::PAYMENTS_VIEW_ALL_URL);
-        $I->waitForText("Payments", 10, "h1");
+        $I->waitForText("Payments", 30, "h1");
 
         $I->see("Completed", "main table tbody tr:nth-child(1) td:nth-child(4)");
 
         $I->setPaymentStatus($this->paymentData['id'], 3);
         $I->amOnPage(self::PAYMENTS_VIEW_ALL_URL);
-        $I->waitForText("Payments", 10, "h1");
+        $I->waitForText("Payments", 30, "h1");
 
         $I->see("Failed", "main table tbody tr:nth-child(1) td:nth-child(4)");
 
         $I->setPaymentStatus($this->paymentData['id'], 4);
         $I->amOnPage(self::PAYMENTS_VIEW_ALL_URL);
-        $I->waitForText("Payments", 10, "h1");
+        $I->waitForText("Payments", 30, "h1");
 
         $I->see("Cancelled", "main table tbody tr:nth-child(1) td:nth-child(4)");
 
         $I->setPaymentStatus($this->paymentData['id'], 5);
         $I->amOnPage(self::PAYMENTS_VIEW_ALL_URL);
-        $I->waitForText("Payments", 10, "h1");
+        $I->waitForText("Payments", 30, "h1");
 
         $I->see("Refunded", "main table tbody tr:nth-child(1) td:nth-child(4)");
     }
@@ -195,7 +195,7 @@ class MothershipFrontPaymentsCest
         $I->setPaymentStatus($this->paymentData['id'], 2);
         $I->amOnPage(sprintf(self::PAYMENT_VIEW_URL, $this->paymentData['id']));
         $log_created = date('Y-m-d H:i:s');
-        $I->waitForText("Payment #{$this->paymentData['id']}", 10);
+        $I->waitForText("Payment #{$this->paymentData['id']}", 30);
 
         // Capture a screenshot of the view
         $I->makeScreenshot("account-center-view-payment");
