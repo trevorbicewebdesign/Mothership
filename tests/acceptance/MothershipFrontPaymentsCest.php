@@ -156,7 +156,7 @@ class MothershipFrontPaymentsCest
         $I->see("123456", "main table tbody tr:nth-child(1) td:nth-child(8)");
         $I->see("{$this->invoiceData['id']}", "main table tbody tr:nth-child(1) td:nth-child(9)");
 
-        $invoiceUrl = $I->grabAttributeFrom("main table tbody tr:nth-child(1) td:nth-child(8) a", "href");
+        $invoiceUrl = $I->grabAttributeFrom("main table tbody tr:nth-child(1) td:nth-child(9) a", "href");
         $I->seeLink("{$this->invoiceData['id']}", $invoiceUrl);
 
         $I->setPaymentStatus($this->paymentData['id'], 2);
