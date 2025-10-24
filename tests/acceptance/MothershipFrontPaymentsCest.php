@@ -163,25 +163,25 @@ class MothershipFrontPaymentsCest
         $I->amOnPage(self::PAYMENTS_VIEW_ALL_URL);
         $I->waitForText("Payments", 30, "h1");
 
-        $I->see("Completed", "main table tbody tr:nth-child(1) td:nth-child(4)");
+        $I->see("Completed", "main table tbody tr:nth-child(1) td:nth-child(5)");
 
         $I->setPaymentStatus($this->paymentData['id'], 3);
         $I->amOnPage(self::PAYMENTS_VIEW_ALL_URL);
         $I->waitForText("Payments", 30, "h1");
 
-        $I->see("Failed", "main table tbody tr:nth-child(1) td:nth-child(4)");
+        $I->see("Failed", "main table tbody tr:nth-child(1) td:nth-child(5)");
 
         $I->setPaymentStatus($this->paymentData['id'], 4);
         $I->amOnPage(self::PAYMENTS_VIEW_ALL_URL);
         $I->waitForText("Payments", 30, "h1");
 
-        $I->see("Cancelled", "main table tbody tr:nth-child(1) td:nth-child(4)");
+        $I->see("Cancelled", "main table tbody tr:nth-child(1) td:nth-child(5)");
 
         $I->setPaymentStatus($this->paymentData['id'], 5);
         $I->amOnPage(self::PAYMENTS_VIEW_ALL_URL);
         $I->waitForText("Payments", 30, "h1");
 
-        $I->see("Refunded", "main table tbody tr:nth-child(1) td:nth-child(4)");
+        $I->see("Refunded", "main table tbody tr:nth-child(1) td:nth-child(5)");
     }
 
     /**
