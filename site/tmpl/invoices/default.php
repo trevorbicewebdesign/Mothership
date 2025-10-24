@@ -16,6 +16,7 @@ use Joomla\CMS\Language\Text;
         <tr>
             <th>PDF</th>
             <th>#</th>
+            <th>Client</th>
             <th>Account</th>
             <th>Amount</th>
             <th>Status</th>
@@ -27,13 +28,14 @@ use Joomla\CMS\Language\Text;
     <tbody>
         <?php if(empty($this->invoices)) : ?>
             <tr>
-                <td colspan="8">No invoices found.</td>
+                <td colspan="9">No invoices found.</td>
             </tr>
         <?php endif; ?>
         <?php foreach ($this->invoices as $invoice) : ?>
             <tr>
                 <td><a href="<?php echo Route::_('index.php?option=com_mothership&task=invoice.downloadPdf&id=' . $invoice->id); ?>" target="_blank">PDF</a></td>
                 <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=invoice&id=' . $invoice->id); ?>"><?php echo $invoice->number; ?></a></td>
+                <td><?php echo $invoice->client_name; ?></td>
                 <td><?php echo $invoice->account_name; ?></td>
                 <td>$<?php echo number_format($invoice->total, 2); ?></td>
                 <td><?php echo $invoice->status; ?></td>

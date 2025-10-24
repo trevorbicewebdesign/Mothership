@@ -16,6 +16,7 @@ use Joomla\CMS\Language\Text;
         <tr>
             <th>#</th>
             <th>Name</th>
+            <th>Client</th>
             <th>Account</th>
             <th>Type</th>
             <th>Status</th>
@@ -25,13 +26,14 @@ use Joomla\CMS\Language\Text;
     <tbody>
         <?php if(empty($this->projects)) : ?>
             <tr>
-                <td colspan="6">No projects found.</td>
+                <td colspan="7">No projects found.</td>
             </tr>
         <?php endif; ?>
         <?php foreach ($this->projects as $projects) : ?>
             <tr>
                 <td><?php echo $projects->id; ?></td>
                 <td><a href="<?php echo Route::_("index.php?option=com_mothership&view=project&id={$projects->id}"); ?>"><?php echo $projects->name; ?></a></td>
+                <td><a href="<?php echo Route::_("index.php?option=com_mothership&view=client&id={$projects->client_id}"); ?>"><?php echo $projects->client_name; ?></a></td>
                 <td><a href="<?php echo Route::_("index.php?option=com_mothership&view=account&id={$projects->account_id}"); ?>"><?php echo $projects->account_name; ?></a></td>
                 <td><?php echo $projects->type; ?></td>
                 <td><?php echo $projects->status; ?></td>

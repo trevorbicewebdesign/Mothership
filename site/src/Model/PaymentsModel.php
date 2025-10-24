@@ -8,9 +8,9 @@ class PaymentsModel extends ListModel
 {
     public function getItems()
     {
-        $clientId = MothershipHelper::getUserClientId();
+        $clientIds = MothershipHelper::getUserClientIds();
 
-        if (!$clientId) {
+        if (!$clientIds) {
             return 0.0;
         }
 
@@ -31,7 +31,7 @@ class PaymentsModel extends ListModel
             ->join('LEFT', '#__mothership_accounts AS a ON p.account_id = a.id')
             ->join('LEFT', '#__mothership_clients AS c ON p.client_id = c.id')
             ->join('LEFT', '#__mothership_invoice_payment AS ip ON p.id = ip.payment_id')
-            ->where("p.client_id = '{$clientId}'")
+            ->where("p.client_id IN (" . implode(',', array_map('intval', $clientIds)) . ")")
             ->group('p.id');
         $db->setQuery($query);
 

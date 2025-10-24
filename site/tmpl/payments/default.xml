@@ -19,11 +19,6 @@
 
 	<!-- Optional menu item parameters -->
 	<fields name="params">
-		<fieldset name="basic" label="COM_MOTHERSHIP_MENU_PAYMENTS_OPTIONS">
-			<field name="show_welcome" type="list" label="COM_MOTHERSHIP_SHOW_WELCOME_LABEL" description="COM_MOTHERSHIP_SHOW_WELCOME_DESC" default="1">
-				<option value="1">JYES</option>
-				<option value="0">JNO</option>
-			</field>
-		</fieldset>
+		
 	</fields>
 </metadata>

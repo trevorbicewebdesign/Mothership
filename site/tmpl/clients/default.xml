@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata>
-	<layout title="COM_MOTHERSHIP_MENU_ACCOUNTS_TITLE" option="COM_MOTHERSHIP_MENU_ACCOUNTS_OPTION">
+	<layout title="COM_MOTHERSHIP_MENU_CLIENTS_TITLE" option="COM_MOTHERSHIP_MENU_CLIENTS_OPTION">
 		<help key="Menu_Item:_Mothership_Dashboard" />
 		<message>
-			<![CDATA[COM_MOTHERSHIP_MENU_ACCOUNTS_DESC]]>
+			<![CDATA[COM_MOTHERSHIP_MENU_CLIENTS_DESC]]>
 		</message>
 	</layout>
 

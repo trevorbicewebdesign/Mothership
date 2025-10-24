@@ -717,6 +717,8 @@ class MothershipAdminInvoicesCest
     {
         $I->amOnPage(sprintf(self::INVOICE_EDIT_URL, "9999"));
         $I->wait(1);
+        $I->waitForText('Mothership: Invoices', 30, 'h1.page-title');
+        $I->seeInCurrentUrl(self::INVOICES_VIEW_ALL_URL);
         $I->waitForText("Invoice not found. Please select a valid invoice.", 30, "#system-message-container .alert-message");
     }
 

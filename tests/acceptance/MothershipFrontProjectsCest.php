@@ -135,19 +135,21 @@ class MothershipFrontProjectsCest
         // Confirm the table headers
         $I->see("#", "main table#projectsTable thead tr th:nth-child(1)");
         $I->see("Name", "main table#projectsTable thead tr th:nth-child(2)");
-        $I->see("Account", "main table#projectsTable thead tr th:nth-child(3)");
-        $I->see("Type", "main table#projectsTable thead tr th:nth-child(4)");
-        $I->see("Status", "main table#projectsTable thead tr th:nth-child(5)");
-        $I->see("Created", "main table#projectsTable thead tr th:nth-child(6)");
+        $I->see("Client", "main table#projectsTable thead tr th:nth-child(3)");
+        $I->see("Account", "main table#projectsTable thead tr th:nth-child(4)");
+        $I->see("Type", "main table#projectsTable thead tr th:nth-child(5)");
+        $I->see("Status", "main table#projectsTable thead tr th:nth-child(6)");
+        $I->see("Created", "main table#projectsTable thead tr th:nth-child(7)");
 
         // Confirm the table data
         $row = 1;
         $I->see("{$projectData['id']}", "main table#projectsTable tbody tr:nth-child({$row}) td:nth-child(1)");
         $I->see("{$projectData['name']}", "main table#projectsTable tbody tr:nth-child({$row}) td:nth-child(2)");
-        $I->see("{$this->accountData['name']}", "main table#projectsTable tbody tr:nth-child({$row}) td:nth-child(3)");
-        $I->see("{$projectData['type']}", "main table#projectsTable tbody tr:nth-child({$row}) td:nth-child(4)");
-        $I->see("active", "main table#projectsTable tbody tr:nth-child({$row}) td:nth-child(5)");
-        $I->see("{$projectData['created']}", "main table#projectsTable tbody tr:nth-child({$row}) td:nth-child(6)");
+        $I->see("{$this->clientData['name']}", "main table#projectsTable tbody tr:nth-child({$row}) td:nth-child(3)");
+        $I->see("{$this->accountData['name']}", "main table#projectsTable tbody tr:nth-child({$row}) td:nth-child(4)");
+        $I->see("{$projectData['type']}", "main table#projectsTable tbody tr:nth-child({$row}) td:nth-child(5)");
+        $I->see("active", "main table#projectsTable tbody tr:nth-child({$row}) td:nth-child(6)");
+        $I->see("{$projectData['created']}", "main table#projectsTable tbody tr:nth-child({$row}) td:nth-child(7)");
 
     }
 

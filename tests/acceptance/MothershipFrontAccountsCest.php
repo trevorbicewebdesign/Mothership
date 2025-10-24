@@ -110,11 +110,13 @@ class MothershipFrontAccountsCest
 
         // Confirm the table headers
         $I->see("#", "table#accountsTable thead tr th:nth-child(1)");
-        $I->see("Account", "table#accountsTable thead tr th:nth-child(2)");
+        $I->see("Client", "table#accountsTable thead tr th:nth-child(2)");
+        $I->see("Account", "table#accountsTable thead tr th:nth-child(3)");
 
         // Confirm the table data
         $I->see("{$this->accountData['id']}", "table#accountsTable tbody tr td:nth-child(1)");
-        $I->see($this->accountData['name'], "table#accountsTable tbody tr td:nth-child(2)");
+        $I->see($this->clientData['name'], "table#accountsTable tbody tr td:nth-child(2)");
+        $I->see($this->accountData['name'], "table#accountsTable tbody tr td:nth-child(3)");
     }
 
     /**

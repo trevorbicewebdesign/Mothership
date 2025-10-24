@@ -109,8 +109,8 @@ class MothershipFrontPayByCheckCest
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
         $I->waitForText("Invoices", 10, "h1");
 
-        $I->see("Pay", "table#invoicesTable tbody tr td:nth-child(8)");
-        $I->click("Pay", "table#invoicesTable tbody tr td:nth-child(8)");
+        $I->see("Pay", "table#invoicesTable tbody tr td:nth-child(9)");
+        $I->click("Pay", "table#invoicesTable tbody tr td:nth-child(9)");
         $I->wait(1);
         $I->waitForText("Pay Invoice", 10, "h1");
         $I->waitForText("Pay Invoice #{$this->invoiceData['number']}", 10, "h1");

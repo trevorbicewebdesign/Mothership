@@ -121,22 +121,24 @@ class MothershipFrontDomainsCest
         // Confirm the table headers
         $I->see("#", "table#domainsTable thead tr th:nth-child(1)");
         $I->see("Domain", "table#domainsTable thead tr th:nth-child(2)");
-        $I->see("Account", "table#domainsTable thead tr th:nth-child(3)");
-        $I->see("Registrar", "table#domainsTable thead tr th:nth-child(4)");
-        $I->see("Reseller", "table#domainsTable thead tr th:nth-child(5)");
-        $I->see("DNS", "table#domainsTable thead tr th:nth-child(6)");
-        $I->see("Created", "table#domainsTable thead tr th:nth-child(7)");
-        $I->see("Status", "table#domainsTable thead tr th:nth-child(8)");
+        $I->see("Client", "table#domainsTable thead tr th:nth-child(3)");
+        $I->see("Account", "table#domainsTable thead tr th:nth-child(4)");
+        $I->see("Registrar", "table#domainsTable thead tr th:nth-child(5)");
+        $I->see("Reseller", "table#domainsTable thead tr th:nth-child(6)");
+        $I->see("DNS", "table#domainsTable thead tr th:nth-child(7)");
+        $I->see("Created", "table#domainsTable thead tr th:nth-child(8)");
+        $I->see("Status", "table#domainsTable thead tr th:nth-child(9)");
 
         // Confirm the table data
         $I->see("{$domainData['id']}", "table#domainsTable tbody tr td:nth-child(1)");
         $I->see($domainData['name'], "table#domainsTable tbody tr td:nth-child(2)");
-        $I->see($this->accountData['name'], "table#domainsTable tbody tr td:nth-child(3)");
-        $I->see($domainData['registrar'], "table#domainsTable tbody tr td:nth-child(4)");
-        $I->see($domainData['reseller'], "table#domainsTable tbody tr td:nth-child(5)");
-        $I->see($domainData['dns_provider'], "table#domainsTable tbody tr td:nth-child(6)");
-        $I->see(date('Y-m-d', strtotime($domainData['created'])), "table#domainsTable tbody tr td:nth-child(7)");
-        
+        $I->see($this->clientData['name'], "table#domainsTable tbody tr td:nth-child(3)");
+        $I->see($this->accountData['name'], "table#domainsTable tbody tr td:nth-child(4)");
+        $I->see($domainData['registrar'], "table#domainsTable tbody tr td:nth-child(5)");
+        $I->see($domainData['reseller'], "table#domainsTable tbody tr td:nth-child(6)");
+        $I->see($domainData['dns_provider'], "table#domainsTable tbody tr td:nth-child(7)");
+        $I->see(date('Y-m-d', strtotime($domainData['created'])), "table#domainsTable tbody tr td:nth-child(8)");
+        $I->see($domainData['status'], "table#domainsTable tbody tr td:nth-child(9)");
 
     }
 
