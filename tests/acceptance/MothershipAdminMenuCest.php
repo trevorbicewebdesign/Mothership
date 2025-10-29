@@ -45,4 +45,32 @@ class MothershipAdminMenuCest
         $I->switchToIFrame();
     }
 
+    public function MothershipMenuAddAccountsPage(AcceptanceTester $I)
+    {
+        $I->amOnPage("/administrator/index.php?option=com_menus&view=items&menutype=mainmenu");
+        $I->wait(1);
+        $I->waitForText("Menus: Items (Main Menu)", 30);
+        $I->click("New", "#toolbar-new");
+        $I->wait(1);
+        $I->waitForText("Menus: New Item", 30);
+        $I->click("button[data-button-action=select]");
+        $I->wait(1);
+        $I->switchToIFrame(".iframe-content");
+        $I->click("Mothership");
+        $I->wait(1);
+        $I->click("Accounts");
+        $I->switchToIFrame();
+        $I->wait(3);
+        
+        $I->seeInField("input#jform_type", "Accounts");
+        $I->seeInField("input#jform_link", "index.php?option=com_mothership&view=accounts");
+
+        $I->fillField("input#jform_title", "Accounts");
+        $I->click("Save & Close", "#save-group-children-save");
+        
+        $I->wait(3);
+
+        $I->see("Accounts", "table#menuitemList tbody tr td:nth-child(3)");    
+    }
+
 }
