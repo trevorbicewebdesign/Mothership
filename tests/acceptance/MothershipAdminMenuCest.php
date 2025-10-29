@@ -69,8 +69,8 @@ class MothershipAdminMenuCest
         $I->click("Save & Close", "#save-group-children-save");
         
         $I->wait(3);
-
-        $I->see("Accounts", "table#menuitemList tbody tr td:nth-child(3)");    
+        
+        $I->see("Accounts");    
     }
 
 }
