@@ -23,7 +23,7 @@ class HtmlView extends BaseHtmlView
             throw new \Exception('Client not found', 404);
         }
 
-        LogHelper::logClientViewed($this->item->id);
+        // LogHelper::logClientViewed($this->item->id);
 
         parent::display($tpl);
     }
