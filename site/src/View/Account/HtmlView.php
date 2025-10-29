@@ -22,7 +22,7 @@ class HtmlView extends BaseHtmlView
         $this->item = $this->getModel()->getItem();
 
         if (!$this->item) {
-            throw new \Exception('Payment not found', 404);
+            throw new \Exception('Account not found', 404);
         }
 
         LogHelper::logAccountViewed($this->item->client_id, $this->item->id);
