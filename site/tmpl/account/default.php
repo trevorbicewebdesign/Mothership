@@ -2,7 +2,6 @@
 \defined('_JEXEC') or die;
 
 use Joomla\CMS\Router\Route;
-use TrevorBice\Component\Mothership\Site\Helper\InvoiceHelper;
 
 $account = $this->item;
 ?>
