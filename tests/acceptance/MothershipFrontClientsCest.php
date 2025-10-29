@@ -131,8 +131,13 @@ class MothershipFrontClientsCest
 
         $I->makeScreenshot("account-center-view-client");
 
-        $I->see("Name", "table#clientsTable thead tr th:nth-child(1)");
-        $I->see("{$this->clientData['name']}", "table#clientsTable tbody tr td:nth-child(1)");
+        $I->see("Email: {$this->clientData['email']}");
+        $I->see("Phone: {$this->clientData['phone']}");
+        $I->see("Address: {$this->clientData['address_1']}");
+        $I->see("Address: {$this->clientData['address_2']}");
+        $I->see("Location: {$this->clientData['city']}, {$this->clientData['state']} {$this->clientData['zip']}");
+        $I->see("Default Rate: {$this->clientData['default_rate']}");
+        $I->see("Created: {$this->clientData['created']}");
     }
 
 }
