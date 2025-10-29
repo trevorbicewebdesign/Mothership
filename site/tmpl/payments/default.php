@@ -34,6 +34,7 @@ use Joomla\CMS\Language\Text;
     <thead>
         <tr>
             <th>#</th>
+            <th>Client</th>
             <th>Account</th>
             <th>Amount</th>
             <th>Status</th>
@@ -46,12 +47,13 @@ use Joomla\CMS\Language\Text;
     <tbody>
         <?php if(empty($this->payments)) : ?>
             <tr>
-                <td colspan="7">No payments found.</td>
+                <td colspan="9">No payments found.</td>
             </tr>
         <?php else : ?>
             <?php foreach ($this->payments as $payment) : ?>
                 <tr>
                     <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=payment&id=' . $payment->id); ?>"><?php echo $payment->id; ?></a></td>
+                    <td><?php echo $payment->client_name; ?></td>
                     <td><?php echo $payment->account_name; ?></td>
                     <td>$<?php echo number_format($payment->amount, 2); ?></td>
                     <td>

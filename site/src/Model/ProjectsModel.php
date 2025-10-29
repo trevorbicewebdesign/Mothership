@@ -9,9 +9,9 @@ class ProjectsModel extends ListModel
     public function getItems()
     {
         
-        $clientId = MothershipHelper::getUserClientId();
+        $clientIds = MothershipHelper::getUserClientIds();
 
-        if (!$clientId) {
+        if (!$clientIds) {
             return [];
         }
 
@@ -22,7 +22,7 @@ class ProjectsModel extends ListModel
             ->from('#__mothership_projects AS p')
             ->join('LEFT', '#__mothership_clients AS c ON p.client_id = c.id')
             ->join('LEFT', '#__mothership_accounts AS a ON p.account_id = a.id')
-            ->where("p.client_id = '{$clientId}'")
+            ->where("p.client_id IN (" . implode(',', array_map('intval', $clientIds)) . ")")
             ->order('p.name ASC');
         $db->setQuery($query);
         $items = $db->loadObjectList();

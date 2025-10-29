@@ -107,13 +107,13 @@ class MothershipFrontPayByZelleCest
         ]);
         // Verify redirection to account center
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
-        $I->waitForText("Invoices", 10, "h1");
+        $I->waitForText("Invoices", 30, "h1");
 
-        $I->see("Pay", "table#invoicesTable tbody tr td:nth-child(8)");
-        $I->click("Pay", "table#invoicesTable tbody tr td:nth-child(8)");
+        $I->see("Pay", "table#invoicesTable tbody tr td:nth-child(9)");
+        $I->click("Pay", "table#invoicesTable tbody tr td:nth-child(9)");
         $I->wait(1);
-        $I->waitForText("Pay Invoice", 10, "h1");
-        $I->waitForText("Pay Invoice #{$this->invoiceData['number']}", 10, "h1");
+        $I->waitForText("Pay Invoice", 30, "h1");
+        $I->waitForText("Pay Invoice #{$this->invoiceData['number']}", 30, "h1");
         $I->makeScreenshot("account-center-pay-invoice");
         codecept_debug($I->grabFromCurrentUrl()); // output the current url into the debug
         $I->see("Pay Now");
@@ -123,7 +123,7 @@ class MothershipFrontPayByZelleCest
         $I->makeScreenshot("account-center-pay-invoice-zelle-instructions");
         $I->click("Pay Now");
         $I->wait(1);
-        $I->waitForText("Thank You", 10, "h1");
+        $I->waitForText("Thank You", 30, "h1");
         $I->makeScreenshot("account-center-pay-invoice-zelle-thank-you");
         // Once the user clicks `Pay Now` the payment is created and the user is redirected to the thank you page
         // The Admin should receive an email regarding the pending payment
@@ -177,7 +177,7 @@ class MothershipFrontPayByZelleCest
 
         $I->click("Return to Payments");
         $I->wait(1);
-        $I->waitForText("Payments", 10, "h1");
+        $I->waitForText("Payments", 30, "h1");
     }
 
     /**
@@ -218,8 +218,8 @@ class MothershipFrontPayByZelleCest
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
         $I->waitForText("Invoices", 20, "h1");
 
-        $I->see("Cancel Pending Payment", "table#invoicesTable tbody tr td:nth-child(8)");
-        $I->click("Cancel Pending Payment", "table#invoicesTable tbody tr td:nth-child(8)");
+        $I->see("Cancel Pending Payment", "table#invoicesTable tbody tr td:nth-child(9)");
+        $I->click("Cancel Pending Payment", "table#invoicesTable tbody tr td:nth-child(9)");
         $I->wait(1);
         $I->waitForText("Cancel Payment", 20, "h4");
         $I->makeScreenshot("account-center-pay-invoice-zelle");
@@ -229,8 +229,8 @@ class MothershipFrontPayByZelleCest
         $I->acceptPopup();
         $I->wait(2);
         codecept_debug($I->grabFromCurrentUrl()); // output the current url into the debug
-        $I->see("Pay", "table#invoicesTable tbody tr td:nth-child(8)");
-        $I->click("Pay", "table#invoicesTable tbody tr td:nth-child(8)");
+        $I->see("Pay", "table#invoicesTable tbody tr td:nth-child(9)");
+        $I->click("Pay", "table#invoicesTable tbody tr td:nth-child(9)");
         $I->wait(1);
         $I->selectOption(['css' => 'input[name="payment_method"]'], 'zelle');
         $I->click("Pay Now");

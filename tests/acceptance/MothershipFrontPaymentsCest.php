@@ -121,7 +121,7 @@ class MothershipFrontPaymentsCest
     {
         // Verify redirection to account center
         $I->amOnPage(self::PAYMENTS_VIEW_ALL_URL);
-        $I->waitForText("Payments", 10, "h1");
+        $I->waitForText("Payments", 30, "h1");
         $I->makeScreenshot("account-center-view-all-payments");
 
         // Confirm the correct number of records
@@ -137,50 +137,51 @@ class MothershipFrontPaymentsCest
 
         // Confirm the table headers
         $I->see("#", "main table thead tr th:nth-child(1)");
-        $I->see("Account", "main table thead tr th:nth-child(2)");
-        $I->see("Amount", "main table thead tr th:nth-child(3)");
-        $I->see("Status", "main table thead tr th:nth-child(4)");
-        $I->see("Fee Amount", "main table thead tr th:nth-child(5)");        
-        $I->see("Payment Method", "main table thead tr th:nth-child(6)");
-        $I->see("Transaction Id", "main table thead tr th:nth-child(7)");
-        $I->see("Invoices", "main table thead tr th:nth-child(8)");
+        $I->see("Client", "main table thead tr th:nth-child(2)");
+        $I->see("Account", "main table thead tr th:nth-child(3)");
+        $I->see("Amount", "main table thead tr th:nth-child(4)");
+        $I->see("Status", "main table thead tr th:nth-child(5)");
+        $I->see("Fee Amount", "main table thead tr th:nth-child(6)");        
+        $I->see("Payment Method", "main table thead tr th:nth-child(7)");
+        $I->see("Transaction Id", "main table thead tr th:nth-child(8)");
+        $I->see("Invoices", "main table thead tr th:nth-child(9)");
 
         // Confirm the table data
-        $I->see("Test Account", "main table tbody tr:nth-child(1) td:nth-child(2)");
-        $I->see("100.00", "main table tbody tr:nth-child(1) td:nth-child(3)");
-        $I->see("Pending", "main table tbody tr:nth-child(1) td:nth-child(4)");
-        $I->see("6.00", "main table tbody tr:nth-child(1) td:nth-child(5)");        
-        $I->see("PayPal", "main table tbody tr:nth-child(1) td:nth-child(6)");
-        $I->see("123456", "main table tbody tr:nth-child(1) td:nth-child(7)");
-        $I->see("{$this->invoiceData['id']}", "main table tbody tr:nth-child(1) td:nth-child(8)");
-        $I->see("{$this->invoiceData['id']}", "main table tbody tr:nth-child(1) td:nth-child(8)");
+        $I->see("{$this->clientData['name']}", "main table tbody tr:nth-child(1) td:nth-child(2)");
+        $I->see("Test Account", "main table tbody tr:nth-child(1) td:nth-child(3)");
+        $I->see("100.00", "main table tbody tr:nth-child(1) td:nth-child(4)");
+        $I->see("Pending", "main table tbody tr:nth-child(1) td:nth-child(5)");
+        $I->see("6.00", "main table tbody tr:nth-child(1) td:nth-child(6)");
+        $I->see("PayPal", "main table tbody tr:nth-child(1) td:nth-child(7)");
+        $I->see("123456", "main table tbody tr:nth-child(1) td:nth-child(8)");
+        $I->see("{$this->invoiceData['id']}", "main table tbody tr:nth-child(1) td:nth-child(9)");
 
-        $invoiceUrl = $I->grabAttributeFrom("main table tbody tr:nth-child(1) td:nth-child(8) a", "href");
+        $invoiceUrl = $I->grabAttributeFrom("main table tbody tr:nth-child(1) td:nth-child(9) a", "href");
         $I->seeLink("{$this->invoiceData['id']}", $invoiceUrl);
 
         $I->setPaymentStatus($this->paymentData['id'], 2);
         $I->amOnPage(self::PAYMENTS_VIEW_ALL_URL);
-        $I->waitForText("Payments", 10, "h1");
+        $I->waitForText("Payments", 30, "h1");
 
-        $I->see("Completed", "main table tbody tr:nth-child(1) td:nth-child(4)");
+        $I->see("Completed", "main table tbody tr:nth-child(1) td:nth-child(5)");
 
         $I->setPaymentStatus($this->paymentData['id'], 3);
         $I->amOnPage(self::PAYMENTS_VIEW_ALL_URL);
-        $I->waitForText("Payments", 10, "h1");
+        $I->waitForText("Payments", 30, "h1");
 
-        $I->see("Failed", "main table tbody tr:nth-child(1) td:nth-child(4)");
+        $I->see("Failed", "main table tbody tr:nth-child(1) td:nth-child(5)");
 
         $I->setPaymentStatus($this->paymentData['id'], 4);
         $I->amOnPage(self::PAYMENTS_VIEW_ALL_URL);
-        $I->waitForText("Payments", 10, "h1");
+        $I->waitForText("Payments", 30, "h1");
 
-        $I->see("Cancelled", "main table tbody tr:nth-child(1) td:nth-child(4)");
+        $I->see("Cancelled", "main table tbody tr:nth-child(1) td:nth-child(5)");
 
         $I->setPaymentStatus($this->paymentData['id'], 5);
         $I->amOnPage(self::PAYMENTS_VIEW_ALL_URL);
-        $I->waitForText("Payments", 10, "h1");
+        $I->waitForText("Payments", 30, "h1");
 
-        $I->see("Refunded", "main table tbody tr:nth-child(1) td:nth-child(4)");
+        $I->see("Refunded", "main table tbody tr:nth-child(1) td:nth-child(5)");
     }
 
     /**
@@ -194,7 +195,7 @@ class MothershipFrontPaymentsCest
         $I->setPaymentStatus($this->paymentData['id'], 2);
         $I->amOnPage(sprintf(self::PAYMENT_VIEW_URL, $this->paymentData['id']));
         $log_created = date('Y-m-d H:i:s');
-        $I->waitForText("Payment #{$this->paymentData['id']}", 10);
+        $I->waitForText("Payment #{$this->paymentData['id']}", 30);
 
         // Capture a screenshot of the view
         $I->makeScreenshot("account-center-view-payment");

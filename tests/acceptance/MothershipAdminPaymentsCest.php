@@ -469,6 +469,8 @@ class MothershipAdminPaymentsCest
     {
         $I->amOnPage(sprintf(self::PAYMENT_EDIT_URL, "9999"));
         $I->wait(1);
+        $I->waitForText('Mothership: Payments', 30, 'h1.page-title');
+        $I->seeInCurrentUrl(self::PAYMENTS_VIEW_ALL_URL);
         $I->waitForText("Payment not found. Please select a valid payment.", 30, "#system-message-container .alert-message");
     }
 

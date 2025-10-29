@@ -129,22 +129,24 @@ class MothershipFrontInvoicesCest
         // Confirm the table headers
         $I->see("PDF", "table#invoicesTable thead tr th:nth-child(1)");
         $I->see("#", "table#invoicesTable thead tr th:nth-child(2)");
-        $I->see("Account", "table#invoicesTable thead tr th:nth-child(3)");
-        $I->see("Amount", "table#invoicesTable thead tr th:nth-child(4)");
-        $I->see("Status", "table#invoicesTable thead tr th:nth-child(5)");
-        $I->see("Payment Status", "table#invoicesTable thead tr th:nth-child(6)");
-        $I->see("Due Date", "table#invoicesTable thead tr th:nth-child(7)");
-        $I->see("Actions", "table#invoicesTable thead tr th:nth-child(8)");
+        $I->see("Client", "table#invoicesTable thead tr th:nth-child(3)");
+        $I->see("Account", "table#invoicesTable thead tr th:nth-child(4)");
+        $I->see("Amount", "table#invoicesTable thead tr th:nth-child(5)");
+        $I->see("Status", "table#invoicesTable thead tr th:nth-child(6)");
+        $I->see("Payment Status", "table#invoicesTable thead tr th:nth-child(7)");
+        $I->see("Due Date", "table#invoicesTable thead tr th:nth-child(8)");
+        $I->see("Actions", "table#invoicesTable thead tr th:nth-child(9)");
 
         // Confirm the table data
         $I->see($this->invoiceData['number'], "table#invoicesTable tbody tr td:nth-child(2)");
-        $I->see($this->accountData['name'], "table#invoicesTable tbody tr td:nth-child(3)");
-        $I->see("$100.00", "table#invoicesTable tbody tr td:nth-child(4)");
-        $I->see("Opened", "table#invoicesTable tbody tr td:nth-child(5)");
-        $I->see("Unpaid", "table#invoicesTable tbody tr td:nth-child(6)");
-        $I->see("Due in 30 days", "table#invoicesTable tbody tr td:nth-child(7)");
-        $I->see("View", "table#invoicesTable tbody tr td:nth-child(8) ul li");
-        $I->see("Pay", "table#invoicesTable tbody tr td:nth-child(8) ul li");
+        $I->see($this->clientData['name'], "table#invoicesTable tbody tr td:nth-child(3)");
+        $I->see($this->accountData['name'], "table#invoicesTable tbody tr td:nth-child(4)");
+        $I->see("$100.00", "table#invoicesTable tbody tr td:nth-child(5)");
+        $I->see("Opened", "table#invoicesTable tbody tr td:nth-child(6)");
+        $I->see("Unpaid", "table#invoicesTable tbody tr td:nth-child(7)");
+        $I->see("Due in 30 days", "table#invoicesTable tbody tr td:nth-child(8)");
+        $I->see("View", "table#invoicesTable tbody tr td:nth-child(9) ul li");
+        $I->see("Pay", "table#invoicesTable tbody tr td:nth-child(9) ul li");
 
         // change the invoice status to 'paid'
         $I->setInvoiceStatus($this->invoiceData['id'], 4);
@@ -152,11 +154,11 @@ class MothershipFrontInvoicesCest
         $I->waitForText("Invoices", 10, "h1");
 
         // When the invoice status is 'paid' or 4 the 'Pay' link should not be displayed and the Due Date should not be displayed
-        $I->see("Closed", "table#invoicesTable tbody tr td:nth-child(5)");
-        $I->see("Paid", "table#invoicesTable tbody tr td:nth-child(6)");
-        $I->dontSee("Due in 30 days", "table#invoicesTable tbody tr td:nth-child(7)");
-        $I->see("View", "table#invoicesTable tbody tr td:nth-child(8) ul li");
-        $I->dontSee("Pay", "table#invoicesTable tbody tr td:nth-child(8) ul li");
+        $I->see("Closed", "table#invoicesTable tbody tr td:nth-child(6)");
+        $I->see("Paid", "table#invoicesTable tbody tr td:nth-child(7)");
+        $I->dontSee("Due in 30 days", "table#invoicesTable tbody tr td:nth-child(8)");
+        $I->see("View", "table#invoicesTable tbody tr td:nth-child(9) ul li");
+        $I->dontSee("Pay", "table#invoicesTable tbody tr td:nth-child(9) ul li");
     }
 
     /**
@@ -239,8 +241,8 @@ class MothershipFrontInvoicesCest
 
         $I->makeScreenshot("account-center-pay-invoice");
 
-        $I->see("Pay", "table#invoicesTable tbody tr td:nth-child(8)");
-        $I->click("Pay", "table#invoicesTable tbody tr td:nth-child(8)");
+        $I->see("Pay", "table#invoicesTable tbody tr td:nth-child(9)");
+        $I->click("Pay", "table#invoicesTable tbody tr td:nth-child(9)");
         $I->waitForText("Pay Invoice", 10, "h1");
         $I->amOnPage(sprintf(self::INVOICE_PAY_URL, $this->invoiceData['id']));
         $I->waitForText("Pay Invoice #{$this->invoiceData['number']}", 10, "h1");
