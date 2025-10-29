@@ -19,6 +19,10 @@ class MothershipAdminClientsCest
     const CLIENTS_VIEW_ALL_URL = "/administrator/index.php?option=com_mothership&view=clients";
     const CLIENT_EDIT_URL = "/administrator/index.php?option=com_mothership&view=client&layout=edit&id=%s";
 
+    // Toolbar (prefer explicit buttons or tasks)
+    public const TBAR            = '#toolbar';
+    public const TBAR_NEW        = '#toolbar-new';
+
     public function _before(AcceptanceTester $I)
     {
         $I->resetMothershipTables();
@@ -58,6 +62,20 @@ class MothershipAdminClientsCest
         $I->click("Hide Forever");
     }
 
+    private function fillByType(\AcceptanceTester $I, string $type, string $selector, $value): void
+    {
+        switch ($type) {
+            case 'select':
+                $I->selectOption($selector, $value);
+                break;
+            case 'hidden':
+                // usually set via picker/modal; skip manual fill
+                break;
+            default:
+                $I->fillField($selector, (string) $value);
+        }
+    }
+
     /**
      * @group backend
      * @group client
@@ -70,11 +88,8 @@ class MothershipAdminClientsCest
 
         $I->makeScreenshot("mothership-clients-view-all");
 
-        $toolbar = "#toolbar";
-        $toolbarNew = "#toolbar-new";
-        $toolbarStatusGroup = "#toolbar-status-group";
-        $I->seeElement("{$toolbar} {$toolbarNew}");
-        $I->see("New", "{$toolbar} {$toolbarNew} .btn.button-new");
+        $I->seeElement(self::TBAR." ".self::TBAR_NEW);
+        $I->see("New", self::TBAR." ".self::TBAR_NEW);
 
         $I->seeElement("#j-main-container ");
         $I->seeElement("#j-main-container thead");
@@ -104,27 +119,24 @@ class MothershipAdminClientsCest
      * @group backend-client
      */
     public function MothershipAddClient(AcceptanceTester $I)
-    {
+    {       
         $I->amOnPage(self::CLIENTS_VIEW_ALL_URL);
         $I->wait(1);
         $I->waitForText("Mothership: Clients", 30, "h1.page-title");
 
-        $toolbar = "#toolbar";
-        $toolbarNew = "#toolbar-new";
-        $toolbarStatusGroup = "#toolbar-status-group";
-        $I->seeElement("{$toolbar} {$toolbarNew}");
-        $I->see("New", "{$toolbar} {$toolbarNew} .btn.button-new");
+        $I->seeElement(self::TBAR." ".self::TBAR_NEW);
+        $I->see("New", self::TBAR." ".self::TBAR_NEW);
 
-        $I->click("{$toolbar} {$toolbarNew} .btn.button-new");
+        $I->click(self::TBAR." ".self::TBAR_NEW);
         $I->wait(1);
         $I->waitForText("Mothership: New Client", 30, "h1.page-title");
 
         $I->makeScreenshot("mothership-client-add-details");
         $I->dontSee("Warning");
 
-        $I->see("Save", "#toolbar");
-        $I->see("Save & Close", "#toolbar");
-        $I->see("Cancel", "#toolbar");
+        $I->see("Save", self::TBAR);
+        $I->see("Save & Close", self::TBAR);
+        $I->see("Cancel", self::TBAR);
 
         $I->seeElement("form[name=adminForm]");
         $I->seeElement("form#client-form");
@@ -132,43 +144,108 @@ class MothershipAdminClientsCest
         $I->seeElement("#myTab");
         $I->see("Client Details", "#myTab");
 
-        $I->seeElement("input#jform_name");
-        $I->seeElement("input#jform_email");
-        $I->seeElement("input#jform_phone");
-        $I->seeElement("input#jform_address_1");
-        $I->seeElement("input#jform_address_2");
-        $I->seeElement("input#jform_city");
-        $I->seeElement("select#jform_state");
-        $I->seeElement("input#jform_zip");
-        $I->seeElement("input#jform_default_rate");
-        $I->seeElement("input#jform_owner_user_id");
+        // Define the form fields
+        $form_fields = [
+            'name'=>'text',
+            'email'=>'email',
+            'phone'=>'tel',
+            'address_1'=>'text',
+            'address_2'=>'text',
+            'city'=>'text',
+            'state'=>'select',
+            'zip'=>'text',
+            'default_rate'=>'text',
+            'owner_user_id'=>'modal',
+        ];
+        $required_fields = [
+            'name',
+            'email',
+            'phone',
+            'address_1',
+            'city',
+            'state',
+            'zip',
+            'default_rate',
+            'owner_user_id',
+        ];
+        // Verify fields exist
+        foreach($form_fields as $field=> $type) {
+            switch($type){
+                case 'select':
+                    $I->seeElement("select#jform_{$field}");
+                    break;
+                default:
+                    $I->seeElement("input#jform_{$field}");
+            }
+        }
 
-        $I->fillField("input#jform_name", "Another Client");
-        $I->fillField("input#jform_email", "another.client@mailinator.com");
-        $I->fillField("input#jform_phone", "(555) 555-5555");
-        $I->fillField("input#jform_address_1", "12345 St.");
-        $I->fillField("input#jform_address_2", "APT 123");
-        $I->fillField("input#jform_city", "City");
-        $I->selectOption("select#jform_state", "California");
-        $I->fillField("input#jform_zip", "95524");
-        $I->fillField("input#jform_default_rate", "100.00");
+        // TEST Error Validation - Submit empty form
+        $I->click("Save", self::TBAR);
+        $I->wait(1);
+        $I->waitForText("Mothership: New Client", 30, "h1.page-title");
+        // The form cannot be submitted as it's missing required data.
+        // Please correct the marked fields and try again.
+        $I->see("The form cannot be submitted as it's missing required data. Please correct the marked fields and try again.", ".alert-message");
+        foreach($form_fields as $field=> $type) {
+             if(!in_array($field, $required_fields)){
+                continue;
+            }
+            switch($type){
+                case 'select':
+                    $I->see("One of the options must be selected", "#jform_{$field}-lbl");
+                    $I->seeElement("select#jform_{$field}.invalid[aria-invalid=true]");
+                    break;
+                case 'modal':
+                default:
+                    $I->see("Please fill in this field", "#jform_{$field}-lbl");
+                    $I->seeElement("input#jform_{$field}.invalid[aria-invalid=true]");
+            }
+        }
 
+        $form_data = [
+            'name' => 'Another Client',
+            'email' => 'another.client@mailinator.com',
+            'phone' => '(555) 555-5555',
+            'address_1' => '12345 St.',
+            'address_2' => 'APT 123',
+            'city' => 'City',
+            'state' => 'California',
+            'zip' => '95524',
+            'default_rate' => '100.00',
+            // 'owner_user_id' => $this->joomlaUserData['name']
+        ];
+
+        // Fill in the form fields
+        foreach ($form_fields as $field => $type) {
+           if(!in_array($field, array_keys($form_data))){
+                continue;
+            }
+            switch($type){
+                case 'select':
+                    $I->selectOption("select#jform_{$field}", $form_data[$field]);
+                    break;
+                default:
+                    $I->fillField("input#jform_{$field}", $form_data[$field]);
+            }
+        }
+        // Add Owner User
         $I->click(".icon-user");
         $I->makeScreenshot("mothership-client-add-contact");
         $I->switchToIFrame(".iframe-content");       
-        $I->fillFIeld("#filter_search", $this->joomlaUserData['name']);
+        $I->fillField("#filter_search", $this->joomlaUserData['name']);
         $I->click('//button[contains(@class, "btn") and .//span[contains(@class, "icon-search")]]');
         $I->wait(3);
         $I->click($this->joomlaUserData['name']);
         $I->wait(1);
         $I->switchToIFrame();
 
-        $I->click("Save", "#toolbar");
+        // TEST ACTION Save
+        $I->click("Save", self::TBAR);
         $I->wait(1);
         $I->waitForText("Mothership: Edit Client", 30, "h1.page-title");
         $I->waitForText("Client Another Client saved successfully.", 30, ".alert-message");
-
-        $I->click("Save & Close", "#toolbar");
+        // TEST ACTION Save & Close
+        $I->click("Save & Close", self::TBAR);
         $I->waitForText("Mothership: Clients", 30, "h1.page-title");
         $I->seeInCurrentUrl(("/administrator/index.php?option=com_mothership&view=clients"));
         $I->see("Client saved", ".alert-message");
@@ -202,7 +279,7 @@ class MothershipAdminClientsCest
         // Confirm the value in jform_number is correct
         $I->seeInField("input#jform_name", "Another Client");
         // TEST ACTION Close
-        $I->click("Close", "#toolbar");
+        $I->click("Close", self::TBAR);
         $I->wait(1);
         $I->waitForText("Mothership: Clients", 30, "h1.page-title");
         $I->seeInCurrentUrl(self::CLIENTS_VIEW_ALL_URL);
@@ -251,7 +328,7 @@ class MothershipAdminClientsCest
         $I->see("Delete", "joomla-toolbar-button#status-group-children-delete");
         $I->seeElement("joomla-toolbar-button#status-group-children-delete", ['task' => "clients.delete"]);
 
-        $I->click("Delete", "#toolbar");
+        $I->click("Delete", self::TBAR);
         $I->wait(1);
 
         $I->seeInCurrentUrl(self::CLIENTS_VIEW_ALL_URL);
@@ -294,7 +371,7 @@ class MothershipAdminClientsCest
         $I->see("Delete", "joomla-toolbar-button#status-group-children-delete");
         $I->seeElement("joomla-toolbar-button#status-group-children-delete", ['task' => "clients.delete"]);
 
-        $I->click("Delete", "#toolbar");
+        $I->click("Delete", self::TBAR);
         $I->wait(1);
 
         $I->seeInCurrentUrl(self::CLIENTS_VIEW_ALL_URL);
