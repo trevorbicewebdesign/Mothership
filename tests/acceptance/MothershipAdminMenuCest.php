@@ -18,6 +18,11 @@ class MothershipAdminMenuCest
         $I->click("Hide Forever");
     }
 
+    /**
+     * @group backend
+     * @group menus
+     * @group backend-menus
+     */
     public function MothershipMenuItems(AcceptanceTester $I)
     {
         $I->amOnPage("/administrator/index.php?option=com_menus&view=items&menutype=mainmenu");
