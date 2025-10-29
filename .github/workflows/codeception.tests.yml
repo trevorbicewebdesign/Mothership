@@ -36,6 +36,8 @@ jobs:
           - suite: acceptance
             group: backend-log
           - suite: acceptance
+            group: backend-menus           
+          - suite: acceptance
             group: frontend
 
     steps:
