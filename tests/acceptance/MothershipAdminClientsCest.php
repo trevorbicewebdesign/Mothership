@@ -62,20 +62,6 @@ class MothershipAdminClientsCest
         $I->click("Hide Forever");
     }
 
-    private function fillByType(\AcceptanceTester $I, string $type, string $selector, $value): void
-    {
-        switch ($type) {
-            case 'select':
-                $I->selectOption($selector, $value);
-                break;
-            case 'hidden':
-                // usually set via picker/modal; skip manual fill
-                break;
-            default:
-                $I->fillField($selector, (string) $value);
-        }
-    }
-
     /**
      * @group backend
      * @group client
@@ -239,6 +225,8 @@ class MothershipAdminClientsCest
         $I->click($this->joomlaUserData['name']);
         $I->wait(1);
         $I->switchToIFrame();
+
+        $I->makeScreenshot("mothership-client-add-filled");
 
         // TEST ACTION Save
         $I->click("Save", self::TBAR);
