@@ -1,5 +1,5 @@
 <?php
-namespace TrevorBice\Component\Mothership\Site\View\Account;
+namespace TrevorBice\Component\Mothership\Site\View\Client;
 
 use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use Joomla\CMS\Factory;
@@ -10,22 +10,20 @@ use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper;
 class HtmlView extends BaseHtmlView
 {
     public $item;
-    public $paymentOptions = [];
-
     public function display($tpl = null)
     {
         $user = Factory::getUser();
-        if (!$user->authorise('mothership.view_accounts', 'com_mothership')) {
+        if (!$user->authorise('mothership.clients', 'com_mothership')) {
             echo Text::_('JERROR_ALERTNOAUTHOR');
             return;
         }
         $this->item = $this->getModel()->getItem();
 
         if (!$this->item) {
-            throw new \Exception('Account not found', 404);
+            throw new \Exception('Client not found', 404);
         }
 
-        LogHelper::logAccountViewed($this->item->client_id, $this->item->id);
+        // LogHelper::logClientViewed($this->item->id);
 
         parent::display($tpl);
     }

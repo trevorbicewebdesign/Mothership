@@ -10,7 +10,6 @@ class ClientController extends BaseController
 {
     public function display($cachable = false, $urlparams = [])
     {
-        die('here');
         $this->input->set('view', $this->input->getCmd('view', 'client'));
         parent::display($cachable, $urlparams);
     }

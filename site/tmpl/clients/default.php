@@ -26,8 +26,8 @@ use Joomla\CMS\Language\Text;
         <?php endif; ?>
         <?php foreach ($this->clients as $client) : ?>
             <tr>
-                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=account&id=' . $client->id); ?>"><?php echo $client->id; ?></a></td>
-                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=client&id=' . $client->client_id); ?>"><?php echo $client->client_name; ?></a></td>
+                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=client&id=' . $client->id); ?>"><?php echo $client->id; ?></a></td>
+                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=client&id=' . $client->id); ?>"><?php echo $client->client_name; ?></a></td>
             </tr>
         <?php endforeach; ?>
     </tbody>
