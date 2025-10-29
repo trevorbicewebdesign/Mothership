@@ -131,7 +131,7 @@ class MothershipAdminClientsCest
         $I->wait(1);
         $I->waitForText("Mothership: New Client", 30, "h1.page-title");
 
-        $I->makeScreenshot("mothership-client-add-details");
+        $I->makeScreenshot("mothership-client-add-new");
         $I->dontSee("Warning");
 
         $I->see("Save", self::TBAR);
@@ -183,6 +183,7 @@ class MothershipAdminClientsCest
         $I->click("Save", self::TBAR);
         $I->wait(1);
         $I->waitForText("Mothership: New Client", 30, "h1.page-title");
+        $I->makeScreenshot("mothership-client-add-errors");
         // The form cannot be submitted as it's missing required data.
         // Please correct the marked fields and try again.
         $I->see("The form cannot be submitted as it's missing required data. Please correct the marked fields and try again.", ".alert-message");
