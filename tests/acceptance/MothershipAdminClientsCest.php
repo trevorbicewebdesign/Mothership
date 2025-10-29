@@ -217,6 +217,7 @@ class MothershipAdminClientsCest
         }
         // Add Owner User
         $I->click(".icon-user");
+        $I->wait(1);
         $I->makeScreenshot("mothership-client-add-contact");
         $I->switchToIFrame(".iframe-content");       
         $I->fillField("#filter_search", $this->joomlaUserData['name']);
@@ -238,12 +239,9 @@ class MothershipAdminClientsCest
         $I->waitForText("Mothership: Clients", 30, "h1.page-title");
         $I->seeInCurrentUrl(("/administrator/index.php?option=com_mothership&view=clients"));
         $I->see("Client saved", ".alert-message");
-
         $I->seeInCurrentUrl(self::CLIENTS_VIEW_ALL_URL);
         $I->seeNumberOfElements("#j-main-container table tbody tr", 2);
-
         $client_id = $I->grabTextFrom("#j-main-container table tbody tr:nth-child(1) td:nth-child(2)");
-
         $I->see($client_id . "", "#j-main-container table tbody tr:nth-child(1) td:nth-child(2)");
         $I->see("Another Client", "#j-main-container table tbody tr:nth-child(1) td:nth-child(3)");
         // $I->see((new DateTime('now', new DateTimeZone('America/Los_Angeles')))->format('Y-m-d'), "#j-main-container table tbody tr:nth-child(1) td:nth-child(6)");
@@ -262,7 +260,7 @@ class MothershipAdminClientsCest
             // 'created' => date("Y-m-d 00:00:00"),
         ]);
 
-        // Open the Invoice again and confirm the data is correct
+        // Open the Client again and confirm the data is correct
         $I->amOnPage(sprintf(self::CLIENT_EDIT_URL, $client_id));
         $I->click("Details");
         // Confirm the value in jform_number is correct
@@ -286,8 +284,8 @@ class MothershipAdminClientsCest
         $I->amOnPage(sprintf(self::CLIENT_EDIT_URL, "9999"));
         $I->wait(1);
         $I->waitForText('Mothership: Clients', 30, 'h1.page-title');
-        $I->seeInCurrentUrl(self::CLIENTS_VIEW_ALL_URL);
         $I->waitForText("Client not found. Please select a valid client.", 30, "#system-message-container .alert-message");
+        $I->seeInCurrentUrl(self::CLIENTS_VIEW_ALL_URL);
     }
 
     /**
