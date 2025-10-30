@@ -109,7 +109,8 @@ class MothershipAdminAccountsCest
             'Client' => ['value' => $this->clientData['name'], 'position' => 4],
             'Created' => ['value' => date("Y-m-d"), 'position' => 5],
         ], $I);
-        $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 1);
+        $I->validateJoomlaViewAllNumberRows(1, $I);
+        $I->see("1 - 1 / 1 items", "#j-main-container .pagination__wrapper");
     }
 
     /**

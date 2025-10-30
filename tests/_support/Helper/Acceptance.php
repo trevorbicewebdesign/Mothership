@@ -95,4 +95,8 @@ class Acceptance extends \codeception\Module
             $I->see("{$value}", "#j-main-container table tbody tr:nth-child({$rowid}) td:nth-child({$position})");
         }
     }
+
+    public function validateJoomlaViewAllNumberRows(int $num_rows, \Tests\Support\AcceptanceTester $I){
+        $I->seeNumberOfElements("#j-main-container table tbody tr", $num_rows);
+    }
 }

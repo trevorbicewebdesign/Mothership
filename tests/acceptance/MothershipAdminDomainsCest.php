@@ -82,40 +82,33 @@ class MothershipAdminDomainsCest
         ]);
 
         $I->amOnPage(self::DOMAINS_VIEW_ALL_URL);
-        $I->wait(1);
-        $I->waitForText("Mothership: Domains", 20, "h1.page-title");
-        
+        $I->waitForJoomlaHeading("Domains", $I);        
         $I->makeScreenshot("mothership-domains-view-all");
-
-        $toolbar = "#toolbar";
-        $toolbarNew = "#toolbar-new";
-        $toolbarStatusGroup = "#toolbar-status-group";
-        $I->seeElement("{$toolbar} {$toolbarNew}");
-        $I->see("New", "{$toolbar} {$toolbarNew} .btn.button-new");
-
+        $I->dontSee("Warning:");
+        $I->validateJoomlaItemActions(['New', ], $I);
         $created = date("Y-m-d", strtotime($domainData['created']));
-
-        $I->seeElement("#j-main-container ");
-        $I->seeElement("#j-main-container thead");
-        $I->see("Id", "#j-main-container table thead tr th:nth-child(2)");
-        $I->see("Name", "#j-main-container table thead tr th:nth-child(3)");
-        $I->see("Client", "#j-main-container table thead tr th:nth-child(4)");
-        $I->see("Account", "#j-main-container table thead tr th:nth-child(5)");
-        $I->see("Registrar", "#j-main-container table thead tr th:nth-child(6)");
-        $I->see("Reseller", "#j-main-container table thead tr th:nth-child(7)");
-        $I->see("DNS Provider", "#j-main-container table thead tr th:nth-child(8)");
-        $I->see("Created", "#j-main-container table thead tr th:nth-child(9)");
-
-        $I->see("{$domainData['id']}", "#j-main-container table tbody tr td:nth-child(2)");
-        $I->see("{$domainData['name']}", "#j-main-container table tbody tr td:nth-child(3)");
-        $I->see("{$this->clientData['name']}", "#j-main-container table tbody tr td:nth-child(4)");
-        $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr td:nth-child(5)");
-        $I->see("{$domainData['registrar']}", "#j-main-container table tbody tr td:nth-child(6)");
-        $I->see("{$domainData['reseller']}", "#j-main-container table tbody tr td:nth-child(7)");
-        $I->see("{$domainData['dns_provider']}", "#j-main-container table tbody tr td:nth-child(8)");
-        $I->see("{$created}", "#j-main-container table tbody tr td:nth-child(9)");
-
+        $I->validateJoomlaViewAllTableHeaders([
+            "Id"=>2,
+            "Name"=>3,
+            "Client"=>4,
+            "Account"=>5,
+            "Registrar"=>6,
+            "Reseller"=>7,
+            "DNS Provider"=>8,
+            "Created"=>9,
+        ], $I);
+        $I->validateJoomlaViewAllTableRowData(1, [
+            'Id' => ['value' => $domainData['id'], 'position' => 2],
+            'Name' => ['value' => $domainData['name'], 'position' => 3],
+            'Client' => ['value' => $this->clientData['name'], 'position' => 4],
+            'Account' => ['value' => $this->accountData['name'], 'position' => 5],
+            'Registrar' => ['value' => $domainData['registrar'], 'position' => 6],
+            'Reseller' => ['value' => $domainData['reseller'], 'position' => 7],
+            'DNS Provider' => ['value' => $domainData['dns_provider'], 'position' => 8],
+            'Created' => ['value' => $created, 'position' => 9],
+         ], $I);
         $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 1);
+        $I->see("1 - 1 / 1 items", "#j-main-container .pagination__wrapper");
     }
 
     /**

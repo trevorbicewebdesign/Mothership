@@ -103,7 +103,7 @@ class MothershipAdminClientsCest
             'Default Rate' => ['value' => '$100.00', 'position' => 5],
             'Created' => ['value' => date("Y-m-d"), 'position' => 6],
         ], $I);
-        $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 1);
+        $I->validateJoomlaViewAllNumberRows(1, $I);
         $I->see("1 - 1 / 1 items", "#j-main-container .pagination__wrapper");
     }
 
