@@ -114,6 +114,7 @@ class MothershipFrontDomainsCest
         $I->waitForText("Domains", 10, "h1");
 
         $I->makeScreenshot("account-center-view-all-domains");
+        $I->dontSee("Warning:");
 
         // Confirm the correct number of records
         $I->seeNumberOfElements("table#domainsTable tbody tr", 1);
