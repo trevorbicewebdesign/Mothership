@@ -108,6 +108,7 @@ class MothershipFrontPayByCheckCest
         // Verify redirection to account center
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
         $I->waitForText("Invoices", 10, "h1");
+        $I->dontSee("Warning:");
 
         $I->see("Pay", "table#invoicesTable tbody tr td:nth-child(9)");
         $I->click("Pay", "table#invoicesTable tbody tr td:nth-child(9)");

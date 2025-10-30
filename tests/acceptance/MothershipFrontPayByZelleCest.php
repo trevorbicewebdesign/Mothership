@@ -108,6 +108,7 @@ class MothershipFrontPayByZelleCest
         // Verify redirection to account center
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
         $I->waitForText("Invoices", 30, "h1");
+        $I->dontSee("Warning:");
 
         $I->see("Pay", "table#invoicesTable tbody tr td:nth-child(9)");
         $I->click("Pay", "table#invoicesTable tbody tr td:nth-child(9)");
@@ -217,6 +218,7 @@ class MothershipFrontPayByZelleCest
         // Verify redirection to account center
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
         $I->waitForText("Invoices", 20, "h1");
+        $I->dontSee("Warning:");
 
         $I->see("Cancel Pending Payment", "table#invoicesTable tbody tr td:nth-child(9)");
         $I->click("Cancel Pending Payment", "table#invoicesTable tbody tr td:nth-child(9)");

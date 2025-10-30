@@ -160,6 +160,7 @@ class MothershipFrontDomainsCest
         $I->waitForText("Domain: {$domainData['name']}", 10, "h1");
     
         $I->makeScreenshot("account-center-view-domain");
+        $I->dontSee("Warning:");
 
         $created = $I->grabFromDatabase("jos_mothership_logs", "created", [
             'client_id' => $this->clientData['id'],

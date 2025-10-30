@@ -132,6 +132,7 @@ class MothershipFrontAccountsCest
         $I->waitForText($this->accountData['name'], 10, "h1");
 
         $I->makeScreenshot("account-center-view-account");
+        $I->dontSee("Warning:");
 
         $I->see("Invoices", "h4");
         $I->seeNumberOfElements("table#invoicesTable tbody tr", 1);

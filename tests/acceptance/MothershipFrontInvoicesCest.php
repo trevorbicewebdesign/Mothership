@@ -172,6 +172,7 @@ class MothershipFrontInvoicesCest
         $log_created = date('Y-m-d H:i:s');
         $I->wait(1);
         $I->waitForText("Invoice of Services", 10, "h1");
+        $I->dontSee("Warning:");
                 
         // Check all the elements in the PDF
         $I->see("{$this->mothershipConfig['company_name']}");
@@ -241,6 +242,7 @@ class MothershipFrontInvoicesCest
         $I->waitForText("Invoices", 10, "h1");
 
         $I->makeScreenshot("account-center-pay-invoice");
+        $I->dontSee("Warning:");
 
         $I->see("Pay", "table#invoicesTable tbody tr td:nth-child(9)");
         $I->click("Pay", "table#invoicesTable tbody tr td:nth-child(9)");
@@ -266,6 +268,7 @@ class MothershipFrontInvoicesCest
     {
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
         $I->waitForText("Invoices", 10, "h1");
+        $I->dontSee("Warning:");
 
         $I->see("PDF", "table#invoicesTable tbody tr:first-child td:nth-child(1)");
         $I->click("PDF", "table#invoicesTable tbody tr:first-child td:nth-child(1)");

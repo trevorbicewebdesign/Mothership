@@ -170,6 +170,7 @@ class MothershipFrontProjectsCest
         $I->amOnPage(sprintf(self::PROJECT_VIEW_URL, $projectData['id']));
         $log_created = date('Y-m-d H:i:s');
         $I->waitForText("{$projectData['name']}", 10);
+        $I->dontSee("Warning:");
 
         // Capture a screenshot of the view
         $I->makeScreenshot("account-center-view-project");
