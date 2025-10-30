@@ -94,7 +94,7 @@ class MothershipFrontPaymentsCest
             'payment_date' => date('Y-m-d H:i:s'),
             'fee_amount' => '6.00',
             'fee_passed_on' => 0,
-            'payment_method' => 'paypal',
+            'payment_method' => 'zelle',
             'transaction_id' => '123456',
             'status' => 1,
         ]);
@@ -119,12 +119,12 @@ class MothershipFrontPaymentsCest
      */
     public function ViewAllPaymentsPage(AcceptanceTester $I)
     {
+
         // Verify redirection to account center
         $I->amOnPage(self::PAYMENTS_VIEW_ALL_URL);
         $I->waitForText("Payments", 30, "h1");
         $I->makeScreenshot("account-center-view-all-payments");
         $I->dontSee("Warning:");
-
 
         // Confirm the correct number of records
         $I->seeNumberOfElements("main table tbody tr", 1);
@@ -154,7 +154,7 @@ class MothershipFrontPaymentsCest
         $I->see("100.00", "main table tbody tr:nth-child(1) td:nth-child(4)");
         $I->see("Pending", "main table tbody tr:nth-child(1) td:nth-child(5)");
         $I->see("6.00", "main table tbody tr:nth-child(1) td:nth-child(6)");
-        $I->see("PayPal", "main table tbody tr:nth-child(1) td:nth-child(7)");
+        $I->see("Zelle", "main table tbody tr:nth-child(1) td:nth-child(7)");
         $I->see("123456", "main table tbody tr:nth-child(1) td:nth-child(8)");
         $I->see("{$this->invoiceData['id']}", "main table tbody tr:nth-child(1) td:nth-child(9)");
 
