@@ -16,6 +16,9 @@ class MothershipAdminAccountsCest
     private $paymentData;
     private $joomlaUserData;
 
+    const TBAR = "#toolbar";
+    const TBAR_NEW = "#toolbar-new";
+
     const ACCOUNTS_VIEW_ALL_URL = "/administrator/index.php?option=com_mothership&view=accounts";
     const ACCOUNT_EDIT_URL = "/administrator/index.php?option=com_mothership&view=account&layout=edit&id=%s";
 
@@ -93,11 +96,8 @@ class MothershipAdminAccountsCest
 
         $I->dontSee("Warning");
 
-        $toolbar = "#toolbar";
-        $toolbarNew = "#toolbar-new";
-        $toolbarStatusGroup = "#toolbar-status-group";
-        $I->seeElement("{$toolbar} {$toolbarNew}");
-        $I->see("New", "{$toolbar} {$toolbarNew} .btn.button-new");
+        $I->seeElement(self::TBAR . ' ' . self::TBAR_NEW);
+        $I->see("New", self::TBAR . ' ' . self::TBAR_NEW . ' .btn.button-new');
 
         $I->seeElement("#j-main-container ");
         $I->seeElement("#j-main-container thead");
@@ -125,21 +125,18 @@ class MothershipAdminAccountsCest
         $I->wait(2);
         $I->waitForText("Mothership: Accounts", 30, "h1.page-title");
 
-        $toolbar = "#toolbar";
-        $toolbarNew = "#toolbar-new";
-        $toolbarStatusGroup = "#toolbar-status-group";
-        $I->seeElement("{$toolbar} {$toolbarNew}");
-        $I->see("New", "{$toolbar} {$toolbarNew} .btn.button-new");
+        $I->seeElement(self::TBAR . ' ' . self::TBAR_NEW);
+        $I->see("New", self::TBAR . ' ' . self::TBAR_NEW . ' .btn.button-new');
 
-        $I->click("{$toolbar} {$toolbarNew} .btn.button-new");
+        $I->click(self::TBAR . ' ' . self::TBAR_NEW . '.btn.button-new');
         $I->wait(1);
         $I->see("Mothership: New Account", "h1.page-title");
 
         $I->makeScreenshot("mothership-account-add-details");
 
-        $I->see("Save", "#toolbar");
-        $I->see("Save & Close", "#toolbar");
-        $I->see("Cancel", "#toolbar");
+        $I->see("Save", self::TBAR);
+        $I->see("Save & Close", self::TBAR);
+        $I->see("Cancel", self::TBAR);
 
         $I->seeElement("form[name=adminForm]");
         $I->seeElement("form#account-form");
@@ -232,7 +229,7 @@ class MothershipAdminAccountsCest
         $I->see("Delete", "joomla-toolbar-button#status-group-children-delete");
         $I->seeElement("joomla-toolbar-button#status-group-children-delete", ['task' => "accounts.delete"]);
 
-        $I->click("Delete", "#toolbar");
+        $I->click("Delete", self::TBAR);
         $I->wait(1);
 
         $I->seeInCurrentUrl(self::ACCOUNTS_VIEW_ALL_URL);
@@ -266,7 +263,7 @@ class MothershipAdminAccountsCest
         $I->see("Delete", "joomla-toolbar-button#status-group-children-delete");
         $I->seeElement("joomla-toolbar-button#status-group-children-delete", ['task' => "accounts.delete"]);
 
-        $I->click("Delete", "#toolbar");
+        $I->click("Delete", self::TBAR);
         $I->wait(1);
 
         $I->seeInCurrentUrl(self::ACCOUNTS_VIEW_ALL_URL);
@@ -314,7 +311,7 @@ class MothershipAdminAccountsCest
         $I->see("Delete", "joomla-toolbar-button#status-group-children-delete");
         $I->seeElement("joomla-toolbar-button#status-group-children-delete", ['task' => "accounts.delete"]);
 
-        $I->click("Delete", "#toolbar");
+        $I->click("Delete", self::TBAR);
         $I->wait(1);
 
         $I->seeNumberOfElements("#j-main-container table tbody tr", 1);
