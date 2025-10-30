@@ -201,6 +201,7 @@ class MothershipFrontPaymentsCest
 
         // Capture a screenshot of the view
         $I->makeScreenshot("account-center-view-payment");
+        $I->dontSee("Warning:");
 
         // Verify payment details are displayed correctly
         $I->see("Amount: \$" . number_format($this->paymentData['amount'], 2));
