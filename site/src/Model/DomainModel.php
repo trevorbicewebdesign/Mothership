@@ -21,9 +21,11 @@ class DomainModel extends BaseDatabaseModel
         $query = $db->getQuery(true)
             ->select([
                 'd.*',
+                'a.name AS account_name',
             ])
             ->from($db->quoteName('#__mothership_domains', 'd'))
-
+            // need to left join the accounts table to get the account name
+            ->leftJoin($db->quoteName('#__mothership_accounts', 'a'), 'a.id = d.account_id')
             ->where('d.id = :id')
             ->bind(':id', $id, \Joomla\Database\ParameterType::INTEGER);
 
