@@ -123,6 +123,8 @@ class MothershipFrontPaymentsCest
         $I->amOnPage(self::PAYMENTS_VIEW_ALL_URL);
         $I->waitForText("Payments", 30, "h1");
         $I->makeScreenshot("account-center-view-all-payments");
+        $I->dontSee("Warning:");
+
 
         // Confirm the correct number of records
         $I->seeNumberOfElements("main table tbody tr", 1);
