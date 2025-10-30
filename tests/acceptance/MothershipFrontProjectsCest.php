@@ -128,6 +128,7 @@ class MothershipFrontProjectsCest
         $I->amOnPage(self::PROJECTS_VIEW_ALL_URL);
         $I->waitForText("Projects", 10, "h1");
         $I->makeScreenshot("account-center-view-all-projects");
+        $I->dontSee("Warning:");
 
         // Confirm the correct number of records
         $I->seeNumberOfElements("main table#projectsTable tbody tr", 1);
@@ -169,6 +170,7 @@ class MothershipFrontProjectsCest
         $I->amOnPage(sprintf(self::PROJECT_VIEW_URL, $projectData['id']));
         $log_created = date('Y-m-d H:i:s');
         $I->waitForText("{$projectData['name']}", 10);
+        $I->dontSee("Warning:");
 
         // Capture a screenshot of the view
         $I->makeScreenshot("account-center-view-project");

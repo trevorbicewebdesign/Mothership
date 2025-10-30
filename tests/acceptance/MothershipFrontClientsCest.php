@@ -104,6 +104,7 @@ class MothershipFrontClientsCest
         $I->waitForText("Clients", 10, "h1");
 
         $I->makeScreenshot("account-center-view-all-clients");
+        $I->dontSee("Warning:");
 
         // Confirm the correct number of records
         $I->seeNumberOfElements("table#clientsTable tbody tr", 1);
@@ -130,6 +131,7 @@ class MothershipFrontClientsCest
         $I->waitForText($this->clientData['name'], 10, "h1");
 
         $I->makeScreenshot("account-center-view-client");
+        $I->dontSee("Warning:");
 
         $I->see("Email: {$this->clientData['email']}");
         $I->see("Phone: {$this->clientData['phone']}");
