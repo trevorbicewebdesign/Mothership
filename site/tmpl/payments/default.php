@@ -65,9 +65,7 @@ use Joomla\CMS\Language\Text;
                     <td>$<?php echo number_format($payment->fee_amount, 2); ?></td>
                     <td>
                         <?php 
-                        echo "payment method ".$payment->payment_method;
                         $plugin = JPluginHelper::getPlugin('mothership-payment', $payment->payment_method);
-                        print_r($plugin);
                         $pluginParams = new JRegistry($plugin->params);
                         echo $pluginParams->get('display_name')?$pluginParams->get('display_name') : $payment->payment_method;
                         ?>
