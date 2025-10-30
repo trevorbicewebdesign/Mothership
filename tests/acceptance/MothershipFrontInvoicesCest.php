@@ -109,6 +109,7 @@ class MothershipFrontInvoicesCest
         $I->waitForText("Invoices", 10, "h1");
 
         $I->makeScreenshot("account-center-view-all-invoices");
+        $I->dontSee("Warning:");
 
         // Confirm the correct number of records
         $I->seeNumberOfElements("table#invoicesTable tbody tr", 1);
