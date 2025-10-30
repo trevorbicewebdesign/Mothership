@@ -128,6 +128,7 @@ class MothershipFrontProjectsCest
         $I->amOnPage(self::PROJECTS_VIEW_ALL_URL);
         $I->waitForText("Projects", 10, "h1");
         $I->makeScreenshot("account-center-view-all-projects");
+        $I->dontSee("Warning:");
 
         // Confirm the correct number of records
         $I->seeNumberOfElements("main table#projectsTable tbody tr", 1);
