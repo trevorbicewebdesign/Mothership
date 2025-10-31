@@ -885,4 +885,11 @@ class DbHelper extends Db
         $this->Db->updateInDatabase("{$this->prefix}mothership_invoices", ['locked' => 0], ['id' => $invoiceId]);
     }
 
+
+    public function validateJoomlaForm(array $fields){
+
+    }
+
+    
+
 }

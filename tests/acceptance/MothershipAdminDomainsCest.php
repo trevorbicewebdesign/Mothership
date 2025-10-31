@@ -18,9 +18,16 @@ class MothershipAdminDomainsCest
 
     const DOMAINS_VIEW_ALL_URL = "/administrator/index.php?option=com_mothership&view=domains";
     const DOMAIN_EDIT_URL = "/administrator/index.php?option=com_mothership&view=domain&layout=edit&id=%s";
+    private $form_fields;
 
     public function _before(AcceptanceTester $I)
     {
+        $this->form_fields = [
+            'client_id'=>['type'=>'select','required'=>true],
+            'account_id'=>['type'=>'select','required'=>true],
+            'name'=>['type'=>'text','required'=>true],
+        ];
+
         $I->resetMothershipTables();
 
         $this->clientData = $I->createMothershipClient([
@@ -76,40 +83,33 @@ class MothershipAdminDomainsCest
         ]);
 
         $I->amOnPage(self::DOMAINS_VIEW_ALL_URL);
-        $I->wait(1);
-        $I->waitForText("Mothership: Domains", 20, "h1.page-title");
-        
+        $I->waitForJoomlaHeading("Domains", $I);        
         $I->makeScreenshot("mothership-domains-view-all");
-
-        $toolbar = "#toolbar";
-        $toolbarNew = "#toolbar-new";
-        $toolbarStatusGroup = "#toolbar-status-group";
-        $I->seeElement("{$toolbar} {$toolbarNew}");
-        $I->see("New", "{$toolbar} {$toolbarNew} .btn.button-new");
-
+        $I->dontSee("Warning:");
+        $I->validateJoomlaItemActions(['New', ], $I);
         $created = date("Y-m-d", strtotime($domainData['created']));
-
-        $I->seeElement("#j-main-container ");
-        $I->seeElement("#j-main-container thead");
-        $I->see("Id", "#j-main-container table thead tr th:nth-child(2)");
-        $I->see("Name", "#j-main-container table thead tr th:nth-child(3)");
-        $I->see("Client", "#j-main-container table thead tr th:nth-child(4)");
-        $I->see("Account", "#j-main-container table thead tr th:nth-child(5)");
-        $I->see("Registrar", "#j-main-container table thead tr th:nth-child(6)");
-        $I->see("Reseller", "#j-main-container table thead tr th:nth-child(7)");
-        $I->see("DNS Provider", "#j-main-container table thead tr th:nth-child(8)");
-        $I->see("Created", "#j-main-container table thead tr th:nth-child(9)");
-
-        $I->see("{$domainData['id']}", "#j-main-container table tbody tr td:nth-child(2)");
-        $I->see("{$domainData['name']}", "#j-main-container table tbody tr td:nth-child(3)");
-        $I->see("{$this->clientData['name']}", "#j-main-container table tbody tr td:nth-child(4)");
-        $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr td:nth-child(5)");
-        $I->see("{$domainData['registrar']}", "#j-main-container table tbody tr td:nth-child(6)");
-        $I->see("{$domainData['reseller']}", "#j-main-container table tbody tr td:nth-child(7)");
-        $I->see("{$domainData['dns_provider']}", "#j-main-container table tbody tr td:nth-child(8)");
-        $I->see("{$created}", "#j-main-container table tbody tr td:nth-child(9)");
-
+        $I->validateJoomlaViewAllTableHeaders([
+            "Id"=>2,
+            "Name"=>3,
+            "Client"=>4,
+            "Account"=>5,
+            "Registrar"=>6,
+            "Reseller"=>7,
+            "DNS Provider"=>8,
+            "Created"=>9,
+        ], $I);
+        $I->validateJoomlaViewAllTableRowData(1, [
+            'Id' => ['value' => $domainData['id'], 'position' => 2],
+            'Name' => ['value' => $domainData['name'], 'position' => 3],
+            'Client' => ['value' => $this->clientData['name'], 'position' => 4],
+            'Account' => ['value' => $this->accountData['name'], 'position' => 5],
+            'Registrar' => ['value' => $domainData['registrar'], 'position' => 6],
+            'Reseller' => ['value' => $domainData['reseller'], 'position' => 7],
+            'DNS Provider' => ['value' => $domainData['dns_provider'], 'position' => 8],
+            'Created' => ['value' => $created, 'position' => 9],
+         ], $I);
         $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 1);
+        $I->see("1 - 1 / 1 items", "#j-main-container .pagination__wrapper");
     }
 
     /**
@@ -120,64 +120,58 @@ class MothershipAdminDomainsCest
     public function MothershipAddDomain(AcceptanceTester $I)
     {
         $I->amOnPage(self::DOMAINS_VIEW_ALL_URL);
-        $I->wait(1);
-        $I->waitForText("Mothership: Domains", 20, "h1.page-title");
-
-        $toolbar = "#toolbar";
-        $toolbarNew = "#toolbar-new";
-        $toolbarStatusGroup = "#toolbar-status-group";
-        $I->seeElement("{$toolbar} {$toolbarNew}");
-        $I->see("New", "{$toolbar} {$toolbarNew} .btn.button-new");
-
-        $I->click("{$toolbar} {$toolbarNew} .btn.button-new");
-        $I->wait(1);
-        $I->see("Mothership: New Domain", "h1.page-title");
-
+        $I->waitForJoomlaHeading("Domains", $I);
+        $I->validateJoomlaItemActions(['New', ], $I);
+        $I->click("New");
+        // Wait for the new domain form to load
+        $I->waitForJoomlaHeading("New Domain", $I);
         $I->makeScreenshot("mothership-domain-add-details");
-
-        $I->see("Save", "#toolbar");
-        $I->see("Save & Close", "#toolbar");
-        $I->see("Cancel", "#toolbar");
-
-        $I->seeElement("form[name=adminForm]");
-        $I->seeElement("form#domain-form");
-
-        $I->seeElement("#myTab");
-        $I->see("Domain Details", "#myTab button[aria-controls=details]");
-
-        // SAVE WITHOUT ENTERING DATA
-        $I->click("Save", "#toolbar");
-        $I->wait(1);
-        $I->see("One of the options must be selected", "label#jform_client_id-lbl .form-control-feedback");
-        $I->makeScreenshot("mothership-domain-add-details");
-        // VERIFY & FILL FORM FIELDS
-        $I->seeElement("select#jform_client_id");
+        $I->dontSee("Warning");
+        $I->validateJoomlaItemActions([ 'Save', 'Save & Close', 'Cancel' ], $I);
+        // Account Field Should Not Be Visible Yet
         $I->dontSee("select#jform_account_id");
         $I->seeElement("input#jform_name");
+        $I->validateJoomlaForm("domain-form", [
+            'client_id'=>['type'=>'select','required'=>true],
+            'name'=>['type'=>'text','required'=>true],
+        ], $I);
+        // Check that the tab exists
+        $I->seeElement("#myTab");
+        $I->see("Domain Details", "#myTab button[aria-controls=details]");
+        // SAVE WITHOUT ENTERING DATA
+        $I->click("Save", "#toolbar");
+        $I->waitForJoomlaHeading("New Domain", $I);
+        $I->makeScreenshot("mothership-domain-add-errors");
 
+        // VERIFY & FILL FORM FIELDS
+        // Select a Client to load Accounts
         $I->selectOption("select#jform_client_id", $this->clientData['id']);
         $I->wait(1);
+        // Confirm Client is selected
         $I->seeOptionIsSelected("select#jform_client_id", "{$this->clientData['name']}");
+        // Select an Account
         $I->selectOption("select#jform_account_id", $this->accountData['id']);
         $I->wait(1);
+        // Confirm Account is selected
         $I->seeOptionIsSelected("select#jform_account_id", "{$this->accountData['name']}");
         
+        // FIll form Fields
+        // USE INVALID DOMAIN NAME FIRST
         $I->fillField("input#jform_name", "not a valid domain");
         $I->fillField("input#jform_registrar", "GoDaddy");
         $I->fillField("input#jform_reseller", "GoDaddy");
         $I->selectOption("select#jform_dns_provider", "cloudflare");
         $I->fillField("input#jform_purchase_date", "2020-01-01 00:00:00");
-
+        // Save the form
         $I->click("Save", "#toolbar");
-        $I->wait(1);
-        $I->waitForText("Mothership: New Domain", 30, "h1.page-title");
+        $I->waitForJoomlaHeading("New Domain", $I);
         $I->see("The form cannot be submitted as it's missing required data.", "#system-message-container .alert-message");
 
+        // CORRECT THE DOMAIN NAME
         $I->fillField("input#jform_name", "example.com");
         // VERIFY SAVE ACTION SUCCESS
         $I->click("Save", "#toolbar");
-        $I->wait(1);
-        $I->waitForText("Mothership: Edit Domain", 20, "h1.page-title");
+        $I->waitForJoomlaHeading("Edit Domain", $I);
         $I->waitForText("Domain example.com saved successfully.", 20, ".alert-message");
 
         $I->seeInField("input#jform_name", "example.com");
@@ -205,22 +199,19 @@ class MothershipAdminDomainsCest
 
         // VERIFY CLOSE ACTION SUCCESS
         $I->click("Close", "#toolbar");
-        $I->wait(1);
-        $I->waitForText("Mothership: Domains", 20, "h1.page-title");
+        $I->waitForJoomlaHeading("Domains", $I);
         $I->seeInCurrentUrl(self::DOMAINS_VIEW_ALL_URL);
         $I->seeNumberOfElements("#j-main-container table tbody tr", 1);
 
         // VERIFY SAVE AND CLOSE ACTION SUCCESS
         $I->amOnPage( sprintf(self::DOMAIN_EDIT_URL, $domain_id) );
-        $I->wait(1);
-        $I->waitForText("Mothership: Edit Domain", 20, "h1.page-title");
+        $I->waitForJoomlaHeading("Edit Domain", $I);
         $I->seeInField("input#jform_name", "example.com");
         $I->seeOptionIsSelected("select#jform_client_id", "Test Client");
         $I->seeOptionIsSelected("select#jform_account_id", "Test Account");
 
         $I->click("Save & Close", "#toolbar");
-        $I->wait(1);
-        $I->waitForText("Mothership: Domains", 20, "h1.page-title");
+        $I->waitForJoomlaHeading("Domains", $I);
         $I->seeInCurrentUrl(self::DOMAINS_VIEW_ALL_URL);
         $I->seeNumberOfElements("#j-main-container table tbody tr", 1);
         $I->dontSeeElement("span.icon-checkedout");
@@ -234,8 +225,7 @@ class MothershipAdminDomainsCest
     public function MothershipEditInvalidDomain(AcceptanceTester $I)
     {
         $I->amOnPage(sprintf(self::DOMAIN_EDIT_URL, "9999"));
-        $I->wait(1);
-        $I->waitForText('Mothership: Domains', 30, 'h1.page-title');
+        $I->waitForJoomlaHeading("Domains", $I);
         $I->seeInCurrentUrl(self::DOMAINS_VIEW_ALL_URL);
         $I->waitForText("Domain not found. Please select a valid domain.", 30, "#system-message-container .alert-message");
     }
@@ -265,7 +255,7 @@ class MothershipAdminDomainsCest
 
         $I->seeInDatabase("jos_mothership_domains", [ 'id' => $domainData['id'] ]);
         $I->amOnPage(self::DOMAINS_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Domains", 20, "h1.page-title");
+        $I->waitForJoomlaHeading("Domains", $I);
 
         $I->seeNumberOfElements("#j-main-container table tbody tr", 1);
 
@@ -281,10 +271,8 @@ class MothershipAdminDomainsCest
         $I->seeElement("joomla-toolbar-button#status-group-children-delete", ['task' => "domains.delete"]);
 
         $I->click("Delete", "#toolbar");
-        $I->wait(1);
-
+        $I->waitForJoomlaHeading("Domains", $I);
         $I->seeInCurrentUrl(self::DOMAINS_VIEW_ALL_URL);
-        $I->see("Mothership: Domains", "h1.page-title");
         $I->see("1 Domain deleted successfully.", ".alert-message");
         $I->seeNumberOfElements("#j-main-container table tbody tr", 0);
 
@@ -317,7 +305,7 @@ class MothershipAdminDomainsCest
 
         $I->seeInDatabase("jos_mothership_domains", [ 'id' => $domainData['id'] ]);
         $I->amOnPage( sprintf(self::DOMAIN_EDIT_URL, $domainData['id']) );
-        $I->waitForText("Mothership: Edit Domain", 20, "h1.page-title");
+        $I->waitForJoomlaHeading("Edit Domain", $I);
 
         $I->see("WHOIS Scan & Update", "joomla-toolbar-button#toolbar-refresh");
         $I->seeElement("joomla-toolbar-button#toolbar-refresh", ['task' => "domain.whoisScan"]);

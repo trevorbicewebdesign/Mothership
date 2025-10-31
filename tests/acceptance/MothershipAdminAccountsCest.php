@@ -16,11 +16,20 @@ class MothershipAdminAccountsCest
     private $paymentData;
     private $joomlaUserData;
 
+    const TBAR = "#toolbar";
+    const TBAR_NEW = "#toolbar-new";
+
     const ACCOUNTS_VIEW_ALL_URL = "/administrator/index.php?option=com_mothership&view=accounts";
     const ACCOUNT_EDIT_URL = "/administrator/index.php?option=com_mothership&view=account&layout=edit&id=%s";
+    private $form_fields;
 
     public function _before(AcceptanceTester $I)
     {
+        $this->form_fields = [
+            'client_id'=>['type'=>'select','required'=>true],
+            'name'=>['type'=>'text','required'=>true],
+        ];
+
         $I->resetMothershipTables();
 
         $this->clientData = $I->createMothershipClient([
@@ -66,15 +75,13 @@ class MothershipAdminAccountsCest
     public function MothershipCancelClientEdit(AcceptanceTester $I)
     {   
         $I->amOnPage( self::ACCOUNTS_VIEW_ALL_URL);
-        $I->wait(1);
-        $I->waitForText("Mothership: Accounts", 30, "h1.page-title");
-
+        $I->waitForJoomlaHeading("Accounts", $I);
         $I->click("Test Client");
-        $I->wait(1);
-        $I->waitForText("Mothership: Edit Client", 30, "h1.page-title");
+
+        $I->waitForJoomlaHeading("Edit Client", $I);
         $I->click("Close", "#toolbar");
-        $I->wait(1);
-        $I->waitForText("Mothership: Accounts", 30, "h1.page-title");
+
+        $I->waitForJoomlaHeading("Accounts", $I);
         $I->seeCurrentUrlEquals(self::ACCOUNTS_VIEW_ALL_URL);
     }
 
@@ -86,32 +93,24 @@ class MothershipAdminAccountsCest
     public function MothershipViewAccounts(AcceptanceTester $I)
     {
         $I->amOnPage(self::ACCOUNTS_VIEW_ALL_URL);
-        $I->wait(1);
-        $I->waitForText("Mothership: Accounts", 30, "h1.page-title");
-        
+        $I->waitForJoomlaHeading("Accounts", $I);
         $I->makeScreenshot("mothership-accounts-view-all");
-
         $I->dontSee("Warning");
-
-        $toolbar = "#toolbar";
-        $toolbarNew = "#toolbar-new";
-        $toolbarStatusGroup = "#toolbar-status-group";
-        $I->seeElement("{$toolbar} {$toolbarNew}");
-        $I->see("New", "{$toolbar} {$toolbarNew} .btn.button-new");
-
-        $I->seeElement("#j-main-container ");
-        $I->seeElement("#j-main-container thead");
-        $I->see("Id", "#j-main-container table thead tr th:nth-child(2)");
-        $I->see("Name", "#j-main-container table thead tr th:nth-child(3)");
-        $I->see("Client", "#j-main-container table thead tr th:nth-child(4)");
-        $I->see("Created", "#j-main-container table thead tr th:nth-child(5)");
-
-        $I->see("1", "#j-main-container table tbody tr td:nth-child(2)");
-        $I->see("Test Account", "#j-main-container table tbody tr td:nth-child(3)");
-        $I->see("Test Client", "#j-main-container table tbody tr td:nth-child(4)");
-        // $I->see(date("Y-m-d"), "#j-main-container table tbody tr td:nth-child(5)");
-
-        $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 1);
+        $I->validateJoomlaItemActions(['New', ], $I);
+        $I->validateJoomlaViewAllTableHeaders([
+            'Id'=>2, 
+            'Name'=>3, 
+            'Client'=>4, 
+            'Created'=>5
+        ], $I);
+        $I->validateJoomlaViewAllTableRowData(1, [
+            'Id' => ['value' => $this->clientData['id'], 'position' => 2],
+            'Name' => ['value' => 'Test Account', 'position' => 3],
+            'Client' => ['value' => $this->clientData['name'], 'position' => 4],
+            'Created' => ['value' => date("Y-m-d"), 'position' => 5],
+        ], $I);
+        $I->validateJoomlaViewAllNumberRows(1, $I);
+        $I->see("1 - 1 / 1 items", "#j-main-container .pagination__wrapper");
     }
 
     /**
@@ -122,40 +121,39 @@ class MothershipAdminAccountsCest
     public function MothershipAddAccount(AcceptanceTester $I)
     {
         $I->amOnPage(self::ACCOUNTS_VIEW_ALL_URL);
-        $I->wait(2);
-        $I->waitForText("Mothership: Accounts", 30, "h1.page-title");
+        $I->waitForJoomlaHeading("Accounts", $I);
+        $I->validateJoomlaItemActions(['New',], $I);
 
-        $toolbar = "#toolbar";
-        $toolbarNew = "#toolbar-new";
-        $toolbarStatusGroup = "#toolbar-status-group";
-        $I->seeElement("{$toolbar} {$toolbarNew}");
-        $I->see("New", "{$toolbar} {$toolbarNew} .btn.button-new");
+        // Add a new account
+        $I->click("New");
+        $I->waitForJoomlaHeading("New Account", $I);
+        $I->makeScreenshot("mothership-account-add-empty");
+        $I->dontSee("Warning:");
+        // CHECK FOR TOOLBAR ACTIONS
+        $I->validateJoomlaItemActions([ 'Save', 'Save & Close', 'Cancel' ], $I);
 
-        $I->click("{$toolbar} {$toolbarNew} .btn.button-new");
-        $I->wait(1);
-        $I->see("Mothership: New Account", "h1.page-title");
-
-        $I->makeScreenshot("mothership-account-add-details");
-
-        $I->see("Save", "#toolbar");
-        $I->see("Save & Close", "#toolbar");
-        $I->see("Cancel", "#toolbar");
-
-        $I->seeElement("form[name=adminForm]");
-        $I->seeElement("form#account-form");
-
+        // Check that the tab exists
         $I->seeElement("#myTab");
         $I->see("Account Details", "#myTab button[aria-controls=details]");
+        // Validate the form and fields exist
+        $I->validateJoomlaForm("account-form", $this->form_fields, $I);
 
-        $I->seeElement("select#jform_client_id");
-        $I->seeElement("input#jform_name");
+        // TEST Error Validation - Submit empty form
+        $I->click("Save", self::TBAR);
+        $I->waitForJoomlaHeading("New Account", $I);
+        $I->makeScreenshot("mothership-account-add-errors");
+        $I->see("The form cannot be submitted as it's missing required data. Please correct the marked fields and try again.", ".alert-message");
+        $I->validateJoomlaFormErrors($this->form_fields, $I);
 
-        $I->selectOption("select#jform_client_id", "Test Client");
-        $I->fillField("input#jform_name", "Test Account");
+        $form_data = [
+            'client_id' => $this->clientData['id'],
+            'name' => 'Test Account',
+        ];
+        $I->fillJoomlaForm($this->form_fields, $form_data, $I);
+
         // TEST ACTION SAVE
-        $I->click("Save", "#toolbar");
-        $I->wait(1);
-        $I->waitForText("Mothership: Edit Account", 30, "h1.page-title");
+        $I->click("Save", self::TBAR);
+        $I->waitForJoomlaHeading("Edit Account", $I);
         $I->see("Account Test Account saved", ".alert-message");
         $I->seeInField("input#jform_name", "Test Account");
         $I->seeOptionIsSelected("select#jform_client_id", "Test Client");
@@ -163,12 +161,10 @@ class MothershipAdminAccountsCest
         $I->seeInDatabase("jos_mothership_accounts", [
             'name' => 'Test Account',
             'client_id' => $this->clientData['id'],
-            // 'created' => date("Y-m-d 00:00:00"),
         ]);
 
-        $I->click("Save & Close", "#toolbar");
-        $I->wait(1);
-        $I->waitForText("Mothership: Accounts", 30, "h1.page-title");
+        $I->click("Save & Close", self::TBAR);
+        $I->waitForJoomlaHeading("Accounts", $I);
         $I->seeCurrentUrlEquals(self::ACCOUNTS_VIEW_ALL_URL);
         $I->see("Account saved", ".alert-message");
         $I->seeNumberOfElements("#j-main-container table tbody tr", 2);
@@ -177,10 +173,9 @@ class MothershipAdminAccountsCest
 
         // TEST ACTION CANCEL
         $I->amOnPage(sprintf(self::ACCOUNT_EDIT_URL, $account_id));
-        $I->waitForText("Mothership: Edit Account", 30, "h1.page-title");
-        $I->click("Close", "#toolbar");
-        $I->wait(1);
-        $I->waitForText("Mothership: Accounts", 30, "h1.page-title");
+        $I->waitForJoomlaHeading("Edit Account", $I);
+        $I->click("Close", self::TBAR);
+        $I->waitForJoomlaHeading("Accounts", $I);
         $I->seeInCurrentUrl(self::ACCOUNTS_VIEW_ALL_URL);
         $I->dontSeeElement("span.icon-checkedout");
     }
@@ -232,7 +227,7 @@ class MothershipAdminAccountsCest
         $I->see("Delete", "joomla-toolbar-button#status-group-children-delete");
         $I->seeElement("joomla-toolbar-button#status-group-children-delete", ['task' => "accounts.delete"]);
 
-        $I->click("Delete", "#toolbar");
+        $I->click("Delete", self::TBAR);
         $I->wait(1);
 
         $I->seeInCurrentUrl(self::ACCOUNTS_VIEW_ALL_URL);
@@ -266,7 +261,7 @@ class MothershipAdminAccountsCest
         $I->see("Delete", "joomla-toolbar-button#status-group-children-delete");
         $I->seeElement("joomla-toolbar-button#status-group-children-delete", ['task' => "accounts.delete"]);
 
-        $I->click("Delete", "#toolbar");
+        $I->click("Delete", self::TBAR);
         $I->wait(1);
 
         $I->seeInCurrentUrl(self::ACCOUNTS_VIEW_ALL_URL);
@@ -314,7 +309,7 @@ class MothershipAdminAccountsCest
         $I->see("Delete", "joomla-toolbar-button#status-group-children-delete");
         $I->seeElement("joomla-toolbar-button#status-group-children-delete", ['task' => "accounts.delete"]);
 
-        $I->click("Delete", "#toolbar");
+        $I->click("Delete", self::TBAR);
         $I->wait(1);
 
         $I->seeNumberOfElements("#j-main-container table tbody tr", 1);
