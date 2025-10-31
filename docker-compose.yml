@@ -1,6 +1,7 @@
 services:
   joomla:
     image: ghcr.io/trevorbicewebdesign/mothership:php8.2-joomla5.3.0
+    pull_policy: if_not_present
     ports:
       - "8080:80"
     depends_on:
@@ -28,7 +29,8 @@ services:
     restart: always
 
   db:
-    image: mysql:8.0
+    image: ghcr.io/trevorbicewebdesign/mysql:8.0
+    pull_policy: if_not_present
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
@@ -40,13 +42,15 @@ services:
       - db_data:/var/lib/mysql
 
   selenium:
-    image: selenium/standalone-chrome:latest
+    image: ghcr.io/trevorbicewebdesign/selenium-standalone-chrome:129.0
+    pull_policy: if_not_present
     ports:
       - "4444:4444"
     shm_size: 2gb
   
   mailpit:
-    image: axllent/mailpit
+    image: ghcr.io/trevorbicewebdesign/mailpit:1.18.0
+    pull_policy: if_not_present
     ports:
       - "8025:8025"   # Web UI
       - "1025:1025"   # SMTP port

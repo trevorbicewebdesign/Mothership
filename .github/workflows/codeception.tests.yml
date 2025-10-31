@@ -59,7 +59,11 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Pull Joomla Docker Image from GHCR
-        run: docker pull ghcr.io/trevorbicewebdesign/mothership:php8.2-joomla5.3.0
+        run: |
+          docker pull ghcr.io/trevorbicewebdesign/mothership:php8.2-joomla5.3.0
+          docker pull ghcr.io/trevorbicewebdesign/mysql:8.0
+          docker pull ghcr.io/trevorbicewebdesign/selenium-standalone-chrome:129.0
+          docker pull ghcr.io/trevorbicewebdesign/mailpit:1.18.0
 
       - name: Rename .env.sample to .env
         run: mv ./tests/.env.sample ./tests/.env
