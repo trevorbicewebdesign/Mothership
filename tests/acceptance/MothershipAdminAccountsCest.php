@@ -122,22 +122,15 @@ class MothershipAdminAccountsCest
     {
         $I->amOnPage(self::ACCOUNTS_VIEW_ALL_URL);
         $I->waitForJoomlaHeading("Accounts", $I);
-        $I->validateJoomlaItemActions([
-            'New', 
-        ], $I);
+        $I->validateJoomlaItemActions(['New',], $I);
 
         // Add a new account
         $I->click("New");
         $I->waitForJoomlaHeading("New Account", $I);
         $I->makeScreenshot("mothership-account-add-empty");
         $I->dontSee("Warning:");
-
         // CHECK FOR TOOLBAR ACTIONS
-        $I->validateJoomlaItemActions([
-            'Save', 
-            'Save & Close', 
-            'Cancel'
-        ], $I);
+        $I->validateJoomlaItemActions([ 'Save', 'Save & Close', 'Cancel' ], $I);
 
         // Check that the tab exists
         $I->seeElement("#myTab");
