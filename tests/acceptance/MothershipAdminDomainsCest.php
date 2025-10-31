@@ -128,7 +128,13 @@ class MothershipAdminDomainsCest
         $I->makeScreenshot("mothership-domain-add-details");
         $I->dontSee("Warning");
         $I->validateJoomlaItemActions([ 'Save', 'Save & Close', 'Cancel' ], $I);
-        $I->validateJoomlaForm("domain-form", $this->form_fields, $I);
+        // Account Field Should Not Be Visible Yet
+        $I->dontSee("select#jform_account_id");
+        $I->seeElement("input#jform_name");
+        $I->validateJoomlaForm("domain-form", [
+            'client_id'=>['type'=>'select','required'=>true],
+            'name'=>['type'=>'text','required'=>true],
+        ], $I);
         // Check that the tab exists
         $I->seeElement("#myTab");
         $I->see("Domain Details", "#myTab button[aria-controls=details]");
@@ -138,10 +144,6 @@ class MothershipAdminDomainsCest
         $I->makeScreenshot("mothership-domain-add-errors");
 
         // VERIFY & FILL FORM FIELDS
-        // Initially only the client is visible until a value is selected
-        $I->seeElement("select#jform_client_id");
-        $I->dontSee("select#jform_account_id");
-        $I->seeElement("input#jform_name");
         // Select a Client to load Accounts
         $I->selectOption("select#jform_client_id", $this->clientData['id']);
         $I->wait(1);
@@ -153,16 +155,19 @@ class MothershipAdminDomainsCest
         // Confirm Account is selected
         $I->seeOptionIsSelected("select#jform_account_id", "{$this->accountData['name']}");
         
+        // FIll form Fields
+        // USE INVALID DOMAIN NAME FIRST
         $I->fillField("input#jform_name", "not a valid domain");
         $I->fillField("input#jform_registrar", "GoDaddy");
         $I->fillField("input#jform_reseller", "GoDaddy");
         $I->selectOption("select#jform_dns_provider", "cloudflare");
         $I->fillField("input#jform_purchase_date", "2020-01-01 00:00:00");
-
+        // Save the form
         $I->click("Save", "#toolbar");
         $I->waitForJoomlaHeading("New Domain", $I);
         $I->see("The form cannot be submitted as it's missing required data.", "#system-message-container .alert-message");
 
+        // CORRECT THE DOMAIN NAME
         $I->fillField("input#jform_name", "example.com");
         // VERIFY SAVE ACTION SUCCESS
         $I->click("Save", "#toolbar");
