@@ -42,7 +42,7 @@ services:
       - db_data:/var/lib/mysql
 
   selenium:
-    image: ghcr.io/selenium/standalone-chrome:129.0
+    image: ghcr.io/trevorbicewebdesign/selenium-standalone-chrome:129.0
     pull_policy: if_not_present
     ports:
       - "4444:4444"
