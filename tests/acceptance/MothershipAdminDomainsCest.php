@@ -24,6 +24,7 @@ class MothershipAdminDomainsCest
     {
         $this->form_fields = [
             'client_id'=>['type'=>'select','required'=>true],
+            'account_id'=>['type'=>'select','required'=>true],
             'name'=>['type'=>'text','required'=>true],
         ];
 
@@ -120,38 +121,36 @@ class MothershipAdminDomainsCest
     {
         $I->amOnPage(self::DOMAINS_VIEW_ALL_URL);
         $I->waitForJoomlaHeading("Domains", $I);
-
-        $toolbar = "#toolbar";
-        $toolbarNew = "#toolbar-new";
-        $I->seeElement("{$toolbar} {$toolbarNew}");
-        $I->see("New", "{$toolbar} {$toolbarNew} .btn.button-new");
-
-        $I->click("{$toolbar} {$toolbarNew} .btn.button-new");
+        $I->validateJoomlaItemActions(['New', ], $I);
+        $I->click("New");
+        // Wait for the new domain form to load
         $I->waitForJoomlaHeading("New Domain", $I);
-
         $I->makeScreenshot("mothership-domain-add-details");
-
-        $I->seeElement("form[name=adminForm]");
-        $I->seeElement("form#domain-form");
-
+        $I->dontSee("Warning");
+        $I->validateJoomlaItemActions([ 'Save', 'Save & Close', 'Cancel' ], $I);
+        $I->validateJoomlaForm("domain-form", $this->form_fields, $I);
+        // Check that the tab exists
         $I->seeElement("#myTab");
         $I->see("Domain Details", "#myTab button[aria-controls=details]");
-
         // SAVE WITHOUT ENTERING DATA
         $I->click("Save", "#toolbar");
-        $I->wait(1);
-        $I->see("One of the options must be selected", "label#jform_client_id-lbl .form-control-feedback");
-        $I->makeScreenshot("mothership-domain-add-details");
+        $I->waitForJoomlaHeading("New Domain", $I);
+        $I->makeScreenshot("mothership-domain-add-errors");
+
         // VERIFY & FILL FORM FIELDS
+        // Initially only the client is visible until a value is selected
         $I->seeElement("select#jform_client_id");
         $I->dontSee("select#jform_account_id");
         $I->seeElement("input#jform_name");
-
+        // Select a Client to load Accounts
         $I->selectOption("select#jform_client_id", $this->clientData['id']);
         $I->wait(1);
+        // Confirm Client is selected
         $I->seeOptionIsSelected("select#jform_client_id", "{$this->clientData['name']}");
+        // Select an Account
         $I->selectOption("select#jform_account_id", $this->accountData['id']);
         $I->wait(1);
+        // Confirm Account is selected
         $I->seeOptionIsSelected("select#jform_account_id", "{$this->accountData['name']}");
         
         $I->fillField("input#jform_name", "not a valid domain");
