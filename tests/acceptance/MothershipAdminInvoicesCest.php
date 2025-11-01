@@ -118,11 +118,13 @@ class MothershipAdminInvoicesCest
     public function MothershipCancelClientEdit(AcceptanceTester $I)
     {
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
+        $I->wait(1);
         $I->waitForText("Mothership: Invoices", 30, "h1.page-title");
-
         $I->click("Test Client");
+        $I->wait(1);
         $I->waitForText("Mothership: Edit Client", 30, "h1.page-title");
         $I->click("Close", "#toolbar");
+        $I->wait(1);
         $I->waitForText("Mothership: Invoices", 30, "h1.page-title");
     }
 
