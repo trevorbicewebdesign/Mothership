@@ -112,11 +112,15 @@ class InvoiceController extends FormController
             'account' => $account,
             'business' => $business
         ]);
-
-        echo $layout->render(['invoice' => $invoice]);
         $html = ob_get_clean();
 
-        $pdf = new Mpdf();
+        $pdf = new Mpdf([
+            'mode'   => 'utf-8',
+            'format' => 'Letter', 
+            'orientation' => 'P',
+            'dpi' => 72,
+            'img_dpi' => 72,
+        ]);
         $pdf->WriteHTML($html);
         $pdf->Output('Invoice-' . $invoice->number . '.pdf', 'I');
 
