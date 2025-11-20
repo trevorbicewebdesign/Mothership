@@ -21,6 +21,7 @@ require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/Pr
 require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/invoiceitems.php';
 require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/PaymentStatusField.php';
 require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/InvoiceStatusField.php';
+require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/InvoicePdfTemplateList.php';
 // Ensure the DomainRule class is autoloaded
 require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Rule/domain.php';
 // Auto load the composer packages
