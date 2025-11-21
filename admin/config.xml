@@ -66,6 +66,17 @@
 		<field name="company_default_rate" type="number" default="" class="" label="COM_MOTHERSHIP_OPTIONS_COMPANY_DEFAULT_RATE_LABEL" description="COM_MOTHERSHIP_OPTIONS_COMPANY_DEFAULT_RATE_DESC" required="true" />
 	</fieldset>
 
+	<fieldset name="settings" label="COM_MOTHERSHIP_OPTIONS_SETTINGS" description=""  addfieldprefix="TrevorBice\Component\Mothership\Administrator\Field">
+		<field
+			name="invoice_pdf_template"
+			type="InvoicePdfTemplate"
+			default="1"
+			label="COM_MOTHERSHIP_CONFIG_INVOICE_PDF_TEMPLATE_LABEL"
+			description="COM_MOTHERSHIP_CONFIG_INVOICE_PDF_TEMPLATE_DESC"
+		/>
+	</fieldset>
+	
+
 	<fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC">
 		<field name="rules" type="rules" label="JCONFIG_PERMISSIONS_LABEL" filter="rules" validate="rules" component="com_mothership" section="component">
 		</field>

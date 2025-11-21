@@ -11,6 +11,14 @@
 		<field name="status" type="invoicestatus" default="1" readonly="" class="" label="COM_MOTHERSHIP_FIELD_INVOICE_STATUS_LABEL" description="COM_MOTHERSHIP_FIELD_INVOICE_STATUS_DESC" />
 		<field name="due_date" type="calendar" readonly="false" class="validate-date" label="COM_MOTHERSHIP_FIELD_INVOICE_DUE_LABEL" description="COM_MOTHERSHIP_FIELD_INVOICE_DUE_DESC" default="" format="%Y-%m-%d" filter="user_utc" />
 		<field name="created" type="calendar" readonly="false" class="validate-date" label="COM_MOTHERSHIP_FIELD_INVOICE_CREATED_LABEL" description="COM_MOTHERSHIP_FIELD_INVOICE_CREATED_DESC" default="" format="%Y-%m-%d" filter="user_utc" />
+		<field
+			name="summary"
+			type="editor"
+			label="COM_MOTHERSHIP_FIELD_SUMMARY_LABEL"
+			description="COM_MOTHERSHIP_FIELD_SUMMARY_DESC"
+			rows="3"
+			filter="safehtml"
+		/>
 		<field name="items" type="invoiceitems"  required="required"
 			formsource="/administrator/components/com_mothership/forms/invoice_items.xml"
 			label="COM_MOTHERSHIP_INVOICE_ITEMS"
@@ -18,6 +26,14 @@
 			multiple="true"
 			buttons="add"
 			sortable="true"
+		/>
+		<field
+			name="notes"
+			type="editor"
+			label="COM_MOTHERSHIP_FIELD_NOTES_LABEL"
+			description="COM_MOTHERSHIP_FIELD_NOTES_DESC"
+			rows="4"
+			filter="safehtml"
 		/>
 	</fieldset>
 </form>

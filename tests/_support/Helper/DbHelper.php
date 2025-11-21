@@ -41,6 +41,7 @@ class DbHelper extends Db
             "tax_id" => "",
             "default_rate" => $data['default_rate'] ?? 100.00,
             "owner_user_id" => $data['owner_user_id'] ?? 0,
+            "invoice_pdf_template" => $data['invoice_pdf_template'] ?? 'default',
             "created" => date('Y-m-d H:i:s'),
         ];
 
@@ -180,6 +181,8 @@ class DbHelper extends Db
             "due_date" => date('Y-m-d H:i:s', strtotime('+30 days')),
             "created" => null,
             "total" => 100,
+            "summary" => "This is a test invoice summary.",
+            "notes" => "These are test invoice notes.",
             "checked_out_time" => null,
             "checked_out" => null
         ];

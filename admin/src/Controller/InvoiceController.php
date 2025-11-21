@@ -6,16 +6,21 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\MVC\Controller\FormController;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Component\ComponentHelper;
 use Mpdf\Mpdf;
+use Mpdf\Config\ConfigVariables;
+use Mpdf\Config\FontVariables;
 use Joomla\CMS\Layout\FileLayout;
 use TrevorBice\Component\Mothership\Administrator\Helper\AccountHelper;
 use TrevorBice\Component\Mothership\Administrator\Helper\ClientHelper;
 use TrevorBice\Component\Mothership\Administrator\Helper\ProjectHelper;
 use TrevorBice\Component\Mothership\Administrator\Helper\MothershipHelper;
+use Joomla\CMS\Plugin\PluginHelper;
+
+
 
 
 \defined('_JEXEC') or die;
-
 
 /**
  * Invoice Controller for com_mothership
@@ -46,6 +51,50 @@ class InvoiceController extends FormController
         Factory::getApplication()->close();
     }
 
+    /**
+     * Retrieves an instance of an invoice PDF plugin by its name.
+     *
+     * This method normalizes the plugin name to lowercase, loads the 
+     * 'mothership-invoice-pdf' plugin group, and searches for the specified plugin.
+     * If the plugin is found, it constructs the expected class name, verifies 
+     * its existence, and instantiates the plugin class.
+     *
+     * @param string $pluginName The name of the invoice PDF plugin to retrieve.
+     * 
+     * @return object An instance of the specified invoice PDF plugin.
+     * 
+     * @throws \RuntimeException If the plugin class is not found or the plugin 
+     *                           is not enabled.
+     */
+    protected function getPluginInstance(string $pluginName)
+    {
+        $normalized = strtolower($pluginName);
+
+        \Joomla\CMS\Plugin\PluginHelper::importPlugin('mothership-invoice-pdf');
+
+        $plugins = \Joomla\CMS\Plugin\PluginHelper::getPlugin('mothership-invoice-pdf');
+
+        foreach ($plugins as $plugin) {
+            if ($plugin->name === $normalized) {
+                // Expected class name e.g. PlgMothershipInvoicePdfTbwebdesign
+                $className = 'PlgMothershipInvoicePdf' . ucfirst($plugin->name);
+
+                if (!class_exists($className)) {
+                    throw new \RuntimeException("Plugin class '$className' not found.");
+                }
+
+                $dispatcher = \Joomla\CMS\Factory::getApplication()->getDispatcher();
+
+                return new $className($dispatcher, (array) $plugin);
+            }
+        }
+
+        throw new \RuntimeException(
+            "Invoice PDF plugin '$pluginName' not found or not enabled."
+        );
+    }
+
+
     public function previewPdf()
     {
         $app = Factory::getApplication();
@@ -59,9 +108,6 @@ class InvoiceController extends FormController
 
         $model = $this->getModel('Invoice');
         $invoice = $model->getItem($id);
-        $client = ClientHelper::getClient($invoice->client_id);
-        $account = AccountHelper::getAccount($invoice->account_id);
-        $business = MothershipHelper::getMothershipOptions();
 
         if (!$invoice) {
             $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVOICE_NOT_FOUND'), 'error');
@@ -69,16 +115,56 @@ class InvoiceController extends FormController
             return;
         }
 
-        $layout = new FileLayout('pdf', JPATH_ROOT . '/components/com_mothership/layouts');
-        echo $layout->render([
+        $client = ClientHelper::getClient($invoice->client_id);
+        $account = AccountHelper::getAccount($invoice->account_id);
+        $business = MothershipHelper::getMothershipOptions();
+
+        // Data passed to either plugin or layout
+        $viewData = [
             'invoice' => $invoice,
             'client' => $client,
             'account' => $account,
-            'business' => $business
-        ]);
+            'business' => $business,
+        ];
 
+        $html = null;
+
+        // Try invoice-PDF plugin first (if configured)
+
+        try {
+            $pluginName = $client->invoice_pdf_template;
+
+            if ($pluginName !== '') {
+                $plugin = $this->getPluginInstance($pluginName);
+
+                if (!method_exists($plugin, 'renderInvoicePdf')) {
+                    throw new \RuntimeException(
+                        "Invoice PDF plugin '{$pluginName}' does not implement renderInvoicePdf()."
+                    );
+                }
+
+                // Expected to return HTML string
+                $html = $plugin->renderInvoicePdf($viewData);
+            }
+        } catch (\Throwable $e) {
+            // Soft-fail: log / warn, but continue to fallback layout
+            $app->enqueueMessage(
+                Text::sprintf('COM_MOTHERSHIP_INVOICE_PDF_PLUGIN_FAILED', $e->getMessage()),
+                'warning'
+            );
+            $html = null;
+        }
+
+        // Fallback to default internal layout if no plugin, plugin failed, or plugin returned nothing
+        if (empty($html)) {
+            $layout = new FileLayout('pdf', JPATH_ROOT . '/components/com_mothership/layouts');
+            $html = $layout->render($viewData);
+        }
+
+        echo $html;
         $app->close();
     }
+
 
     public function downloadPdf()
     {
@@ -94,9 +180,6 @@ class InvoiceController extends FormController
 
         $model = $this->getModel('Invoice');
         $invoice = $model->getItem($id);
-        $client = ClientHelper::getClient($invoice->client_id);
-        $account = AccountHelper::getAccount($invoice->account_id);
-        $business = MothershipHelper::getMothershipOptions();
 
         if (!$invoice) {
             $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVOICE_NOT_FOUND'), 'error');
@@ -104,21 +187,93 @@ class InvoiceController extends FormController
             return;
         }
 
-        ob_start();
-        $layout = new FileLayout('pdf', JPATH_ROOT . '/components/com_mothership/layouts');
-        echo $layout->render([
+        $client = ClientHelper::getClient($invoice->client_id);
+        $account = AccountHelper::getAccount($invoice->account_id);
+        $business = MothershipHelper::getMothershipOptions();
+
+        // Data passed to either plugin or layout
+        $viewData = [
             'invoice' => $invoice,
-            'client' => $client,
+            'client'  => $client,
             'account' => $account,
-            'business' => $business
+            'business'=> $business,
+        ];
+
+        $html = null;
+
+        // Try invoice-PDF plugin first (if configured) — match preview behavior
+        try {
+            $pluginName = $client->invoice_pdf_template;
+
+            if ($pluginName !== '') {
+                $plugin = $this->getPluginInstance($pluginName);
+
+                if (!method_exists($plugin, 'renderInvoicePdf')) {
+                    throw new \RuntimeException(
+                        "Invoice PDF plugin '{$pluginName}' does not implement renderInvoicePdf()."
+                    );
+                }
+
+                // Expected to return HTML string
+                $result = $plugin->renderInvoicePdf($viewData);
+
+                // If plugin returned HTML, use it. Otherwise fall back to layout.
+                if (is_string($result) && trim($result) !== '') {
+                    $html = $result;
+                } else {
+                    // allow plugin to have soft-failed by returning nothing/invalid content
+                    $html = null;
+                }
+            }
+        } catch (\Throwable $e) {
+            // Soft-fail: log / warn, but continue to fallback layout
+            $app->enqueueMessage(
+                Text::sprintf('COM_MOTHERSHIP_INVOICE_PDF_PLUGIN_FAILED', $e->getMessage()),
+                'warning'
+            );
+            $html = null;
+        }
+
+        // Fallback to default internal layout if no plugin, plugin failed, or plugin returned nothing
+        if (empty($html)) {
+            $layout = new FileLayout('pdf', JPATH_ROOT . '/components/com_mothership/layouts');
+            $html = $layout->render($viewData);
+        }
+
+        $defaultConfig = (new ConfigVariables())->getDefaults();
+        $fontDirs = $defaultConfig['fontDir'];
+
+        $defaultFontConfig = (new FontVariables())->getDefaults();
+        $fontData = $defaultFontConfig['fontdata'];
+
+        // Generate PDF from the resolved HTML
+        $pdf = new Mpdf([
+            'mode'     => 'utf-8',
+            'format'   => 'Letter',
+            'orientation' => 'P',
+            'dpi'      => 72,
+            'img_dpi'  => 72,
+            
         ]);
 
-        echo $layout->render(['invoice' => $invoice]);
-        $html = ob_get_clean();
+        
 
-        $pdf = new Mpdf();
+        $pdf->SetHTMLFooter('
+            <div class="final-company-info" style="text-align:center; font-size:10px;line-height:1em;">
+                <strong>' . htmlspecialchars($business['company_name']) . '</strong><br>
+                ' . htmlspecialchars($business['company_address_1']) . '<br>
+                ' . htmlspecialchars($business['company_city']) . ', ' . 
+                    htmlspecialchars($business['company_state']) . ' ' . 
+                    htmlspecialchars($business['company_zip']) . '<br>
+                ' . htmlspecialchars($business['company_phone']) . '
+            </div>
+            ');
+
         $pdf->WriteHTML($html);
-        $pdf->Output('Invoice-' . $invoice->number . '.pdf', 'I');
+
+        // Output inline (I) to match previous behavior; change to 'D' to force download
+        $filename = 'Invoice-' . (!empty($invoice->number) ? $invoice->number : $invoice->id) . '.pdf';
+        $pdf->Output($filename, 'I');
 
         $app->close();
     }
