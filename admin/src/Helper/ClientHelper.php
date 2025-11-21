@@ -86,6 +86,7 @@ class ClientHelper extends ContentHelper
                 'tax_id',
                 'default_rate',
                 'owner_user_id',
+                'invoice_pdf_template',
                 'created',
                 'created_by',
                 'checked_out_time',

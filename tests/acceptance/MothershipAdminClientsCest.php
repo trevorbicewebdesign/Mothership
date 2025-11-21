@@ -142,6 +142,7 @@ class MothershipAdminClientsCest
             'zip'=>'text',
             'default_rate'=>'text',
             'owner_user_id'=>'modal',
+            'invoice_pdf_template'=>'select',
         ];
         $required_fields = [
             'name',
@@ -153,6 +154,7 @@ class MothershipAdminClientsCest
             'zip',
             'default_rate',
             'owner_user_id',
+            'invoice_pdf_template',
         ];
         // Verify fields exist
         foreach($form_fields as $field=> $type) {
@@ -257,6 +259,7 @@ class MothershipAdminClientsCest
             'zip' => '95524',
             'default_rate' => '100.00',
             'tax_id' => '',
+            'invoice_pdf_template' => 'Default',
             // 'created' => date("Y-m-d 00:00:00"),
         ]);
 

@@ -3,21 +3,35 @@
 namespace TrevorBice\Component\Mothership\Administrator\Field;
 
 use Joomla\CMS\Form\Field\ListField;
-use TrevorBice\Component\Mothership\Administrator\Helper\AccountHelper;
+\defined('_JEXEC') or die;
 
-defined('_JEXEC') or die;
-
-class InvoicePdfTemplateList extends ListField
+class InvoicepdftemplateListField extends ListField
 {
-    protected $type = 'invoicepdftemplate';
+    protected $type = 'invoicepdftemplatelist';
 
     public function getOptions()
     {
+
+        \Joomla\CMS\Plugin\PluginHelper::importPlugin('mothership-invoice-pdf');
+
+        $plugins = \Joomla\CMS\Plugin\PluginHelper::getPlugin('mothership-invoice-pdf');
+
         $form = $this->form;
         $data = $form->getData();
-        $client_id = $data->get('client_id', null);
 
-        $options = AccountHelper::getAccountListOptions($client_id);
+        // The options are the installed plugins, plus `default`
+        $options = [];
+        $options[] = (object) [
+            'value' => 'default',
+            'text'  => "Default"
+        ];
+        foreach ($plugins as $plugin) {
+            $options[] = (object) [
+                'value' => $plugin->name,
+                'text'  => $plugin->name
+            ];
+        }
+        
         return array_merge(parent::getOptions(), $options);
     }
 }

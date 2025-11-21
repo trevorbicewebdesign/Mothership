@@ -87,7 +87,16 @@ $listDirn = $this->escape($this->state->get('list.direction'));
             <div class="col-lg-12">
                 <div>
                     <fieldset class="adminform">
+                        <?php echo $this->form->renderField('summary'); ?>
+
+                        <hr/>
+
                         <?php echo $this->form->getInput('items'); ?>
+
+                        <hr/>
+
+                        <?php echo $this->form->renderField('notes'); ?>
+
                     </fieldset>
                 </div>
             </div>
