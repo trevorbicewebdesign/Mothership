@@ -3,3 +3,4 @@
 /tests/.env
 /tests/_output/
 /tests/_support/
+plugins/mothership-invoice-pdf/tbwebdesign/*
