@@ -8,10 +8,10 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
 
-class InvoicesController extends BaseController
+class EstimatesController extends BaseController
 {
     /**
-     * Display the list of Invoices.
+     * Display the list of Estimates.
      *
      * @param   bool  $cachable   Should the view be cached
      * @param   array $urlparams  An array of safe url parameters and their variable types.
@@ -39,16 +39,16 @@ class InvoicesController extends BaseController
         if (empty($ids)) {
             $app->enqueueMessage(Text::_('JGLOBAL_NO_ITEM_SELECTED'), 'warning');
         } else {
-            $model = $this->getModel('Invoices');
+            $model = $this->getModel('Estimates');
             if ($model->checkin($ids)) {
                 // this uses sprint f to insert the number of items checked in into the message
-                $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_INVOICE_CHECK_IN_SUCCESS', count($ids)), 'message');
+                $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_ESTIMATE_CHECK_IN_SUCCESS', count($ids)), 'message');
             } else {
-                $app->enqueueMessage(Text::_('COM_MOTHERSHIP_INVOICE_CHECK_IN_FAILED'), 'error');
+                $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ESTIMATE_CHECK_IN_FAILED'), 'error');
             }
         }
 
-        $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoices', false));
+        $this->setRedirect(Route::_('index.php?option=com_mothership&view=estimates', false));
     }
 
     public function delete()
@@ -61,54 +61,54 @@ class InvoicesController extends BaseController
 
         if (empty($ids)) {
             $app->enqueueMessage(Text::_('JGLOBAL_NO_ITEM_SELECTED'), 'warning');
-            $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoices', false));
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=estimates', false));
             return;
         }
 
         $allowed = [];
         $blocked = [];
 
-        // Filter invoice IDs: only allow draft invoices to be deleted
-        foreach ($ids as $invoiceId) {
+        // Filter estimate IDs: only allow draft estimates to be deleted
+        foreach ($ids as $estimateId) {
             $query = $db->getQuery(true)
                 ->select($db->quoteName('status'))
-                ->from($db->quoteName('#__mothership_invoices'))
-                ->where($db->quoteName('id') . ' = ' . $invoiceId);
+                ->from($db->quoteName('#__mothership_estimates'))
+                ->where($db->quoteName('id') . ' = ' . $estimateId);
             $db->setQuery($query);
             $status = (int) $db->loadResult();
 
             if ($status === 1) { // 0 = Draft
-                $allowed[] = $invoiceId;
+                $allowed[] = $estimateId;
             } else {
-                $blocked[] = $invoiceId;
+                $blocked[] = $estimateId;
             }
         }
 
         if (!empty($allowed)) {
-            $model = $this->getModel('Invoices');
+            $model = $this->getModel('Estimates');
 
             if ($model->delete($allowed)) {
                 $count = count($allowed);
                 $app->enqueueMessage(
-                    Text::sprintf('COM_MOTHERSHIP_INVOICE_DELETE_SUCCESS', $count, $count === 1 ? '' : 's'),
+                    Text::sprintf('COM_MOTHERSHIP_ESTIMATE_DELETE_SUCCESS', $count, $count === 1 ? '' : 's'),
                     'message'
                 );
             } else {
-                $app->enqueueMessage(Text::_('COM_MOTHERSHIP_INVOICE_DELETE_FAILED'), 'error');
+                $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ESTIMATE_DELETE_FAILED'), 'error');
             }
         }
 
         if (!empty($blocked)) {
             $app->enqueueMessage(
                 Text::sprintf(
-                    'COM_MOTHERSHIP_INVOICE_DELETE_SKIPPED_NON_DRAFT',
+                    'COM_MOTHERSHIP_ESTIMATE_DELETE_SKIPPED_NON_DRAFT',
                     implode(', ', $blocked)
                 ),
                 'warning'
             );
         }
 
-        $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoices', false));
+        $this->setRedirect(Route::_('index.php?option=com_mothership&view=estimates', false));
     }
 
 
