@@ -8,7 +8,7 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace TrevorBice\Component\Mothership\Administrator\View\Invoices;
+namespace TrevorBice\Component\Mothership\Administrator\View\Estimates;
 
 use Joomla\CMS\Form\Form;
 use Joomla\CMS\Helper\ContentHelper;
@@ -18,7 +18,7 @@ use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use Joomla\CMS\Pagination\Pagination;
 use Joomla\CMS\Toolbar\ToolbarHelper;
-use TrevorBice\Component\Mothership\Administrator\Model\InvoicesModel;
+use TrevorBice\Component\Mothership\Administrator\Model\EstimatesModel;
 use Joomla\CMS\Factory;
 use Joomla\CMS\User\User;
 
