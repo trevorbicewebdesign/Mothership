@@ -9,7 +9,7 @@ use Joomla\CMS\Factory;
 use TrevorBice\Component\Mothership\Administrator\Helper\MothershipHelper;
 use TrevorBice\Component\Mothership\Administrator\Helper\InvoiceHelper;
 
-/** @var \TrevorBice\Component\Mothership\Administrator\View\Invoices\HtmlView $this */
+/** @var \TrevorBice\Component\Mothership\Administrator\View\Estimates\HtmlView $this */
 
 $wa = $this->getDocument()->getWebAssetManager();
 $wa->useScript('table.columns')
@@ -19,7 +19,7 @@ $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn = $this->escape($this->state->get('list.direction'));
 
 ?>
-<form action="<?php echo Route::_('index.php?option=com_mothership&view=invoices'); ?>" method="post" name="adminForm"
+<form action="<?php echo Route::_('index.php?option=com_mothership&view=estimates'); ?>" method="post" name="adminForm"
     id="adminForm">
     <div class="row">
         <div class="col-md-12">
@@ -35,7 +35,7 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                         <?php echo Text::_('JGLOBAL_NO_MATCHING_RESULTS'); ?>
                     </div>
                 <?php else: ?>
-                    <table class="table itemList" id="invoiceList">
+                    <table class="table itemList" id="estimateList">
                         <thead>
                             <tr>
                                 <th width="1%" class="text-center">
@@ -45,38 +45,38 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                     <?php echo HTMLHelper::_('searchtools.sort', 'JGRID_HEADING_ID', 'i.id', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_INVOICE_HEADING_NUMBER', 'i.number', $listDirn, $listOrder); ?>
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_ESTIMATE_HEADING_NUMBER', 'i.number', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_INVOICE_HEADING_PDF', 'c.name', $listDirn, $listOrder); ?>
-                                </th>
-
-                                <th scope="col" class="w-10">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_INVOICE_HEADING_CLIENT', 'c.name', $listDirn, $listOrder); ?>
-                                </th>
-                                <th scope="col" class="w-10">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_INVOICE_HEADING_ACCOUNT', 'a.name', $listDirn, $listOrder); ?>
-                                </th>
-                                <th scope="col" class="w-10">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_INVOICE_HEADING_PROJECT', 'p.name', $listDirn, $listOrder); ?>
-                                </th>
-                                <th scope="col" class="w-10">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_INVOICE_HEADING_TOTAL', 'i.total', $listDirn, $listOrder); ?>
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_ESTIMATE_HEADING_PDF', 'c.name', $listDirn, $listOrder); ?>
                                 </th>
 
                                 <th scope="col" class="w-10">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_INVOICE_HEADING_STATUS', 'i.status', $listDirn, $listOrder); ?>
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_ESTIMATE_HEADING_CLIENT', 'c.name', $listDirn, $listOrder); ?>
+                                </th>
+                                <th scope="col" class="w-10">
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_ESTIMATE_HEADING_ACCOUNT', 'a.name', $listDirn, $listOrder); ?>
+                                </th>
+                                <th scope="col" class="w-10">
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_ESTIMATE_HEADING_PROJECT', 'p.name', $listDirn, $listOrder); ?>
+                                </th>
+                                <th scope="col" class="w-10">
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_ESTIMATE_HEADING_TOTAL', 'i.total', $listDirn, $listOrder); ?>
                                 </th>
 
                                 <th scope="col" class="w-10">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_INVOICE_HEADING_PAYMENT_STATUS', 'i.payment_status', $listDirn, $listOrder); ?>
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_ESTIMATE_HEADING_STATUS', 'i.status', $listDirn, $listOrder); ?>
                                 </th>
 
                                 <th scope="col" class="w-10">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_INVOICE_HEADING_DUE', 'i.due_date', $listDirn, $listOrder); ?>
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_ESTIMATE_HEADING_PAYMENT_STATUS', 'i.payment_status', $listDirn, $listOrder); ?>
+                                </th>
+
+                                <th scope="col" class="w-10">
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_ESTIMATE_HEADING_DUE', 'i.due_date', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_INVOICE_HEADING_CREATED', 'i.created', $listDirn, $listOrder); ?>
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_ESTIMATE_HEADING_CREATED', 'i.created', $listDirn, $listOrder); ?>
                                 </th>
                             </tr>
                         </thead>
