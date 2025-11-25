@@ -84,7 +84,6 @@ class EstimatesModel extends ListModel
                     $db->quoteName('i.checked_out_time'),
                     $db->quoteName('i.checked_out'),
                     $db->quoteName('i.locked'),
-                    $db->quoteName('pay.payment_ids'),
                     $db->quoteName('i.created'),
                     $db->quoteName('i.created_by'),      
                     $db->quoteName('i.project_id'),
@@ -98,34 +97,16 @@ class EstimatesModel extends ListModel
                         ' WHEN 4 THEN ' . $db->quote('Closed') .
                         ' ELSE ' . $db->quote('Unknown') . ' END AS ' . $db->quoteName('status'),
 
-                    // 👇 Add total_paid and payment_status
-                    'COALESCE(pay.total_paid, 0) AS total_paid',
-                    'CASE' .
-                        ' WHEN COALESCE(pay.total_paid, 0) <= 0 THEN ' . $db->quote('Unpaid') .
-                        ' WHEN COALESCE(pay.total_paid, 0) < i.total THEN ' . $db->quote('Partially Paid') .
-                        ' ELSE ' . $db->quote('Paid') .
-                    ' END AS payment_status'
+                   
                 ]
             )
         );
 
-        $query->from($db->quoteName('#__mothership_invoices', 'i'))
+        $query->from($db->quoteName('#__mothership_estimates', 'i'))
             ->join('LEFT', $db->quoteName('#__mothership_clients', 'c') . ' ON ' . $db->quoteName('i.client_id') . ' = ' . $db->quoteName('c.id'))
             ->join('LEFT', $db->quoteName('#__mothership_accounts', 'a') . ' ON ' . $db->quoteName('i.account_id') . ' = ' . $db->quoteName('a.id'))
             ->join('LEFT', $db->quoteName('#__mothership_projects', 'p') . ' ON ' . $db->quoteName('i.project_id') . ' = ' . $db->quoteName('p.id'))
-
-            // 👇 JOIN: Pull total completed payments per invoice
-            ->join(
-                'LEFT',
-                '(SELECT ip.invoice_id,
-                         SUM(ip.applied_amount) AS total_paid,
-                         GROUP_CONCAT(p.id ORDER BY p.payment_date) AS payment_ids
-                  FROM ' . $db->quoteName('#__mothership_invoice_payment', 'ip') . '
-                  JOIN ' . $db->quoteName('#__mothership_payments', 'p') . ' ON ip.payment_id = p.id
-                  WHERE p.status = 2
-                  GROUP BY ip.invoice_id) AS pay
-                ON pay.invoice_id = i.id'
-            );
+            ;
 
         // Filter by ID search
         if ($search = trim($this->getState('filter.search', ''))) {
@@ -189,7 +170,7 @@ class EstimatesModel extends ListModel
     
         // Build the query using an IN clause for multiple IDs
         $query = $db->getQuery(true)
-            ->update($db->quoteName('#__mothership_invoices'))
+            ->update($db->quoteName('#__mothership_estimates'))
             ->set($db->quoteName('checked_out') . ' = 0')
             ->set($db->quoteName('checked_out_time') . ' = ' . $db->quote('0000-00-00 00:00:00'))
             ->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
@@ -206,7 +187,7 @@ class EstimatesModel extends ListModel
         }
     }
 
-    public function canDeleteInvoice($record): bool
+    public function canDeleteEstimate($record): bool
     {
         $id = (int) ($record->id ?? $record['id'] ?? 0);
         $status = (int) ($record->status ?? $record['status'] ?? null);
@@ -240,7 +221,7 @@ class EstimatesModel extends ListModel
         foreach ($ids as $id) {
             $query = $db->getQuery(true)
                 ->select($db->quoteName(['id', 'status']))
-                ->from($db->quoteName('#__mothership_invoices'))
+                ->from($db->quoteName('#__mothership_estimates'))
                 ->where($db->quoteName('id') . ' = :id')
                 ->bind(':id', $id, ParameterType::INTEGER);
 
@@ -263,15 +244,9 @@ class EstimatesModel extends ListModel
         try {
             $db->transactionStart();
 
-            // Delete linked invoice_payment rows
+            // Delete estimates
             $query = $db->getQuery(true)
-                ->delete($db->quoteName('#__mothership_invoice_payment'))
-                ->where($db->quoteName('invoice_id') . ' IN (' . implode(',', $deletableIds) . ')');
-            $db->setQuery($query)->execute();
-
-            // Delete invoices
-            $query = $db->getQuery(true)
-                ->delete($db->quoteName('#__mothership_invoices'))
+                ->delete($db->quoteName('#__mothership_estimates'))
                 ->where($db->quoteName('id') . ' IN (' . implode(',', $deletableIds) . ')');
             $db->setQuery($query)->execute();
 
