@@ -81,7 +81,7 @@ class EstimateModel extends AdminModel
     protected function loadFormData()
     {
         $app = Factory::getApplication();
-        $data = $app->getUserState('com_mothership.edit.invoice.data', []);
+        $data = $app->getUserState('com_mothership.edit.estimate.data', []);
 
         if ((is_object($data) && isset($data->id) && empty($data->id)) || (is_array($data) && empty($data['id']))) {
             $data = $this->getItem();
