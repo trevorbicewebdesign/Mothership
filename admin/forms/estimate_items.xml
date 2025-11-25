@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fields name="items">
+		<field name="name" type="text" label="Item Name" readonly="false" required="true" />
+        <field name="description" type="text" label="Description" size="40" />
+		<field name="hours" type="number" label="Hours" required="true" />
+		<field name="minutes" type="number" label="Minutes" required="true" />
+        <field name="quantity" type="text" label="Quantity" required="true" />
+        <field name="rate" type="text" label="Rate" required="true" />
+        <field name="subtotal" type="number" label="Total" readonly="true" />
+    </fields>
+</form>
