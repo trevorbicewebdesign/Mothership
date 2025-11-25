@@ -68,7 +68,7 @@ class HtmlView extends BaseHtmlView
 
         // ✅ Use WebAssetManager to load the script
         $wa = $this->getDocument()->getWebAssetManager();
-        $wa->registerAndUseStyle('com_mothership.invoices', 'administrator/components/com_mothership/assets/css/invoices.css');
+        $wa->registerAndUseStyle('com_mothership.estimates', 'administrator/components/com_mothership/assets/css/estimates.css');
 
         // Ensure transitions is always an array
         $this->transitions = $this->state->get('transitions', []);
@@ -95,10 +95,10 @@ class HtmlView extends BaseHtmlView
         $canDo = ContentHelper::getActions('com_mothership');
         $toolbar = $this->getDocument()->getToolbar();
 
-        ToolbarHelper::title(Text::_('COM_MOTHERSHIP_MANAGER_INVOICES'), 'bookmark mothership-invoices');
+        ToolbarHelper::title(Text::_('COM_MOTHERSHIP_MANAGER_ESTIMATES'), 'bookmark mothership-estimates');
 
         if ($canDo->get('core.create')) {
-            $toolbar->addNew('invoice.add');
+            $toolbar->addNew('estimate.add');
         }
 
         if (!$this->isEmptyState && ($canDo->get('core.edit.state') || $canDo->get('core.admin'))) {
@@ -111,17 +111,17 @@ class HtmlView extends BaseHtmlView
             $childBar = $dropdown->getChildToolbar();
 
             if ($canDo->get('core.admin')) {
-                $childBar->checkin('invoices.checkIn')->listCheck(true);
+                $childBar->checkin('estimates.checkIn')->listCheck(true);
             }
 
-            $childBar->edit('invoice.edit')->listCheck(true); // Add 'Edit' option
-            $childBar->delete('invoices.delete')->listCheck(true);
+            $childBar->edit('estimate.edit')->listCheck(true); // Add 'Edit' option
+            $childBar->delete('estimates.delete')->listCheck(true);
         }
 
         if ($canDo->get('core.admin') || $canDo->get('core.options')) {
             $toolbar->preferences('com_mothership');
         }
 
-        $toolbar->help('Mothership:_Invoice');
+        $toolbar->help('Mothership:_Estimate');
     }
 }
