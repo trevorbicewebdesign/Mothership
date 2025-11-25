@@ -89,7 +89,7 @@ class EstimatesModel extends ListModel
                     $db->quoteName('i.project_id'),
                     $db->quoteName('p.name', 'project_name'),
 
-                    // Invoice status (Draft, Opened, etc.)
+                    // Estimate status (Draft, Opened, etc.)
                     'CASE ' . $db->quoteName('i.status') . 
                         ' WHEN 1 THEN ' . $db->quote('Draft') . 
                         ' WHEN 2 THEN ' . $db->quote('Opened') . 
@@ -144,7 +144,7 @@ class EstimatesModel extends ListModel
             return [];
         }
 
-        // Since "published" doesn't apply for Invoices,
+        // Since "published" doesn't apply for estimates,
         // we simply return the items without additional counting logic.
         $this->cache[$store] = $items;
 
@@ -227,7 +227,7 @@ class EstimatesModel extends ListModel
 
             $record = $db->setQuery($query)->loadObject();
 
-            if ($record && $this->canDeleteInvoice($record)) {
+            if ($record && $this->canDeleteEstimate($record)) {
                 $deletableIds[] = $id;
             } else {
                 $skippedIds[] = $id;
