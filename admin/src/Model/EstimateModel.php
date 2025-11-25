@@ -112,7 +112,7 @@ class EstimateModel extends AdminModel
             $db = $this->getDatabase();
             $query = $db->getQuery(true)
             ->select('*')
-            ->from($db->quoteName('#__mothership_invoice_items'))
+            ->from($db->quoteName('#__mothership_estimate_items'))
             ->where($db->quoteName('invoice_id') . ' = ' . (int) $item->id)
             ->order($db->quoteName('ordering') . ' ASC');
 
@@ -190,7 +190,7 @@ class EstimateModel extends AdminModel
         // Delete existing items
         $db->setQuery(
             $db->getQuery(true)
-                ->delete($db->quoteName('#__mothership_invoice_items'))
+                ->delete($db->quoteName('#__mothership_estimate_items'))
                 ->where($db->quoteName('invoice_id') . ' = ' . (int)$invoiceId)
         )->execute();
 
@@ -212,7 +212,7 @@ class EstimateModel extends AdminModel
                 ];
 
                 $query = $db->getQuery(true)
-                    ->insert($db->quoteName('#__mothership_invoice_items'))
+                    ->insert($db->quoteName('#__mothership_estimate_items'))
                     ->columns($db->quoteName($columns))
                     ->values(implode(',', $values));
 
@@ -266,7 +266,7 @@ class EstimateModel extends AdminModel
         if ($result) {
             $db = $this->getDbo();
             $query = $db->getQuery(true)
-                ->delete($db->quoteName('#__mothership_invoice_items'))
+                ->delete($db->quoteName('#__mothership_estimate_items'))
                 ->where($db->quoteName('invoice_id') . ' IN (' . implode(',', array_map('intval', $pks)) . ')');
 
             $db->setQuery($query)->execute();
