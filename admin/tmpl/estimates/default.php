@@ -11,12 +11,10 @@ use TrevorBice\Component\Mothership\Administrator\Helper\InvoiceHelper;
 
 /** @var \TrevorBice\Component\Mothership\Administrator\View\Estimates\HtmlView $this */
 
-
-/*
 $wa = $this->getDocument()->getWebAssetManager();
 $wa->useScript('table.columns')
     ->useScript('multiselect');
-*/
+
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn = $this->escape($this->state->get('list.direction'));
 
