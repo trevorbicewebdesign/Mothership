@@ -11,10 +11,12 @@ use TrevorBice\Component\Mothership\Administrator\Helper\InvoiceHelper;
 
 /** @var \TrevorBice\Component\Mothership\Administrator\View\Estimates\HtmlView $this */
 
+
+/*
 $wa = $this->getDocument()->getWebAssetManager();
 $wa->useScript('table.columns')
     ->useScript('multiselect');
-
+*/
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn = $this->escape($this->state->get('list.direction'));
 
@@ -24,10 +26,7 @@ $listDirn = $this->escape($this->state->get('list.direction'));
     <div class="row">
         <div class="col-md-12">
             <div id="j-main-container" class="j-main-container">
-                <?php
-                // Search tools bar
-                echo LayoutHelper::render('joomla.searchtools.default', ['view' => $this]);
-                ?>
+                            
                 <?php if (empty($this->items)): ?>
                     <div class="alert alert-info">
                         <span class="icon-info-circle" aria-hidden="true"></span><span
@@ -81,6 +80,7 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                             </tr>
                         </thead>
                         <tbody>
+                            
                             <?php foreach ($this->items as $i => $item):
                                 $user = Factory::getApplication()->getIdentity();
                                 $canEdit = $user->authorise('core.edit', "com_mothership.invoice.{$item->id}");
@@ -164,3 +164,4 @@ $listDirn = $this->escape($this->state->get('list.direction'));
         </div>
     </div>
 </form>
+
