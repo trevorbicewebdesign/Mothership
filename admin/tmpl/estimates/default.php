@@ -64,11 +64,6 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                 <th scope="col" class="w-10">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_ESTIMATE_HEADING_STATUS', 'i.status', $listDirn, $listOrder); ?>
                                 </th>
-
-                                <th scope="col" class="w-10">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_ESTIMATE_HEADING_PAYMENT_STATUS', 'i.payment_status', $listDirn, $listOrder); ?>
-                                </th>
-
                                 <th scope="col" class="w-10">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_ESTIMATE_HEADING_DUE', 'i.due_date', $listDirn, $listOrder); ?>
                                 </th>
@@ -98,17 +93,17 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                     </td>
                                     <td>
                                         <a
-                                            href="<?php echo Route::_("index.php?option=com_mothership&task=invoice.edit&id={$item->id}"); ?>"><?php echo (int) $item->number; ?></a>
+                                            href="<?php echo Route::_("index.php?option=com_mothership&task=estimate.edit&id={$item->id}"); ?>"><?php echo (int) $item->number; ?></a>
                                     </td>
                                     <td>
                                         <a class="downloadPdf"
-                                            href="<?php echo Route::_('index.php?option=com_mothership&task=invoice.downloadPdf&id=' . (int) $item->id); ?>"
+                                            href="<?php echo Route::_('index.php?option=com_mothership&task=estimate.downloadPdf&id=' . (int) $item->id); ?>"
                                             target="_blank">
                                             <i class="fa-solid fa-file-pdf" aria-hidden="true"
                                                 title="<?php echo Text::_('COM_MOTHERSHIP_DOWNLOAD_PDF'); ?>"></i>
                                         </a>
                                         <a class="previewPdf"
-                                            href="<?php echo Route::_('index.php?option=com_mothership&task=invoice.previewPdf&id=' . (int) $item->id); ?>"
+                                            href="<?php echo Route::_('index.php?option=com_mothership&task=estimate.previewPdf&id=' . (int) $item->id); ?>"
                                             target="_blank">
                                             <i class="fa-solid fa-eye" aria-hidden="true"
                                                 title="<?php echo Text::_('COM_MOTHERSHIP_PREVIEW_PDF'); ?>"></i>
@@ -129,15 +124,7 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                         <?php echo $item->status; ?>
                                     </td>
                                     <td>
-                                        <?php echo $item->payment_status; ?><br/>
-                                        <?php $payment_ids = array_filter(explode(",", $item->payment_ids ?? '')); ?>
-                                        <?php if (count($payment_ids) > 0): ?>
-                                        <ul style="margin-bottom:0px;">
-                                            <?php foreach ($payment_ids as $paymentId): ?>
-                                                <li style="list-style: none;"><small><a href="index.php?option=com_mothership&view=payment&layout=edit&id=<?php echo $paymentId; ?>&return=<?php echo base64_encode(Route::_('index.php?option=com_mothership&view=invoices')); ?>"><?php echo "Payment #{$paymentId}"; ?></a></small></li>
-                                            <?php endforeach; ?>
-                                        </ul>
-                                        <?php endif; ?>
+                                        
                                     </td>
                                     <td>
                                         <?php echo !empty($item->due) ? $item->due : 'N/A'; ?>
