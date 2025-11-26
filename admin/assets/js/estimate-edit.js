@@ -55,6 +55,50 @@ jQuery(document).ready(function ($) {
         return isNaN(n) ? fallback : n;
     }
 
+    function isRowFixed(row) {
+        // adjust selector to your actual field name for type
+        const $type = $(row).find('select[name$="[type]"], input[name$="[type]"]');
+        return $type.length && String($type.val()).toLowerCase() === 'fixed';
+    }
+
+    // NEW: toggle CSS class for fixed/material rows
+    function updateRowTypeUI($row) {
+        const isFixed = isRowFixed($row);
+
+        const $timeLow    = $row.find('input[name$="[time_low]"]');
+        const $timeHigh   = $row.find('input[name$="[time]"]');
+        const $qtyLow     = $row.find('input[name$="[quantity_low]"]');
+        const $qtyHigh    = $row.find('input[name$="[quantity]"]');
+        const $rate       = $row.find('input[name$="[rate]"]');
+        const $lowTotal   = $row.find(' input[name$="[subtotal_low]"]');
+        const $highTotal  = $row.find('input[name$="[subtotal]"]');
+
+        if (isFixed) {
+            // Fixed/material: only subtotal fields enabled
+            $row.addClass('estimate-row-fixed');
+
+            $timeLow.prop('disabled', true);
+            $timeHigh.prop('disabled', true);
+            $qtyLow.prop('disabled', true);
+            $qtyHigh.prop('disabled', true);
+            $rate.prop('disabled', true);
+
+            $lowTotal.prop('disabled', false);
+           $highTotal.prop('enabled', true);
+        } else {
+            // Hourly: time/quantity/rate enabled, subtotals read-only
+            $row.removeClass('estimate-row-fixed');
+
+            $timeLow.prop('enabled', false);
+            $timeHigh.prop('enabled', false);
+            $qtyLow.prop('enabled', false);
+            $qtyHigh.prop('enabled', false);
+            $rate.prop('enabled', false);
+            $lowTotal.prop('enabled', true);
+            $highTotal.prop('enabled', true);
+        }
+    }
+
     function updateEstimateTotals() {
         let lowTotalSum  = 0;
         let highTotalSum = 0;
@@ -88,20 +132,11 @@ jQuery(document).ready(function ($) {
         }
     }
 
-    // Totals are purely rate * quantity_(low/high)
+    // Totals:
+    // - hourly: rate * quantity_(low/high)
+    // - fixed:  use subtotal / low_total fields directly as dollar amounts
     function recalcRowTotals(row) {
         const $row = $(row);
-
-        const $qtyLowInput  = $row.find('input[name$="[quantity_low]"]');
-        const $qtyHighInput = $row.find('input[name$="[quantity]"]');
-        const $rateInput    = $row.find('input[name$="[rate]"]');
-
-        const qtyLow  = $qtyLowInput.length  ? toNumber($qtyLowInput.val(), 0)  : 0;
-        const qtyHigh = $qtyHighInput.length ? toNumber($qtyHighInput.val(), 0) : 0;
-        const rate    = $rateInput.length    ? toNumber($rateInput.val(), 0)    : 0;
-
-        const lowTotal  = rate * qtyLow;
-        const highTotal = rate * qtyHigh;
 
         const $lowTotalField = $row.find(
             'input[name$="[low_total]"], input[name$="[subtotal_low]"]'
@@ -110,20 +145,48 @@ jQuery(document).ready(function ($) {
             'input[name$="[high_total]"], input[name$="[subtotal]"]'
         );
 
-        if ($lowTotalField.length) {
-            $lowTotalField.val(formatCurrency(lowTotal));
-        }
-        if ($highTotalField.length) {
-            $highTotalField.val(formatCurrency(highTotal));
+        if (isRowFixed($row)) {
+            // For fixed rows, just normalize the entered dollar amounts
+            if ($lowTotalField.length) {
+                const val = toNumber($lowTotalField.val(), 0);
+                $lowTotalField.val(formatCurrency(val));
+            }
+            if ($highTotalField.length) {
+                const val = toNumber($highTotalField.val(), 0);
+                $highTotalField.val(formatCurrency(val));
+            }
+        } else {
+            // Hourly / non-fixed: rate * quantity
+            const $qtyLowInput  = $row.find('input[name$="[quantity_low]"]');
+            const $qtyHighInput = $row.find('input[name$="[quantity]"]');
+            const $rateInput    = $row.find('input[name$="[rate]"]');
+
+            const qtyLow  = $qtyLowInput.length  ? toNumber($qtyLowInput.val(), 0)  : 0;
+            const qtyHigh = $qtyHighInput.length ? toNumber($qtyHighInput.val(), 0) : 0;
+            const rate    = $rateInput.length    ? toNumber($rateInput.val(), 0)    : 0;
+
+            const lowTotal  = rate * qtyLow;
+            const highTotal = rate * qtyHigh;
+
+            if ($lowTotalField.length) {
+                $lowTotalField.val(formatCurrency(lowTotal));
+            }
+            if ($highTotalField.length) {
+                $highTotalField.val(formatCurrency(highTotal));
+            }
         }
 
         updateEstimateTotals();
     }
 
-    // Sync helpers: keep time <-> quantity in lockstep
+    // Sync helpers: keep time <-> quantity in lockstep for non-fixed rows
 
     function syncFromTimeLow(row) {
-        const $row          = $(row);
+        const $row = $(row);
+        if (isRowFixed($row)) {
+            return;
+        }
+
         const $timeLowInput = $row.find('input[name$="[time_low]"]');
         const $qtyLowInput  = $row.find('input[name$="[quantity_low]"]');
 
@@ -142,7 +205,11 @@ jQuery(document).ready(function ($) {
     }
 
     function syncFromQuantityLow(row) {
-        const $row          = $(row);
+        const $row = $(row);
+        if (isRowFixed($row)) {
+            return;
+        }
+
         const $qtyLowInput  = $row.find('input[name$="[quantity_low]"]');
         const $timeLowInput = $row.find('input[name$="[time_low]"]');
 
@@ -161,7 +228,11 @@ jQuery(document).ready(function ($) {
     }
 
     function syncFromTimeHigh(row) {
-        const $row        = $(row);
+        const $row = $(row);
+        if (isRowFixed($row)) {
+            return;
+        }
+
         const $timeInput  = $row.find('input[name$="[time]"]');
         const $qtyInput   = $row.find('input[name$="[quantity]"]');
 
@@ -180,7 +251,11 @@ jQuery(document).ready(function ($) {
     }
 
     function syncFromQuantityHigh(row) {
-        const $row       = $(row);
+        const $row = $(row);
+        if (isRowFixed($row)) {
+            return;
+        }
+
         const $qtyInput  = $row.find('input[name$="[quantity]"]');
         const $timeInput = $row.find('input[name$="[time]"]');
 
@@ -247,26 +322,55 @@ jQuery(document).ready(function ($) {
             recalcRowTotals($row);
         });
 
-        // Initialize existing rows on page load:
-        // - prefer existing quantity, back-fill time if needed
-        // - or, if quantity empty but time present, back-fill quantity
-        $tbody.find('tr').each(function () {
-            const $row          = $(this);
-            const hasQtyLow     = $row.find('input[name$="[quantity_low]"]').val().trim() !== '';
-            const hasTimeLow    = $row.find('input[name$="[time_low]"]').val().trim() !== '';
-            const hasQtyHigh    = $row.find('input[name$="[quantity]"]').val().trim() !== '';
-            const hasTimeHigh   = $row.find('input[name$="[time]"]').val().trim() !== '';
-
-            if (hasQtyLow && !hasTimeLow) {
-                syncFromQuantityLow($row);
-            } else if (!hasQtyLow && hasTimeLow) {
-                syncFromTimeLow($row);
+        // If user edits the fixed subtotal fields, normalize and update totals
+        $tbody.on('blur', 'input[name$="[subtotal]"], input[name$="[high_total]"], input[name$="[subtotal_low]"], input[name$="[low_total]"]', function () {
+            const $row = $(this).closest('tr');
+            if (!isRowFixed($row)) {
+                return;
             }
+            const val = parseFloat($(this).val());
+            $(this).val(isNaN(val) ? '' : formatCurrency(val));
+            recalcRowTotals($row);
+        });
 
-            if (hasQtyHigh && !hasTimeHigh) {
-                syncFromQuantityHigh($row);
-            } else if (!hasQtyHigh && hasTimeHigh) {
-                syncFromTimeHigh($row);
+        // When type changes, recalc and optionally clear hourly-specific fields
+        $tbody.on('change', 'select[name$="[type]"], input[name$="[type]"]', function () {
+            const $row = $(this).closest('tr');
+
+            // NEW: update UI class for fixed vs hourly
+            updateRowTypeUI($row);
+
+            if (isRowFixed($row)) {
+                // optional: clear hourly stuff when switching to fixed
+                $row.find('input[name$="[time]"], input[name$="[time_low]"], input[name$="[quantity]"], input[name$="[quantity_low]"]').val('');
+            }
+            recalcRowTotals($row);
+        });
+
+        // Initialize existing rows on page load
+        $tbody.find('tr').each(function () {
+            const $row = $(this);
+
+            // NEW: set CSS state based on current type
+            updateRowTypeUI($row);
+
+            if (!isRowFixed($row)) {
+                const hasQtyLow   = $row.find('input[name$="[quantity_low]"]').val().trim() !== '';
+                const hasTimeLow  = $row.find('input[name$="[time_low]"]').val().trim() !== '';
+                const hasQtyHigh  = $row.find('input[name$="[quantity]"]').val().trim() !== '';
+                const hasTimeHigh = $row.find('input[name$="[time]"]').val().trim() !== '';
+
+                if (hasQtyLow && !hasTimeLow) {
+                    syncFromQuantityLow($row);
+                } else if (!hasQtyLow && hasTimeLow) {
+                    syncFromTimeLow($row);
+                }
+
+                if (hasQtyHigh && !hasTimeHigh) {
+                    syncFromQuantityHigh($row);
+                } else if (!hasQtyHigh && hasTimeHigh) {
+                    syncFromTimeHigh($row);
+                }
             }
 
             recalcRowTotals($row);
