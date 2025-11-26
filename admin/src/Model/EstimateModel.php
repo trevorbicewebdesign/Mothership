@@ -148,11 +148,12 @@ class EstimateModel extends AdminModel
         if (!empty($data['items'])) {
             $i = 0;
             foreach ($data['items'] as $item) {
-                $columns = ['estimate_id', 'name', 'description', 'time', 'time_low', 'quantity', 'quantity_low', 'rate', 'subtotal', 'subtotal_low', 'ordering'];
+                $columns = ['estimate_id', 'name', 'description', 'type', 'time', 'time_low', 'quantity', 'quantity_low', 'rate', 'subtotal', 'subtotal_low', 'ordering'];
                 $values = [
                     $db->quote($invoiceId),
                     $db->quote($item['name']),
                     $db->quote($item['description']),
+                    $db->quote($item['type']),
                     $db->quote($item['time']),
                     $db->quote($item['time_low']),
                     (float) $item['quantity'],
