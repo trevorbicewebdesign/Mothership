@@ -98,13 +98,10 @@ $estimate = $displayData['estimate'];
     <table>
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Hours</th>
-                <th>Hours</th>
-                <th>Minutes</th>
-                <th>Quantity</th>
+                <th>Name / Description</th>
+                <th>Range</th>
                 <th>Rate</th>
+                <th>Subtotal Low</th>
                 <th>Subtotal</th>
             </tr>
         </thead>
@@ -112,19 +109,25 @@ $estimate = $displayData['estimate'];
             <?php if (!empty($estimate->items)) : ?>
                 <?php foreach ($estimate->items as $item) : ?>
                     <tr>
-                        <td><?php echo htmlspecialchars($item['name'] ?? ''); ?></td>
-                        <td><?php echo htmlspecialchars($item['description'] ?? ''); ?></td>
-                        <td><?php echo (float)($item['hours'] ?? 0); ?></td>
-                        <td><?php echo (float)($item['hours'] ?? 0); ?></td>
-                        <td><?php echo (float)($item['minutes'] ?? 0); ?></td>
-                        <td><?php echo (float)($item['quantity'] ?? 1); ?></td>
+                        <td><?php echo htmlspecialchars($item['name'] ?? ''); ?><br/><?php echo htmlspecialchars($item['description'] ?? ''); ?></td>
+                        <td><?php echo ($item['time_low'] ?? 0); ?> - <?php echo ($item['time'] ?? 0); ?></td>
                         <td><?php echo number_format((float)($item['rate'] ?? 0), 2); ?></td>
+                        <td><?php echo number_format((float)($item['subtotal_low'] ?? 0), 2); ?></td>
+                        <td><?php echo number_format((float)($item['subtotal'] ?? 0), 2); ?></td>
+                    </tr>
+                <?php endforeach; ?>
+                 <?php foreach ($estimate->items as $item) : ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($item['name'] ?? ''); ?><br/><?php echo htmlspecialchars($item['description'] ?? ''); ?></td>
+                        <td><?php echo ($item['time_low'] ?? 0); ?> - <?php echo ($item['time'] ?? 0); ?></td>
+                        <td><?php echo number_format((float)($item['rate'] ?? 0), 2); ?></td>
+                        <td><?php echo number_format((float)($item['subtotal_low'] ?? 0), 2); ?></td>
                         <td><?php echo number_format((float)($item['subtotal'] ?? 0), 2); ?></td>
                     </tr>
                 <?php endforeach; ?>
             <?php else : ?>
                 <tr>
-                    <td colspan="7">No items found.</td>
+                    <td colspan="6">No items found.</td>
                 </tr>
             <?php endif; ?>
         </tbody>
