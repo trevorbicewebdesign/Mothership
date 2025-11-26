@@ -61,43 +61,56 @@ jQuery(document).ready(function ($) {
         return $type.length && String($type.val()).toLowerCase() === 'fixed';
     }
 
-    // NEW: toggle CSS class for fixed/material rows
+    // Toggle UI / disabled state for fixed vs hourly rows
     function updateRowTypeUI($row) {
-        const isFixed = isRowFixed($row);
+    const isFixed = isRowFixed($row);
 
-        const $timeLow    = $row.find('input[name$="[time_low]"]');
-        const $timeHigh   = $row.find('input[name$="[time]"]');
-        const $qtyLow     = $row.find('input[name$="[quantity_low]"]');
-        const $qtyHigh    = $row.find('input[name$="[quantity]"]');
-        const $rate       = $row.find('input[name$="[rate]"]');
-        const $lowTotal   = $row.find(' input[name$="[subtotal_low]"]');
-        const $highTotal  = $row.find('input[name$="[subtotal]"]');
+    const $timeLow   = $row.find('input[name$="[time_low]"]');
+    const $timeHigh  = $row.find('input[name$="[time]"]');
+    const $qtyLow    = $row.find('input[name$="[quantity_low]"]');
+    const $qtyHigh   = $row.find('input[name$="[quantity]"]');
+    const $rate      = $row.find('input[name$="[rate]"]');
+    const $lowTotal  = $row.find('input[name$="[subtotal_low]"], input[name$="[low_total]"]');
+    const $highTotal = $row.find('input[name$="[subtotal]"], input[name$="[high_total]"]');
 
-        if (isFixed) {
-            // Fixed/material: only subtotal fields enabled
-            $row.addClass('estimate-row-fixed');
+    if (isFixed) {
+        // Hide time + low-qty
+        $timeLow.val('').prop('disabled', true).css('visibility', 'hidden');
+        $timeHigh.val('').prop('disabled', true).css('visibility', 'hidden');
+        $qtyLow.val('').prop('disabled', true).css('visibility', 'hidden');
 
-            $timeLow.prop('disabled', true);
-            $timeHigh.prop('disabled', true);
-            $qtyLow.prop('disabled', true);
-            $qtyHigh.prop('disabled', true);
-            $rate.prop('disabled', true);
+        // Quantity (HIGH) must be integer for fixed rows
+        $qtyHigh.prop('disabled', false)
+            .css('visibility', 'visible')
+            .attr('step', '1')               // browser enforces integer step
+            .attr('min', '1');               // optional (prevents 0 / negatives)
 
-            $lowTotal.prop('disabled', false);
-           $highTotal.prop('enabled', true);
-        } else {
-            // Hourly: time/quantity/rate enabled, subtotals read-only
-            $row.removeClass('estimate-row-fixed');
+        // Rate stays visible
+        $rate.prop('disabled', false).css('visibility', 'visible');
 
-            $timeLow.prop('enabled', false);
-            $timeHigh.prop('enabled', false);
-            $qtyLow.prop('enabled', false);
-            $qtyHigh.prop('enabled', false);
-            $rate.prop('enabled', false);
-            $lowTotal.prop('enabled', true);
-            $highTotal.prop('enabled', true);
-        }
+        // Only high subtotal counts
+        $lowTotal.val('').prop('disabled', true).css('visibility', 'hidden');
+        $highTotal.prop('disabled', false)
+            .prop('readonly', true)
+            .css('visibility', 'visible');
+
+    } else {
+        // Restore hourly fields
+        $timeLow.prop('disabled', false).css('visibility', 'visible');
+        $timeHigh.prop('disabled', false).css('visibility', 'visible');
+        $qtyLow.prop('disabled', false).css('visibility', 'visible');
+        $qtyHigh.prop('disabled', false)
+            .css('visibility', 'visible')
+            .removeAttr('step')
+            .removeAttr('min');
+        $rate.prop('disabled', false).css('visibility', 'visible');
+
+        // Subtotals visible but readonly
+        $lowTotal.prop('disabled', false).prop('readonly', true).css('visibility', 'visible');
+        $highTotal.prop('disabled', false).prop('readonly', true).css('visibility', 'visible');
     }
+}
+
 
     function updateEstimateTotals() {
         let lowTotalSum  = 0;
@@ -134,50 +147,40 @@ jQuery(document).ready(function ($) {
 
     // Totals:
     // - hourly: rate * quantity_(low/high)
-    // - fixed:  use subtotal / low_total fields directly as dollar amounts
+    // - fixed:  use subtotal / low_total fields as quantity * rate (same on both sides)
     function recalcRowTotals(row) {
-        const $row = $(row);
+    const $row = $(row);
 
-        const $lowTotalField = $row.find(
-            'input[name$="[low_total]"], input[name$="[subtotal_low]"]'
-        );
-        const $highTotalField = $row.find(
-            'input[name$="[high_total]"], input[name$="[subtotal]"]'
-        );
+    const $lowTotalField  = $row.find('input[name$="[low_total]"], input[name$="[subtotal_low]"]');
+    const $highTotalField = $row.find('input[name$="[high_total]"], input[name$="[subtotal]"]');
 
-        if (isRowFixed($row)) {
-            // For fixed rows, just normalize the entered dollar amounts
-            if ($lowTotalField.length) {
-                const val = toNumber($lowTotalField.val(), 0);
-                $lowTotalField.val(formatCurrency(val));
-            }
-            if ($highTotalField.length) {
-                const val = toNumber($highTotalField.val(), 0);
-                $highTotalField.val(formatCurrency(val));
-            }
-        } else {
-            // Hourly / non-fixed: rate * quantity
-            const $qtyLowInput  = $row.find('input[name$="[quantity_low]"]');
-            const $qtyHighInput = $row.find('input[name$="[quantity]"]');
-            const $rateInput    = $row.find('input[name$="[rate]"]');
+    const $qtyHighInput = $row.find('input[name$="[quantity]"]');
+    const $rateInput    = $row.find('input[name$="[rate]"]');
 
-            const qtyLow  = $qtyLowInput.length  ? toNumber($qtyLowInput.val(), 0)  : 0;
-            const qtyHigh = $qtyHighInput.length ? toNumber($qtyHighInput.val(), 0) : 0;
-            const rate    = $rateInput.length    ? toNumber($rateInput.val(), 0)    : 0;
+    const rawQty  = toNumber($qtyHighInput.val(), 0);
+    const rate    = toNumber($rateInput.val(), 0);
 
-            const lowTotal  = rate * qtyLow;
-            const highTotal = rate * qtyHigh;
+    if (isRowFixed($row)) {
+        // force integer
+        const qty = Math.max(1, Math.round(rawQty));
+        $qtyHighInput.val(qty);
 
-            if ($lowTotalField.length) {
-                $lowTotalField.val(formatCurrency(lowTotal));
-            }
-            if ($highTotalField.length) {
-                $highTotalField.val(formatCurrency(highTotal));
-            }
-        }
+        const subtotal = qty * rate;
 
-        updateEstimateTotals();
+        $highTotalField.val(formatCurrency(subtotal));
+        $lowTotalField.val(formatCurrency(subtotal)); // low mirrors high
+    } else {
+        // normal hourly logic (unchanged)
+        const qtyLow  = toNumber($row.find('input[name$="[quantity_low]"]').val(), 0);
+        const qtyHigh = toNumber($qtyHighInput.val(), 0);
+
+        $lowTotalField.val(formatCurrency(rate * qtyLow));
+        $highTotalField.val(formatCurrency(rate * qtyHigh));
     }
+
+    updateEstimateTotals();
+}
+
 
     // Sync helpers: keep time <-> quantity in lockstep for non-fixed rows
 
@@ -300,6 +303,8 @@ jQuery(document).ready(function ($) {
         $tbody.on('input change', 'input[name$="[quantity]"]', function () {
             const $row = $(this).closest('tr');
             syncFromQuantityHigh($row);
+            // Also recalc totals so fixed rows update subtotal when quantity changes
+            recalcRowTotals($row);
         });
 
         // RATE changes just recalc totals using existing quantities
@@ -322,28 +327,36 @@ jQuery(document).ready(function ($) {
             recalcRowTotals($row);
         });
 
-        // If user edits the fixed subtotal fields, normalize and update totals
+        // Subtotal fields: normalize and update totals (mostly hourly case)
         $tbody.on('blur', 'input[name$="[subtotal]"], input[name$="[high_total]"], input[name$="[subtotal_low]"], input[name$="[low_total]"]', function () {
             const $row = $(this).closest('tr');
-            if (!isRowFixed($row)) {
-                return;
-            }
             const val = parseFloat($(this).val());
             $(this).val(isNaN(val) ? '' : formatCurrency(val));
-            recalcRowTotals($row);
+            updateEstimateTotals();
         });
 
-        // When type changes, recalc and optionally clear hourly-specific fields
+        $('#estimate-items-table tbody').on('blur', 'input[name$="[quantity]"]', function () {
+            const $row = $(this).closest('tr');
+
+            if (isRowFixed($row)) {
+                let val = Math.round(parseFloat($(this).val()));
+                if (isNaN(val) || val < 1) val = 1;
+                $(this).val(val);
+            }
+        });
+
+
+        // When type changes, recalc and update UI
         $tbody.on('change', 'select[name$="[type]"], input[name$="[type]"]', function () {
             const $row = $(this).closest('tr');
 
-            // NEW: update UI class for fixed vs hourly
             updateRowTypeUI($row);
 
             if (isRowFixed($row)) {
-                // optional: clear hourly stuff when switching to fixed
-                $row.find('input[name$="[time]"], input[name$="[time_low]"], input[name$="[quantity]"], input[name$="[quantity_low]"]').val('');
+                // Clear hourly-only stuff when switching to fixed
+                $row.find('input[name$="[time]"], input[name$="[time_low]"], input[name$="[quantity_low]"]').val('');
             }
+
             recalcRowTotals($row);
         });
 
@@ -351,7 +364,6 @@ jQuery(document).ready(function ($) {
         $tbody.find('tr').each(function () {
             const $row = $(this);
 
-            // NEW: set CSS state based on current type
             updateRowTypeUI($row);
 
             if (!isRowFixed($row)) {
