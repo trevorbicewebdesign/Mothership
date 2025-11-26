@@ -69,7 +69,7 @@ class EstimateController extends FormController
             return;
         }
 
-        $layout = new FileLayout('pdf', JPATH_ROOT . '/components/com_mothership/layouts');
+        $layout = new FileLayout('estimate-pdf', JPATH_ROOT . '/components/com_mothership/layouts');
         echo $layout->render([
             'estimate' => $estimate,
             'client' => $client,
@@ -105,7 +105,7 @@ class EstimateController extends FormController
         }
 
         ob_start();
-        $layout = new FileLayout('pdf', JPATH_ROOT . '/components/com_mothership/layouts');
+        $layout = new FileLayout('estimate-pdf', JPATH_ROOT . '/components/com_mothership/layouts');
         echo $layout->render([
             'estimate' => $estimate,
             'client' => $client,
