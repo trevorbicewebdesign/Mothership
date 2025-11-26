@@ -20,7 +20,7 @@ use Joomla\CMS\Session\Session;
 JHtml::_('behavior.formvalidator');
 // JHtml::_('formbehavior.chosen', 'select');
 
-/** @var \TrevorBice\Component\Mothership\Administrator\View\Invoice\HtmlView $this */
+/** @var \TrevorBice\Component\Mothership\Administrator\View\Estimate\HtmlView $this */
 
 $wa = $this->getDocument()->getWebAssetManager();
 $wa->useScript('table.columns')
@@ -71,8 +71,8 @@ $listDirn = $this->escape($this->state->get('list.direction'));
 
                         <?php echo $this->form->renderField('number'); ?>
                         <?php echo $this->form->renderField('rate'); ?>
+                        <?php echo $this->form->renderField('total_low'); ?>
                         <?php echo $this->form->renderField('total'); ?>
-
 
                     </fieldset>
                 </div>
@@ -80,14 +80,15 @@ $listDirn = $this->escape($this->state->get('list.direction'));
             <div class="col-lg-3">
                 <?php echo $this->form->renderField('status'); ?>
                 <?php echo $this->form->renderField('created'); ?>
-                <?php echo $this->form->renderField('due_date'); ?>
             </div>
         </div>
         <div class="row">
             <div class="col-lg-12">
                 <div>
                     <fieldset class="adminform">
+                        <?php echo $this->form->getInput('summary'); ?>
                         <?php echo $this->form->getInput('items'); ?>
+                        <?php echo $this->form->getInput('notes'); ?>
                     </fieldset>
                 </div>
             </div>
