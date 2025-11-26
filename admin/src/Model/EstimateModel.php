@@ -43,39 +43,10 @@ class EstimateModel extends AdminModel
         return $this->getCurrentUser()->authorise('core.edit', 'com_mothership');
     }
 
-    public function canDeleteInvoice($record): bool
-    {
-        // Assume $record is an object or associative array with at least 'id' and 'status'
-        $id = isset($record->id) ? (int) $record->id : (int) $record['id'];
-        $status = isset($record->status) ? (int) $record->status : (int) $record['status'];
-
-        if ($status !== 1) {
-            // Not a draft invoice
-            return false;
-        }
-
-        // Extra check: invoice shouldn't have any linked payments
-        $db = $this->getDatabase();
-
-        $query = $db->getQuery(true)
-            ->select('COUNT(*)')
-            ->from($db->quoteName('#__mothership_invoice_payment'))
-            ->where($db->quoteName('invoice_id') . ' = ' . $id);
-
-        $invoicePaymentCount = (int) $db->setQuery($query)->loadResult();
-
-        if ($invoicePaymentCount > 0) {
-            // Something went wrong — drafts shouldn't have payments
-            throw new \RuntimeException("Draft invoice ID {$id} has associated payments, which should not be possible.");
-        }
-
-        return true;
-    }
-
 
     public function getForm($data = [], $loadData = true)
     {
-        return $this->loadForm('com_mothership.invoice', 'invoice', ['control' => 'jform', 'load_data' => $loadData]);
+        return $this->loadForm('com_mothership.estimate', 'estimate', ['control' => 'jform', 'load_data' => $loadData]);
     }
 
     protected function loadFormData()
@@ -95,7 +66,7 @@ class EstimateModel extends AdminModel
             }
         }
 
-        $this->preprocessData('com_mothership.invoice', $data);
+        $this->preprocessData('com_mothership.estimate', $data);
         return $data;
     }
 
@@ -113,7 +84,7 @@ class EstimateModel extends AdminModel
             $query = $db->getQuery(true)
             ->select('*')
             ->from($db->quoteName('#__mothership_estimate_items'))
-            ->where($db->quoteName('invoice_id') . ' = ' . (int) $item->id)
+            ->where($db->quoteName('estimate_id') . ' = ' . (int) $item->id)
             ->order($db->quoteName('ordering') . ' ASC');
 
             $db->setQuery($query);
@@ -150,11 +121,6 @@ class EstimateModel extends AdminModel
                 return false;
             }
         }
-
-        if($data['due_date'] == '') {
-            $data['due_date'] = null;
-        }
-
         if (!$table->bind($data)) {
             $this->setError($table->getError());
             return false;
@@ -170,45 +136,31 @@ class EstimateModel extends AdminModel
         }
 
         $invoiceId = $table->id;
-        // 🔔 Trigger when status is set to Opened (1), unless previous was Late (2)
-        if ( !$isNew && ($newStatus == 2 && $previousStatus !== 2)) {
-            
-            // Fill in the due date
-            $table->due_date = Factory::getDate()->modify('+30 days')->format('Y-m-d');
-            $table->locked = 1;
-            $table->store();
-
-            InvoiceHelper::onInvoiceOpened($table, $previousStatus);
-        }
-
-        // Trigger `onInvoiceClosed`event if the invoice is set to closed (4)
-        if (($newStatus == 4 && $previousStatus == 2)) {
-            InvoiceHelper::onInvoiceClosed($table, $previousStatus);
-        }
-        
 
         // Delete existing items
         $db->setQuery(
             $db->getQuery(true)
                 ->delete($db->quoteName('#__mothership_estimate_items'))
-                ->where($db->quoteName('invoice_id') . ' = ' . (int)$invoiceId)
+                ->where($db->quoteName('estimate_id') . ' = ' . (int)$invoiceId)
         )->execute();
 
         // Insert new items
         if (!empty($data['items'])) {
             $i = 0;
-            foreach ($data['items'] as $index => $item) {
-                $columns = ['invoice_id', 'name', 'description', 'hours', 'minutes', 'quantity', 'rate', 'subtotal', 'ordering'];
+            foreach ($data['items'] as $item) {
+                $columns = ['estimate_id', 'name', 'description', 'time', 'time_low', 'quantity', 'quantity_low', 'rate', 'subtotal', 'subtotal_low', 'ordering'];
                 $values = [
-                    (int)$invoiceId,
+                    $db->quote($invoiceId),
                     $db->quote($item['name']),
                     $db->quote($item['description']),
-                    (int)$item['hours'],
-                    (int)$item['minutes'],
-                    (float)$item['quantity'],
-                    (float)$item['rate'],
-                    (float)$item['subtotal'],
-                    (int)$i + 1 // Assuming ordering starts from 1
+                    $db->quote($item['time']),
+                    $db->quote($item['time_low']),
+                    (float) $item['quantity'],
+                    (float) $item['quantity_low'],
+                    (float) $item['rate'],
+                    (float) $item['subtotal'],
+                    (float) $item['subtotal_low'],
+                    $db->quote($i + 1) // Assuming ordering starts from 1
                 ];
 
                 $query = $db->getQuery(true)
