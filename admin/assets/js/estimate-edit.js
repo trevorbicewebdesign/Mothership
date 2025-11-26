@@ -1,188 +1,295 @@
-/**
- * This jQuery script manages dynamic invoice item calculations in a Joomla-based admin interface.
- * It ensures that values such as quantity, rate, subtotal, and total are automatically synchronized
- * and formatted as the user interacts with invoice line item fields.
- *
- * Core Features:
- * - Converts hours and minutes into decimal "quantity" format (e.g., 1h 30m → 1.50)
- * - Converts "quantity" back into hours and minutes when edited directly
- * - Dynamically calculates subtotal for each invoice item (rate × quantity)
- * - Aggregates subtotals to compute the total invoice value
- * - Formats currency values to two decimal places, but only on `blur` (after editing is complete)
- * - Avoids interfering with user input by not formatting values during typing
- *
- * Event Bindings:
- * - `input` on hours/minutes → converts to quantity and updates subtotal
- * - `input` on quantity → converts to hours/minutes and updates subtotal (but defers formatting)
- * - `blur` on quantity → formats the value to 2 decimal places
- * - `blur` on rate → formats the rate and updates subtotal
- *
- * Initialization:
- * - On document ready, all existing invoice item rows are normalized by:
- *    - Converting quantity to hours/minutes
- *    - Calculating and formatting subtotals
- *
- * Dependencies: jQuery (assumes Joomla admin template includes it)
- */
-
 jQuery(document).ready(function ($) {
 
+    /* ------------------------------------------------------------------
+     *  Estimate line items: time_low / time  <->  quantity_low / quantity
+     * ------------------------------------------------------------------ */
+
     function formatCurrency(value) {
-        return parseFloat(value).toFixed(2);
+        const n = parseFloat(value);
+        if (isNaN(n)) {
+            return '0.00';
+        }
+        return n.toFixed(2);
     }
 
-    function updateSubtotal(row) {
-        const quantityInput = $(row).find('input[name$="[quantity]"]');
-        const rateInput = $(row).find('input[name$="[rate]"]');
-
-        let quantity = parseFloat(quantityInput.val()) || 0;
-        let rate = parseFloat(rateInput.val()) || 0;
-
-        // Format Rate
-        rateInput.val(formatCurrency(rate));
-
-        const subtotal = rate * quantity;
-        $(row).find('input[name$="[subtotal]"]').val(formatCurrency(subtotal));
-
-        updateInvoiceTotal();
-    }
-
-    function updateInvoiceTotal() {
-        let invoiceTotal = 0;
-        $('#invoice-items-table tbody tr').each(function () {
-            const subtotal = parseFloat($(this).find('input[name$="[subtotal]"]').val()) || 0;
-            invoiceTotal += subtotal;
-        });
-
-        $('#jform_total').val(formatCurrency(invoiceTotal));
-    }
-
-    function hoursMinutesToQuantity(row) {
-        const hoursInput = $(row).find('input[name$="[hours]"]');
-        const minutesInput = $(row).find('input[name$="[minutes]"]');
-
-        let hours = parseInt(hoursInput.val()) || 0;
-        let minutes = parseInt(minutesInput.val()) || 0;
-
-        // Ensure hours/minutes are integers
-        hoursInput.val(hours);
-        minutesInput.val(minutes);
-
-        const totalHours = hours + (minutes / 60);
-        $(row).find('input[name$="[quantity]"]').val(formatCurrency(totalHours));
-    }
-
-    function quantityToHoursMinutes(row) {
-        const quantity = parseFloat($(row).find('input[name$="[quantity]"]').val()) || 0;
-        let hours = Math.floor(quantity);
-        let minutes = Math.round((quantity - hours) * 60);
-
-        // Adjust if minutes hit exactly 60
-        if (minutes >= 60) {
-            hours += 1;
-            minutes -= 60;
+    // Accepts "HH:MM" or plain numeric input
+    function parseTimeToHours(value) {
+        if (value === null || value === undefined) {
+            return 0;
         }
 
-        $(row).find('input[name$="[hours]"]').val(hours);
-        $(row).find('input[name$="[minutes]"]').val(minutes);
+        const str = String(value).trim();
+        if (!str) {
+            return 0;
+        }
+
+        // Match HH:MM
+        const match = str.match(/^(\d{1,3}):(\d{2})$/);
+        if (match) {
+            const hours   = parseInt(match[1], 10) || 0;
+            const minutes = parseInt(match[2], 10) || 0;
+            return hours + (minutes / 60);
+        }
+
+        // Fallback: treat as numeric hours
+        const n = parseFloat(str);
+        return isNaN(n) ? 0 : n;
     }
 
-    // Convert from hours/minutes to quantity on input
-    $('#invoice-items-table tbody').on('input', 'input[name$="[hours]"], input[name$="[minutes]"]', function () {
-        const row = $(this).closest('tr');
-        hoursMinutesToQuantity(row);
-        updateSubtotal(row);
-    });
+    // Convert decimal hours → "HH:MM"
+    function hoursToTimeString(hours) {
+        const n = parseFloat(hours);
+        if (isNaN(n) || n <= 0) {
+            return '';
+        }
 
-    // Convert from quantity to hours/minutes and update subtotal, but don't reformat mid-input
-    $('#invoice-items-table tbody').on('input', 'input[name$="[quantity]"]', function () {
-        const row = $(this).closest('tr');
-        quantityToHoursMinutes(row);
-        updateSubtotal(row);
-    });
+        const totalMinutes = Math.round(n * 60);
+        const h = Math.floor(totalMinutes / 60);
+        const m = totalMinutes % 60;
 
-    // Format quantity only on blur to avoid disrupting typing
-    $('#invoice-items-table tbody').on('blur', 'input[name$="[quantity]"]', function () {
-        const val = parseFloat($(this).val()) || 0;
-        $(this).val(formatCurrency(val));
-    });
+        return h + ':' + String(m).padStart(2, '0');
+    }
 
-    // Format and update subtotal on blur of rate
-    $('#invoice-items-table tbody').on('blur', 'input[name$="[rate]"]', function () {
-        const row = $(this).closest('tr');
-        const val = parseFloat($(this).val()) || 0;
-        $(this).val(formatCurrency(val));
-        updateSubtotal(row);
-    });
+    function toNumber(val, fallback = 0) {
+        const n = parseFloat(val);
+        return isNaN(n) ? fallback : n;
+    }
 
-    // Initialize subtotals and formatting on page load
-    $('#invoice-items-table tbody tr').each(function () {
-        quantityToHoursMinutes(this);
-        updateSubtotal(this);
-    });
+    function updateEstimateTotals() {
+        let lowTotalSum  = 0;
+        let highTotalSum = 0;
 
-    /**
-     * Mothership Invoice - Dynamic Account Dropdown Handler
-     *
-     * This script is used in the Joomla 5 admin interface of the Mothership component.
-     * It controls the visibility and population of the "Account" dropdown based on the selected "Client".
-     *
-     * Behavior Overview:
-     * ------------------
-     * - On initial page load:
-     *   - If no client is selected (value is ''), the Account field (.account_id_wrapper) is hidden.
-     *   - The loading accountSpinner (.account-loading-spinner) is also hidden.
-     *
-     * - When a client is selected:
-     *   1. The Account field slides open over 200ms.
-     *   2. A loading accountSpinner fades in over 200ms, centered in the account container.
-     *   3. An AJAX request is sent to:
-     *      /administrator/index.php?option=com_mothership&task=invoice.getAccountsList&client_id={clientId}
-     *   4. While waiting, the Account dropdown is hidden.
-     *   5. On AJAX success:
-     *      - The Account dropdown is cleared and populated with the returned list.
-     *      - Each item is an object with { value, text, disable }.
-     *      - The accountSpinner fades out (200ms), and the dropdown fades in (200ms).
-     *
-     * - If the user selects a blank client:
-     *   - The Account section fades out and slides closed over 200ms.
-     *   - The accountSpinner is reset and hidden.
-     *
-     * Expected JSON response format:
-     * ------------------------------
-     * [
-     *   { "value": "", "text": "Please select an Account", "disable": false },
-     *   { "value": 1,  "text": "Test Account",             "disable": false }
-     * ]
-     *
-     * Security Considerations:
-     * ------------------------
-     * - CSRF protection should be implemented via Joomla.getOptions('csrf.token') and validated in PHP.
-     * - Server-side must validate user permissions and input (client_id).
-     * - The PHP controller should return a proper JsonResponse object.
-     *
-     * DOM Elements:
-     * -------------
-     * - #jform_client_id            : Client dropdown
-     * - .account_id_wrapper         : Wrapper for the Account dropdown (shown/hidden)
-     * - .account-loading-spinner    : Spinner shown during AJAX load
-     * - #jform_account_id           : Account dropdown (populated dynamically)
-     */
+        $('#estimate-items-table tbody tr').each(function () {
+            const $row = $(this);
 
-    const clientSelect = $('#jform_client_id');
+            const $lowField = $row.find(
+                'input[name$="[low_total]"], input[name$="[subtotal_low]"]'
+            );
+            const $highField = $row.find(
+                'input[name$="[high_total]"], input[name$="[subtotal]"]'
+            );
+
+            const low  = toNumber($lowField.val(), 0);
+            const high = toNumber($highField.val(), 0);
+
+            lowTotalSum  += low;
+            highTotalSum += high;
+        });
+
+        const $totalLow  = $('#jform_total_low');
+        const $totalHigh = $('#jform_total_high');
+
+        if ($totalLow.length) {
+            $totalLow.val(formatCurrency(lowTotalSum));
+        }
+
+        if ($totalHigh.length) {
+            $totalHigh.val(formatCurrency(highTotalSum));
+        }
+    }
+
+    // Totals are purely rate * quantity_(low/high)
+    function recalcRowTotals(row) {
+        const $row = $(row);
+
+        const $qtyLowInput  = $row.find('input[name$="[quantity_low]"]');
+        const $qtyHighInput = $row.find('input[name$="[quantity]"]');
+        const $rateInput    = $row.find('input[name$="[rate]"]');
+
+        const qtyLow  = $qtyLowInput.length  ? toNumber($qtyLowInput.val(), 0)  : 0;
+        const qtyHigh = $qtyHighInput.length ? toNumber($qtyHighInput.val(), 0) : 0;
+        const rate    = $rateInput.length    ? toNumber($rateInput.val(), 0)    : 0;
+
+        const lowTotal  = rate * qtyLow;
+        const highTotal = rate * qtyHigh;
+
+        const $lowTotalField = $row.find(
+            'input[name$="[low_total]"], input[name$="[subtotal_low]"]'
+        );
+        const $highTotalField = $row.find(
+            'input[name$="[high_total]"], input[name$="[subtotal]"]'
+        );
+
+        if ($lowTotalField.length) {
+            $lowTotalField.val(formatCurrency(lowTotal));
+        }
+        if ($highTotalField.length) {
+            $highTotalField.val(formatCurrency(highTotal));
+        }
+
+        updateEstimateTotals();
+    }
+
+    // Sync helpers: keep time <-> quantity in lockstep
+
+    function syncFromTimeLow(row) {
+        const $row          = $(row);
+        const $timeLowInput = $row.find('input[name$="[time_low]"]');
+        const $qtyLowInput  = $row.find('input[name$="[quantity_low]"]');
+
+        if (!$timeLowInput.length || !$qtyLowInput.length) {
+            return;
+        }
+
+        const hours = parseTimeToHours($timeLowInput.val());
+        if (hours > 0) {
+            $qtyLowInput.val(formatCurrency(hours));
+        } else if ($timeLowInput.val().trim() === '') {
+            $qtyLowInput.val('');
+        }
+
+        recalcRowTotals(row);
+    }
+
+    function syncFromQuantityLow(row) {
+        const $row          = $(row);
+        const $qtyLowInput  = $row.find('input[name$="[quantity_low]"]');
+        const $timeLowInput = $row.find('input[name$="[time_low]"]');
+
+        if (!$qtyLowInput.length || !$timeLowInput.length) {
+            return;
+        }
+
+        const qty = toNumber($qtyLowInput.val(), 0);
+        if (qty > 0) {
+            $timeLowInput.val(hoursToTimeString(qty));
+        } else if ($qtyLowInput.val().trim() === '') {
+            $timeLowInput.val('');
+        }
+
+        recalcRowTotals(row);
+    }
+
+    function syncFromTimeHigh(row) {
+        const $row        = $(row);
+        const $timeInput  = $row.find('input[name$="[time]"]');
+        const $qtyInput   = $row.find('input[name$="[quantity]"]');
+
+        if (!$timeInput.length || !$qtyInput.length) {
+            return;
+        }
+
+        const hours = parseTimeToHours($timeInput.val());
+        if (hours > 0) {
+            $qtyInput.val(formatCurrency(hours));
+        } else if ($timeInput.val().trim() === '') {
+            $qtyInput.val('');
+        }
+
+        recalcRowTotals(row);
+    }
+
+    function syncFromQuantityHigh(row) {
+        const $row       = $(row);
+        const $qtyInput  = $row.find('input[name$="[quantity]"]');
+        const $timeInput = $row.find('input[name$="[time]"]');
+
+        if (!$qtyInput.length || !$timeInput.length) {
+            return;
+        }
+
+        const qty = toNumber($qtyInput.val(), 0);
+        if (qty > 0) {
+            $timeInput.val(hoursToTimeString(qty));
+        } else if ($qtyInput.val().trim() === '') {
+            $timeInput.val('');
+        }
+
+        recalcRowTotals(row);
+    }
+
+    // Only wire up if this is actually the estimate edit screen
+    if ($('#estimate-items-table').length) {
+
+        const $tbody = $('#estimate-items-table tbody');
+
+        // TIME LOW → QUANTITY_LOW
+        $tbody.on('input change', 'input[name$="[time_low]"]', function () {
+            const $row = $(this).closest('tr');
+            syncFromTimeLow($row);
+        });
+
+        // QUANTITY_LOW → TIME LOW
+        $tbody.on('input change', 'input[name$="[quantity_low]"]', function () {
+            const $row = $(this).closest('tr');
+            syncFromQuantityLow($row);
+        });
+
+        // TIME (HIGH) → QUANTITY (HIGH)
+        $tbody.on('input change', 'input[name$="[time]"]', function () {
+            const $row = $(this).closest('tr');
+            syncFromTimeHigh($row);
+        });
+
+        // QUANTITY (HIGH) → TIME (HIGH)
+        $tbody.on('input change', 'input[name$="[quantity]"]', function () {
+            const $row = $(this).closest('tr');
+            syncFromQuantityHigh($row);
+        });
+
+        // RATE changes just recalc totals using existing quantities
+        $tbody.on('input change', 'input[name$="[rate]"]', function () {
+            const $row = $(this).closest('tr');
+            recalcRowTotals($row);
+        });
+
+        // Format number-ish fields only on blur (don’t disrupt typing)
+        $tbody.on('blur', 'input[name$="[quantity]"], input[name$="[quantity_low]"]', function () {
+            const val = parseFloat($(this).val());
+            $(this).val(isNaN(val) ? '' : formatCurrency(val));
+        });
+
+        $tbody.on('blur', 'input[name$="[rate]"]', function () {
+            const val = parseFloat($(this).val());
+            $(this).val(isNaN(val) ? '' : formatCurrency(val));
+
+            const $row = $(this).closest('tr');
+            recalcRowTotals($row);
+        });
+
+        // Initialize existing rows on page load:
+        // - prefer existing quantity, back-fill time if needed
+        // - or, if quantity empty but time present, back-fill quantity
+        $tbody.find('tr').each(function () {
+            const $row          = $(this);
+            const hasQtyLow     = $row.find('input[name$="[quantity_low]"]').val().trim() !== '';
+            const hasTimeLow    = $row.find('input[name$="[time_low]"]').val().trim() !== '';
+            const hasQtyHigh    = $row.find('input[name$="[quantity]"]').val().trim() !== '';
+            const hasTimeHigh   = $row.find('input[name$="[time]"]').val().trim() !== '';
+
+            if (hasQtyLow && !hasTimeLow) {
+                syncFromQuantityLow($row);
+            } else if (!hasQtyLow && hasTimeLow) {
+                syncFromTimeLow($row);
+            }
+
+            if (hasQtyHigh && !hasTimeHigh) {
+                syncFromQuantityHigh($row);
+            } else if (!hasQtyHigh && hasTimeHigh) {
+                syncFromTimeHigh($row);
+            }
+
+            recalcRowTotals($row);
+        });
+    }
+
+    /* ------------------------------------------------------------------
+     *  Client → Account → Project dynamic dropdowns (shared with estimate)
+     * ------------------------------------------------------------------ */
+
+    const clientSelect   = $('#jform_client_id');
     const accountWrapper = $('.account_id_wrapper');
     const projectWrapper = $('.project_id_wrapper');
     const accountSpinner = $('.account-loading-spinner');
     const projectSpinner = $('.project-loading-spinner');
-    const accountSelect = $('#jform_account_id');
-    const projectSelect = $('#jform_project_id');
+    const accountSelect  = $('#jform_account_id');
+    const projectSelect  = $('#jform_project_id');
 
-    function isNewInvoice() {
-        return clientSelect.val() === '';
+    function isNewEstimate() {
+        return clientSelect.length && clientSelect.val() === '';
     }
 
     function revealAccountField(clientId) {
-        // Initial state
         accountWrapper.css({
             display: 'block',
             overflow: 'hidden',
@@ -193,8 +300,6 @@ jQuery(document).ready(function ($) {
             display: 'block',
             opacity: 0
         });
-
-        accountWrapper.css('opacity', 0);
 
         const clone = accountWrapper.clone().css({
             visibility: 'hidden',
@@ -213,7 +318,6 @@ jQuery(document).ready(function ($) {
                 duration: 200,
                 easing: 'swing',
                 complete: function () {
-                    // Fade in spinner
                     accountSpinner.animate({ opacity: 1 }, {
                         duration: 200,
                         easing: 'swing',
@@ -227,21 +331,16 @@ jQuery(document).ready(function ($) {
     }
 
     function revealProjectField(accountId) {
-        if (projectWrapper.is(':visible')) return;
+        if (!projectWrapper.length || projectWrapper.is(':visible')) {
+            return;
+        }
 
-        // Initial state
         projectWrapper.css({
             display: 'block',
             overflow: 'hidden',
             height: 0,
             opacity: 0
         });
-        projectWrapper.css({
-            display: 'block',
-            opacity: 0
-        });
-
-        projectWrapper.css('opacity', 0);
 
         const clone = projectWrapper.clone().css({
             visibility: 'hidden',
@@ -260,7 +359,6 @@ jQuery(document).ready(function ($) {
                 duration: 200,
                 easing: 'swing',
                 complete: function () {
-                    // Fade in spinner
                     projectSpinner.animate({ opacity: 1 }, {
                         duration: 200,
                         easing: 'swing',
@@ -274,6 +372,10 @@ jQuery(document).ready(function ($) {
     }
 
     function hideAccountField() {
+        if (!accountWrapper.length || !accountWrapper.is(':visible')) {
+            return;
+        }
+
         const currentHeight = accountWrapper.outerHeight();
 
         accountWrapper.css({
@@ -305,6 +407,10 @@ jQuery(document).ready(function ($) {
     }
 
     function hideProjectsField() {
+        if (!projectWrapper.length || !projectWrapper.is(':visible')) {
+            return;
+        }
+
         const currentHeight = projectWrapper.outerHeight();
 
         projectWrapper.css({
@@ -336,16 +442,18 @@ jQuery(document).ready(function ($) {
     }
 
     function loadAccountsForClient(clientId) {
-        const ajaxUrl = '/administrator/index.php?option=com_mothership&task=invoice.getAccountsList&client_id=' + clientId;
-    
+        const ajaxUrl = '/administrator/index.php' +
+            '?option=com_mothership' +
+            '&task=estimate.getAccountsList' +
+            '&client_id=' + encodeURIComponent(clientId);
+
         $.ajax({
             url: ajaxUrl,
             method: 'GET',
             dataType: 'json',
             success: function (response) {
-                // Clear and populate account dropdown
                 accountSelect.empty();
-    
+
                 $.each(response, function (index, item) {
                     const option = $('<option>', {
                         value: item.value,
@@ -354,14 +462,13 @@ jQuery(document).ready(function ($) {
                     });
                     accountSelect.append(option);
                 });
-    
-                // Fade out spinner, fade in dropdown
+
                 accountSpinner.animate({ opacity: 0 }, {
                     duration: 200,
                     easing: 'swing',
                     complete: function () {
                         accountSpinner.css('display', 'none');
-    
+
                         accountWrapper.animate({ opacity: 1 }, {
                             duration: 200,
                             easing: 'swing',
@@ -379,23 +486,24 @@ jQuery(document).ready(function ($) {
             error: function () {
                 console.error('Failed to fetch accounts for client_id=' + clientId);
                 alert('Error loading accounts. Please try again.');
-    
                 accountSpinner.fadeOut(200);
             }
         });
     }
 
     function loadProjectsForAccount(accountId) {
-        const ajaxUrl = '/administrator/index.php?option=com_mothership&task=invoice.getProjectsList&account_id=' + accountId;
-    
+        const ajaxUrl = '/administrator/index.php' +
+            '?option=com_mothership' +
+            '&task=estimate.getProjectsList' +
+            '&account_id=' + encodeURIComponent(accountId);
+
         $.ajax({
             url: ajaxUrl,
             method: 'GET',
             dataType: 'json',
             success: function (response) {
-                // Clear and populate account dropdown
                 projectSelect.empty();
-    
+
                 $.each(response, function (index, item) {
                     const option = $('<option>', {
                         value: item.value,
@@ -404,14 +512,13 @@ jQuery(document).ready(function ($) {
                     });
                     projectSelect.append(option);
                 });
-    
-                // Fade out spinner, fade in dropdown
+
                 projectSpinner.animate({ opacity: 0 }, {
                     duration: 200,
                     easing: 'swing',
                     complete: function () {
                         projectSpinner.css('display', 'none');
-    
+
                         projectWrapper.animate({ opacity: 1 }, {
                             duration: 200,
                             easing: 'swing',
@@ -427,83 +534,82 @@ jQuery(document).ready(function ($) {
                 });
             },
             error: function () {
-                console.error('Failed to fetch projects for account_id =' + accountId);
+                console.error('Failed to fetch projects for account_id=' + accountId);
                 alert('Error loading projects. Please try again.');
-    
                 projectSpinner.fadeOut(200);
             }
         });
     }
 
-    // On page load
-    if (isNewInvoice()) {
-        accountWrapper.hide();
-        accountSpinner.hide();
-        projectWrapper.hide();
-        projectSpinner.hide();
-    }
-
-    // On client change
-    clientSelect.on('change', function () {
-        hideProjectsField();
-        const selectedVal = $(this).val();
-        
-        if (selectedVal) {
-            revealAccountField(selectedVal);
-        }
-        else {
-            hideAccountField();
-        }
-    });
-
-    accountSelect.on('change', function () {
-        const selectedVal = $(this).val();
-        
-        if (selectedVal) {
-            revealProjectField(selectedVal);
-        }
-        else {
-            hideProjectField();
-        }
-    });
-
-    
-    var $clientField = $('#jform_client_id');
-    var $rateField = $('#jform_rate');
-    var userModifiedRate = false;
-
-    // Track user changes to the rate field
-    $rateField.on('input', function () {
-        userModifiedRate = true;
-    });
-
-    // Watch for client changes
-    $clientField.on('change', function () {
-        var clientId = $(this).val();
-
-        if (!clientId || userModifiedRate) {
-            return; // Skip if user already changed rate manually
+    if (clientSelect.length) {
+        if (isNewEstimate()) {
+            accountWrapper.hide();
+            accountSpinner.hide();
+            projectWrapper.hide();
+            projectSpinner.hide();
         }
 
-        $.ajax({
-            url: 'index.php?option=com_mothership&task=client.getDefaultRate&id=' + clientId + '&format=json',
-            dataType: 'json',
-            success: function (data) {
-                console.log('Success Default rate:', data.default_rate);
-                if (typeof data.default_rate !== 'undefined') {
-                    $rateField.val(data.default_rate);
-                    // Also needs to loop through the invoice item rates
-                    // and update them with the default rate from the client.
-                    $('#invoice-items-table tbody tr').each(function () {
-                        const rateInput = $(this).find('input[name$="[rate]"]');
-                        rateInput.val(data.default_rate);
-                        updateSubtotal(this); // Update subtotal for the row
-                    });
-                }
-            },
-            complete: function () {
+        clientSelect.on('change', function () {
+            hideProjectsField();
 
+            const selectedVal = $(this).val();
+
+            if (selectedVal) {
+                revealAccountField(selectedVal);
+            } else {
+                hideAccountField();
             }
         });
-    });
+
+        accountSelect.on('change', function () {
+            const selectedVal = $(this).val();
+
+            if (selectedVal) {
+                revealProjectField(selectedVal);
+            } else {
+                hideProjectsField();
+            }
+        });
+    }
+
+    /* ------------------------------------------------------------------
+     *  Default rate from client → estimate + line items
+     * ------------------------------------------------------------------ */
+
+    const $clientField = $('#jform_client_id');
+    const $rateField   = $('#jform_rate');
+    let userModifiedRate = false;
+
+    if ($clientField.length && $rateField.length) {
+
+        $rateField.on('input', function () {
+            userModifiedRate = true;
+        });
+
+        $clientField.on('change', function () {
+            const clientId = $(this).val();
+
+            if (!clientId || userModifiedRate) {
+                return;
+            }
+
+            $.ajax({
+                url: 'index.php?option=com_mothership&task=client.getDefaultRate&id=' +
+                    encodeURIComponent(clientId) + '&format=json',
+                dataType: 'json',
+                success: function (data) {
+                    if (typeof data.default_rate !== 'undefined') {
+                        $rateField.val(data.default_rate);
+
+                        $('#estimate-items-table tbody tr').each(function () {
+                            const $row      = $(this);
+                            const rateInput = $row.find('input[name$="[rate]"]');
+                            rateInput.val(data.default_rate);
+                            recalcRowTotals($row);
+                        });
+                    }
+                }
+            });
+        });
+    }
 });
