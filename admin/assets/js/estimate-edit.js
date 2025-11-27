@@ -120,21 +120,27 @@ jQuery(document).ready(function ($) {
             const $row = $(this);
 
             const $lowField = $row.find(
-                'input[name$="[low_total]"], input[name$="[subtotal_low]"]'
+                'input[name$="[total_low]"], input[name$="[subtotal_low]"]'
             );
             const $highField = $row.find(
-                'input[name$="[high_total]"], input[name$="[subtotal]"]'
+                'input[name$="[total]"], input[name$="[subtotal]"]'
             );
 
             const low  = toNumber($lowField.val(), 0);
             const high = toNumber($highField.val(), 0);
 
-            lowTotalSum  += low;
-            highTotalSum += high;
+            if (isRowFixed($row)) {
+                // fixed items always count in both totals
+                lowTotalSum  += high; // low mirrors high
+                highTotalSum += high;
+            } else {
+                lowTotalSum  += low;
+                highTotalSum += high;
+            }
         });
 
         const $totalLow  = $('#jform_total_low');
-        const $totalHigh = $('#jform_total_high');
+        const $totalHigh = $('#jform_total');
 
         if ($totalLow.length) {
             $totalLow.val(formatCurrency(lowTotalSum));
