@@ -151,21 +151,6 @@ class MothershipAdminEstimatesCest
             'subtotal' => '70.00',
         ]);
         
-        $paymentData = $I->createMothershipPayment([
-            'client_id' => $this->clientData['id'],
-            'account_id' => $this->accountData['id'],
-            'amount' => $estimateData['total'],
-            'payment_method' => 'paypal',
-            'status' => 2,
-            'locked' => 1,
-        ]);
-
-        $paymentEstimateData = $I->createMothershipEstimatePayment([
-            'estimate_id' => $estimateData['id'],
-            'payment_id' => $paymentData['id'],
-            'applied_amount' => $estimateData['total'],
-        ]);
-
         $I->amOnPage(self::ESTIMATES_VIEW_ALL_URL);
         $I->waitForText("Mothership: Estimates", 30, "h1.page-title");
 
