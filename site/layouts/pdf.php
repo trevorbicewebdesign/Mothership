@@ -84,7 +84,7 @@ $items    = $invoice->items ?? [];
 <body class="invoice">
     <h1>Invoice #<?php echo $invoice->number; ?></h1>
     <p><?php if (!empty($business['company_name'])): ?><p><?php echo nl2br(htmlspecialchars($business['company_name'])); ?></p> <?php endif; ?></p>
-    <p><?php if (!empty($business['address'])): ?><p><?php echo nl2br(htmlspecialchars($business['address'])); ?></p> <?php endif; ?></p>
+    <p><?php if (!empty($business['address_1'])): ?><p><?php echo nl2br(htmlspecialchars($business['address_1'])); ?></p> <?php endif; ?></p>
 
     <div class="section">
         <p><strong>Client:</strong> </p>
