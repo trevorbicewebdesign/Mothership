@@ -3,6 +3,10 @@ defined('_JEXEC') or die;
 
 /** @var array $displayData */
 $invoice = $displayData['invoice'];
+$account  = $displayData['account'] ?? null;
+$client   = $displayData['client'] ?? null;
+$business = $displayData['business'] ?? null;
+$items    = $invoice->items ?? [];
 
 ?>
 
