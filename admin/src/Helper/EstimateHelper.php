@@ -22,7 +22,7 @@ use Joomla\Database\ParameterType;
 use TrevorBice\Component\Mothership\Administrator\Service\EmailService;
 use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper; 
 
-class EstimateHelper
+class ProposalHelper
 {
     /**
      * Returns the invoice status as a string based on the provided status ID.
@@ -135,28 +135,28 @@ class EstimateHelper
 
 
     /**
-     * Retrieves an estimate object from the database by its ID.
+     * Retrieves an proposal object from the database by its ID.
      *
-     * @param  int  $estimate_id  The ID of the estimate to retrieve.
-     * @return object             The estimate object.
-     * @throws \RuntimeException  If the estimate with the given ID is not found.
+     * @param  int  $proposal_id  The ID of the proposal to retrieve.
+     * @return object             The proposal object.
+     * @throws \RuntimeException  If the proposal with the given ID is not found.
      */
-    public static function getEstimate($estimate_id)
+    public static function getProposal($proposal_id)
     {
         $db = Factory::getContainer()->get(\Joomla\Database\DatabaseInterface::class);
 
         $query = $db->getQuery(true)
             ->select('*')
-            ->from($db->quoteName('#__mothership_estimates'))
-            ->where($db->quoteName('id') . ' = ' . $db->quote($estimate_id));
+            ->from($db->quoteName('#__mothership_proposals'))
+            ->where($db->quoteName('id') . ' = ' . $db->quote($proposal_id));
 
         $db->setQuery($query);
-        $estimate = $db->loadObject();
+        $proposal = $db->loadObject();
 
-        if (!$estimate) {
-            throw new \RuntimeException("Estimate ID {$estimate_id} not found.");
+        if (!$proposal) {
+            throw new \RuntimeException("Proposal ID {$proposal_id} not found.");
         }
 
-        return $estimate;
+        return $proposal;
     }
 }

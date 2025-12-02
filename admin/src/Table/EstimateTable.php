@@ -21,11 +21,11 @@ use Joomla\Event\DispatcherInterface;
 // phpcs:enable PSR1.Files.SideEffects
 
 /**
- * estimate table
+ * proposal table
  *
  * @since  1.6
  */
-class EstimateTable extends Table implements VersionableTableInterface
+class ProposalTable extends Table implements VersionableTableInterface
 {
     /**
      * Indicates that columns fully support the NULL value in the database
@@ -45,9 +45,9 @@ class EstimateTable extends Table implements VersionableTableInterface
      */
     public function __construct(DatabaseDriver $db, ?DispatcherInterface $dispatcher = null)
     {
-        $this->typeAlias = 'com_mothership.estimate';
+        $this->typeAlias = 'com_mothership.proposal';
 
-        parent::__construct('#__mothership_estimates', 'id', $db, $dispatcher);
+        parent::__construct('#__mothership_proposals', 'id', $db, $dispatcher);
     }
 
     /**

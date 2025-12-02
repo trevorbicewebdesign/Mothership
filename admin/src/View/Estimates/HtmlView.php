@@ -8,7 +8,7 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace TrevorBice\Component\Mothership\Administrator\View\Estimates;
+namespace TrevorBice\Component\Mothership\Administrator\View\Proposals;
 
 use Joomla\CMS\Form\Form;
 use Joomla\CMS\Helper\ContentHelper;
@@ -18,7 +18,7 @@ use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use Joomla\CMS\Pagination\Pagination;
 use Joomla\CMS\Toolbar\ToolbarHelper;
-use TrevorBice\Component\Mothership\Administrator\Model\EstimatesModel;
+use TrevorBice\Component\Mothership\Administrator\Model\ProposalsModel;
 use Joomla\CMS\Factory;
 use Joomla\CMS\User\User;
 
@@ -68,7 +68,7 @@ class HtmlView extends BaseHtmlView
 
         // ✅ Use WebAssetManager to load the script
         $wa = $this->getDocument()->getWebAssetManager();
-        $wa->registerAndUseStyle('com_mothership.estimates', 'administrator/components/com_mothership/assets/css/estimates.css');
+        $wa->registerAndUseStyle('com_mothership.proposals', 'administrator/components/com_mothership/assets/css/proposals.css');
 
         // Ensure transitions is always an array
         $this->transitions = $this->state->get('transitions', []);
@@ -95,10 +95,10 @@ class HtmlView extends BaseHtmlView
         $canDo = ContentHelper::getActions('com_mothership');
         $toolbar = $this->getDocument()->getToolbar();
 
-        ToolbarHelper::title(Text::_('COM_MOTHERSHIP_MANAGER_ESTIMATES'), 'bookmark mothership-estimates');
+        ToolbarHelper::title(Text::_('COM_MOTHERSHIP_MANAGER_PROPOSALS'), 'bookmark mothership-proposals');
 
         if ($canDo->get('core.create')) {
-            $toolbar->addNew('estimate.add');
+            $toolbar->addNew('proposal.add');
         }
 
         if (!$this->isEmptyState && ($canDo->get('core.edit.state') || $canDo->get('core.admin'))) {
@@ -111,17 +111,17 @@ class HtmlView extends BaseHtmlView
             $childBar = $dropdown->getChildToolbar();
 
             if ($canDo->get('core.admin')) {
-                $childBar->checkin('estimates.checkIn')->listCheck(true);
+                $childBar->checkin('proposals.checkIn')->listCheck(true);
             }
 
-            $childBar->edit('estimate.edit')->listCheck(true); // Add 'Edit' option
-            $childBar->delete('estimates.delete')->listCheck(true);
+            $childBar->edit('proposal.edit')->listCheck(true); // Add 'Edit' option
+            $childBar->delete('proposals.delete')->listCheck(true);
         }
 
         if ($canDo->get('core.admin') || $canDo->get('core.options')) {
             $toolbar->preferences('com_mothership');
         }
 
-        $toolbar->help('Mothership:_Estimate');
+        $toolbar->help('Mothership:_Proposal');
     }
 }

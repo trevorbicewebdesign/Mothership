@@ -2,7 +2,7 @@
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
-use TrevorBice\Component\Mothership\Administrator\Helper\EstimateHelper;
+use TrevorBice\Component\Mothership\Administrator\Helper\ProposalHelper;
 
 /**
  * @phpstan-import-type ApplicationFactory from \Joomla\CMS\Factory
@@ -17,8 +17,8 @@ $input = $app->input;
 $id    = $input->getInt('id', 0);
 
 try {
-    $estimate = EstimateHelper::getEstimate($id);
-    $isLocked = $estimate->locked ?? false;
+    $proposal = ProposalHelper::getProposal($id);
+    $isLocked = $proposal->locked ?? false;
 } catch (Exception $e) {
     $isLocked = false;
 }
@@ -32,28 +32,28 @@ $items = $field->value ?? [];
     }
 </style>
 
-<table class="table table-striped" id="estimate-items-table">
+<table class="table table-striped" id="proposal-items-table">
     <thead>
         <tr>
             <th width="1%"></th>
-            <th><?php echo Text::_('COM_MOTHERSHIP_ESTIMATE_ITEM_NAME'); ?></th>
-            <th><?php echo Text::_('COM_MOTHERSHIP_ESTIMATE_ITEM_DESCRIPTION'); ?></th>
+            <th><?php echo Text::_('COM_MOTHERSHIP_PROPOSAL_ITEM_NAME'); ?></th>
+            <th><?php echo Text::_('COM_MOTHERSHIP_PROPOSAL_ITEM_DESCRIPTION'); ?></th>
             <th><?php echo "Type" ?></th>
-            <th width="1%"><?php echo Text::_('COM_MOTHERSHIP_ESTIMATE_ITEM_TIME_LOW'); ?> (HH:MM)</th>
-            <th width="1%"><?php echo Text::_('COM_MOTHERSHIP_ESTIMATE_ITEM_TIME'); ?> (HH:MM)</th>            
-            <th width="1%"><?php echo Text::_('COM_MOTHERSHIP_ESTIMATE_ITEM_QUANTITY_LOW'); ?></th>
-            <th width="1%"><?php echo Text::_('COM_MOTHERSHIP_ESTIMATE_ITEM_QUANTITY'); ?></th>
-            <th width="6%"><?php echo Text::_('COM_MOTHERSHIP_ESTIMATE_ITEM_RATE'); ?></th>
-            <th width="1%"><?php echo Text::_('COM_MOTHERSHIP_ESTIMATE_ITEM_SUBTOTAL_LOW'); ?></th>
-            <th width="1%"><?php echo Text::_('COM_MOTHERSHIP_ESTIMATE_ITEM_SUBTOTAL'); ?></th>
-            <th width="1%"><?php echo Text::_('COM_MOTHERSHIP_ESTIMATE_ITEM_ACTIONS'); ?></th>
+            <th width="1%"><?php echo Text::_('COM_MOTHERSHIP_PROPOSAL_ITEM_TIME_LOW'); ?> (HH:MM)</th>
+            <th width="1%"><?php echo Text::_('COM_MOTHERSHIP_PROPOSAL_ITEM_TIME'); ?> (HH:MM)</th>            
+            <th width="1%"><?php echo Text::_('COM_MOTHERSHIP_PROPOSAL_ITEM_QUANTITY_LOW'); ?></th>
+            <th width="1%"><?php echo Text::_('COM_MOTHERSHIP_PROPOSAL_ITEM_QUANTITY'); ?></th>
+            <th width="6%"><?php echo Text::_('COM_MOTHERSHIP_PROPOSAL_ITEM_RATE'); ?></th>
+            <th width="1%"><?php echo Text::_('COM_MOTHERSHIP_PROPOSAL_ITEM_SUBTOTAL_LOW'); ?></th>
+            <th width="1%"><?php echo Text::_('COM_MOTHERSHIP_PROPOSAL_ITEM_SUBTOTAL'); ?></th>
+            <th width="1%"><?php echo Text::_('COM_MOTHERSHIP_PROPOSAL_ITEM_ACTIONS'); ?></th>
         </tr>
     </thead>
 
     <tbody>
         <?php if (!empty($items)) : ?>
             <?php foreach ($items as $index => $item) : ?>
-                <tr class="estimate-item-row">
+                <tr class="proposal-item-row">
                     <td class="drag-handle"><?php if (!$isLocked) : ?>☰<?php endif; ?></td>
 
                     <td>
@@ -163,7 +163,7 @@ $items = $field->value ?? [];
 
         <?php else : ?>
 
-            <tr class="estimate-item-row">
+            <tr class="proposal-item-row">
                 <td class="drag-handle">☰</td>
 
                 <td>
@@ -253,7 +253,7 @@ $items = $field->value ?? [];
 </table>
 
 <?php if (!$isLocked) : ?>
-    <button type="button" class="btn btn-success" id="add-estimate-item">
+    <button type="button" class="btn btn-success" id="add-proposal-item">
         <?php echo Text::_('COM_MOTHERSHIP_ADD_ITEM'); ?>
     </button>
 <?php endif; ?>
@@ -261,7 +261,7 @@ $items = $field->value ?? [];
 
 <script type="text/javascript">
 jQuery(function ($) {
-    const $tableBody = $('#estimate-items-table tbody');
+    const $tableBody = $('#proposal-items-table tbody');
     const $form      = $('#adminForm');
 
     /**
@@ -405,7 +405,7 @@ jQuery(function ($) {
     }
 
     // Add new row
-    $('#add-estimate-item').on('click', function () {
+    $('#add-proposal-item').on('click', function () {
         addNewRow();
     });
 

@@ -11,22 +11,22 @@ use Joomla\CMS\Layout\FileLayout;
 /**
  * Custom field to display invoice items in a table layout.
  */
-class EstimateItemsField extends SubformField
+class ProposalItemsField extends SubformField
 {
-    protected $type = 'EstimateItems';
+    protected $type = 'ProposalItems';
 
     /**
      * Override the getInput method to include a custom layout.
      */
     protected function getInput()
     {
-        $layoutPath = JPATH_ROOT . '/administrator/components/com_mothership/tmpl/fields/EstimateItems.php';
+        $layoutPath = JPATH_ROOT . '/administrator/components/com_mothership/tmpl/fields/ProposalItems.php';
 
         if (!file_exists($layoutPath)) {
             return parent::getInput(); // Fallback to default Joomla subform
         }
 
-        $layout = new FileLayout('estimateitems',JPATH_ROOT . '/administrator/components/com_mothership/tmpl/fields');
+        $layout = new FileLayout('proposalitems',JPATH_ROOT . '/administrator/components/com_mothership/tmpl/fields');
 
         return $layout->render(['field' => $this]);
     }

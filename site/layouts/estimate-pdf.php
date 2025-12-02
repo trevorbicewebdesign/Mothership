@@ -2,7 +2,7 @@
 defined('_JEXEC') or die;
 
 /** @var array $displayData */
-$estimate = $displayData['estimate'];
+$proposal = $displayData['proposal'];
 
 ?>
 
@@ -10,9 +10,9 @@ $estimate = $displayData['estimate'];
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Estimate #<?php echo $estimate->number; ?></title>
+    <title>Proposal #<?php echo $proposal->number; ?></title>
     <style>
-        body.estimate {
+        body.proposal {
             font-family: "Helvetica Neue", Arial, sans-serif;
             font-size: 12pt;
             color: #333;
@@ -77,24 +77,24 @@ $estimate = $displayData['estimate'];
         }
     </style>
 </head>
-<body class="estimate">
-    <h1>Estimate #<?php echo $estimate->number; ?></h1>
+<body class="proposal">
+    <h1>Proposal #<?php echo $proposal->number; ?></h1>
 
     <div class="section">
-        <p><strong>Client:</strong> <?php echo htmlspecialchars($estimate->client_name ?? ''); ?></p>
-        <p><strong>Date:</strong> <?php echo htmlspecialchars($estimate->created ?? ''); ?></p>
-        <p><strong>Due Date:</strong> <?php echo htmlspecialchars($estimate->due ?? ''); ?></p>
-        <p><strong>Status:</strong> <?php echo htmlspecialchars($estimate->status ?? ''); ?></p>
+        <p><strong>Client:</strong> <?php echo htmlspecialchars($proposal->client_name ?? ''); ?></p>
+        <p><strong>Date:</strong> <?php echo htmlspecialchars($proposal->created ?? ''); ?></p>
+        <p><strong>Due Date:</strong> <?php echo htmlspecialchars($proposal->due ?? ''); ?></p>
+        <p><strong>Status:</strong> <?php echo htmlspecialchars($proposal->status ?? ''); ?></p>
     </div>
 
-    <div class="section estimate-summary">
+    <div class="section proposal-summary">
         <h2>Summary</h2>
-        <?php echo $estimate->summary ?? ''; ?>
+        <?php echo $proposal->summary ?? ''; ?>
     </div>
 
     <pagebreak />
 
-    <h2>Estimate Items</h2>
+    <h2>Proposal Items</h2>
     <table>
         <thead>
             <tr>
@@ -106,8 +106,8 @@ $estimate = $displayData['estimate'];
             </tr>
         </thead>
         <tbody>
-            <?php if (!empty($estimate->items)) : ?>
-                <?php foreach ($estimate->items as $item) : ?>
+            <?php if (!empty($proposal->items)) : ?>
+                <?php foreach ($proposal->items as $item) : ?>
                     <tr>
                         <td><?php echo htmlspecialchars($item['name'] ?? ''); ?><br/><?php echo htmlspecialchars($item['description'] ?? ''); ?></td>
                         <td><?php echo ($item['time_low'] ?? 0); ?> - <?php echo ($item['time'] ?? 0); ?></td>
@@ -116,7 +116,7 @@ $estimate = $displayData['estimate'];
                         <td><?php echo number_format((float)($item['subtotal'] ?? 0), 2); ?></td>
                     </tr>
                 <?php endforeach; ?>
-                 <?php foreach ($estimate->items as $item) : ?>
+                 <?php foreach ($proposal->items as $item) : ?>
                     <tr>
                         <td><?php echo htmlspecialchars($item['name'] ?? ''); ?><br/><?php echo htmlspecialchars($item['description'] ?? ''); ?></td>
                         <td><?php echo ($item['time_low'] ?? 0); ?> - <?php echo ($item['time'] ?? 0); ?></td>
@@ -134,12 +134,12 @@ $estimate = $displayData['estimate'];
     </table>
 
     <div class="totals">
-        <h3>Total: $<?php echo number_format((float)($estimate->total ?? 0), 2); ?></h3>
+        <h3>Total: $<?php echo number_format((float)($proposal->total ?? 0), 2); ?></h3>
     </div>
 
-    <div class="section estimate-notes"></div>
+    <div class="section proposal-notes"></div>
         <h2>Notes</h2>
-        <?php echo $estimate->notes ?? ''; ?>
+        <?php echo $proposal->notes ?? ''; ?>
     </div>  
 
 </body>

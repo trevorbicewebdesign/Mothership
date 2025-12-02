@@ -18,11 +18,11 @@ use TrevorBice\Component\Mothership\Administrator\Helper\MothershipHelper;
 
 
 /**
- * Estimate Controller for com_mothership
+ * Proposal Controller for com_mothership
  */
-class EstimateController extends FormController
+class ProposalController extends FormController
 {
-    protected $default_view = 'estimate';
+    protected $default_view = 'proposal';
 
     public function display($cachable = false, $urlparams = [])
     {
@@ -52,26 +52,26 @@ class EstimateController extends FormController
         $id = $app->getInput()->getInt('id');
 
         if (!$id) {
-            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVALID_ESTIMATE_ID'), 'error');
-            $this->setRedirect(Route::_('index.php?option=com_mothership&view=estimates', false));
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVALID_PROPOSAL_ID'), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=proposals', false));
             return;
         }
 
-        $model = $this->getModel('Estimate');
-        $estimate = $model->getItem($id);
-        $client = ClientHelper::getClient($estimate->client_id);
-        $account = AccountHelper::getAccount($estimate->account_id);
+        $model = $this->getModel('Proposal');
+        $proposal = $model->getItem($id);
+        $client = ClientHelper::getClient($proposal->client_id);
+        $account = AccountHelper::getAccount($proposal->account_id);
         $business = MothershipHelper::getMothershipOptions();
 
-        if (!$estimate) {
-            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_ESTIMATE_NOT_FOUND'), 'error');
-            $this->setRedirect(Route::_('index.php?option=com_mothership&view=estimates', false));
+        if (!$proposal) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_PROPOSAL_NOT_FOUND'), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=proposals', false));
             return;
         }
 
-        $layout = new FileLayout('estimate-pdf', JPATH_ROOT . '/components/com_mothership/layouts');
+        $layout = new FileLayout('proposal-pdf', JPATH_ROOT . '/components/com_mothership/layouts');
         echo $layout->render([
-            'estimate' => $estimate,
+            'proposal' => $proposal,
             'client' => $client,
             'account' => $account,
             'business' => $business
@@ -87,38 +87,38 @@ class EstimateController extends FormController
         $id = $input->getInt('id');
 
         if (!$id) {
-            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVALID_ESTIMATE_ID'), 'error');
-            $this->setRedirect(Route::_('index.php?option=com_mothership&view=estimates', false));
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVALID_PROPOSAL_ID'), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=proposals', false));
             return;
         }
 
-        $model = $this->getModel('Estimate');
-        $estimate = $model->getItem($id);
-        $client = ClientHelper::getClient($estimate->client_id);
-        $account = AccountHelper::getAccount($estimate->account_id);
+        $model = $this->getModel('Proposal');
+        $proposal = $model->getItem($id);
+        $client = ClientHelper::getClient($proposal->client_id);
+        $account = AccountHelper::getAccount($proposal->account_id);
         $business = MothershipHelper::getMothershipOptions();
 
-        if (!$estimate) {
-            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_ESTIMATE_NOT_FOUND'), 'error');
-            $this->setRedirect(Route::_('index.php?option=com_mothership&view=estimates', false));
+        if (!$proposal) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_PROPOSAL_NOT_FOUND'), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=proposals', false));
             return;
         }
 
         ob_start();
-        $layout = new FileLayout('estimate-pdf', JPATH_ROOT . '/components/com_mothership/layouts');
+        $layout = new FileLayout('proposal-pdf', JPATH_ROOT . '/components/com_mothership/layouts');
         echo $layout->render([
-            'estimate' => $estimate,
+            'proposal' => $proposal,
             'client' => $client,
             'account' => $account,
             'business' => $business
         ]);
 
-        echo $layout->render(['estimate' => $estimate]);
+        echo $layout->render(['proposal' => $proposal]);
         $html = ob_get_clean();
 
         $pdf = new Mpdf();
         $pdf->WriteHTML($html);
-        $pdf->Output('Estimate-' . $estimate->number . '.pdf', 'I');
+        $pdf->Output('Proposal-' . $proposal->number . '.pdf', 'I');
 
         $app->close();
     }
@@ -133,19 +133,19 @@ class EstimateController extends FormController
         $data = $input->get('jform', [], 'array');
 
         // Get the model
-        $model = $this->getModel('Estimate');
+        $model = $this->getModel('Proposal');
 
         if (!$model->save($data)) {
             // Error occurred, redirect back to form with error messages
-            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ESTIMATE_SAVE_FAILED'), 'error');
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_PROPOSAL_SAVE_FAILED'), 'error');
             $app->enqueueMessage($model->getError(), 'error');
 
             // Determine which task was requested to redirect back to the appropriate edit page
             $task = $input->getCmd('task');
             if ($task === 'apply') {
-                $redirectUrl = Route::_('index.php?option=com_mothership&view=estimate&layout=edit&id=' . $data['id'], false);
+                $redirectUrl = Route::_('index.php?option=com_mothership&view=proposal&layout=edit&id=' . $data['id'], false);
             } else {
-                $redirectUrl = Route::_('index.php?option=com_mothership&view=estimates', false);
+                $redirectUrl = Route::_('index.php?option=com_mothership&view=proposals', false);
             }
 
             $this->setRedirect($redirectUrl);
@@ -153,18 +153,18 @@ class EstimateController extends FormController
         }
 
         // Success message
-        $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_ESTIMATE_SAVED_SUCCESSFULLY', "<strong>{$data['name']}</strong>"), 'message');
+        $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_PROPOSAL_SAVED_SUCCESSFULLY', "<strong>{$data['name']}</strong>"), 'message');
 
         // Determine which task was requested
         $task = $input->getCmd('task');
 
-        // If "Apply" (i.e., estimate.apply) is clicked, remain on the edit page.
+        // If "Apply" (i.e., proposal.apply) is clicked, remain on the edit page.
         if ($task === 'apply') {
             $id = !empty($data['id']) ? $data['id'] : $model->getState($model->getName() . '.id');
-            $redirectUrl = Route::_('index.php?option=com_mothership&view=estimate&layout=edit&id=' . $id, false);
+            $redirectUrl = Route::_('index.php?option=com_mothership&view=proposal&layout=edit&id=' . $id, false);
         } else {
-            // If "Save" (i.e., estimate.save) is clicked, return to the estimates list.
-            $redirectUrl = Route::_('index.php?option=com_mothership&view=estimates', false);
+            // If "Save" (i.e., proposal.save) is clicked, return to the proposals list.
+            $redirectUrl = Route::_('index.php?option=com_mothership&view=proposals', false);
         }
 
         $this->setRedirect($redirectUrl);
@@ -173,11 +173,11 @@ class EstimateController extends FormController
 
     public function cancel($key = null)
     {
-        $model = $this->getModel('Estimate');
+        $model = $this->getModel('Proposal');
         $id = $this->input->getInt('id');
         $model->cancelEdit($id);
 
-        $defaultRedirect = Route::_('index.php?option=com_mothership&view=estimates', false);
+        $defaultRedirect = Route::_('index.php?option=com_mothership&view=proposals', false);
         $returnRedirect = MothershipHelper::getReturnRedirect($defaultRedirect);
 
         $this->setRedirect($returnRedirect);
@@ -191,19 +191,19 @@ class EstimateController extends FormController
         $id = $app->getInput()->getInt('id');
 
         if (!$id) {
-            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVALID_ESTIMATE_ID'), 'error');
-            $this->setRedirect(Route::_('index.php?option=com_mothership&view=estimates', false));
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVALID_PROPOSAL_ID'), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=proposals', false));
             return;
         }
 
-        $model = $this->getModel('Estimate');
+        $model = $this->getModel('Proposal');
         if ($model->unlock($id)) {
-            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ESTIMATE_UNLOCKED_SUCCESSFULLY'), 'message');
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_PROPOSAL_UNLOCKED_SUCCESSFULLY'), 'message');
         } else {
-            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ESTIMATE_UNLOCK_FAILED'), 'error');
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_PROPOSAL_UNLOCK_FAILED'), 'error');
         }
 
-        $this->setRedirect(Route::_("index.php?option=com_mothership&view=estimate&layout=edit&id={$id}", false));
+        $this->setRedirect(Route::_("index.php?option=com_mothership&view=proposal&layout=edit&id={$id}", false));
     }
 
     public function lock($key = null)
@@ -212,18 +212,18 @@ class EstimateController extends FormController
         $id = $app->getInput()->getInt('id');
 
         if (!$id) {
-            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVALID_ESTIMATE_ID'), 'error');
-            $this->setRedirect(Route::_('index.php?option=com_mothership&view=estimates', false));
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVALID_PROPOSAL_ID'), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=proposals', false));
             return;
         }
 
-        $model = $this->getModel('Estimate');
+        $model = $this->getModel('Proposal');
         if ($model->lock($id)) {
-            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ESTIMATE_LOCKED_SUCCESSFULLY'), 'message');
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_PROPOSAL_LOCKED_SUCCESSFULLY'), 'message');
         } else {
-            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ESTIMATE_LOCK_FAILED'), 'error');
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_PROPOSAL_LOCK_FAILED'), 'error');
         }
 
-        $this->setRedirect(Route::_("index.php?option=com_mothership&view=estimate&layout=edit&id={$id}", false));
+        $this->setRedirect(Route::_("index.php?option=com_mothership&view=proposal&layout=edit&id={$id}", false));
     }
 }

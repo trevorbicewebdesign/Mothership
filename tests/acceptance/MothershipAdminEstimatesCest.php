@@ -6,18 +6,18 @@ use Tests\Support\AcceptanceTester;
 use Facebook\WebDriver\WebDriverKeys;
 
 
-class MothershipAdminEstimatesCest
+class MothershipAdminProposalsCest
 {
     private $clientData;
     private $userData;
     private $accountData;
-    private $estimateData;
+    private $proposalData;
     private $projectData;
-    private $estimateItemData = [];
+    private $proposalItemData = [];
     private $mothershipConfig = [];
 
-    const ESTIMATES_VIEW_ALL_URL = "/administrator/index.php?option=com_mothership&view=estimates";
-    const ESTIMATE_EDIT_URL = "/administrator/index.php?option=com_mothership&view=estimate&layout=edit&id=%s";
+    const PROPOSALS_VIEW_ALL_URL = "/administrator/index.php?option=com_mothership&view=proposals";
+    const PROPOSAL_EDIT_URL = "/administrator/index.php?option=com_mothership&view=proposal&layout=edit&id=%s";
     public function _before(AcceptanceTester $I)
     {
         $I->resetMothershipTables();
@@ -66,7 +66,7 @@ class MothershipAdminEstimatesCest
             'name' => 'Roadrunner Products',
         ]);
 
-        $this->estimateData = $I->createMothershipEstimate([
+        $this->proposalData = $I->createMothershipProposal([
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
             'project_id' => $this->projectData['id'],   
@@ -77,8 +77,8 @@ class MothershipAdminEstimatesCest
             'status' => 1,
         ]);
 
-        $this->estimateItemData[] = $I->createMothershipEstimateItem([
-            'estimate_id' => $this->estimateData['id'],
+        $this->proposalItemData[] = $I->createMothershipProposalItem([
+            'proposal_id' => $this->proposalData['id'],
             'name' => 'Test Item 1',
             'description' => 'Test Description 1',
             'hours' => '1',
@@ -88,8 +88,8 @@ class MothershipAdminEstimatesCest
             'subtotal' => '105.00',
         ]);
 
-        $this->estimateItemData[] = $I->createMothershipEstimateItem([
-            'estimate_id' => $this->estimateData['id'],
+        $this->proposalItemData[] = $I->createMothershipProposalItem([
+            'proposal_id' => $this->proposalData['id'],
             'name' => 'Test Item 2',
             'description' => 'Test Description 2',
             'hours' => '1',
@@ -112,13 +112,13 @@ class MothershipAdminEstimatesCest
 
     /**
      * @group backend
-     * @group estimate
-     * @group backend-estimate
+     * @group proposal
+     * @group backend-proposal
      */
-    public function MothershipViewEstimates(AcceptanceTester $I)
+    public function MothershipViewProposals(AcceptanceTester $I)
     {
 
-        $estimateData = $I->createMothershipEstimate([
+        $proposalData = $I->createMothershipProposal([
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
             'project_id' => NULL,
@@ -129,8 +129,8 @@ class MothershipAdminEstimatesCest
             'locked' => 1,
         ]);
 
-        $estimateItemData[] = $I->createMothershipEstimateItem([
-            'estimate_id' => $estimateData['id'],
+        $proposalItemData[] = $I->createMothershipProposalItem([
+            'proposal_id' => $proposalData['id'],
             'name' => 'Test Item 1',
             'description' => 'Test Description 1',
             'hours' => '1',
@@ -140,8 +140,8 @@ class MothershipAdminEstimatesCest
             'subtotal' => '105.00',
         ]);
 
-        $estimateItemData[] = $I->createMothershipEstimateItem([
-            'estimate_id' => $estimateData['id'],
+        $proposalItemData[] = $I->createMothershipProposalItem([
+            'proposal_id' => $proposalData['id'],
             'name' => 'Test Item 2',
             'description' => 'Test Description 2',
             'hours' => '1',
@@ -151,10 +151,10 @@ class MothershipAdminEstimatesCest
             'subtotal' => '70.00',
         ]);
         
-        $I->amOnPage(self::ESTIMATES_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Estimates", 30, "h1.page-title");
+        $I->amOnPage(self::PROPOSALS_VIEW_ALL_URL);
+        $I->waitForText("Mothership: Proposals", 30, "h1.page-title");
 
-        $I->makeScreenshot("mothership-view-estimates");
+        $I->makeScreenshot("mothership-view-proposals");
 
         $I->dontSee("Warning");
 
@@ -168,7 +168,7 @@ class MothershipAdminEstimatesCest
         $I->seeElement("#j-main-container thead");
         
         $I->see("ID", "#j-main-container table thead tr th:nth-child(2)");
-        $I->see("Estimate Number", "#j-main-container table thead tr th:nth-child(3)");
+        $I->see("Proposal Number", "#j-main-container table thead tr th:nth-child(3)");
         $I->see("PDF", "#j-main-container table thead tr th:nth-child(4)");
         $I->see("Client", "#j-main-container table thead tr th:nth-child(5)");
         $I->see("Account", "#j-main-container table thead tr th:nth-child(6)");
@@ -182,10 +182,10 @@ class MothershipAdminEstimatesCest
         $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 2);
 
         $row = 1;
-        // This estimate is not locked, so it should not have the lock icon
+        // This proposal is not locked, so it should not have the lock icon
         $I->dontSeeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(1) i.fa-solid.fa-lock");
-        $I->see("{$this->estimateData['id']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(2)");
-        $I->see("{$this->estimateData['number']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(3)");
+        $I->see("{$this->proposalData['id']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(2)");
+        $I->see("{$this->proposalData['number']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(3)");
         $I->seeNumberOfElements("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4) a", 2);
         $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4) a.downloadPdf");
         $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4) a.previewPdf");
@@ -193,22 +193,22 @@ class MothershipAdminEstimatesCest
         $downloadPdfUrl = $I->grabAttributeFrom("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4) a.downloadPdf", 'href');
         $previewPdfUrl = $I->grabAttributeFrom("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4) a.previewPdf", 'href');
 
-        $I->assertEquals("/administrator/index.php?option=com_mothership&task=estimate.downloadPdf&id={$this->estimateData['id']}", $downloadPdfUrl);
-        $I->assertEquals("/administrator/index.php?option=com_mothership&task=estimate.previewPdf&id={$this->estimateData['id']}", $previewPdfUrl);
+        $I->assertEquals("/administrator/index.php?option=com_mothership&task=proposal.downloadPdf&id={$this->proposalData['id']}", $downloadPdfUrl);
+        $I->assertEquals("/administrator/index.php?option=com_mothership&task=proposal.previewPdf&id={$this->proposalData['id']}", $previewPdfUrl);
 
         $I->see("{$this->clientData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5)");
         $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(6)");
         $I->see("{$this->projectData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(7)");
-        $I->see("{$this->estimateData['total']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(8)");
+        $I->see("{$this->proposalData['total']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(8)");
         $I->see("Draft", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(9)");
         $I->see("Unpaid", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(10)");
         $I->see(date('Y-m-d'), "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(12)");
 
         $row = 2;
-        // This estimate IS not locked, so it SHOULD have the lock icon
+        // This proposal IS not locked, so it SHOULD have the lock icon
         $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(1) i.fa-solid.fa-lock");
-        $I->see("{$estimateData['id']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(2)");
-        $I->see("{$estimateData['number']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(3)");
+        $I->see("{$proposalData['id']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(2)");
+        $I->see("{$proposalData['number']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(3)");
         $I->seeNumberOfElements("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4) a", 2);
         $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4) a.downloadPdf");
         $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4) a.previewPdf");
@@ -216,12 +216,12 @@ class MothershipAdminEstimatesCest
         $downloadPdfUrl = $I->grabAttributeFrom("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4) a.downloadPdf", 'href');
         $previewPdfUrl = $I->grabAttributeFrom("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4) a.previewPdf", 'href');
 
-        $I->assertEquals("/administrator/index.php?option=com_mothership&task=estimate.downloadPdf&id={$estimateData['id']}", $downloadPdfUrl);
-        $I->assertEquals("/administrator/index.php?option=com_mothership&task=estimate.previewPdf&id={$estimateData['id']}", $previewPdfUrl);
+        $I->assertEquals("/administrator/index.php?option=com_mothership&task=proposal.downloadPdf&id={$proposalData['id']}", $downloadPdfUrl);
+        $I->assertEquals("/administrator/index.php?option=com_mothership&task=proposal.previewPdf&id={$proposalData['id']}", $previewPdfUrl);
 
         $I->see("{$this->clientData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5)");
         $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(6)");
-        $I->see("{$estimateData['total']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(8)");
+        $I->see("{$proposalData['total']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(8)");
         $I->see("Closed", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(9)");
         $I->see("Paid", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(10)");
         $I->see("Payment #{$paymentData['id']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(10)"); 
@@ -232,49 +232,49 @@ class MothershipAdminEstimatesCest
 
     /**
      * @group backend
-     * @group estimate
+     * @group proposal
      * @group delete
-     * @group backend-estimate
+     * @group backend-proposal
      */
-    public function MothershipDeleteEstimateSuccess(AcceptanceTester $I)
+    public function MothershipDeleteProposalSuccess(AcceptanceTester $I)
     {
-        $I->setEstimateStatus($this->estimateData['id'], 1);
-        $I->seeInDatabase('jos_mothership_estimates', ['id' => $this->estimateData['id']]);
+        $I->setProposalStatus($this->proposalData['id'], 1);
+        $I->seeInDatabase('jos_mothership_proposals', ['id' => $this->proposalData['id']]);
 
-        $I->amOnPage(self::ESTIMATES_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Estimates", 30, "h1.page-title");
+        $I->amOnPage(self::PROPOSALS_VIEW_ALL_URL);
+        $I->waitForText("Mothership: Proposals", 30, "h1.page-title");
 
         $I->seeElement(".btn-toolbar");
 
         $I->click("input[name=checkall-toggle]");
         $I->click("Actions");
         $I->see("Check-in", "joomla-toolbar-button#status-group-children-checkin");
-        $I->seeElement("joomla-toolbar-button#status-group-children-checkin", ['task' => "estimates.checkIn"]);
+        $I->seeElement("joomla-toolbar-button#status-group-children-checkin", ['task' => "proposals.checkIn"]);
         $I->see("Edit", "joomla-toolbar-button#status-group-children-edit");
-        $I->seeElement("joomla-toolbar-button#status-group-children-edit", ['task' => "estimate.edit"]);
+        $I->seeElement("joomla-toolbar-button#status-group-children-edit", ['task' => "proposal.edit"]);
         $I->see("Delete", "joomla-toolbar-button#status-group-children-delete");
-        $I->seeElement("joomla-toolbar-button#status-group-children-delete", ['task' => "estimates.delete"]);
+        $I->seeElement("joomla-toolbar-button#status-group-children-delete", ['task' => "proposals.delete"]);
 
         $I->click("Delete", "#toolbar");
         $I->wait(1);
 
-        $I->seeInCurrentUrl(self::ESTIMATES_VIEW_ALL_URL);
-        $I->see("Mothership: Estimates", "h1.page-title");
-        $I->see("1 Estimate deleted successfully.", ".alert-message");
+        $I->seeInCurrentUrl(self::PROPOSALS_VIEW_ALL_URL);
+        $I->see("Mothership: Proposals", "h1.page-title");
+        $I->see("1 Proposal deleted successfully.", ".alert-message");
         $I->seeNumberOfElements("#j-main-container table tbody tr", 0);
 
-        $I->dontSeeInDatabase('jos_mothership_estimates', ['id' => $this->estimateData['id']]);
+        $I->dontSeeInDatabase('jos_mothership_proposals', ['id' => $this->proposalData['id']]);
     }
 
     /**
      * @group backend
-     * @group estimate
-     * @group backend-estimate
+     * @group proposal
+     * @group backend-proposal
      */
-    public function MothershipAddEstimate(AcceptanceTester $I)
+    public function MothershipAddProposal(AcceptanceTester $I)
     {
-        $I->amOnPage(self::ESTIMATES_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Estimates", 30, "h1.page-title");
+        $I->amOnPage(self::PROPOSALS_VIEW_ALL_URL);
+        $I->waitForText("Mothership: Proposals", 30, "h1.page-title");
 
         $toolbar = "#toolbar";
         $toolbarNew = "#toolbar-new";
@@ -282,7 +282,7 @@ class MothershipAdminEstimatesCest
         $I->seeElement("{$toolbar} {$toolbarNew}");
         $I->see("New", "{$toolbar} {$toolbarNew} .btn.button-new");
         $I->click("{$toolbar} {$toolbarNew} .btn.button-new");
-        $I->waitForText("Mothership: New Estimate", 30, "h1.page-title");
+        $I->waitForText("Mothership: New Proposal", 30, "h1.page-title");
         $I->wait(5);
 
         $I->see("Save", "#toolbar");
@@ -329,109 +329,109 @@ class MothershipAdminEstimatesCest
 
         $I->fillFIeld("input#jform_total", "105.00");
 
-        $I->amGoingTo("Fill out the first row of the estimate items table");
-        $I->fillField("#estimate-items-table input[name='jform[items][0][name]']", "Test Item");
-        $I->fillField("#estimate-items-table input[name='jform[items][0][description]']", "Test Description");
+        $I->amGoingTo("Fill out the first row of the proposal items table");
+        $I->fillField("#proposal-items-table input[name='jform[items][0][name]']", "Test Item");
+        $I->fillField("#proposal-items-table input[name='jform[items][0][description]']", "Test Description");
 
-        $I->fillField("#estimate-items-table input[name='jform[items][0][hours]']", "1");
+        $I->fillField("#proposal-items-table input[name='jform[items][0][hours]']", "1");
 
-        $I->seeInField("#estimate-items-table input[name='jform[items][0][hours]']", "1");
-        $I->seeInField("#estimate-items-table input[name='jform[items][0][minutes]']", "0");
-        $I->seeInField("#estimate-items-table input[name='jform[items][0][quantity]']", "1.00");
-        $I->seeInField("#estimate-items-table input[name='jform[items][0][rate]']", $this->clientData['default_rate']);
+        $I->seeInField("#proposal-items-table input[name='jform[items][0][hours]']", "1");
+        $I->seeInField("#proposal-items-table input[name='jform[items][0][minutes]']", "0");
+        $I->seeInField("#proposal-items-table input[name='jform[items][0][quantity]']", "1.00");
+        $I->seeInField("#proposal-items-table input[name='jform[items][0][rate]']", $this->clientData['default_rate']);
         $expectedSubtotal = number_format(($this->clientData['default_rate'] * 1), 2); // Update this value if needed based on calculations
-        $I->seeInField("#estimate-items-table input[name='jform[items][0][subtotal]']", $expectedSubtotal);
+        $I->seeInField("#proposal-items-table input[name='jform[items][0][subtotal]']", $expectedSubtotal);
 
-        $I->fillField("#estimate-items-table input[name='jform[items][0][minutes]']", "30");
+        $I->fillField("#proposal-items-table input[name='jform[items][0][minutes]']", "30");
 
-        $I->seeInField("#estimate-items-table input[name='jform[items][0][hours]']", "1");
-        $I->seeInField("#estimate-items-table input[name='jform[items][0][minutes]']", "30");
-        $I->seeInField("#estimate-items-table input[name='jform[items][0][quantity]']", "1.50");
-        $I->seeInField("#estimate-items-table input[name='jform[items][0][rate]']", $this->clientData['default_rate']);
+        $I->seeInField("#proposal-items-table input[name='jform[items][0][hours]']", "1");
+        $I->seeInField("#proposal-items-table input[name='jform[items][0][minutes]']", "30");
+        $I->seeInField("#proposal-items-table input[name='jform[items][0][quantity]']", "1.50");
+        $I->seeInField("#proposal-items-table input[name='jform[items][0][rate]']", $this->clientData['default_rate']);
         $expectedSubtotal = number_format(($this->clientData['default_rate'] * 1.5), 2); // Update this value if needed based on calculations
-        $I->seeInField("#estimate-items-table input[name='jform[items][0][subtotal]']", $expectedSubtotal);
+        $I->seeInField("#proposal-items-table input[name='jform[items][0][subtotal]']", $expectedSubtotal);
 
         // Delete whats in quantity
-        $I->executeJS("document.querySelector(\"#estimate-items-table input[name='jform[items][0][quantity]']\").value = '';");
-        $I->fillField("#estimate-items-table input[name='jform[items][0][quantity]']", "2.00");
+        $I->executeJS("document.querySelector(\"#proposal-items-table input[name='jform[items][0][quantity]']\").value = '';");
+        $I->fillField("#proposal-items-table input[name='jform[items][0][quantity]']", "2.00");
 
-        $I->seeInField("#estimate-items-table input[name='jform[items][0][hours]']", "2");
-        $I->seeInField("#estimate-items-table input[name='jform[items][0][minutes]']", "0");
-        $I->seeInField("#estimate-items-table input[name='jform[items][0][quantity]']", "2.00");
-        $I->seeInField("#estimate-items-table input[name='jform[items][0][rate]']", $this->clientData['default_rate']);
+        $I->seeInField("#proposal-items-table input[name='jform[items][0][hours]']", "2");
+        $I->seeInField("#proposal-items-table input[name='jform[items][0][minutes]']", "0");
+        $I->seeInField("#proposal-items-table input[name='jform[items][0][quantity]']", "2.00");
+        $I->seeInField("#proposal-items-table input[name='jform[items][0][rate]']", $this->clientData['default_rate']);
         $expectedSubtotal = number_format(($this->clientData['default_rate'] * 2), 2); // Update this value if needed based on calculations
-        $I->seeInField("#estimate-items-table input[name='jform[items][0][subtotal]']", $expectedSubtotal);
+        $I->seeInField("#proposal-items-table input[name='jform[items][0][subtotal]']", $expectedSubtotal);
 
-        $I->executeJS("document.querySelector(\"#estimate-items-table input[name='jform[items][0][rate]']\").value = '';");
+        $I->executeJS("document.querySelector(\"#proposal-items-table input[name='jform[items][0][rate]']\").value = '';");
         $I->fillField("table tbody tr:first-child input[name='jform[items][0][rate]']", "70.00");
 
-        $I->click("#estimate-items-table input[name='jform[items][0][subtotal]']");
+        $I->click("#proposal-items-table input[name='jform[items][0][subtotal]']");
 
-        $I->seeInField("#estimate-items-table input[name='jform[items][0][hours]']", "2");
-        $I->seeInField("#estimate-items-table input[name='jform[items][0][minutes]']", "0");
-        $I->seeInField("#estimate-items-table input[name='jform[items][0][quantity]']", "2.00");
-        $I->seeInField("#estimate-items-table input[name='jform[items][0][rate]']", "70.00");
-        $I->seeInField("#estimate-items-table input[name='jform[items][0][subtotal]']", "140.00");
+        $I->seeInField("#proposal-items-table input[name='jform[items][0][hours]']", "2");
+        $I->seeInField("#proposal-items-table input[name='jform[items][0][minutes]']", "0");
+        $I->seeInField("#proposal-items-table input[name='jform[items][0][quantity]']", "2.00");
+        $I->seeInField("#proposal-items-table input[name='jform[items][0][rate]']", "70.00");
+        $I->seeInField("#proposal-items-table input[name='jform[items][0][subtotal]']", "140.00");
 
         $I->seeInField("input#jform_total", "140.00");
 
-        $I->executeJS("document.querySelector('#add-estimate-item').scrollIntoView({ behavior: 'instant', block: 'center' });");
+        $I->executeJS("document.querySelector('#add-proposal-item').scrollIntoView({ behavior: 'instant', block: 'center' });");
         $I->wait(1);
-        $I->click("#add-estimate-item");
+        $I->click("#add-proposal-item");
 
-        $I->dontSee("#estimate-items-table input[name='jform[items][2][name]']");
+        $I->dontSee("#proposal-items-table input[name='jform[items][2][name]']");
 
-        $I->fillField("#estimate-items-table input[name='jform[items][1][name]']", "A different Item");
-        $I->fillField("#estimate-items-table input[name='jform[items][1][description]']", "Test Description");
+        $I->fillField("#proposal-items-table input[name='jform[items][1][name]']", "A different Item");
+        $I->fillField("#proposal-items-table input[name='jform[items][1][description]']", "Test Description");
 
-        $I->fillField("#estimate-items-table input[name='jform[items][1][hours]']", "2");
+        $I->fillField("#proposal-items-table input[name='jform[items][1][hours]']", "2");
 
-        $I->seeInField("#estimate-items-table input[name='jform[items][1][hours]']", "2");
-        $I->seeInField("#estimate-items-table input[name='jform[items][1][minutes]']", "0");
-        $I->seeInField("#estimate-items-table input[name='jform[items][1][quantity]']", "2.00");
-        $I->seeInField("#estimate-items-table input[name='jform[items][1][rate]']", "0.00");
-        $I->seeInField("#estimate-items-table input[name='jform[items][1][subtotal]']", "0.00");
+        $I->seeInField("#proposal-items-table input[name='jform[items][1][hours]']", "2");
+        $I->seeInField("#proposal-items-table input[name='jform[items][1][minutes]']", "0");
+        $I->seeInField("#proposal-items-table input[name='jform[items][1][quantity]']", "2.00");
+        $I->seeInField("#proposal-items-table input[name='jform[items][1][rate]']", "0.00");
+        $I->seeInField("#proposal-items-table input[name='jform[items][1][subtotal]']", "0.00");
 
-        $I->fillField("#estimate-items-table input[name='jform[items][1][minutes]']", "45");
+        $I->fillField("#proposal-items-table input[name='jform[items][1][minutes]']", "45");
 
-        $I->seeInField("#estimate-items-table input[name='jform[items][1][hours]']", "2");
-        $I->seeInField("#estimate-items-table input[name='jform[items][1][minutes]']", "45");
-        $I->seeInField("#estimate-items-table input[name='jform[items][1][quantity]']", "2.75");
-        $I->seeInField("#estimate-items-table input[name='jform[items][1][rate]']", "0.00");
-        $I->seeInField("#estimate-items-table input[name='jform[items][1][subtotal]']", "0.00");
+        $I->seeInField("#proposal-items-table input[name='jform[items][1][hours]']", "2");
+        $I->seeInField("#proposal-items-table input[name='jform[items][1][minutes]']", "45");
+        $I->seeInField("#proposal-items-table input[name='jform[items][1][quantity]']", "2.75");
+        $I->seeInField("#proposal-items-table input[name='jform[items][1][rate]']", "0.00");
+        $I->seeInField("#proposal-items-table input[name='jform[items][1][subtotal]']", "0.00");
 
-        $I->executeJS("document.querySelector(\"#estimate-items-table input[name='jform[items][1][quantity]']\").value = '';");
-        $I->fillField("#estimate-items-table input[name='jform[items][1][quantity]']", "3.75");
+        $I->executeJS("document.querySelector(\"#proposal-items-table input[name='jform[items][1][quantity]']\").value = '';");
+        $I->fillField("#proposal-items-table input[name='jform[items][1][quantity]']", "3.75");
 
-        $I->seeInField("#estimate-items-table input[name='jform[items][1][hours]']", "3");
-        $I->seeInField("#estimate-items-table input[name='jform[items][1][minutes]']", "45");
-        $I->seeInField("#estimate-items-table input[name='jform[items][1][quantity]']", "3.75");
-        $I->seeInField("#estimate-items-table input[name='jform[items][1][rate]']", "0.00");
-        $I->seeInField("#estimate-items-table input[name='jform[items][1][subtotal]']", "0.00");
+        $I->seeInField("#proposal-items-table input[name='jform[items][1][hours]']", "3");
+        $I->seeInField("#proposal-items-table input[name='jform[items][1][minutes]']", "45");
+        $I->seeInField("#proposal-items-table input[name='jform[items][1][quantity]']", "3.75");
+        $I->seeInField("#proposal-items-table input[name='jform[items][1][rate]']", "0.00");
+        $I->seeInField("#proposal-items-table input[name='jform[items][1][subtotal]']", "0.00");
 
-        $I->executeJS("document.querySelector(\"#estimate-items-table input[name='jform[items][1][rate]']\").value = '';");
-        $I->fillField("#estimate-items-table input[name='jform[items][1][rate]']", "70.00");
-        $I->click("#estimate-items-table input[name='jform[items][1][subtotal]']");
+        $I->executeJS("document.querySelector(\"#proposal-items-table input[name='jform[items][1][rate]']\").value = '';");
+        $I->fillField("#proposal-items-table input[name='jform[items][1][rate]']", "70.00");
+        $I->click("#proposal-items-table input[name='jform[items][1][subtotal]']");
 
-        $I->seeInField("#estimate-items-table input[name='jform[items][1][hours]']", "3");
-        $I->seeInField("#estimate-items-table input[name='jform[items][1][minutes]']", "45");
-        $I->seeInField("#estimate-items-table input[name='jform[items][1][quantity]']", "3.75");
-        $I->seeInField("#estimate-items-table input[name='jform[items][1][rate]']", "70.00");
-        $I->seeInField("#estimate-items-table input[name='jform[items][1][subtotal]']", "262.50");
+        $I->seeInField("#proposal-items-table input[name='jform[items][1][hours]']", "3");
+        $I->seeInField("#proposal-items-table input[name='jform[items][1][minutes]']", "45");
+        $I->seeInField("#proposal-items-table input[name='jform[items][1][quantity]']", "3.75");
+        $I->seeInField("#proposal-items-table input[name='jform[items][1][rate]']", "70.00");
+        $I->seeInField("#proposal-items-table input[name='jform[items][1][subtotal]']", "262.50");
 
         $I->fillField("input#jform_total", "402.50");
 
         $I->click("Save & Close", "#toolbar");
-        $I->waitForText("Estimate saved successfully.", 5, "#system-message-container .alert-message");
+        $I->waitForText("Proposal saved successfully.", 5, "#system-message-container .alert-message");
 
-        // Check that the new estimate has two rows of items
-        $I->assertEstimateHasRows(($this->estimateData['id'] + 1), 2);
-        $I->assertEstimateHasItems($this->estimateData['id'] + 1, [
+        // Check that the new proposal has two rows of items
+        $I->assertProposalHasRows(($this->proposalData['id'] + 1), 2);
+        $I->assertProposalHasItems($this->proposalData['id'] + 1, [
             ['name' => 'Test Item', 'description' => 'Test Description', 'hours' => 2, 'minutes' => 0, 'quantity' => 2.00, 'rate' => 70.0, 'subtotal' => 140.00],
             ['name' => 'A different Item', 'description' => 'Test Description', 'hours' => 3, 'minutes' => 45, 'quantity' => 3.75, 'rate' => 70.0, 'subtotal' => 262.50],
         ]);
 
-        $I->waitForText("Mothership: Estimates", 30, "h1.page-title");
+        $I->waitForText("Mothership: Proposals", 30, "h1.page-title");
 
         $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 2);
 
@@ -440,8 +440,8 @@ class MothershipAdminEstimatesCest
         $I->see("Test Account", "#j-main-container table.itemList tbody tr td:nth-child(6)");
         $I->see(date("Y-m-d"), "#j-main-container table.itemList tbody tr td:nth-child(12)");
 
-        // Open the Estimate again and confirm the data is correct
-        $I->amOnPage(sprintf(self::ESTIMATE_EDIT_URL, ($this->estimateData['id'] + 1)));
+        // Open the Proposal again and confirm the data is correct
+        $I->amOnPage(sprintf(self::PROPOSAL_EDIT_URL, ($this->proposalData['id'] + 1)));
         // Confirm the value in jform_number is correct
         $I->seeInField("input#jform_number", "1001");
 
@@ -449,63 +449,63 @@ class MothershipAdminEstimatesCest
         $I->wait(2);
 
         // We should still be on the same edit page, with the same ID
-        $I->seeInCurrentUrl(sprintf(self::ESTIMATE_EDIT_URL, ($this->estimateData['id'] + 1)));
-        $I->see("Estimate saved successfully.", "#system-message-container .alert-message");
+        $I->seeInCurrentUrl(sprintf(self::PROPOSAL_EDIT_URL, ($this->proposalData['id'] + 1)));
+        $I->see("Proposal saved successfully.", "#system-message-container .alert-message");
 
-        // Check that the estimate displays the same data that was entered before
+        // Check that the proposal displays the same data that was entered before
         $I->seeInField("input#jform_created", date('Y-m-d'));
 
         $I->seeOptionIsSelected("select#jform_client_id", "Test Client");
 
-        $I->seeInField("#estimate-items-table input[name='jform[items][0][name]']", "Test Item");
-        $I->seeInField("#estimate-items-table input[name='jform[items][0][description]']", "Test Description");
-        $I->seeInField("#estimate-items-table input[name='jform[items][0][hours]']", "2");
-        $I->seeInField("#estimate-items-table input[name='jform[items][0][minutes]']", "0");
-        $I->seeInField("#estimate-items-table input[name='jform[items][0][quantity]']", "2");
-        $I->seeInField("#estimate-items-table input[name='jform[items][0][rate]']", "70.00");
-        $I->seeInField("#estimate-items-table input[name='jform[items][0][subtotal]']", "140.00");
+        $I->seeInField("#proposal-items-table input[name='jform[items][0][name]']", "Test Item");
+        $I->seeInField("#proposal-items-table input[name='jform[items][0][description]']", "Test Description");
+        $I->seeInField("#proposal-items-table input[name='jform[items][0][hours]']", "2");
+        $I->seeInField("#proposal-items-table input[name='jform[items][0][minutes]']", "0");
+        $I->seeInField("#proposal-items-table input[name='jform[items][0][quantity]']", "2");
+        $I->seeInField("#proposal-items-table input[name='jform[items][0][rate]']", "70.00");
+        $I->seeInField("#proposal-items-table input[name='jform[items][0][subtotal]']", "140.00");
         // Now check the second row of items
-        $I->seeInField("#estimate-items-table input[name='jform[items][1][name]']", "A different Item");
-        $I->seeInField("#estimate-items-table input[name='jform[items][1][description]']", "Test Description");
-        $I->seeInField("#estimate-items-table input[name='jform[items][1][hours]']", "3");
-        $I->seeInField("#estimate-items-table input[name='jform[items][1][minutes]']", "45");
-        $I->seeInField("#estimate-items-table input[name='jform[items][1][quantity]']", "3.75");
-        $I->seeInField("#estimate-items-table input[name='jform[items][1][rate]']", "70.00");
-        $I->seeInField("#estimate-items-table input[name='jform[items][1][subtotal]']", "262.50");
+        $I->seeInField("#proposal-items-table input[name='jform[items][1][name]']", "A different Item");
+        $I->seeInField("#proposal-items-table input[name='jform[items][1][description]']", "Test Description");
+        $I->seeInField("#proposal-items-table input[name='jform[items][1][hours]']", "3");
+        $I->seeInField("#proposal-items-table input[name='jform[items][1][minutes]']", "45");
+        $I->seeInField("#proposal-items-table input[name='jform[items][1][quantity]']", "3.75");
+        $I->seeInField("#proposal-items-table input[name='jform[items][1][rate]']", "70.00");
+        $I->seeInField("#proposal-items-table input[name='jform[items][1][subtotal]']", "262.50");
 
-        $I->amOnPage(sprintf(self::ESTIMATE_EDIT_URL, ($this->estimateData['id'] + 1)));
+        $I->amOnPage(sprintf(self::PROPOSAL_EDIT_URL, ($this->proposalData['id'] + 1)));
         $I->wait(1);
-        $I->waitForText("Mothership: Edit Estimate", 30, "h1.page-title");
+        $I->waitForText("Mothership: Edit Proposal", 30, "h1.page-title");
         $I->click("Close", "#toolbar");
         $I->wait(1);
-        $I->waitForText("Mothership: Estimates", 30, "h1.page-title");
-        $I->seeInCurrentUrl(self::ESTIMATES_VIEW_ALL_URL);
+        $I->waitForText("Mothership: Proposals", 30, "h1.page-title");
+        $I->seeInCurrentUrl(self::PROPOSALS_VIEW_ALL_URL);
         $I->dontSeeElement("span.icon-checkedout");
     }
 
     /**
      * @group backend
-     * @group estimate
-     * @group backend-estimate
+     * @group proposal
+     * @group backend-proposal
      */
-    public function MothershipEditInvalidEstimate(AcceptanceTester $I)
+    public function MothershipEditInvalidProposal(AcceptanceTester $I)
     {
-        $I->amOnPage(sprintf(self::ESTIMATE_EDIT_URL, "9999"));
+        $I->amOnPage(sprintf(self::PROPOSAL_EDIT_URL, "9999"));
         $I->wait(1);
-        $I->waitForText('Mothership: Estimates', 30, 'h1.page-title');
-        $I->waitForText("Estimate not found. Please select a valid estimate.", 30, "#system-message-container .alert-message");
-        $I->seeInCurrentUrl(self::ESTIMATES_VIEW_ALL_URL);
+        $I->waitForText('Mothership: Proposals', 30, 'h1.page-title');
+        $I->waitForText("Proposal not found. Please select a valid proposal.", 30, "#system-message-container .alert-message");
+        $I->seeInCurrentUrl(self::PROPOSALS_VIEW_ALL_URL);
     }  
 
     /**
      * @group backend
-     * @group estimate
-     * @group backend-estimate
+     * @group proposal
+     * @group backend-proposal
      */
-    public function estimateViewPdf(AcceptanceTester $I)
+    public function proposalViewPdf(AcceptanceTester $I)
     {
-        $I->amOnPage(self::ESTIMATES_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Estimates", 30, "h1.page-title");
+        $I->amOnPage(self::PROPOSALS_VIEW_ALL_URL);
+        $I->waitForText("Mothership: Proposals", 30, "h1.page-title");
 
         $I->seeElement("#j-main-container table.itemList tbody tr:first-child a.downloadPdf");
 
@@ -521,13 +521,13 @@ class MothershipAdminEstimatesCest
 
     /**
      * @group backend
-     * @group estimate
-     * @group backend-estimate
+     * @group proposal
+     * @group backend-proposal
      */
-    public function estimateViewPdfTemplate(AcceptanceTester $I)
+    public function proposalViewPdfTemplate(AcceptanceTester $I)
     {
         $due_date = date('Y-m-d', strtotime('+30 days'));
-        $estimateData = $I->createMothershipEstimate([
+        $proposalData = $I->createMothershipProposal([
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
             'number' => 9000,
@@ -536,9 +536,9 @@ class MothershipAdminEstimatesCest
             'due_date' => $due_date,
         ]);
 
-        $estimateItemData = [];
-        $estimateItemData[] = $I->createMothershipEstimateItem([
-            'estimate_id' => $estimateData['id'],
+        $proposalItemData = [];
+        $proposalItemData[] = $I->createMothershipProposalItem([
+            'proposal_id' => $proposalData['id'],
             'name' => 'Test Item',
             'description' => 'Test Description',
             'hours' => 1,
@@ -548,8 +548,8 @@ class MothershipAdminEstimatesCest
             'subtotal' => $this->clientData['default_rate'] * 1,
         ]);
 
-        $I->amOnPage(self::ESTIMATES_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Estimates", 30, "h1.page-title");
+        $I->amOnPage(self::PROPOSALS_VIEW_ALL_URL);
+        $I->waitForText("Mothership: Proposals", 30, "h1.page-title");
 
         $I->seeElement("#j-main-container table.itemList tbody tr:nth-child(2) a.previewPdf");
 
@@ -571,11 +571,11 @@ class MothershipAdminEstimatesCest
         $I->see("{$this->mothershipConfig['company_phone']}");
         $I->see("{$this->mothershipConfig['company_email']}");
     
-        // Check for the estimate meta data
-        $I->see("Estimate of Services");
-        $I->see("Estimate Number: #{$estimateData['number']}");
-        $I->see("Estimate Status: Opened");
-        $I->see("Estimate Due: {$due_date}");
+        // Check for the proposal meta data
+        $I->see("Proposal of Services");
+        $I->see("Proposal Number: #{$proposalData['number']}");
+        $I->see("Proposal Status: Opened");
+        $I->see("Proposal Due: {$due_date}");
 
         // Check the client data is displayed 
         $I->see("{$this->clientData['name']}");
@@ -596,13 +596,13 @@ class MothershipAdminEstimatesCest
         $I->see("Subtotal");
 
 
-        $I->see("{$estimateItemData[0]['name']}");
-        // $I->see("{$this->estimateItemData[0]['description']}");
-        $I->see("{$estimateItemData[0]['quantity']}");
-        // $I->see("{$this->estimateItemData[0]['minutes']}");
-        // $I->see("{$this->estimateItemData[0]['quantity']}");
-        $I->see("{$estimateItemData[0]['rate']}");
-        $I->see("{$estimateItemData[0]['subtotal']}");
+        $I->see("{$proposalItemData[0]['name']}");
+        // $I->see("{$this->proposalItemData[0]['description']}");
+        $I->see("{$proposalItemData[0]['quantity']}");
+        // $I->see("{$this->proposalItemData[0]['minutes']}");
+        // $I->see("{$this->proposalItemData[0]['quantity']}");
+        $I->see("{$proposalItemData[0]['rate']}");
+        $I->see("{$proposalItemData[0]['subtotal']}");
 
     }
 }

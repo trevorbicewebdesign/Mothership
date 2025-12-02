@@ -20,7 +20,7 @@ use Joomla\CMS\Session\Session;
 JHtml::_('behavior.formvalidator');
 // JHtml::_('formbehavior.chosen', 'select');
 
-/** @var \TrevorBice\Component\Mothership\Administrator\View\Estimate\HtmlView $this */
+/** @var \TrevorBice\Component\Mothership\Administrator\View\Proposal\HtmlView $this */
 
 $wa = $this->getDocument()->getWebAssetManager();
 $wa->useScript('table.columns')
@@ -38,12 +38,12 @@ $listDirn = $this->escape($this->state->get('list.direction'));
  }
 </style>
 <form action="<?php echo Route::_('index.php?option=com_mothership&layout=edit&id=' . (int) $this->item->id); ?>"
-    method="post" name="adminForm" id="estimate-form"
-    aria-label="<?php echo Text::_('COM_MOTHERSHIP_ESTIMATE_' . ((int) $this->item->id === 0 ? 'NEW' : 'EDIT'), true); ?>"
+    method="post" name="adminForm" id="proposal-form"
+    aria-label="<?php echo Text::_('COM_MOTHERSHIP_PROPOSAL_' . ((int) $this->item->id === 0 ? 'NEW' : 'EDIT'), true); ?>"
     class="form-validate">
     <div class="main-card">
         <?php echo HTMLHelper::_('uitab.startTabSet', 'myTab', ['active' => 'details', 'recall' => true, 'breakpoint' => 768]); ?>
-        <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'details', Text::_('COM_MOTHERSHIP_FORM_ESTIMATE_DETAILS_TAB')); ?>
+        <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'details', Text::_('COM_MOTHERSHIP_FORM_PROPOSAL_DETAILS_TAB')); ?>
         <div class="row">
             <div class="col-lg-9">
                 <div>

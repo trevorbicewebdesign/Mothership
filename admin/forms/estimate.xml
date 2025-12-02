@@ -5,23 +5,23 @@
 		<field name="client_id" type="clientlist" required="required" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_CLIENT_ID_LABEL" description="COM_MOTHERSHIP_FIELD_CLIENT_NAME_DESC" />
 		<field name="account_id" type="accountlist" required="required" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_ACCOUNT_ID_LABEL" description="COM_MOTHERSHIP_FIELD_ACCOUNT_NAME_DESC" />
 		<field name="project_id" type="projectlist" required="required" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_PROJECT_ID_LABEL" description="COM_MOTHERSHIP_FIELD_PROJECT_NAME_DESC" />
-		<field name="type" type="type" default="hourly" readonly="" class="" label="COM_MOTHERSHIP_FIELD_ESTIMATE_TYPE_LABEL" description="COM_MOTHERSHIP_FIELD_ESTIMATE_TYPE_DESC" />
-		<field name="number" type="text" default="" required="required" readonly="" class="input-xxlarge input-large-text" label="COM_MOTHERSHIP_FIELD_ESTIMATE_NUMBER_LABEL" description="COM_MOTHERSHIP_FIELD_ESTIMATE_NUMBER_DESC" />
-		<field name="total_low" type="text" default="" required="required" readonly="" class="input-xxlarge input-large-text" label="COM_MOTHERSHIP_FIELD_ESTIMATE_TOTAL_LABEL" description="COM_MOTHERSHIP_FIELD_ESTIMATE_TOTAL_DESC" />
-		<field name="total" type="text" default="" required="required" readonly="" class="input-xxlarge input-large-text" label="COM_MOTHERSHIP_FIELD_ESTIMATE_TOTAL_LABEL" description="COM_MOTHERSHIP_FIELD_ESTIMATE_TOTAL_DESC" />
-		<field name="rate" type="text" default="" required="required" readonly="" class="input-xxlarge input-large-text" label="COM_MOTHERSHIP_FIELD_ESTIMATE_RATE_LABEL" description="COM_MOTHERSHIP_FIELD_ESTIMATE_RATE_DESC" />
-		<field name="status" type="estimatestatus" default="1" readonly="" class="" label="COM_MOTHERSHIP_FIELD_ESTIMATE_STATUS_LABEL" description="COM_MOTHERSHIP_FIELD_ESTIMATE_STATUS_DESC" />
-		<field name="due_date" type="calendar" readonly="false" class="validate-date" label="COM_MOTHERSHIP_FIELD_ESTIMATE_DUE_LABEL" description="COM_MOTHERSHIP_FIELD_ESTIMATE_DUE_DESC" default="" format="%Y-%m-%d" filter="user_utc" />
-		<field name="created" type="calendar" readonly="false" class="validate-date" label="COM_MOTHERSHIP_FIELD_ESTIMATE_CREATED_LABEL" description="COM_MOTHERSHIP_FIELD_ESTIMATE_CREATED_DESC" default="" format="%Y-%m-%d" filter="user_utc" />
-		<field name="summary" type="editor" label="COM_MOTHERSHIP_FIELD_ESTIMATE_SUMMARY_LABEL" description="COM_MOTHERSHIP_FIELD_ESTIMATE_SUMMARY_DESC" rows="5" cols="50" />
-		<field name="items" type="EstimateItems"  required="required"
-			formsource="/administrator/components/com_mothership/forms/estimate_items.xml"
-			label="COM_MOTHERSHIP_ESTIMATE_ITEMS"
-			description="COM_MOTHERSHIP_ESTIMATE_ITEMS_DESC"
+		<field name="type" type="type" default="hourly" readonly="" class="" label="COM_MOTHERSHIP_FIELD_PROPOSAL_TYPE_LABEL" description="COM_MOTHERSHIP_FIELD_PROPOSAL_TYPE_DESC" />
+		<field name="number" type="text" default="" required="required" readonly="" class="input-xxlarge input-large-text" label="COM_MOTHERSHIP_FIELD_PROPOSAL_NUMBER_LABEL" description="COM_MOTHERSHIP_FIELD_PROPOSAL_NUMBER_DESC" />
+		<field name="total_low" type="text" default="" required="required" readonly="" class="input-xxlarge input-large-text" label="COM_MOTHERSHIP_FIELD_PROPOSAL_TOTAL_LABEL" description="COM_MOTHERSHIP_FIELD_PROPOSAL_TOTAL_DESC" />
+		<field name="total" type="text" default="" required="required" readonly="" class="input-xxlarge input-large-text" label="COM_MOTHERSHIP_FIELD_PROPOSAL_TOTAL_LABEL" description="COM_MOTHERSHIP_FIELD_PROPOSAL_TOTAL_DESC" />
+		<field name="rate" type="text" default="" required="required" readonly="" class="input-xxlarge input-large-text" label="COM_MOTHERSHIP_FIELD_PROPOSAL_RATE_LABEL" description="COM_MOTHERSHIP_FIELD_PROPOSAL_RATE_DESC" />
+		<field name="status" type="proposalstatus" default="1" readonly="" class="" label="COM_MOTHERSHIP_FIELD_PROPOSAL_STATUS_LABEL" description="COM_MOTHERSHIP_FIELD_PROPOSAL_STATUS_DESC" />
+		<field name="due_date" type="calendar" readonly="false" class="validate-date" label="COM_MOTHERSHIP_FIELD_PROPOSAL_DUE_LABEL" description="COM_MOTHERSHIP_FIELD_PROPOSAL_DUE_DESC" default="" format="%Y-%m-%d" filter="user_utc" />
+		<field name="created" type="calendar" readonly="false" class="validate-date" label="COM_MOTHERSHIP_FIELD_PROPOSAL_CREATED_LABEL" description="COM_MOTHERSHIP_FIELD_PROPOSAL_CREATED_DESC" default="" format="%Y-%m-%d" filter="user_utc" />
+		<field name="summary" type="editor" label="COM_MOTHERSHIP_FIELD_PROPOSAL_SUMMARY_LABEL" description="COM_MOTHERSHIP_FIELD_PROPOSAL_SUMMARY_DESC" rows="5" cols="50" />
+		<field name="items" type="ProposalItems"  required="required"
+			formsource="/administrator/components/com_mothership/forms/proposal_items.xml"
+			label="COM_MOTHERSHIP_PROPOSAL_ITEMS"
+			description="COM_MOTHERSHIP_PROPOSAL_ITEMS_DESC"
 			multiple="true"
 			buttons="add"
 			sortable="true"
 		/>
-		<field name="notes" type="editor" label="COM_MOTHERSHIP_FIELD_ESTIMATE_NOTES_LABEL" description="COM_MOTHERSHIP_FIELD_ESTIMATE_NOTES_DESC" rows="5" cols="50" />
+		<field name="notes" type="editor" label="COM_MOTHERSHIP_FIELD_PROPOSAL_NOTES_LABEL" description="COM_MOTHERSHIP_FIELD_PROPOSAL_NOTES_DESC" rows="5" cols="50" />
 	</fieldset>
 </form>

@@ -18,7 +18,7 @@ use Joomla\Database\ParameterType;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
-class EstimatesModel extends ListModel
+class ProposalsModel extends ListModel
 {
     public function __construct($config = [])
     {
@@ -89,7 +89,7 @@ class EstimatesModel extends ListModel
                     $db->quoteName('i.project_id'),
                     $db->quoteName('p.name', 'project_name'),
 
-                    // Estimate status (Draft, Opened, etc.)
+                    // Proposal status (Draft, Opened, etc.)
                     'CASE ' . $db->quoteName('i.status') . 
                         ' WHEN 1 THEN ' . $db->quote('Draft') . 
                         ' WHEN 2 THEN ' . $db->quote('Opened') . 
@@ -102,7 +102,7 @@ class EstimatesModel extends ListModel
             )
         );
 
-        $query->from($db->quoteName('#__mothership_estimates', 'i'))
+        $query->from($db->quoteName('#__mothership_proposals', 'i'))
             ->join('LEFT', $db->quoteName('#__mothership_clients', 'c') . ' ON ' . $db->quoteName('i.client_id') . ' = ' . $db->quoteName('c.id'))
             ->join('LEFT', $db->quoteName('#__mothership_accounts', 'a') . ' ON ' . $db->quoteName('i.account_id') . ' = ' . $db->quoteName('a.id'))
             ->join('LEFT', $db->quoteName('#__mothership_projects', 'p') . ' ON ' . $db->quoteName('i.project_id') . ' = ' . $db->quoteName('p.id'))
@@ -144,7 +144,7 @@ class EstimatesModel extends ListModel
             return [];
         }
 
-        // Since "published" doesn't apply for estimates,
+        // Since "published" doesn't apply for proposals,
         // we simply return the items without additional counting logic.
         $this->cache[$store] = $items;
 
@@ -170,7 +170,7 @@ class EstimatesModel extends ListModel
     
         // Build the query using an IN clause for multiple IDs
         $query = $db->getQuery(true)
-            ->update($db->quoteName('#__mothership_estimates'))
+            ->update($db->quoteName('#__mothership_proposals'))
             ->set($db->quoteName('checked_out') . ' = 0')
             ->set($db->quoteName('checked_out_time') . ' = ' . $db->quote('0000-00-00 00:00:00'))
             ->where($db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
@@ -187,7 +187,7 @@ class EstimatesModel extends ListModel
         }
     }
 
-    public function canDeleteEstimate($record): bool
+    public function canDeleteProposal($record): bool
     {
         $id = (int) ($record->id ?? $record['id'] ?? 0);
         $status = (int) ($record->status ?? $record['status'] ?? null);
@@ -221,13 +221,13 @@ class EstimatesModel extends ListModel
         foreach ($ids as $id) {
             $query = $db->getQuery(true)
                 ->select($db->quoteName(['id', 'status']))
-                ->from($db->quoteName('#__mothership_estimates'))
+                ->from($db->quoteName('#__mothership_proposals'))
                 ->where($db->quoteName('id') . ' = :id')
                 ->bind(':id', $id, ParameterType::INTEGER);
 
             $record = $db->setQuery($query)->loadObject();
 
-            if ($record && $this->canDeleteEstimate($record)) {
+            if ($record && $this->canDeleteProposal($record)) {
                 $deletableIds[] = $id;
             } else {
                 $skippedIds[] = $id;
@@ -244,9 +244,9 @@ class EstimatesModel extends ListModel
         try {
             $db->transactionStart();
 
-            // Delete estimates
+            // Delete proposals
             $query = $db->getQuery(true)
-                ->delete($db->quoteName('#__mothership_estimates'))
+                ->delete($db->quoteName('#__mothership_proposals'))
                 ->where($db->quoteName('id') . ' IN (' . implode(',', $deletableIds) . ')');
             $db->setQuery($query)->execute();
 

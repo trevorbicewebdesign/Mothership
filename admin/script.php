@@ -27,11 +27,11 @@ class com_mothershipInstallerScript
             return;
         }
 
-        // Check if Estimates submenu already exists
+        // Check if Proposals submenu already exists
         $query = $db->getQuery(true)
             ->select($db->quoteName('id'))
             ->from($db->quoteName('#__menu'))
-            ->where($db->quoteName('link') . ' = ' . $db->quote('index.php?option=com_mothership&view=estimates'))
+            ->where($db->quoteName('link') . ' = ' . $db->quote('index.php?option=com_mothership&view=proposals'))
             ->where($db->quoteName('client_id') . ' = 1');
         $db->setQuery($query);
         $id = (int) $db->loadResult();
@@ -48,10 +48,10 @@ class com_mothershipInstallerScript
 
         $values = [
             $db->quote($parent->menutype),
-            $db->quote('COM_MOTHERSHIP_SUBMENU_ESTIMATES'),
-            $db->quote('estimates'),
-            $db->quote('mothership/estimates'),
-            $db->quote('index.php?option=com_mothership&view=estimates'),
+            $db->quote('COM_MOTHERSHIP_SUBMENU_PROPOSALS'),
+            $db->quote('proposals'),
+            $db->quote('mothership/proposals'),
+            $db->quote('index.php?option=com_mothership&view=proposals'),
             $db->quote('component'),
             1,                    // published
             (int) $parent->id,

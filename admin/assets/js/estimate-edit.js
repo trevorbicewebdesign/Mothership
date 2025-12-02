@@ -1,7 +1,7 @@
 jQuery(document).ready(function ($) {
 
     /* ------------------------------------------------------------------
-     *  Estimate line items: time_low / time  <->  quantity_low / quantity
+     *  Proposal line items: time_low / time  <->  quantity_low / quantity
      * ------------------------------------------------------------------ */
 
     function formatCurrency(value) {
@@ -112,11 +112,11 @@ jQuery(document).ready(function ($) {
 }
 
 
-    function updateEstimateTotals() {
+    function updateProposalTotals() {
         let lowTotalSum  = 0;
         let highTotalSum = 0;
 
-        $('#estimate-items-table tbody tr').each(function () {
+        $('#proposal-items-table tbody tr').each(function () {
             const $row = $(this);
 
             const $lowField = $row.find(
@@ -184,7 +184,7 @@ jQuery(document).ready(function ($) {
         $highTotalField.val(formatCurrency(rate * qtyHigh));
     }
 
-    updateEstimateTotals();
+    updateProposalTotals();
 }
 
 
@@ -282,10 +282,10 @@ jQuery(document).ready(function ($) {
         recalcRowTotals(row);
     }
 
-    // Only wire up if this is actually the estimate edit screen
-    if ($('#estimate-items-table').length) {
+    // Only wire up if this is actually the proposal edit screen
+    if ($('#proposal-items-table').length) {
 
-        const $tbody = $('#estimate-items-table tbody');
+        const $tbody = $('#proposal-items-table tbody');
 
         // TIME LOW → QUANTITY_LOW
         $tbody.on('input change', 'input[name$="[time_low]"]', function () {
@@ -338,10 +338,10 @@ jQuery(document).ready(function ($) {
             const $row = $(this).closest('tr');
             const val = parseFloat($(this).val());
             $(this).val(isNaN(val) ? '' : formatCurrency(val));
-            updateEstimateTotals();
+            updateProposalTotals();
         });
 
-        $('#estimate-items-table tbody').on('blur', 'input[name$="[quantity]"]', function () {
+        $('#proposal-items-table tbody').on('blur', 'input[name$="[quantity]"]', function () {
             const $row = $(this).closest('tr');
 
             if (isRowFixed($row)) {
@@ -396,7 +396,7 @@ jQuery(document).ready(function ($) {
     }
 
     /* ------------------------------------------------------------------
-     *  Client → Account → Project dynamic dropdowns (shared with estimate)
+     *  Client → Account → Project dynamic dropdowns (shared with proposal)
      * ------------------------------------------------------------------ */
 
     const clientSelect   = $('#jform_client_id');
@@ -407,7 +407,7 @@ jQuery(document).ready(function ($) {
     const accountSelect  = $('#jform_account_id');
     const projectSelect  = $('#jform_project_id');
 
-    function isNewEstimate() {
+    function isNewProposal() {
         return clientSelect.length && clientSelect.val() === '';
     }
 
@@ -566,7 +566,7 @@ jQuery(document).ready(function ($) {
     function loadAccountsForClient(clientId) {
         const ajaxUrl = '/administrator/index.php' +
             '?option=com_mothership' +
-            '&task=estimate.getAccountsList' +
+            '&task=proposal.getAccountsList' +
             '&client_id=' + encodeURIComponent(clientId);
 
         $.ajax({
@@ -616,7 +616,7 @@ jQuery(document).ready(function ($) {
     function loadProjectsForAccount(accountId) {
         const ajaxUrl = '/administrator/index.php' +
             '?option=com_mothership' +
-            '&task=estimate.getProjectsList' +
+            '&task=proposal.getProjectsList' +
             '&account_id=' + encodeURIComponent(accountId);
 
         $.ajax({
@@ -664,7 +664,7 @@ jQuery(document).ready(function ($) {
     }
 
     if (clientSelect.length) {
-        if (isNewEstimate()) {
+        if (isNewProposal()) {
             accountWrapper.hide();
             accountSpinner.hide();
             projectWrapper.hide();
@@ -695,7 +695,7 @@ jQuery(document).ready(function ($) {
     }
 
     /* ------------------------------------------------------------------
-     *  Default rate from client → estimate + line items
+     *  Default rate from client → proposal + line items
      * ------------------------------------------------------------------ */
 
     const $clientField = $('#jform_client_id');
@@ -723,7 +723,7 @@ jQuery(document).ready(function ($) {
                     if (typeof data.default_rate !== 'undefined') {
                         $rateField.val(data.default_rate);
 
-                        $('#estimate-items-table tbody tr').each(function () {
+                        $('#proposal-items-table tbody tr').each(function () {
                             const $row      = $(this);
                             const rateInput = $row.find('input[name$="[rate]"]');
                             rateInput.val(data.default_rate);

@@ -257,14 +257,14 @@ class DbHelper extends Db
     }
 
         /**
-     * Build default data array for a Mothership estimate.
+     * Build default data array for a Mothership proposal.
      *
      * @param  array $data
      * @return array
      */
-    public function createMothershipEstimateData(array $data): array
+    public function createMothershipProposalData(array $data): array
     {
-        // Default values for the estimate
+        // Default values for the proposal
         $defaultData = [
             // Core fields
             "number"        => rand(1, 1000),
@@ -272,7 +272,7 @@ class DbHelper extends Db
             "account_id"    => 1,
             "project_id"    => null,
 
-            // Estimate-level type – matches the <field name="type"> in the form
+            // Proposal-level type – matches the <field name="type"> in the form
             "type"          => 'hourly',
 
             // Money fields
@@ -287,8 +287,8 @@ class DbHelper extends Db
             "created"       => null,
 
             // Text content
-            "summary"       => 'Test estimate summary',
-            "notes"         => 'Test estimate notes',
+            "summary"       => 'Test proposal summary',
+            "notes"         => 'Test proposal notes',
 
             // Joomla housekeeping
             "locked"        => 0,
@@ -308,24 +308,24 @@ class DbHelper extends Db
     }
 
     /**
-     * Creates a new Mothership estimate in the database.
+     * Creates a new Mothership proposal in the database.
      *
      * @param  array $data
-     * @return array The data of the newly created estimate, including its ID.
+     * @return array The data of the newly created proposal, including its ID.
      * @throws \Exception
      */
-    public function createMothershipEstimate(array $data): array
+    public function createMothershipProposal(array $data): array
     {
-        $data = $this->createMothershipEstimateData($data);
+        $data = $this->createMothershipProposalData($data);
 
-        codecept_debug("Creating Mothership Estimate with the following data:");
+        codecept_debug("Creating Mothership Proposal with the following data:");
         codecept_debug($data);
 
         try {
-            $id = $this->Db->haveInDatabase("{$this->prefix}mothership_estimates", $data);
+            $id = $this->Db->haveInDatabase("{$this->prefix}mothership_proposals", $data);
             $data['id'] = $id;
         } catch (\Exception $e) {
-            throw new \Exception("Failed to create estimate: " . $e->getMessage());
+            throw new \Exception("Failed to create proposal: " . $e->getMessage());
         }
 
         codecept_debug($data);
@@ -334,19 +334,19 @@ class DbHelper extends Db
     }
 
     /**
-     * Build default data for a Mothership estimate item.
+     * Build default data for a Mothership proposal item.
      *
      * @param  array $data
      * @return array
      */
-    public function createMothershipEstimateItemData(array $data): array
+    public function createMothershipProposalItemData(array $data): array
     {
         $faker = \Faker\Factory::create();
 
         $defaultData = [
-            "estimate_id"   => 0,
-            "name"          => "Test Estimate Item",
-            "description"   => "Test Estimate Item Description",
+            "proposal_id"   => 0,
+            "name"          => "Test Proposal Item",
+            "description"   => "Test Proposal Item Description",
 
             // Line item type: hourly vs fixed
             "type"          => "hourly",
@@ -371,20 +371,20 @@ class DbHelper extends Db
     }
 
     /**
-     * Creates a new Mothership estimate item in the database.
+     * Creates a new Mothership proposal item in the database.
      *
      * @param  array $data
      * @return array
      */
-    public function createMothershipEstimateItem(array $data): array
+    public function createMothershipProposalItem(array $data): array
     {
-        $data = $this->createMothershipEstimateItemData($data);
+        $data = $this->createMothershipProposalItemData($data);
 
-        codecept_debug("Creating Mothership Estimate Item with the following data:");
+        codecept_debug("Creating Mothership Proposal Item with the following data:");
         codecept_debug($data);
 
         try {
-            $id = $this->Db->haveInDatabase("{$this->prefix}mothership_estimate_items", $data);
+            $id = $this->Db->haveInDatabase("{$this->prefix}mothership_proposal_items", $data);
             $data['id'] = $id;
 
             // Normalize numeric formatting if your tests/UI rely on it
@@ -394,7 +394,7 @@ class DbHelper extends Db
             $data['subtotal']      = number_format($data['subtotal'], 2);
             $data['subtotal_low']  = number_format($data['subtotal_low'], 2);
         } catch (\Exception $e) {
-            codecept_debug("Error creating estimate item: " . $e->getMessage());
+            codecept_debug("Error creating proposal item: " . $e->getMessage());
         }
 
         codecept_debug($data);
@@ -602,7 +602,7 @@ class DbHelper extends Db
         $this->Db->updateInDatabase("{$this->prefix}mothership_invoices", ['status' => $status], ['id' => $invoiceId]);
     }
 
-    public function setEstimateStatus($estimateId, $status)
+    public function setProposalStatus($proposalId, $status)
     {
         // Status levels are 1-5
         $statusArray = [
@@ -616,7 +616,7 @@ class DbHelper extends Db
         if ($status < 1 || $status > 5) {
             throw new Exception("Invalid status provided: {$statusArray[$status]}");
         }
-        $this->Db->updateInDatabase("{$this->prefix}mothership_estimates", ['status' => $status], ['id' => $estimateId]);
+        $this->Db->updateInDatabase("{$this->prefix}mothership_proposals", ['status' => $status], ['id' => $proposalId]);
     }
 
     public function clearClientsTable()

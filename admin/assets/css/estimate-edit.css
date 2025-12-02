@@ -1,10 +1,10 @@
-#estimate-items-table td .form-control {
+#proposal-items-table td .form-control {
     display: block;
     min-width: 20px;
     width: 100%;
 }
 
-#estimate-items-table td {
+#proposal-items-table td {
     padding-left: 2px;
     padding-right: 2px;
 }

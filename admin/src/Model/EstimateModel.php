@@ -15,11 +15,11 @@ use TrevorBice\Component\Mothership\Administrator\Helper\InvoiceHelper; // Ensur
 
 \defined('_JEXEC') or die;
 
-class EstimateModel extends AdminModel
+class ProposalModel extends AdminModel
 {
     use VersionableModelTrait;
 
-    public $typeAlias = 'com_mothership.estimate';
+    public $typeAlias = 'com_mothership.proposal';
     protected function canDelete($record)
     {
         if (empty($record->id) || $record->state != -2) {
@@ -46,13 +46,13 @@ class EstimateModel extends AdminModel
 
     public function getForm($data = [], $loadData = true)
     {
-        return $this->loadForm('com_mothership.estimate', 'estimate', ['control' => 'jform', 'load_data' => $loadData]);
+        return $this->loadForm('com_mothership.proposal', 'proposal', ['control' => 'jform', 'load_data' => $loadData]);
     }
 
     protected function loadFormData()
     {
         $app = Factory::getApplication();
-        $data = $app->getUserState('com_mothership.edit.estimate.data', []);
+        $data = $app->getUserState('com_mothership.edit.proposal.data', []);
 
         if ((is_object($data) && isset($data->id) && empty($data->id)) || (is_array($data) && empty($data['id']))) {
             $data = $this->getItem();
@@ -66,7 +66,7 @@ class EstimateModel extends AdminModel
             }
         }
 
-        $this->preprocessData('com_mothership.estimate', $data);
+        $this->preprocessData('com_mothership.proposal', $data);
         return $data;
     }
 
@@ -83,8 +83,8 @@ class EstimateModel extends AdminModel
             $db = $this->getDatabase();
             $query = $db->getQuery(true)
             ->select('*')
-            ->from($db->quoteName('#__mothership_estimate_items'))
-            ->where($db->quoteName('estimate_id') . ' = ' . (int) $item->id)
+            ->from($db->quoteName('#__mothership_proposal_items'))
+            ->where($db->quoteName('proposal_id') . ' = ' . (int) $item->id)
             ->order($db->quoteName('ordering') . ' ASC');
 
             $db->setQuery($query);
@@ -140,15 +140,15 @@ class EstimateModel extends AdminModel
         // Delete existing items
         $db->setQuery(
             $db->getQuery(true)
-                ->delete($db->quoteName('#__mothership_estimate_items'))
-                ->where($db->quoteName('estimate_id') . ' = ' . (int)$invoiceId)
+                ->delete($db->quoteName('#__mothership_proposal_items'))
+                ->where($db->quoteName('proposal_id') . ' = ' . (int)$invoiceId)
         )->execute();
 
         // Insert new items
         if (!empty($data['items'])) {
             $i = 0;
             foreach ($data['items'] as $item) {
-                $columns = ['estimate_id', 'name', 'description', 'type', 'time', 'time_low', 'quantity', 'quantity_low', 'rate', 'subtotal', 'subtotal_low', 'ordering'];
+                $columns = ['proposal_id', 'name', 'description', 'type', 'time', 'time_low', 'quantity', 'quantity_low', 'rate', 'subtotal', 'subtotal_low', 'ordering'];
                 $values = [
                     $db->quote($invoiceId),
                     $db->quote($item['name']),
@@ -165,7 +165,7 @@ class EstimateModel extends AdminModel
                 ];
 
                 $query = $db->getQuery(true)
-                    ->insert($db->quoteName('#__mothership_estimate_items'))
+                    ->insert($db->quoteName('#__mothership_proposal_items'))
                     ->columns($db->quoteName($columns))
                     ->values(implode(',', $values));
 
@@ -219,7 +219,7 @@ class EstimateModel extends AdminModel
         if ($result) {
             $db = $this->getDbo();
             $query = $db->getQuery(true)
-                ->delete($db->quoteName('#__mothership_estimate_items'))
+                ->delete($db->quoteName('#__mothership_proposal_items'))
                 ->where($db->quoteName('invoice_id') . ' IN (' . implode(',', array_map('intval', $pks)) . ')');
 
             $db->setQuery($query)->execute();
