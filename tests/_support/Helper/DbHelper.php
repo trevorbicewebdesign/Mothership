@@ -602,6 +602,23 @@ class DbHelper extends Db
         $this->Db->updateInDatabase("{$this->prefix}mothership_invoices", ['status' => $status], ['id' => $invoiceId]);
     }
 
+    public function setEstimateStatus($estimateId, $status)
+    {
+        // Status levels are 1-5
+        $statusArray = [
+            1 => "Draft",
+            2 => "Opened",
+            3 => "Late",
+            4 => "Paid",
+            5 => "Cancelled"
+        ];
+        // Validate the status
+        if ($status < 1 || $status > 5) {
+            throw new Exception("Invalid status provided: {$statusArray[$status]}");
+        }
+        $this->Db->updateInDatabase("{$this->prefix}mothership_estimates", ['status' => $status], ['id' => $estimateId]);
+    }
+
     public function clearClientsTable()
     {
         codecept_debug("Clearing clients table");
