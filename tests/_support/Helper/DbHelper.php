@@ -256,6 +256,153 @@ class DbHelper extends Db
         return $data;
     }
 
+        /**
+     * Build default data array for a Mothership estimate.
+     *
+     * @param  array $data
+     * @return array
+     */
+    public function createMothershipEstimateData(array $data): array
+    {
+        // Default values for the estimate
+        $defaultData = [
+            // Core fields
+            "number"        => rand(1, 1000),
+            "client_id"     => 1,
+            "account_id"    => 1,
+            "project_id"    => null,
+
+            // Estimate-level type – matches the <field name="type"> in the form
+            "type"          => 'hourly',
+
+            // Money fields
+            "total_low"     => 80.00,
+            "total"         => 100.00,
+            "rate"          => 100.00,
+
+            // Status / dates
+            "status"        => 1,
+            // due_date is DATE in the schema, so use Y-m-d (not datetime)
+            "due_date"      => date('Y-m-d', strtotime('+30 days')),
+            "created"       => null,
+
+            // Text content
+            "summary"       => 'Test estimate summary',
+            "notes"         => 'Test estimate notes',
+
+            // Joomla housekeeping
+            "locked"        => 0,
+            "state"         => 1,
+            "created_by"    => null,
+            "modified"      => null,
+            "modified_by"   => null,
+            "checked_out_time" => null,
+            "checked_out"   => null,
+            "version"       => 1,
+        ];
+
+        // Merge provided data with defaults
+        $finalData = array_merge($defaultData, $data);
+
+        return $finalData;
+    }
+
+    /**
+     * Creates a new Mothership estimate in the database.
+     *
+     * @param  array $data
+     * @return array The data of the newly created estimate, including its ID.
+     * @throws \Exception
+     */
+    public function createMothershipEstimate(array $data): array
+    {
+        $data = $this->createMothershipEstimateData($data);
+
+        codecept_debug("Creating Mothership Estimate with the following data:");
+        codecept_debug($data);
+
+        try {
+            $id = $this->Db->haveInDatabase("{$this->prefix}mothership_estimates", $data);
+            $data['id'] = $id;
+        } catch (\Exception $e) {
+            throw new \Exception("Failed to create estimate: " . $e->getMessage());
+        }
+
+        codecept_debug($data);
+
+        return $data;
+    }
+
+    /**
+     * Build default data for a Mothership estimate item.
+     *
+     * @param  array $data
+     * @return array
+     */
+    public function createMothershipEstimateItemData(array $data): array
+    {
+        $faker = \Faker\Factory::create();
+
+        $defaultData = [
+            "estimate_id"   => 0,
+            "name"          => "Test Estimate Item",
+            "description"   => "Test Estimate Item Description",
+
+            // Line item type: hourly vs fixed
+            "type"          => "hourly",
+
+            // Time fields: your JS uses HH:MM strings
+            "time"          => "01:30",
+            "time_low"      => "01:00",
+
+            // Numeric values
+            "quantity"      => 1.50,
+            "quantity_low"  => 1.00,
+            "rate"          => 100.00,
+            "subtotal"      => 150.00,
+            "subtotal_low"  => 100.00,
+
+            "ordering"      => 0,
+        ];
+
+        $finalData = array_merge($defaultData, $data);
+
+        return $finalData;
+    }
+
+    /**
+     * Creates a new Mothership estimate item in the database.
+     *
+     * @param  array $data
+     * @return array
+     */
+    public function createMothershipEstimateItem(array $data): array
+    {
+        $data = $this->createMothershipEstimateItemData($data);
+
+        codecept_debug("Creating Mothership Estimate Item with the following data:");
+        codecept_debug($data);
+
+        try {
+            $id = $this->Db->haveInDatabase("{$this->prefix}mothership_estimate_items", $data);
+            $data['id'] = $id;
+
+            // Normalize numeric formatting if your tests/UI rely on it
+            $data['quantity']      = number_format($data['quantity'], 2);
+            $data['quantity_low']  = number_format($data['quantity_low'], 2);
+            $data['rate']          = number_format($data['rate'], 2);
+            $data['subtotal']      = number_format($data['subtotal'], 2);
+            $data['subtotal_low']  = number_format($data['subtotal_low'], 2);
+        } catch (\Exception $e) {
+            codecept_debug("Error creating estimate item: " . $e->getMessage());
+        }
+
+        codecept_debug($data);
+
+        return $data;
+    }
+
+
     public function createMothershipPaymentData(array $data)
     {
         $now = date('Y-m-d H:i:s');
