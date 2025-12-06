@@ -3,7 +3,10 @@ defined('_JEXEC') or die;
 
 /** @var array $displayData */
 $invoice = $displayData['invoice'];
-
+$account  = $displayData['account'] ?? null;
+$client   = $displayData['client'] ?? null;
+$business = $displayData['business'] ?? null;
+$items    = $invoice->items ?? [];
 ?>
 
 <!DOCTYPE html>
@@ -80,6 +83,10 @@ $invoice = $displayData['invoice'];
 <body class="invoice">
     <h1>Invoice of Services</h1>
     <h1>Invoice #<?php echo $invoice->number; ?></h1>
+    <p><?php echo $business->name ?? ''; ?></p>
+    <p><?php echo nl2br(htmlspecialchars($business->address_1 ?? '')); ?></p>
+    <p><?php echo htmlspecialchars($business->address_2 ?? ''); ?></p>
+    <p><?php echo htmlspecialchars($business->city ?? ''); ?>, <?php echo htmlspecialchars($business->state ?? ''); ?> <?php echo htmlspecialchars($business->zip ?? ''); ?></p>
         
     <div class="section">
         <p><strong>Client:</strong> <?php echo htmlspecialchars($invoice->client_name ?? ''); ?></p>
