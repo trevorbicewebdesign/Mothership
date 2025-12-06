@@ -16,7 +16,6 @@ CREATE TABLE IF NOT EXISTS `#__mothership_clients` (
   `default_rate` DECIMAL(10,2) DEFAULT NULL,
   `owner_user_id` INT(11) DEFAULT NULL,
   `invoice_pdf_template` VARCHAR(100) NOT NULL DEFAULT 'default' COLLATE 'utf8mb4_unicode_ci',
-
   `created` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `created_by` INT(11) DEFAULT NULL,
   `checked_out_time` DATETIME DEFAULT NULL,
@@ -86,6 +85,7 @@ CREATE TABLE IF NOT EXISTS `#__mothership_invoices` (
   `locked` TINYINT(1) NOT NULL DEFAULT 0,
   `summary` TEXT NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
   `notes` TEXT NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+  `invoices_pdf_template` VARCHAR(100) NULL DEFAULT 'default' COLLATE 'utf8mb4_unicode_ci',
   `created` DATETIME NULL DEFAULT (CURRENT_TIMESTAMP),
   `created_by` INT(11) NULL DEFAULT NULL,
   `checked_out_time` DATETIME NULL DEFAULT NULL,
