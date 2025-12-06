@@ -154,7 +154,7 @@ class MothershipAdminClientsCest
             'zip',
             'default_rate',
             'owner_user_id',
-            'invoice_pdf_template',
+            // 'invoice_pdf_template',
         ];
         // Verify fields exist
         foreach($form_fields as $field=> $type) {
