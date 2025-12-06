@@ -78,7 +78,7 @@ $invoice = $displayData['invoice'];
     </style>
 </head>
 <body class="invoice">
-    <h3>Invoice of Services</h3>
+    <h1>Invoice of Services</h1>
     <h1>Invoice #<?php echo $invoice->number; ?></h1>
         
     <div class="section">
