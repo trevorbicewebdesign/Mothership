@@ -133,8 +133,8 @@ class MothershipAdminClientsCest
         // Define the form fields
         $form_fields = [
             'name'=>'text',
-            'email'=>'email',
-            'phone'=>'tel',
+            'email'=>'text',
+            'phone'=>'text',
             'address_1'=>'text',
             'address_2'=>'text',
             'city'=>'text',
