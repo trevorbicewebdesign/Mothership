@@ -78,8 +78,9 @@ $invoice = $displayData['invoice'];
     </style>
 </head>
 <body class="invoice">
+    <h3>Invoice of Services</h3>
     <h1>Invoice #<?php echo $invoice->number; ?></h1>
-
+        
     <div class="section">
         <p><strong>Client:</strong> <?php echo htmlspecialchars($invoice->client_name ?? ''); ?></p>
         <p><strong>Date:</strong> <?php echo htmlspecialchars($invoice->created ?? ''); ?></p>
