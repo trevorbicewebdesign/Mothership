@@ -65,6 +65,13 @@
 		<field name="tax_id" type="text" label="COM_MOTHERSHIP_FORM_CLIENT_TAX_ID_LABEL" />
 		<field name="default_rate" type="text" label="COM_MOTHERSHIP_FORM_CLIENT_DEFAULT_RATE_LABEL" required="true" />
 		<field name="owner_user_id"  type="user" label="COM_MOTHERSHIP_CLIENT_OWNER_LABEL" repeat="true" required="true"/>
+		<field
+			name="invoice_pdf_template"
+			type="invoicepdftemplatelist"
+			label="COM_MOTHERSHIP_FORM_CLIENT_INVOICE_PDF_TEMPLATE_LABEL"
+			description="COM_MOTHERSHIP_FORM_CLIENT_INVOICE_PDF_TEMPLATE_DESC"
+
+		/>
 	</fieldset>
 	<fieldset name="metadata" label="JGLOBAL_FIELDSET_METADATA_OPTIONS">
 		<field name="metakey" type="textarea" label="JFIELD_META_KEYWORDS_LABEL" rows="3" cols="30" />
