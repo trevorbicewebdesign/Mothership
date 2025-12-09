@@ -68,7 +68,8 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                 <?php echo $this->form->renderField('project_id'); ?>
                             </div>
                         </div>
-
+                        <?php echo $this->form->renderField('title'); ?>
+                        
                         <?php echo $this->form->renderField('number'); ?>
                         <?php echo $this->form->renderField('rate'); ?>
                         <?php echo $this->form->renderField('total'); ?>
@@ -87,7 +88,16 @@ $listDirn = $this->escape($this->state->get('list.direction'));
             <div class="col-lg-12">
                 <div>
                     <fieldset class="adminform">
+                        <?php echo $this->form->renderField('summary'); ?>
+
+                        <hr/>
+
                         <?php echo $this->form->getInput('items'); ?>
+
+                        <hr/>
+
+                        <?php echo $this->form->renderField('notes'); ?>
+
                     </fieldset>
                 </div>
             </div>

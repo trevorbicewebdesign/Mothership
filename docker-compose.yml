@@ -24,6 +24,12 @@ services:
       - ./plugins/mothership-payment/zelle/language/en-GB/en-GB.plg_mothership-payment_zelle.sys.ini:/var/www/html/administrator/language/en-GB/plg_mothership-payment_zelle.sys.ini
 
       - ./plugins/mothership-payment:/var/www/html/plugins/mothership-payment
+
+      - ./plugins/mothership-invoice-pdf/zelle/language/en-GB/en-GB.plg_mothership-invoice-pdf_zelle.ini:/var/www/html/administrator/language/en-GB/plg_mothership-invoice-pdf_zelle.ini
+      - ./plugins/mothership-invoice-pdf/zelle/language/en-GB/en-GB.plg_mothership-invoice-pdf_zelle.sys.ini:/var/www/html/administrator/language/en-GB/plg_mothership-invoice-pdf_zelle.sys.ini
+
+      - ./plugins/mothership-invoice-pdf:/var/www/html/plugins/mothership-invoice-pdf
+
       - ./codeception.yml:/var/www/html/codeception.yml
       - ./tests/configuration.php:/var/www/html/configuration.php
     restart: always

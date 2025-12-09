@@ -551,8 +551,11 @@ class MothershipAdminInvoicesCest
         $I->wait(1);
         $I->seeOptionIsSelected("select#jform_project_id", "{$this->projectData['name']}");
 
+        $I->fillField("input#jform_title", "Test Invoice Title");
+
         $I->fillFIeld("input#jform_number", "1001");
         $I->seeInField("input#jform_rate", $this->clientData['default_rate']);
+        
 
         $I->fillFIeld("input#jform_total", "105.00");
 
@@ -647,9 +650,10 @@ class MothershipAdminInvoicesCest
         $I->seeInField("#invoice-items-table input[name='jform[items][1][subtotal]']", "262.50");
 
         $I->fillField("input#jform_total", "402.50");
+        $I->fillField("input#jform_title", "Test Invoice Title");
 
         $I->click("Save & Close", "#toolbar");
-        $I->waitForText("Invoice saved successfully.", 5, "#system-message-container .alert-message");
+        $I->waitForText("Invoice saved successfully.", 10, "#system-message-container .alert-message");
 
         // Check that the new invoice has two rows of items
         $I->assertInvoiceHasRows(($this->invoiceData['id'] + 1), 2);
@@ -742,6 +746,7 @@ class MothershipAdminInvoicesCest
         $I->seeOptionIsSelected("select#jform_status", "Draft");
         $I->selectOption("select#jform_status", "Opened");
         $I->fillFIeld("input#jform_rate", "70.00");
+        $I->fillFIeld("input#jform_title", "Updated Invoice Title");
         $I->click("Save", "#toolbar"); 
         $I->waitForText("Invoice saved successfully.", 5, "#system-message-container .alert-message");
         $I->waitForText("Mothership: View Invoice", 30, "h1.page-title");

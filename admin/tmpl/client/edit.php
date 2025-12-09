@@ -55,6 +55,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                 <?php echo $this->form->renderField('default_rate'); ?>
                 <?php echo $this->form->renderField('tax_id'); ?>
                 <?php echo $this->form->renderField('owner_user_id'); ?>
+                <?php echo $this->form->renderField('invoice_pdf_template'); ?>
             </div>
         </div>
 
