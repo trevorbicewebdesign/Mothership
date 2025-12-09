@@ -1,4 +1,7 @@
 <?php
+
+use TrevorBice\Component\Mothership\Administrator\Helper\InvoiceHelper;
+
 defined('_JEXEC') or die;
 
 /** @var array $displayData */
@@ -8,13 +11,13 @@ $client   = $displayData['client'] ?? null;
 $business = $displayData['business'] ?? null;
 
 // Items fallback to array
-$items = $invoice->items ?? [];
+$items = $invoice?->items ?? [];
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Invoice #<?php echo htmlspecialchars((string)($invoice->number ?? ''), ENT_QUOTES, 'UTF-8'); ?></title>
+    <title>Invoice #<?php echo htmlspecialchars((string)($invoice?->number ?? ''), ENT_QUOTES, 'UTF-8'); ?></title>
     <style>
         body.invoice {
             font-family: "Helvetica Neue", Arial, sans-serif;
@@ -134,7 +137,7 @@ $items = $invoice->items ?? [];
         <h1>Invoice of Services</h1>
         <div class="invoice-number">
             <!-- Test expects this exact string -->
-            Invoice Number: #<?php echo htmlspecialchars((string)($invoice->number ?? ''), ENT_QUOTES, 'UTF-8'); ?>
+            Invoice Number: #<?php echo htmlspecialchars((string)($invoice?->number ?? ''), ENT_QUOTES, 'UTF-8'); ?>
         </div>
     </div>
 
@@ -170,9 +173,9 @@ $items = $invoice->items ?? [];
 
             <div class="invoice-meta">
                 <!-- Test expects these exact labels -->
-                <p><strong>Invoice Status:</strong> Opened</p>
-                <p><strong>Invoice Due:</strong> <?php echo htmlspecialchars((string)($invoice->due ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
-                <p><strong>Invoice Date:</strong> <?php echo htmlspecialchars((string)($invoice->created ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
+                <p><strong>Invoice Status:</strong><?php echo htmlspecialchars(InvoiceHelper::getStatus($invoice->status)); ?></p>
+                <p><strong>Invoice Due:</strong> <?php echo htmlspecialchars((string)($invoice?->due_date ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
+                <p><strong>Invoice Date:</strong> <?php echo htmlspecialchars((string)($invoice?->created ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
             </div>
         </div>
     </div>
@@ -181,7 +184,7 @@ $items = $invoice->items ?? [];
         <h2>Summary</h2>
         <?php
         // Allow basic HTML in summary if you want; tests don't care about content
-        echo $invoice->summary ?? '';
+        echo $invoice?->summary ?? '';
         ?>
     </div>
 
@@ -227,7 +230,7 @@ $items = $invoice->items ?? [];
         <div class="totals">
             <h3>
                 Total:
-                $<?php echo htmlspecialchars((string)($invoice->total ?? '0.00'), ENT_QUOTES, 'UTF-8'); ?>
+                $<?php echo htmlspecialchars((string)($invoice?->total ?? '0.00'), ENT_QUOTES, 'UTF-8'); ?>
             </h3>
         </div>
     </div>
@@ -236,7 +239,7 @@ $items = $invoice->items ?? [];
         <h2>Notes</h2>
         <?php
         // Allow HTML / line breaks in notes; tests don't check this content
-        echo $invoice->notes ?? '';
+        echo $invoice?->notes ?? '';
         ?>
     </div>
 
