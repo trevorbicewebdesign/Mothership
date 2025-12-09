@@ -746,6 +746,7 @@ class MothershipAdminInvoicesCest
         $I->seeOptionIsSelected("select#jform_status", "Draft");
         $I->selectOption("select#jform_status", "Opened");
         $I->fillFIeld("input#jform_rate", "70.00");
+        $I->fillFIeld("input#jform_title", "Updated Invoice Title");
         $I->click("Save", "#toolbar"); 
         $I->waitForText("Invoice saved successfully.", 5, "#system-message-container .alert-message");
         $I->waitForText("Mothership: View Invoice", 30, "h1.page-title");
