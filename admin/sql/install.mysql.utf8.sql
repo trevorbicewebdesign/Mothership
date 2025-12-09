@@ -77,6 +77,7 @@ CREATE TABLE IF NOT EXISTS `#__mothership_invoices` (
   `account_id` INT(10) NULL DEFAULT NULL,
   `project_id` INT(10) NULL DEFAULT NULL,
   `rate` DECIMAL(10,2) NULL DEFAULT NULL,
+  `title` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
   `status` INT(11) NULL DEFAULT NULL,
   `total` DECIMAL(10,2) NULL DEFAULT NULL,
   `due_date` DATE NULL DEFAULT NULL,
