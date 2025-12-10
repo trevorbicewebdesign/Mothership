@@ -117,7 +117,7 @@ class ProposalModel extends AdminModel
             $newStatus = (int) $data['status'];
         
             if (!empty($existingTable->locked)) {
-                $this->setError(JText::_('COM_MOTHERSHIP_ERROR_INVOICE_LOCKED'));
+                $this->setError(JText::_('COM_MOTHERSHIP_ERROR_PROPOSAL_LOCKED'));
                 return false;
             }
         }
@@ -135,13 +135,13 @@ class ProposalModel extends AdminModel
             return false;
         }
 
-        $invoiceId = $table->id;
+        $proposalId = $table->id;
 
         // Delete existing items
         $db->setQuery(
             $db->getQuery(true)
                 ->delete($db->quoteName('#__mothership_proposal_items'))
-                ->where($db->quoteName('proposal_id') . ' = ' . (int)$invoiceId)
+                ->where($db->quoteName('proposal_id') . ' = ' . (int)$proposalId)
         )->execute();
 
         // Insert new items
@@ -150,7 +150,7 @@ class ProposalModel extends AdminModel
             foreach ($data['items'] as $item) {
                 $columns = ['proposal_id', 'name', 'description', 'type', 'time', 'time_low', 'quantity', 'quantity_low', 'rate', 'subtotal', 'subtotal_low', 'ordering'];
                 $values = [
-                    $db->quote($invoiceId),
+                    $db->quote($proposalId),
                     $db->quote($item['name']),
                     $db->quote($item['description']),
                     $db->quote($item['type']),
@@ -204,7 +204,7 @@ class ProposalModel extends AdminModel
     }
 
     /**
-     * Deletes one or more records and their associated invoice items from the database.
+     * Deletes one or more records and their associated proposal items from the database.
      *
      * @param   array|int[]  &$pks  An array of primary key IDs of the records to delete.
      *
@@ -220,7 +220,7 @@ class ProposalModel extends AdminModel
             $db = $this->getDbo();
             $query = $db->getQuery(true)
                 ->delete($db->quoteName('#__mothership_proposal_items'))
-                ->where($db->quoteName('invoice_id') . ' IN (' . implode(',', array_map('intval', $pks)) . ')');
+                ->where($db->quoteName('proposal_id') . ' IN (' . implode(',', array_map('intval', $pks)) . ')');
 
             $db->setQuery($query)->execute();
         }
@@ -229,11 +229,11 @@ class ProposalModel extends AdminModel
     }
 
     /**
-     * Locks an invoice by setting its `locked` property to 1.
+     * Locks an proposal by setting its `locked` property to 1.
      *
-     * @param int $id The ID of the invoice to lock.
+     * @param int $id The ID of the proposal to lock.
      * 
-     * @return bool Returns false if the invoice is already locked, 
+     * @return bool Returns false if the proposal is already locked, 
      *              or true if the lock operation is successful.
      */
     public function lock($id)
