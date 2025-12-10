@@ -22,6 +22,7 @@ try {
 } catch (Exception $e) {
     $isLocked = false;
 }
+$isLocked = false;
 
 $field = $displayData['field'];
 $items = $field->value ?? [];
@@ -185,6 +186,13 @@ $items = $field->value ?? [];
                            <?php if($isLocked): ?>disabled<?php endif; ?>>
                 </td>
 
+                 <td>
+                        <select name="jform[items][<?php echo $index; ?>][type]" class="form-control" <?php if($isLocked): ?>disabled<?php endif; ?>>
+                            <option value="hourly" <?php echo (isset($item['type']) && $item['type'] === 'hourly') ? 'selected' : ''; ?>>Hourly</option>
+                            <option value="fixed" <?php echo (isset($item['type']) && $item['type'] === 'fixed') ? 'selected' : ''; ?>>Fixed</option>
+                        </select>                        
+                    </td>
+
                 <td>
                     <input type="text"
                            name="jform[items][0][time_low]"
@@ -200,6 +208,15 @@ $items = $field->value ?? [];
                            class="form-control"
                            placeholder="00:00"
                            value=""
+                           <?php if ($isLocked): ?>disabled<?php endif; ?>>
+                </td>
+
+                <td>
+                    <input type="number"
+                           step="0.01"
+                           name="jform[items][0][quantity_low]"
+                           class="form-control"
+                           value="1"
                            <?php if ($isLocked): ?>disabled<?php endif; ?>>
                 </td>
 
@@ -224,7 +241,7 @@ $items = $field->value ?? [];
                 <td>
                     <input type="number"
                            step="0.01"
-                           name="jform[items][0][low_total]"
+                           name="jform[items][0][subtotal_low]"
                            class="form-control"
                            readonly
                            value="0"
@@ -234,7 +251,7 @@ $items = $field->value ?? [];
                 <td>
                     <input type="number"
                            step="0.01"
-                           name="jform[items][0][high_total]"
+                           name="jform[items][0][subtotal]"
                            class="form-control"
                            readonly
                            value="0"
