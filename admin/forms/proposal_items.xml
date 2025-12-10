@@ -3,7 +3,11 @@
     <fields name="items">
 		<field name="name" type="text" label="Item Name" readonly="false" required="true" />
         <field name="description" type="text" label="Description" size="40" />
-		<field name="low" type="number" label="Low" required="true" />
+        <field name="type" type="select" label="Type" required="true">
+            <option value="hourly">Hourly</option>
+            <option value="fixed">Fixed</option>
+            </field>
+		<field name="quantity_low" type="number" label="Low" required="true" />
 		<field name="high" type="number" label="High" required="true" />
         <field name="quantity" type="text" label="Quantity" required="true" />
         <field name="rate" type="text" label="Rate" required="true" />
