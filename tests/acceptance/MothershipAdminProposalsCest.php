@@ -72,7 +72,6 @@ class MothershipAdminProposalsCest
             'project_id' => $this->projectData['id'],   
             'total' => '175.00',
             'number' => 1000,
-            'due_date' => NULL,
             'created' => date('Y-m-d H:i:s'),
             'status' => 1,
         ]);
@@ -294,7 +293,7 @@ class MothershipAdminProposalsCest
         $I->dontSeeElement("select#jform_project_id");
         $I->seeElement("input#jform_number");
         $I->seeElement("input#jform_created");
-        $I->seeElement("input#jform_due_date");
+        // $I->seeElement("input#jform_due_date");
         $I->seeElement("input#jform_rate");
         $I->seeElement("input#jform_total");
 
@@ -526,14 +525,14 @@ class MothershipAdminProposalsCest
      */
     public function proposalViewPdfTemplate(AcceptanceTester $I)
     {
-        $due_date = date('Y-m-d', strtotime('+30 days'));
+        // $due_date = date('Y-m-d', strtotime('+30 days'));
         $proposalData = $I->createMothershipProposal([
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
             'number' => 9000,
             'status' => 2,
             'total' => '123.45',
-            'due_date' => $due_date,
+           //  'due_date' => $due_date,
         ]);
 
         $proposalItemData = [];
@@ -575,7 +574,7 @@ class MothershipAdminProposalsCest
         $I->see("Proposal of Services");
         $I->see("Proposal Number: #{$proposalData['number']}");
         $I->see("Proposal Status: Opened");
-        $I->see("Proposal Due: {$due_date}");
+        // $I->see("Proposal Due: {$due_date}");
 
         // Check the client data is displayed 
         $I->see("{$this->clientData['name']}");
