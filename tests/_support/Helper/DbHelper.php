@@ -646,6 +646,12 @@ class DbHelper extends Db
         $this->Db->_getDriver()->executeQuery("TRUNCATE TABLE {$this->prefix}mothership_invoices", []);
     }
 
+    public function clearProposalsTable()
+    {
+        codecept_debug("Clearing proposals table");
+        $this->Db->_getDriver()->executeQuery("TRUNCATE TABLE {$this->prefix}mothership_proposals", []);
+    }
+
     public function clearInvoicePaymentTable()
     {
         codecept_debug("Clearing invoice payment table");
@@ -656,6 +662,12 @@ class DbHelper extends Db
     {
         codecept_debug("Clearing invoice items table");
         $this->Db->_getDriver()->executeQuery("TRUNCATE TABLE {$this->prefix}mothership_invoice_items", []);
+    }
+
+    public function clearProposalItemsTable()
+    {
+        codecept_debug("Clearing proposal items table");
+        $this->Db->_getDriver()->executeQuery("TRUNCATE TABLE {$this->prefix}mothership_proposal_items", []);
     }
 
     public function clearPaymentsTable()
@@ -674,6 +686,8 @@ class DbHelper extends Db
          // Truncate everything
          $this->clearInvoiceItemsTable();
          $this->clearInvoicesTable();
+         $this->clearProposalsTable();
+         $this->clearProposalItemsTable();
          $this->clearPaymentsTable();
          $this->clearInvoicePaymentTable();
          $this->clearAccountsTable();
