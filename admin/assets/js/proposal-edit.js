@@ -663,7 +663,7 @@ jQuery(document).ready(function ($) {
         });
     }
 
-    if (clientSelect.length) {
+    
         if (isNewProposal()) {
             accountWrapper.hide();
             accountSpinner.hide();
@@ -692,7 +692,7 @@ jQuery(document).ready(function ($) {
                 hideProjectsField();
             }
         });
-    }
+    
 
     /* ------------------------------------------------------------------
      *  Default rate from client → proposal + line items
