@@ -1,9 +1,9 @@
 <?php
 /**
- * Invoice Helper for Mothership Invoice Plugins
+ * Proposal Helper for Mothership Proposal Plugins
  *
- * Provides methods to update an invoice record, insert payment data, 
- * and allocate the payment to the corresponding invoice.
+ * Provides methods to update an proposal record, insert payment data, 
+ * and allocate the payment to the corresponding proposal.
  *
  * @package     Mothership
  * @subpackage  Helper
@@ -25,9 +25,9 @@ use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper;
 class ProposalHelper
 {
     /**
-     * Returns the invoice status as a string based on the provided status ID.
+     * Returns the proposal status as a string based on the provided status ID.
      *
-     * @param int $status_id The status ID of the invoice.
+     * @param int $status_id The status ID of the proposal.
      *                      1 = Draft
      *                      2 = Opened
      *                      3 = Cancelled
@@ -59,17 +59,17 @@ class ProposalHelper
     }
 
 
-    public static function setInvoiceClosed($invoiceId)
+    public static function setProposalClosed($proposalId)
     {
-        self::updateInvoiceStatus($invoiceId, 4);
+        self::updateProposalStatus($proposalId, 4);
     }
     
 
     /**
-     * Updates the status of an invoice in the database.
+     * Updates the status of an proposal in the database.
      *
-     * @param int $invoiceId The ID of the invoice to update.
-     * @param int $status The new status to set for the invoice.
+     * @param int $proposalId The ID of the proposal to update.
+     * @param int $status The new status to set for the proposal.
      * 
      * @return bool Returns true if the update was successful, false otherwise.
      * 
@@ -77,12 +77,12 @@ class ProposalHelper
      * 
      * Logs an error message if the update fails.
      */
-    public static function updateInvoiceStatus($invoice, $status): bool
+    public static function updateProposalStatus($proposal, $status): bool
     {
         $paidDate = null;
 
         try {
-            $invoice = self::getInvoice($invoice->id);
+            $proposal = self::getProposal($proposal->id);
         } catch (\RuntimeException $e) {
             throw new \RuntimeException($e->getMessage());
         }
@@ -101,14 +101,14 @@ class ProposalHelper
 
         $db = Factory::getContainer()->get(DatabaseDriver::class);
         $query = $db->getQuery(true)
-            ->update($db->quoteName('#__mothership_invoices'))
+            ->update($db->quoteName('#__mothership_proposals'))
             ->set($db->quoteName('status') . ' = ' . (int) $status);
 
         if ($paidDate !== null) {
             $query->set($db->quoteName('paid_date') . ' = ' . $db->quote($paidDate));
         }
 
-        $query->where($db->quoteName('id') . ' = ' . (int) $invoice->id);
+        $query->where($db->quoteName('id') . ' = ' . (int) $proposal->id);
 
         $db->transactionStart();
 
@@ -116,12 +116,12 @@ class ProposalHelper
             $db->setQuery($query)->execute();
 
             // Update object & run hooks
-            $invoice->status = $status;
+            $proposal->status = $status;
 
             if ($status === 4) {
-                self::onInvoiceClosed($invoice, $status);
+                self::onProposalClosed($proposal, $status);
             } elseif ($status === 2) {
-                self::onInvoiceOpened($invoice, $status);
+                self::onProposalOpened($proposal, $status);
             }
 
             $db->transactionCommit();
