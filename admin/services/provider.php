@@ -19,7 +19,7 @@ require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/Cl
 require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/AccountList.php';
 require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/ProjectList.php';
 require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/invoiceitems.php';
-require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/ProposalItems.php';
+require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/proposalitems.php';
 require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/PaymentStatusField.php';
 require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/InvoiceStatusField.php';
 require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/InvoicePdfTemplateList.php';
