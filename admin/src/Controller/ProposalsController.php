@@ -23,6 +23,16 @@ class ProposalsController extends BaseController
         return parent::display($cachable, $urlparams);
     }
 
+        // Returns a list of accounts for a given client in JSON format
+    public function getAccountsList()
+    {
+        $client_id = Factory::getApplication()->input->getInt('client_id');
+        $accountList = AccountHelper::getAccountListOptions($client_id);
+        echo json_encode($accountList);
+        Factory::getApplication()->close();
+    }
+
+
     /**
      * Check in selected account items.
      *
