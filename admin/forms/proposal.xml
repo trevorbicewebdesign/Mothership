@@ -7,7 +7,7 @@
 		<field name="project_id" type="projectlist" required="required" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_PROJECT_ID_LABEL" description="COM_MOTHERSHIP_FIELD_PROJECT_NAME_DESC" />
 		<field name="type" type="type" default="hourly" readonly="" class="" label="COM_MOTHERSHIP_FIELD_PROPOSAL_TYPE_LABEL" description="COM_MOTHERSHIP_FIELD_PROPOSAL_TYPE_DESC" />
 		<field name="number" type="text" default="" required="required" readonly="" class="input-xxlarge input-large-text" label="COM_MOTHERSHIP_FIELD_PROPOSAL_NUMBER_LABEL" description="COM_MOTHERSHIP_FIELD_PROPOSAL_NUMBER_DESC" />
-		<field name="total_low" type="text" default="" required="required" readonly="" class="input-xxlarge input-large-text" label="COM_MOTHERSHIP_FIELD_PROPOSAL_TOTAL_LABEL" description="COM_MOTHERSHIP_FIELD_PROPOSAL_TOTAL_DESC" />
+		<field name="total_low" type="text" default="" required="required" readonly="" class="input-xxlarge input-large-text" label="COM_MOTHERSHIP_FIELD_PROPOSAL_TOTAL_LOW_LABEL" description="COM_MOTHERSHIP_FIELD_PROPOSAL_TOTAL_LOW_DESC" />
 		<field name="total" type="text" default="" required="required" readonly="" class="input-xxlarge input-large-text" label="COM_MOTHERSHIP_FIELD_PROPOSAL_TOTAL_LABEL" description="COM_MOTHERSHIP_FIELD_PROPOSAL_TOTAL_DESC" />
 		<field name="rate" type="text" default="" required="required" readonly="" class="input-xxlarge input-large-text" label="COM_MOTHERSHIP_FIELD_PROPOSAL_RATE_LABEL" description="COM_MOTHERSHIP_FIELD_PROPOSAL_RATE_DESC" />
 		<field name="status" type="proposalstatus" default="1" readonly="" class="" label="COM_MOTHERSHIP_FIELD_PROPOSAL_STATUS_LABEL" description="COM_MOTHERSHIP_FIELD_PROPOSAL_STATUS_DESC" />
