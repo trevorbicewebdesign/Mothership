@@ -9,6 +9,7 @@ use Joomla\CMS\Versioning\VersionableModelTrait;
 use Joomla\CMS\Log\Log;
 use Joomla\Registry\Registry;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Language\Text;
 use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper; // Ensure this is the correct namespace for LogHelper
 use TrevorBice\Component\Mothership\Administrator\Service\EmailService; // Ensure this is the correct namespace for EmailService
 use TrevorBice\Component\Mothership\Administrator\Helper\InvoiceHelper; // Ensure this is the correct namespace for InvoiceHelper
@@ -115,9 +116,8 @@ class ProposalModel extends AdminModel
             $existingTable->load($data['id']);
             $previousStatus = (int) $existingTable->status;
             $newStatus = (int) $data['status'];
-        
             if (!empty($existingTable->locked)) {
-                $this->setError(JText::_('COM_MOTHERSHIP_ERROR_PROPOSAL_LOCKED'));
+                $this->setError(Text::_('COM_MOTHERSHIP_ERROR_PROPOSAL_LOCKED'));
                 return false;
             }
         }
