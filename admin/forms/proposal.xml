@@ -11,7 +11,6 @@
 		<field name="total" type="text" default="" required="required" readonly="" class="input-xxlarge input-large-text" label="COM_MOTHERSHIP_FIELD_PROPOSAL_TOTAL_LABEL" description="COM_MOTHERSHIP_FIELD_PROPOSAL_TOTAL_DESC" />
 		<field name="rate" type="text" default="" required="required" readonly="" class="input-xxlarge input-large-text" label="COM_MOTHERSHIP_FIELD_PROPOSAL_RATE_LABEL" description="COM_MOTHERSHIP_FIELD_PROPOSAL_RATE_DESC" />
 		<field name="status" type="proposalstatus" default="1" readonly="" class="" label="COM_MOTHERSHIP_FIELD_PROPOSAL_STATUS_LABEL" description="COM_MOTHERSHIP_FIELD_PROPOSAL_STATUS_DESC" />
-		<field name="due_date" type="calendar" readonly="false" class="validate-date" label="COM_MOTHERSHIP_FIELD_PROPOSAL_DUE_LABEL" description="COM_MOTHERSHIP_FIELD_PROPOSAL_DUE_DESC" default="" format="%Y-%m-%d" filter="user_utc" />
 		<field name="created" type="calendar" readonly="false" class="validate-date" label="COM_MOTHERSHIP_FIELD_PROPOSAL_CREATED_LABEL" description="COM_MOTHERSHIP_FIELD_PROPOSAL_CREATED_DESC" default="" format="%Y-%m-%d" filter="user_utc" />
 		<field name="summary" type="editor" label="COM_MOTHERSHIP_FIELD_PROPOSAL_SUMMARY_LABEL" description="COM_MOTHERSHIP_FIELD_PROPOSAL_SUMMARY_DESC" rows="5" cols="50" />
 		<field name="items" type="proposalitems"  required="required"
