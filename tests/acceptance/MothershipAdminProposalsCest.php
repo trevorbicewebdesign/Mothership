@@ -174,9 +174,7 @@ class MothershipAdminProposalsCest
         $I->see("Project", "#j-main-container table thead tr th:nth-child(7)");
         $I->see("Total", "#j-main-container table thead tr th:nth-child(8)");
         $I->see("Status", "#j-main-container table thead tr th:nth-child(9)");
-        $I->see("Payment Status", "#j-main-container table thead tr th:nth-child(10)");
-        $I->see("Due", "#j-main-container table thead tr th:nth-child(11)");
-        $I->see("Created", "#j-main-container table thead tr th:nth-child(12)");
+        $I->see("Created", "#j-main-container table thead tr th:nth-child(10)");
 
         $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 2);
 
