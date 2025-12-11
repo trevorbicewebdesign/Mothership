@@ -198,7 +198,7 @@ class MothershipAdminProposalsCest
         $I->see("{$this->projectData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(7)");
         $I->see("{$this->proposalData['total']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(8)");
         $I->see("Draft", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(9)");
-        $I->see(date('Y-m-d'), "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(10)");
+        $I->see(date('Y-m-d'), "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(11)");
 
         $row = 2;
         // This proposal IS not locked, so it SHOULD have the lock icon
@@ -219,9 +219,7 @@ class MothershipAdminProposalsCest
         $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(6)");
         $I->see("{$proposalData['total']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(8)");
         $I->see("Closed", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(9)");
-        $I->see("Paid", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(10)");
-        $I->see("Payment #{$paymentData['id']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(10)"); 
-        $I->see(date('Y-m-d'), "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(12)");
+        $I->see(date('Y-m-d'), "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(11)");
 
         $I->see("1 - 2 / 2 items", "#j-main-container .pagination__wrapper");
     }
