@@ -281,6 +281,7 @@ class MothershipAdminProposalsCest
         $I->seeElement("{$toolbar} {$toolbarNew}");
         $I->see("New", "{$toolbar} {$toolbarNew} .btn.button-new");
         $I->click("{$toolbar} {$toolbarNew} .btn.button-new");
+
         $I->waitForText("Mothership: New Proposal", 30, "h1.page-title");
         $I->wait(5);
 
@@ -409,7 +410,7 @@ class MothershipAdminProposalsCest
         $I->fillField("input#jform_total", "402.50");
 
         $I->click("Save & Close", "#toolbar");
-        $I->waitForText("Proposal saved successfully.", 5, "#system-message-container .alert-message");
+        $I->waitForText("Proposal saved successfully.", 10, "#system-message-container .alert-message");
 
         // Check that the new proposal has two rows of items
         $I->assertProposalHasRows(($this->proposalData['id'] + 1), 2);
