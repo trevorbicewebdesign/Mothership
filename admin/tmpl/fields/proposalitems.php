@@ -393,6 +393,24 @@ jQuery(function ($) {
             $input.removeClass('is-invalid').removeAttr('aria-invalid');
         });
 
+        // 🔧 Reindex selects (this fixes the `type` field)
+        $newRow.find('select').each(function () {
+            const $select = $(this);
+            const oldName = $select.attr('name');
+
+            if (oldName) {
+                const newName = oldName.replace(/\[\d+\]/, '[' + rowCount + ']');
+                $select.attr('name', newName);
+            }
+
+            // Optional: reset to default value (e.g. 'hourly')
+            if ($select.find('option[value="hourly"]').length) {
+                $select.val('hourly');
+            } else {
+                $select.prop('selectedIndex', 0);
+            }
+        });
+
         $newRow.find('.invalid-feedback').text('Please provide an item name.');
         $tableBody.append($newRow);
 
@@ -404,8 +422,8 @@ jQuery(function ($) {
         let hasErrors = false;
 
         $tableBody.find('tr').each(function () {
-            const $row      = $(this);
-            const $input    = $row.find('input[name$="[name]"]');
+            const $row = $(this);
+            const $input = $row.find('input[name$="[name]"]');
             const $feedback = $input.next('.invalid-feedback');
 
             if ($input.val().trim() === '') {
