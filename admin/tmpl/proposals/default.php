@@ -65,9 +65,6 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_PROPOSAL_HEADING_STATUS', 'i.status', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_PROPOSAL_HEADING_DUE', 'i.due_date', $listDirn, $listOrder); ?>
-                                </th>
-                                <th scope="col" class="w-10">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_PROPOSAL_HEADING_CREATED', 'i.created', $listDirn, $listOrder); ?>
                                 </th>
                             </tr>
@@ -125,9 +122,6 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                     </td>
                                     <td>
                                         
-                                    </td>
-                                    <td>
-                                        <?php echo !empty($item->due) ? $item->due : 'N/A'; ?>
                                     </td>
                                     <td>
                                         <?php echo HTMLHelper::_('date', $item->created, Text::_('DATE_FORMAT_LC4')); ?>
