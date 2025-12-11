@@ -768,6 +768,14 @@ class DbHelper extends Db
         $this->assertEquals($expectedRows, $actualRows);
     }
 
+    public function assertProposalHasRows($proposalId, $expectedRows)
+    {
+        $actualRows = $this->Db->grabNumRecords("{$this->prefix}mothership_proposal_items", ["proposal_id" => $proposalId]);
+
+        codecept_debug("Proposal {$proposalId} has {$actualRows} rows");
+        $this->assertEquals($expectedRows, $actualRows);
+    }
+
     /**
      * Asserts that the status of an invoice matches the expected status.
      *
