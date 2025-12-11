@@ -443,16 +443,18 @@ class MothershipAdminProposalsCest
 
         $I->seeInField("#proposal-items-table input[name='jform[items][0][name]']", "Test Item");
         $I->seeInField("#proposal-items-table input[name='jform[items][0][description]']", "Test Description");
-
+        $I->seeOptionIsSelected("#proposal-items-table select[name='jform[items][0][type]']", "Hourly");
+        $I->seeInField("#proposal-items-table input[name='jform[items][0][time_low]']", "01:00");
+        $I->seeInField("#proposal-items-table input[name='jform[items][0][time]']", "2:00");
         $I->seeInField("#proposal-items-table input[name='jform[items][0][quantity]']", "2");
-        $I->seeInField("#proposal-items-table input[name='jform[items][0][rate]']", "70.00");
+        $I->seeInField("#proposal-items-table input[name='jform[items][0][rate]']", "70");
         $I->seeInField("#proposal-items-table input[name='jform[items][0][subtotal]']", "140.00");
         // Now check the second row of items
         $I->seeInField("#proposal-items-table input[name='jform[items][1][name]']", "A different Item");
         $I->seeInField("#proposal-items-table input[name='jform[items][1][description]']", "Test Description");
 
         $I->seeInField("#proposal-items-table input[name='jform[items][1][quantity]']", "3.75");
-        $I->seeInField("#proposal-items-table input[name='jform[items][1][rate]']", "70.00");
+        $I->seeInField("#proposal-items-table input[name='jform[items][1][rate]']", "70");
         $I->seeInField("#proposal-items-table input[name='jform[items][1][subtotal]']", "262.50");
 
         $I->amOnPage(sprintf(self::PROPOSAL_EDIT_URL, ($this->proposalData['id'] + 1)));
