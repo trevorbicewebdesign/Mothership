@@ -378,8 +378,8 @@ class MothershipAdminProposalsCest
 
         $I->seeInField("#proposal-items-table input[name='jform[items][1][quantity_low]']", "1.50");
         $I->seeInField("#proposal-items-table input[name='jform[items][1][quantity]']", "3.00");
-        $I->seeInField("#proposal-items-table input[name='jform[items][1][rate]']", "0.00");
-        $I->seeInField("#proposal-items-table input[name='jform[items][1][subtotal]_low']", "0.00");
+        $I->seeInField("#proposal-items-table input[name='jform[items][1][rate]']", "");
+        $I->seeInField("#proposal-items-table input[name='jform[items][1][subtotal_low]']", "0.00");
         $I->seeInField("#proposal-items-table input[name='jform[items][1][subtotal]']", "0.00");
 
         $I->fillField("#proposal-items-table input[name='jform[items][1][time_low]']", "3:00");
@@ -387,15 +387,15 @@ class MothershipAdminProposalsCest
 
         $I->seeInField("#proposal-items-table input[name='jform[items][1][quantity_low]']", "3.00");
         $I->seeInField("#proposal-items-table input[name='jform[items][1][quantity]']", "6.00");
-        $I->seeInField("#proposal-items-table input[name='jform[items][1][rate]']", "0.00");
-        $I->seeInField("#proposal-items-table input[name='jform[items][1][subtotal]_low']", "0.00");
+        $I->seeInField("#proposal-items-table input[name='jform[items][1][rate]']", "");
+        $I->seeInField("#proposal-items-table input[name='jform[items][1][subtotal_low]']", "0.00");
         $I->seeInField("#proposal-items-table input[name='jform[items][1][subtotal]']", "0.00");
 
         $I->executeJS("document.querySelector(\"#proposal-items-table input[name='jform[items][1][quantity]']\").value = '';");
         $I->fillField("#proposal-items-table input[name='jform[items][1][quantity]']", "3.75");
 
         $I->seeInField("#proposal-items-table input[name='jform[items][1][quantity]']", "3.75");
-        $I->seeInField("#proposal-items-table input[name='jform[items][1][rate]']", "0.00");
+        $I->seeInField("#proposal-items-table input[name='jform[items][1][rate]']", "");
         $I->seeInField("#proposal-items-table input[name='jform[items][1][subtotal]']", "0.00");
 
         $I->executeJS("document.querySelector(\"#proposal-items-table input[name='jform[items][1][rate]']\").value = '';");
