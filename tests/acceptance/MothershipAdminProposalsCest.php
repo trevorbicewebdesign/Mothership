@@ -570,19 +570,15 @@ class MothershipAdminProposalsCest
         // Check the account name is displayed
         $I->see($this->accountData['name']);
 
-        $I->see("PROPOSED SERVICES");
-        // $I->see("Hours");
-        // $I->see("Rate");
-        // $I->see("Subtotal");
+        $I->see("ITEMS", "h2");
 
-
-        // $I->see("{$proposalItemData[0]['name']}");
-        // $I->see("{$this->proposalItemData[0]['description']}");
-        // $I->see("{$proposalItemData[0]['quantity']}");
-        // $I->see("{$this->proposalItemData[0]['minutes']}");
-        // $I->see("{$this->proposalItemData[0]['quantity']}");
-        // $I->see("{$proposalItemData[0]['rate']}");
-        // $I->see("{$proposalItemData[0]['subtotal']}");
+        $I->see("{$proposalItemData[0]['name']}", "table tbody tr:nth-child(1) td:nth-child(1)");
+        $I->see("{$proposalItemData[0]['description']}", "table tbody tr:nth-child(1) td:nth-child(1)");
+        $I->see("{$proposalItemData[0]['time_low']}", "table tbody tr:nth-child(1) td:nth-child(2)");
+        $I->see("{$proposalItemData[0]['time']}", "table tbody tr:nth-child(1) td:nth-child(2)");
+        $I->see("{$proposalItemData[0]['rate']}", "table tbody tr:nth-child(1) td:nth-child(3)");
+        $I->see("{$proposalItemData[0]['subtotal_low']}", "table tbody tr:nth-child(1) td:nth-child(4)");
+        $I->see("{$proposalItemData[0]['subtotal']}", "table tbody tr:nth-child(1) td:nth-child(4)");
 
     }
 }
