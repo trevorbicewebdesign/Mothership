@@ -232,11 +232,20 @@ class MothershipAdminProjectsCest
      */
     public function MothershipEditInvalidProject(AcceptanceTester $I)
     {
-        $I->amOnPage(sprintf(self::PROJECT_EDIT_URL, "9999"));
-        $I->wait(1);
-        $I->waitForText('Mothership: Projects', 30, 'h1.page-title');
+        // Attempt to load an invalid domain ID
+        $I->amOnPage(sprintf(self::PROJECT_EDIT_URL, 9999));
+
+        // Wait until a redirect or view switch occurs
+        // This ensures the page has fully navigated before we assert anything.
+        $I->waitForElementVisible('h1.page-title', 30);
+
+        // We should always land back on the Domains list
+        $I->see('Mothership: Projects', 'h1.page-title');
         $I->seeInCurrentUrl(self::PROJECTS_VIEW_ALL_URL);
-        $I->waitForText("Project not found. Please select a valid project.", 30, "#system-message-container .alert-message");
+
+        // Validate system message with a flexible selector
+        $I->waitForElementVisible('#system-message-container', 30);
+        $I->see('Project not found. Please select a valid project.', '#system-message-container');
     }
 
     /**
