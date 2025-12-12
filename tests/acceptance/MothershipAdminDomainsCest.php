@@ -233,12 +233,22 @@ class MothershipAdminDomainsCest
      */
     public function MothershipEditInvalidDomain(AcceptanceTester $I)
     {
-        $I->amOnPage(sprintf(self::DOMAIN_EDIT_URL, "9999"));
-        $I->wait(1);
-        $I->waitForText('Mothership: Domains', 30, 'h1.page-title');
+        // Attempt to load an invalid domain ID
+        $I->amOnPage(sprintf(self::DOMAIN_EDIT_URL, 9999));
+
+        // Wait until a redirect or view switch occurs
+        // This ensures the page has fully navigated before we assert anything.
+        $I->waitForElementVisible('h1.page-title', 30);
+
+        // We should always land back on the Domains list
+        $I->see('Mothership: Domains', 'h1.page-title');
         $I->seeInCurrentUrl(self::DOMAINS_VIEW_ALL_URL);
-        $I->waitForText("Domain not found. Please select a valid domain.", 30, "#system-message-container .alert-message");
+
+        // Validate system message with a flexible selector
+        $I->waitForElementVisible('#system-message-container', 30);
+        $I->see('Domain not found. Please select a valid domain.', '#system-message-container');
     }
+
 
     /**
      * @group backend
