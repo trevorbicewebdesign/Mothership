@@ -45,6 +45,10 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_PROPOSAL_HEADING_NUMBER', 'i.number', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_PROPOSAL_HEADING_TITLE', 'i.title', $listDirn, $listOrder); ?>
+                                </th>
+
+                                <th scope="col" class="w-10">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_PROPOSAL_HEADING_PDF', 'c.name', $listDirn, $listOrder); ?>
                                 </th>
 
@@ -59,10 +63,6 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                 </th>
                                 <th scope="col" class="w-10">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_PROPOSAL_HEADING_TOTAL', 'i.total', $listDirn, $listOrder); ?>
-                                </th>
-
-                                <th scope="col" class="w-10">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_PROPOSAL_HEADING_STATUS', 'i.status', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_PROPOSAL_HEADING_CREATED', 'i.created', $listDirn, $listOrder); ?>
@@ -93,6 +93,10 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                             href="<?php echo Route::_("index.php?option=com_mothership&task=proposal.edit&id={$item->id}"); ?>"><?php echo (int) $item->number; ?></a>
                                     </td>
                                     <td>
+                                        <a
+                                            href="<?php echo Route::_("index.php?option=com_mothership&task=proposal.edit&id={$item->id}"); ?>"><?php echo htmlspecialchars($item->title ?? '', ENT_QUOTES, 'UTF-8'); ?></a>
+                                    </td>
+                                    <td>
                                         <a class="downloadPdf"
                                             href="<?php echo Route::_('index.php?option=com_mothership&task=proposal.downloadPdf&id=' . (int) $item->id); ?>"
                                             target="_blank">
@@ -119,9 +123,6 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                     </td>
                                     <td>
                                         <?php echo $item->status; ?>
-                                    </td>
-                                    <td>
-                                        
                                     </td>
                                     <td>
                                         <?php echo HTMLHelper::_('date', $item->created, Text::_('DATE_FORMAT_LC4')); ?>
