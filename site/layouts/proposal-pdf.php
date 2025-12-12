@@ -134,7 +134,7 @@ $items = $proposal?->items ?? [];
 
     <pagebreak />
 
-    <h2>PROPOSED SERVICES</h2>
+    <h2>ITEMS</h2>
     <table>
         <thead>
             <tr>
