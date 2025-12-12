@@ -421,7 +421,7 @@ class MothershipAdminProposalsCest
         $I->see("1001", "#j-main-container table.itemList tbody tr td:nth-child(3)");
         $I->see("Test Client", "#j-main-container table.itemList tbody tr td:nth-child(6)");
         $I->see("Test Account", "#j-main-container table.itemList tbody tr td:nth-child(7)");
-        $I->see(date("Y-m-d"), "#j-main-container table.itemList tbody tr td:nth-child(12)");
+        $I->see(date("Y-m-d"), "#j-main-container table.itemList tbody tr td:nth-child(11)");
 
         // Open the Proposal again and confirm the data is correct
         $I->amOnPage(sprintf(self::PROPOSAL_EDIT_URL, ($this->proposalData['id'] + 1)));
