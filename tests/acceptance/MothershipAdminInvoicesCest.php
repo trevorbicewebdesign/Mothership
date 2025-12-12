@@ -146,7 +146,7 @@ class MothershipAdminInvoicesCest
         $I->waitForText("Mothership: Invoices", 30, "h1.page-title");
     }
 
-    /**
+   /**
      * @group backend
      * @group payment
      * @group invoice
@@ -154,29 +154,41 @@ class MothershipAdminInvoicesCest
      */
     public function MothershipCancelPaymentEdit(AcceptanceTester $I)
     {
+        // Arrange: create a payment and link it to the existing test invoice
         $paymentData = $I->createMothershipPayment([
-            'client_id' => $this->clientData['id'],
-            'account_id' => $this->accountData['id'],
-            'amount' => $this->invoiceData['total'],
+            'client_id'      => $this->clientData['id'],
+            'account_id'     => $this->accountData['id'],
+            'amount'         => $this->invoiceData['total'],
             'payment_method' => 'paypal',
-            'status' => 2,
+            'status'         => 2, // whatever "normal" editable status is
         ]);
-        $invoicePaymentData = $I->createMothershipInvoicePayment([
-            'invoice_id' => $this->invoiceData['id'],
-            'payment_id' => $paymentData['id'],
+
+        $I->createMothershipInvoicePayment([
+            'invoice_id'     => $this->invoiceData['id'],
+            'payment_id'     => $paymentData['id'],
             'applied_amount' => $this->invoiceData['total'],
         ]);
 
+        // Go to invoices list
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Invoices", 30, "h1.page-title");
+        $I->waitForText('Mothership: Invoices', 30, 'h1.page-title');
 
-        $I->click("Payment #{$paymentData['id']}");
-        $I->waitForText("Mothership: Edit Payment", 30, "h1.page-title");
-        $I->click("Close", "#toolbar");
-        $I->wait(1);
-        $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
-        $I->see("Mothership: Invoices", "h1.page-title");
+        // Click the specific Payment link (data-test added in the layout)
+        $I->click("[data-test='payment-link-{$paymentData['id']}']");
+
+        // Make sure we actually navigated to the edit view
+        $I->waitForElementVisible('form#adminForm', 30);
+        $I->seeInCurrentUrl('option=com_mothership');
+        // Adjust this to match your actual edit URL (task or view/layout)
+        $I->seeInCurrentUrl('task=payment.edit');
+        $I->see('Mothership: Edit Payment', 'h1.page-title');
+
+        // Hit Close and confirm we’re back on Invoices
+        $I->click('Close', '#toolbar');
+        $I->waitForText('Mothership: Invoices', 30, 'h1.page-title');
+        $I->seeInCurrentUrl(self::INVOICES_VIEW_ALL_URL);
     }
+
 
     /**
      * @group backend
