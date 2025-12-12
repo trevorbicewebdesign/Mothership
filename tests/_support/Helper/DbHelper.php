@@ -279,16 +279,14 @@ class DbHelper extends Db
             "type"          => 'hourly',
 
             // Money fields
-            "time"     => 80.00,
-            "time_low"         => 100.00,
-            "quantity"      => 1.00,
-            "quantity_low"  => 1.00,
+            "total_low"     => 80.00,
+            "total"         => 100.00,
             "rate"          => 100.00,
-            "subtotal"      => 8000.00,
-            "subtotal_low"  => 10000.00,
 
             // Status / dates
             "status"        => 1,
+            // due_date is DATE in the schema, so use Y-m-d (not datetime)
+            "due_date"      => date('Y-m-d', strtotime('+30 days')),
             "created"       => null,
 
             // Text content
