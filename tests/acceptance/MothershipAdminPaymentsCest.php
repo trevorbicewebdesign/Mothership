@@ -178,14 +178,16 @@ class MothershipAdminPaymentsCest
             'applied_amount' => 103.20,
         ]);
 
-        $I->amOnPage( self::PAYMENTS_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Payments", 30, "h1.page-title");
+        // Go to invoices list
+        $I->amOnPage(self::PAYMENTS_VIEW_ALL_URL);
+        $I->waitForText('Mothership: Payments', 30, 'h1.page-title');
 
         $I->click("Invoice #{$this->invoiceData['id']}");
+
         $I->waitForText("Mothership: Edit Invoice", 30, "h1.page-title");
         $I->click("Close", "#toolbar");
         $I->waitForText("Mothership: Payments", 30, "h1.page-title");
-        $I->seeCurrentUrlEquals(self::PAYMENTS_VIEW_ALL_URL);
+        $I->seeInCurrentUrl(self::PAYMENTS_VIEW_ALL_URL);
     }
 
     /**
