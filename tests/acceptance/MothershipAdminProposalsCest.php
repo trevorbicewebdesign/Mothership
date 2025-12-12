@@ -526,7 +526,6 @@ class MothershipAdminProposalsCest
             'status' => 2,
             'total_low' => '111.00',
             'total' => '222.00',
-           //  'due_date' => $due_date,
         ]);
 
         $proposalItemData = [];
@@ -534,6 +533,7 @@ class MothershipAdminProposalsCest
             'proposal_id' => $proposalData['id'],
             'name' => 'Test Item',
             'description' => 'Test Description',
+            'type' => 'hourly',
             'time_low' => "01:00",
             'time' => "02:00",
             'quantity_low' => 1.00,
@@ -541,6 +541,20 @@ class MothershipAdminProposalsCest
             'rate' => $this->clientData['default_rate'],
             'subtotal_low' => $this->clientData['default_rate'] * 1,
             'subtotal' => $this->clientData['default_rate'] * 2
+        ]);
+
+        $proposalItemData[] = $I->createMothershipProposalItem([
+            'proposal_id' => $proposalData['id'],
+            'name' => 'Test Item',
+            'description' => 'Test Description',
+            'type' => 'fixed',
+            'time_low' =>NULL,
+            'time' => NULL,
+            'quantity_low' => NULL,
+            'quantity' => 1.00,
+            'rate' => 42.00,
+            'subtotal_low' => NULL,
+            'subtotal' => 42.00 * 1
         ]);
 
         $I->amOnPage(self::PROPOSALS_VIEW_ALL_URL);
@@ -585,6 +599,7 @@ class MothershipAdminProposalsCest
 
         $I->see("ITEMS", "h2");
 
+
         $I->see("{$proposalItemData[0]['name']}", "table tbody tr:nth-child(1) td:nth-child(1)");
         $I->see("{$proposalItemData[0]['description']}", "table tbody tr:nth-child(1) td:nth-child(1)");
         $I->see("{$proposalItemData[0]['time_low']}", "table tbody tr:nth-child(1) td:nth-child(2)");
@@ -593,5 +608,6 @@ class MothershipAdminProposalsCest
         $I->see("{$proposalItemData[0]['subtotal_low']}", "table tbody tr:nth-child(1) td:nth-child(4)");
         $I->see("{$proposalItemData[0]['subtotal']}", "table tbody tr:nth-child(1) td:nth-child(4)");
 
+        $I->see("Total: $222.00", ".totals h3");
     }
 }
