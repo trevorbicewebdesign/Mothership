@@ -174,7 +174,7 @@ class MothershipAdminInvoicesCest
         $I->waitForText('Mothership: Invoices', 30, 'h1.page-title');
 
         // Click the specific Payment link (data-test added in the layout)
-        $I->click("[data-test='payment-link-{$paymentData['id']}']");
+        $I->click("Payment #{$paymentData['id']}");
 
         // Make sure we actually navigated to the edit view
         $I->waitForElementVisible('form#adminForm', 30);
