@@ -168,13 +168,14 @@ class MothershipAdminProposalsCest
         
         $I->see("ID", "#j-main-container table thead tr th:nth-child(2)");
         $I->see("Proposal Number", "#j-main-container table thead tr th:nth-child(3)");
-        $I->see("PDF", "#j-main-container table thead tr th:nth-child(4)");
-        $I->see("Client", "#j-main-container table thead tr th:nth-child(5)");
-        $I->see("Account", "#j-main-container table thead tr th:nth-child(6)");
-        $I->see("Project", "#j-main-container table thead tr th:nth-child(7)");
-        $I->see("Total", "#j-main-container table thead tr th:nth-child(8)");
-        $I->see("Status", "#j-main-container table thead tr th:nth-child(9)");
-        $I->see("Created", "#j-main-container table thead tr th:nth-child(10)");
+        $I->see("Title", "#j-main-container table thead tr th:nth-child(4)");
+        $I->see("PDF", "#j-main-container table thead tr th:nth-child(5)");
+        $I->see("Client", "#j-main-container table thead tr th:nth-child(6)");
+        $I->see("Account", "#j-main-container table thead tr th:nth-child(7)");
+        $I->see("Project", "#j-main-container table thead tr th:nth-child(8)");
+        $I->see("Total", "#j-main-container table thead tr th:nth-child(9)");
+        $I->see("Status", "#j-main-container table thead tr th:nth-child(10)");
+        $I->see("Created", "#j-main-container table thead tr th:nth-child(11)");
 
         $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 2);
 
@@ -193,11 +194,11 @@ class MothershipAdminProposalsCest
         $I->assertEquals("/administrator/index.php?option=com_mothership&task=proposal.downloadPdf&id={$this->proposalData['id']}", $downloadPdfUrl);
         $I->assertEquals("/administrator/index.php?option=com_mothership&task=proposal.previewPdf&id={$this->proposalData['id']}", $previewPdfUrl);
 
-        $I->see("{$this->clientData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5)");
-        $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(6)");
-        $I->see("{$this->projectData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(7)");
-        $I->see("{$this->proposalData['total']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(8)");
-        $I->see("Draft", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(9)");
+        $I->see("{$this->clientData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(6)");
+        $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(7)");
+        $I->see("{$this->projectData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(8)");
+        $I->see("{$this->proposalData['total']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(9)");
+        $I->see("Draft", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(10)");
         $I->see(date('Y-m-d'), "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(11)");
 
         $row = 2;
@@ -215,10 +216,10 @@ class MothershipAdminProposalsCest
         $I->assertEquals("/administrator/index.php?option=com_mothership&task=proposal.downloadPdf&id={$proposalData['id']}", $downloadPdfUrl);
         $I->assertEquals("/administrator/index.php?option=com_mothership&task=proposal.previewPdf&id={$proposalData['id']}", $previewPdfUrl);
 
-        $I->see("{$this->clientData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5)");
-        $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(6)");
-        $I->see("{$proposalData['total']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(8)");
-        $I->see("Closed", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(9)");
+        $I->see("{$this->clientData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(6)");
+        $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(7)");
+        $I->see("{$proposalData['total']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(9)");
+        $I->see("Closed", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(10)");
         $I->see(date('Y-m-d'), "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(11)");
 
         $I->see("1 - 2 / 2 items", "#j-main-container .pagination__wrapper");
