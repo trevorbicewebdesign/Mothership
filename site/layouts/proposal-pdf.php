@@ -1,9 +1,16 @@
 <?php
+
+use TrevorBice\Component\Mothership\Administrator\Helper\ProposalHelper;
+
 defined('_JEXEC') or die;
 
 /** @var array $displayData */
 $proposal = $displayData['proposal'];
-
+$account  = $displayData['account'] ?? null;
+$client   = $displayData['client'] ?? null;
+$business = $displayData['business'] ?? null;
+// Items fallback to array
+$items = $proposal?->items ?? [];
 ?>
 
 <!DOCTYPE html>
@@ -78,13 +85,46 @@ $proposal = $displayData['proposal'];
     </style>
 </head>
 <body class="proposal">
-    <h1>Proposal #<?php echo $proposal->number; ?></h1>
+    <h1>Proposal of Services</h1>
+    <h1>Proposal Number: #<?php echo $proposal->number; ?></h1>
 
-    <div class="section">
-        <p><strong>Client:</strong> <?php echo htmlspecialchars($proposal->client_name ?? ''); ?></p>
-        <p><strong>Date:</strong> <?php echo htmlspecialchars($proposal->created ?? ''); ?></p>
-        <p><strong>Due Date:</strong> <?php echo htmlspecialchars($proposal->due ?? ''); ?></p>
-        <p><strong>Status:</strong> <?php echo htmlspecialchars($proposal->status ?? ''); ?></p>
+
+    <div class="top-row">
+        <div class="company-block">
+            <strong>From</strong>
+            <p><?php echo htmlspecialchars((string)($business['company_name'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
+            <p><?php echo htmlspecialchars((string)($business['company_address_1'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
+            <p><?php echo htmlspecialchars((string)($business['company_address_2'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
+            <p>
+                <?php echo htmlspecialchars((string)($business['company_city'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>,
+                <?php echo htmlspecialchars((string)($business['company_state'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>
+                <?php echo htmlspecialchars((string)($business['company_zip'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>
+            </p>
+            <p><?php echo htmlspecialchars((string)($business['company_phone'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
+            <p><?php echo htmlspecialchars((string)($business['company_email'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
+        </div>
+
+        <div class="client-block">
+            <strong>Bill To</strong>
+            <p><?php echo htmlspecialchars((string)($client?->name ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
+            <p><?php echo htmlspecialchars((string)($client?->address_1 ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
+            <p><?php echo htmlspecialchars((string)($client?->address_2 ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
+            <p>
+                <?php echo htmlspecialchars((string)($client?->city ?? ''), ENT_QUOTES, 'UTF-8'); ?>,
+                <?php echo htmlspecialchars((string)($client?->state ?? ''), ENT_QUOTES, 'UTF-8'); ?>
+                <?php echo htmlspecialchars((string)($client?->zip ?? ''), ENT_QUOTES, 'UTF-8'); ?>
+            </p>
+
+            <?php if ($account?->name ?? false) : ?>
+                <p><strong>Account:</strong> <?php echo htmlspecialchars((string)$account->name, ENT_QUOTES, 'UTF-8'); ?></p>
+            <?php endif; ?>
+
+            <div class="proposal-meta">
+                <!-- Test expects these exact labels -->
+                <p><strong>Proposal Status:</strong><?php echo htmlspecialchars(ProposalHelper::getStatus($proposal->status)); ?></p>
+                <p><strong>Proposal Date:</strong> <?php echo htmlspecialchars((string)($proposal?->created ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
+            </div>
+        </div>
     </div>
 
     <div class="section proposal-summary">
@@ -94,7 +134,7 @@ $proposal = $displayData['proposal'];
 
     <pagebreak />
 
-    <h2>Proposal Items</h2>
+    <h2>PROPOSED SERVICES</h2>
     <table>
         <thead>
             <tr>
