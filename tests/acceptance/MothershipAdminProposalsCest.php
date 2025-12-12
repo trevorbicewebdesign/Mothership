@@ -511,7 +511,8 @@ class MothershipAdminProposalsCest
             'account_id' => $this->accountData['id'],
             'number' => 9000,
             'status' => 2,
-            'total' => '123.45',
+            'total_low' => '111.00',
+            'total' => '222.00',
            //  'due_date' => $due_date,
         ]);
 
@@ -520,11 +521,13 @@ class MothershipAdminProposalsCest
             'proposal_id' => $proposalData['id'],
             'name' => 'Test Item',
             'description' => 'Test Description',
-            'hours' => 1,
-            'minutes' => 0,
-            'quantity' => 1.00,
+            'time_low' => "01:00",
+            'time' => "02:00",
+            'quantity_low' => 1.00,
+            'quantity' => 2.00,
             'rate' => $this->clientData['default_rate'],
-            'subtotal' => $this->clientData['default_rate'] * 1,
+            'subtotal_low' => $this->clientData['default_rate'] * 1,
+            'subtotal' => $this->clientData['default_rate'] * 2
         ]);
 
         $I->amOnPage(self::PROPOSALS_VIEW_ALL_URL);
