@@ -127,28 +127,33 @@ class MothershipAdminProposalsCest
             'status' => 4,
             'locked' => 1,
         ]);
-
-        $proposalItemData[] = $I->createMothershipProposalItem([
-            'proposal_id' => $proposalData['id'],
+        
+        $proposalItemData = [];
+        $proposalItemData[] = $I->createMothershipProposalItem(array(
+            'proposal_id'   => $proposalData['id'],
             'name' => 'Test Item 1',
             'description' => 'Test Description 1',
-            'hours' => '1',
-            'minutes' => '30',
-            'quantity' => '1.5',
-            'rate' => '70.00',
-            'subtotal' => '105.00',
-        ]);
+            'time_low' => '01:00',
+            'time' => '01:30',
+            'quantity_low'  => 1,
+            'quantity' => 1.5,
+            'rate' => 70,
+            'subtotal_low'  => 70,
+            'subtotal'      => 105,
+        ));
 
-        $proposalItemData[] = $I->createMothershipProposalItem([
-            'proposal_id' => $proposalData['id'],
+        $proposalItemData[] = $I->createMothershipProposalItem(array(
+            'proposal_id'   => $proposalData['id'],
             'name' => 'Test Item 2',
             'description' => 'Test Description 2',
-            'hours' => '1',
-            'minutes' => '0',
-            'quantity' => '1',
-            'rate' => '70.00',
-            'subtotal' => '70.00',
-        ]);
+            'time_low' => '01:00',
+            'time' => '01:00',
+            'quantity_low'  => 1,
+            'quantity' => 1,
+            'rate' => 70,
+            'subtotal_low'  => 70,
+            'subtotal' => 70,
+        ));
         
         $I->amOnPage(self::PROPOSALS_VIEW_ALL_URL);
         $I->waitForText("Mothership: Proposals", 30, "h1.page-title");
@@ -174,8 +179,7 @@ class MothershipAdminProposalsCest
         $I->see("Account", "#j-main-container table thead tr th:nth-child(7)");
         $I->see("Project", "#j-main-container table thead tr th:nth-child(8)");
         $I->see("Total", "#j-main-container table thead tr th:nth-child(9)");
-        $I->see("Status", "#j-main-container table thead tr th:nth-child(10)");
-        $I->see("Created", "#j-main-container table thead tr th:nth-child(11)");
+        $I->see("Created", "#j-main-container table thead tr th:nth-child(10)");
 
         $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 2);
 
@@ -198,8 +202,7 @@ class MothershipAdminProposalsCest
         $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(7)");
         $I->see("{$this->projectData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(8)");
         $I->see("{$this->proposalData['total']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(9)");
-        $I->see("Draft", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(10)");
-        $I->see(date('Y-m-d'), "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(11)");
+        $I->see(date('Y-m-d'), "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(10)");
 
         $row = 2;
         // This proposal IS not locked, so it SHOULD have the lock icon
@@ -219,8 +222,7 @@ class MothershipAdminProposalsCest
         $I->see("{$this->clientData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(6)");
         $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(7)");
         $I->see("{$proposalData['total']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(9)");
-        $I->see("Closed", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(10)");
-        $I->see(date('Y-m-d'), "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(11)");
+        $I->see(date('Y-m-d'), "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(10)");
 
         $I->see("1 - 2 / 2 items", "#j-main-container .pagination__wrapper");
     }
