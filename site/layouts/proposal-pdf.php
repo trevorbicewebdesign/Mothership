@@ -141,7 +141,6 @@ $items = $proposal?->items ?? [];
                 <th>Name / Description</th>
                 <th>Range</th>
                 <th>Rate</th>
-                <th>Subtotal Low</th>
                 <th>Subtotal</th>
             </tr>
         </thead>
@@ -152,22 +151,12 @@ $items = $proposal?->items ?? [];
                         <td><?php echo htmlspecialchars($item['name'] ?? ''); ?><br/><?php echo htmlspecialchars($item['description'] ?? ''); ?></td>
                         <td><?php echo ($item['time_low'] ?? 0); ?> - <?php echo ($item['time'] ?? 0); ?></td>
                         <td><?php echo number_format((float)($item['rate'] ?? 0), 2); ?></td>
-                        <td><?php echo number_format((float)($item['subtotal_low'] ?? 0), 2); ?></td>
-                        <td><?php echo number_format((float)($item['subtotal'] ?? 0), 2); ?></td>
-                    </tr>
-                <?php endforeach; ?>
-                 <?php foreach ($proposal->items as $item) : ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($item['name'] ?? ''); ?><br/><?php echo htmlspecialchars($item['description'] ?? ''); ?></td>
-                        <td><?php echo ($item['time_low'] ?? 0); ?> - <?php echo ($item['time'] ?? 0); ?></td>
-                        <td><?php echo number_format((float)($item['rate'] ?? 0), 2); ?></td>
-                        <td><?php echo number_format((float)($item['subtotal_low'] ?? 0), 2); ?></td>
-                        <td><?php echo number_format((float)($item['subtotal'] ?? 0), 2); ?></td>
+                        <td><?php echo number_format((float)($item['subtotal_low'] ?? 0), 2); ?> - <?php echo number_format((float)($item['subtotal'] ?? 0), 2); ?></td>
                     </tr>
                 <?php endforeach; ?>
             <?php else : ?>
                 <tr>
-                    <td colspan="6">No items found.</td>
+                    <td colspan="4">No items found.</td>
                 </tr>
             <?php endif; ?>
         </tbody>
