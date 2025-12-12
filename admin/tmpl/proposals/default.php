@@ -65,6 +65,9 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_PROPOSAL_HEADING_TOTAL', 'i.total', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_PROPOSAL_HEADING_STATUS', 'i.status', $listDirn, $listOrder); ?>
+                                </th>
+                                <th scope="col" class="w-10">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_PROPOSAL_HEADING_CREATED', 'i.created', $listDirn, $listOrder); ?>
                                 </th>
                             </tr>
