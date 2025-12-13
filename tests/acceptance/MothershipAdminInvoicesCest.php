@@ -174,7 +174,7 @@ class MothershipAdminInvoicesCest
         $I->waitForText('Mothership: Invoices', 30, 'h1.page-title');
 
         // Click the specific Payment link (data-test added in the layout)
-        $I->click("Payment #{$paymentData['id']}");
+        $I->click("Payment #{$paymentData['id']}", "ul.payment-list li");
 
         $I->waitForText("Mothership: Edit Payment", 30, "h1.page-title");
         $I->click("Close", "#toolbar");
