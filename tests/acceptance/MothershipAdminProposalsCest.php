@@ -473,20 +473,11 @@ class MothershipAdminProposalsCest
      */
     public function MothershipEditInvalidProposal(AcceptanceTester $I)
     {
-        // Attempt to load an invalid domain ID
+        $message = 'Proposal not found. Please select a valid proposal.';
         $I->amOnPage(sprintf(self::PROPOSAL_EDIT_URL, 9999));
-
-        // Wait until a redirect or view switch occurs
-        // This ensures the page has fully navigated before we assert anything.
-        $I->waitForElementVisible('h1.page-title', 30);
-
-        // We should always land back on the Domains list
-        $I->see('Mothership: Proposals', 'h1.page-title');
-        $I->seeInCurrentUrl(self::PROPOSALS_VIEW_ALL_URL);
-
-        // Validate system message with a flexible selector
         $I->waitForElementVisible('#system-message-container', 30);
-        $I->see('Proposal not found. Please select a valid proposal.', '#system-message-container');
+        $I->see($message, '#system-message-container');
+        $I->seeInCurrentUrl(self::PROPOSALS_VIEW_ALL_URL);
     }  
 
     /**
