@@ -96,7 +96,7 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
                                         </a>
                                     </td>
                                     <td>
-                                        <a href="<?php echo Route::_("index.php?option=com_mothership&task=account.edit&id={$item->account_id}&return=" . base64_encode(Route::_('index.php?option=com_mothership&view=payments'))); ?>">
+                                        <a href="<?php echo Route::_("index.php?option=com_mothership&task=account.edit&id={$item->account_id}&return=" . base64_encode(Route::_('index.php?option=com_mothership&view=payments'))); ?>" class="account-link">
                                             <?php echo htmlspecialchars($item->account_name, ENT_QUOTES, 'UTF-8'); ?>
                                         </a>
                                     </td>
