@@ -141,7 +141,7 @@ class MothershipAdminPaymentsCest
         $I->amOnPage(self::PAYMENTS_VIEW_ALL_URL);
         $I->waitForText('Mothership: Payments', 30, 'h1.page-title');
 
-         $I->click("Test Account", ".account-link");
+        $I->click("Test Account", "table tbody tr:nth-child(1) td.account-column");
 
         $I->waitForText("Mothership: Edit Account", 30, "h1.page-title");
         $I->click("Close", "#toolbar");
