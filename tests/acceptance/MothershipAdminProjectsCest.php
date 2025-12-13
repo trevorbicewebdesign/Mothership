@@ -232,11 +232,11 @@ class MothershipAdminProjectsCest
      */
     public function MothershipEditInvalidProject(AcceptanceTester $I)
     {
-        $message = 'Project not found. Please select a valid project.';
         $I->amOnPage(sprintf(self::PROJECT_EDIT_URL, 9999));
+        $I->waitForText('Mothership: Projects', 30, 'h1.page-title');
         $I->waitForElementVisible('#system-message-container', 30);
-        $I->see($message, '#system-message-container');
-        $I->seeInCurrentUrl(self::PROJECTS_VIEW_ALL_URL);        
+        $I->see('Project not found. Please select a valid project.', '#system-message-container');
+        $I->seeInCurrentUrl(self::PROJECTS_VIEW_ALL_URL);     
     }
 
     /**

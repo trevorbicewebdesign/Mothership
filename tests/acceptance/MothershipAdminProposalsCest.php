@@ -473,11 +473,11 @@ class MothershipAdminProposalsCest
      */
     public function MothershipEditInvalidProposal(AcceptanceTester $I)
     {
-        $message = 'Proposal not found. Please select a valid proposal.';
         $I->amOnPage(sprintf(self::PROPOSAL_EDIT_URL, 9999));
+        $I->waitForText('Mothership: Proposals', 30, 'h1.page-title');
         $I->waitForElementVisible('#system-message-container', 30);
-        $I->see($message, '#system-message-container');
-        $I->seeInCurrentUrl(self::PROPOSALS_VIEW_ALL_URL);
+        $I->see('Proposal not found. Please select a valid proposal.', '#system-message-container');
+        $I->seeInCurrentUrl(self::PROPOSALS_VIEW_ALL_URL);     
     }  
 
     /**
