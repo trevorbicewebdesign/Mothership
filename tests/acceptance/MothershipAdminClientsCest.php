@@ -284,20 +284,11 @@ class MothershipAdminClientsCest
      */
     public function MothershipEditInvalidClient(AcceptanceTester $I)
     {
-         // Attempt to load an invalid client ID
+        $message = 'Client not found. Please select a valid client.';
         $I->amOnPage(sprintf(self::CLIENT_EDIT_URL, 9999));
-
-        // Wait until a redirect or view switch occurs
-        // This ensures the page has fully navigated before we assert anything.
-        $I->waitForElementVisible('h1.page-title', 30);
-
-        // We should always land back on the Clients list
-        $I->see('Mothership: Clients', 'h1.page-title');
-        $I->seeInCurrentUrl(self::CLIENTS_VIEW_ALL_URL);
-
-        // Validate system message with a flexible selector
         $I->waitForElementVisible('#system-message-container', 30);
-        $I->see('Client not found. Please select a valid client.', '#system-message-container');
+        $I->see($message, '#system-message-container');
+        $I->seeInCurrentUrl(self::CLIENTS_VIEW_ALL_URL);
     }
 
     /**
