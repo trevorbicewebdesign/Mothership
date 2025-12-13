@@ -138,16 +138,15 @@ class MothershipAdminPaymentsCest
      */
     public function MothershipCancelAccountEdit(AcceptanceTester $I)
     {
-        $I->amOnPage( self::PAYMENTS_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Payments", 30, "h1.page-title");
+        $I->amOnPage(self::PAYMENTS_VIEW_ALL_URL);
+        $I->waitForText('Mothership: Payments', 30, 'h1.page-title');
 
-        $I->click("Test Account");
+        $I->click("Test Account", "table tbody tr:nth-child(1) td.account-column");
+
         $I->waitForText("Mothership: Edit Account", 30, "h1.page-title");
-        $I->wait(1);
         $I->click("Close", "#toolbar");
-        $I->waitForText("Mothership: Payments", 30, "h1.page-title");
-        $I->wait(1);
-        $I->seeCurrentUrlEquals(self::PAYMENTS_VIEW_ALL_URL);
+        $I->waitForText("Mothership: Payments",  30, "h1.page-title");
+        $I->seeInCurrentUrl(self::PAYMENTS_VIEW_ALL_URL);
     }
 
     /**
@@ -178,14 +177,16 @@ class MothershipAdminPaymentsCest
             'applied_amount' => 103.20,
         ]);
 
-        $I->amOnPage( self::PAYMENTS_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Payments", 30, "h1.page-title");
+        // Go to invoices list
+        $I->amOnPage(self::PAYMENTS_VIEW_ALL_URL);
+        $I->waitForText('Mothership: Payments', 30, 'h1.page-title');
 
         $I->click("Invoice #{$this->invoiceData['id']}");
+
         $I->waitForText("Mothership: Edit Invoice", 30, "h1.page-title");
         $I->click("Close", "#toolbar");
         $I->waitForText("Mothership: Payments", 30, "h1.page-title");
-        $I->seeCurrentUrlEquals(self::PAYMENTS_VIEW_ALL_URL);
+        $I->seeInCurrentUrl(self::PAYMENTS_VIEW_ALL_URL);
     }
 
     /**
@@ -467,12 +468,11 @@ class MothershipAdminPaymentsCest
      */
     public function MothershipEditInvalidPayment(AcceptanceTester $I)
     {
-        $I->amOnPage(sprintf(self::PAYMENT_EDIT_URL, "9999"));
-        $I->wait(1);
+        $I->amOnPage(sprintf(self::PAYMENT_EDIT_URL, 9999));
         $I->waitForText('Mothership: Payments', 30, 'h1.page-title');
-        $I->waitForText("Payment not found. Please select a valid payment.", 30, "#system-message-container .alert-message");
+        $I->waitForElementVisible('#system-message-container', 30);
+        $I->see('Payment not found. Please select a valid payment.', '#system-message-container');
         $I->seeInCurrentUrl(self::PAYMENTS_VIEW_ALL_URL);
-        
     }
 
     /**

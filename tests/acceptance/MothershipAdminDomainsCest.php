@@ -233,12 +233,13 @@ class MothershipAdminDomainsCest
      */
     public function MothershipEditInvalidDomain(AcceptanceTester $I)
     {
-        $I->amOnPage(sprintf(self::DOMAIN_EDIT_URL, "9999"));
-        $I->wait(1);
+        $I->amOnPage(sprintf(self::DOMAIN_EDIT_URL, 9999));
         $I->waitForText('Mothership: Domains', 30, 'h1.page-title');
+        $I->waitForElementVisible('#system-message-container', 30);
+        $I->see('Domain not found. Please select a valid domain.', '#system-message-container');
         $I->seeInCurrentUrl(self::DOMAINS_VIEW_ALL_URL);
-        $I->waitForText("Domain not found. Please select a valid domain.", 30, "#system-message-container .alert-message");
     }
+
 
     /**
      * @group backend

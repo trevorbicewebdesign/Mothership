@@ -1,0 +1,275 @@
+<?php
+
+namespace TrevorBice\Component\Mothership\Administrator\Model;
+
+use Joomla\CMS\Factory;
+use Joomla\CMS\MVC\Model\AdminModel;
+use Joomla\CMS\Table\Table;
+use Joomla\CMS\Versioning\VersionableModelTrait;
+use Joomla\CMS\Log\Log;
+use Joomla\Registry\Registry;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Language\Text;
+use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper; // Ensure this is the correct namespace for LogHelper
+use TrevorBice\Component\Mothership\Administrator\Service\EmailService; // Ensure this is the correct namespace for EmailService
+use TrevorBice\Component\Mothership\Administrator\Helper\InvoiceHelper; // Ensure this is the correct namespace for InvoiceHelper
+
+\defined('_JEXEC') or die;
+
+class ProposalModel extends AdminModel
+{
+    use VersionableModelTrait;
+
+    public $typeAlias = 'com_mothership.proposal';
+    protected function canDelete($record)
+    {
+        if (empty($record->id) || $record->state != -2) {
+            return false;
+        }
+
+        if (!empty($record->catid)) {
+            return $this->getCurrentUser()->authorise('core.delete', 'com_mothership.category.' . (int) $record->catid);
+        }
+
+        return parent::canDelete($record);
+    }
+
+    protected function canCheckin($record)
+    {
+        return $this->getCurrentUser()->authorise('core.manage', 'com_mothership');
+    }
+
+    protected function canEdit($record)
+    {
+        return $this->getCurrentUser()->authorise('core.edit', 'com_mothership');
+    }
+
+
+    public function getForm($data = [], $loadData = true)
+    {
+        return $this->loadForm('com_mothership.proposal', 'proposal', ['control' => 'jform', 'load_data' => $loadData]);
+    }
+
+    protected function loadFormData()
+    {
+        $app = Factory::getApplication();
+        $data = $app->getUserState('com_mothership.edit.proposal.data', []);
+
+        if ((is_object($data) && isset($data->id) && empty($data->id)) || (is_array($data) && empty($data['id']))) {
+            $data = $this->getItem();
+
+            if (empty($data->id)) {
+                $params = ComponentHelper::getParams('com_mothership');
+                $defaultRate = $params->get('company_default_rate');
+                if ($defaultRate !== null) {
+                    $data->rate = $defaultRate;
+                }
+            }
+        }
+
+        $this->preprocessData('com_mothership.proposal', $data);
+        return $data;
+    }
+
+
+    public function getItem($pk = null)
+    {
+        $item = parent::getItem($pk);
+
+        if(!is_object($item)) {
+            return false;
+        }
+
+        if ($item && $item->id) {
+            $db = $this->getDatabase();
+            $query = $db->getQuery(true)
+            ->select('*')
+            ->from($db->quoteName('#__mothership_proposal_items'))
+            ->where($db->quoteName('proposal_id') . ' = ' . (int) $item->id)
+            ->order($db->quoteName('ordering') . ' ASC');
+
+            $db->setQuery($query);
+            $item->items = $db->loadAssocList();
+        }
+
+        return $item;
+    }
+
+    protected function prepareTable($table)
+    {
+        $table->name = htmlspecialchars_decode($table->name, ENT_QUOTES);
+    }
+
+
+    public function save($data)
+    {
+        $table = $this->getTable();
+        $db = $this->getDbo();
+
+        Log::add('Data received for saving: ' . json_encode($data), Log::DEBUG, 'com_mothership');
+
+        $isNew = empty($data['id']);
+        $previousStatus = null;
+
+        if (!$isNew) {
+            $existingTable = $this->getTable();
+            $existingTable->load($data['id']);
+            $previousStatus = (int) $existingTable->status;
+            $newStatus = (int) $data['status'];
+            if (!empty($existingTable->locked)) {
+                $this->setError(Text::_('COM_MOTHERSHIP_ERROR_PROPOSAL_LOCKED'));
+                return false;
+            }
+        }
+        if (!$table->bind($data)) {
+            $this->setError($table->getError());
+            return false;
+        }
+
+        if (empty($table->created)) {
+            $table->created = Factory::getDate()->toSql();
+        }
+
+        if (!$table->check() || !$table->store()) {
+            $this->setError($table->getError());
+            return false;
+        }
+
+        $proposalId = $table->id;
+
+        // Delete existing items
+        $db->setQuery(
+            $db->getQuery(true)
+                ->delete($db->quoteName('#__mothership_proposal_items'))
+                ->where($db->quoteName('proposal_id') . ' = ' . (int)$proposalId)
+        )->execute();
+
+        // Insert new items
+        if (!empty($data['items'])) {
+            $i = 0;
+            foreach ($data['items'] as $item) {
+                $columns = ['proposal_id', 'name', 'description', 'type', 'time', 'time_low', 'quantity', 'quantity_low', 'rate', 'subtotal', 'subtotal_low', 'ordering'];
+                $values = [
+                    $db->quote($proposalId),
+                    $db->quote($item['name']),
+                    $db->quote($item['description']),
+                    $db->quote($item['type']),
+                    $db->quote($item['time']),
+                    $db->quote($item['time_low']),
+                    (float) $item['quantity'],
+                    (float) $item['quantity_low'],
+                    (float) $item['rate'],
+                    (float) $item['subtotal'],
+                    (float) $item['subtotal_low'],
+                    $db->quote($i + 1) // Assuming ordering starts from 1
+                ];
+
+                $query = $db->getQuery(true)
+                    ->insert($db->quoteName('#__mothership_proposal_items'))
+                    ->columns($db->quoteName($columns))
+                    ->values(implode(',', $values));
+
+                $db->setQuery($query)->execute();
+                $i++;
+            }
+        }
+
+        // Set the new record ID into the model state
+        $this->setState($this->getName() . '.id', $table->id);
+
+        return true;
+    }
+
+    /**
+     * Cancel editing by checking in the record.
+     *
+     * @param   int|null  $pk  The primary key of the record to check in. If null, it attempts to load it from the state.
+     *
+     * @return  bool  True on success, false on failure.
+     */
+    public function cancelEdit($pk = null)
+    {
+        // Use the provided primary key or retrieve it from the model state
+        $pk = $pk ? $pk : (int) $this->getState($this->getName() . '.id');
+
+        if ($pk) {
+            $table = $this->getTable();
+            if (!$table->checkin($pk)) {
+                $this->setError($table->getError());
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Deletes one or more records and their associated proposal items from the database.
+     *
+     * @param   array|int[]  &$pks  An array of primary key IDs of the records to delete.
+     *
+     * @return  bool  True on success, false on failure.
+     *
+     * @throws  Exception  If an error occurs during the database operation.
+     */
+    public function delete(&$pks)
+    {
+        $result = parent::delete($pks);
+
+        if ($result) {
+            $db = $this->getDbo();
+            $query = $db->getQuery(true)
+                ->delete($db->quoteName('#__mothership_proposal_items'))
+                ->where($db->quoteName('proposal_id') . ' IN (' . implode(',', array_map('intval', $pks)) . ')');
+
+            $db->setQuery($query)->execute();
+        }
+
+        return $result;
+    }
+
+    /**
+     * Locks an proposal by setting its `locked` property to 1.
+     *
+     * @param int $id The ID of the proposal to lock.
+     * 
+     * @return bool Returns false if the proposal is already locked, 
+     *              or true if the lock operation is successful.
+     */
+    public function lock($id)
+    {
+        $table = $this->getTable();
+        $table->load($id);
+
+        if ($table->locked) {
+            return false; 
+        }
+
+        $table->locked = 1;
+        return $table->store();
+    }
+
+    /**
+     * Unlocks a record by its ID. 
+     *
+     * This method loads a record from the table using the provided ID and checks
+     * if the record is currently locked. If the record is locked, it updates the
+     * `locked` field to 0 (unlocked) and stores the updated record in the database.
+     *
+     * @param int $id The ID of the record to unlock.
+     * @return bool True if the record was successfully unlocked and stored, 
+     *              False if the record was not locked or the operation failed.
+     */
+    public function unlock($id)
+    {
+        $table = $this->getTable();
+        $table->load($id);
+
+        if (!$table->locked) {
+            return false; 
+        }
+
+        $table->locked = 0;
+        return $table->store();
+    }
+}
