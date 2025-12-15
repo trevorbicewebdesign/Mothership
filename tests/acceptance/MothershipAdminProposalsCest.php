@@ -518,8 +518,8 @@ class MothershipAdminProposalsCest
         $proposalItemData = [];
         $proposalItemData[] = $I->createMothershipProposalItem([
             'proposal_id' => $proposalData['id'],
-            'name' => 'Test Item',
-            'description' => 'Test Description',
+            'name' => 'Test Item 1',
+            'description' => 'Test Description 1',
             'type' => 'hourly',
             'time_low' => "01:00",
             'time' => "02:00",
@@ -532,8 +532,8 @@ class MothershipAdminProposalsCest
 
         $proposalItemData[] = $I->createMothershipProposalItem([
             'proposal_id' => $proposalData['id'],
-            'name' => 'Test Item',
-            'description' => 'Test Description',
+            'name' => 'Test Item 2',
+            'description' => 'Test Description 2',
             'type' => 'fixed',
             'time_low' =>'',
             'time' => '',
