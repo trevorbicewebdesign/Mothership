@@ -80,8 +80,6 @@ class MothershipAdminProposalsCest
             'proposal_id' => $this->proposalData['id'],
             'name' => 'Test Item 1',
             'description' => 'Test Description 1',
-            'hours' => '1',
-            'minutes' => '30',
             'quantity' => '1.5',
             'rate' => '70.00',
             'subtotal' => '105.00',
@@ -91,8 +89,6 @@ class MothershipAdminProposalsCest
             'proposal_id' => $this->proposalData['id'],
             'name' => 'Test Item 2',
             'description' => 'Test Description 2',
-            'hours' => '1',
-            'minutes' => '0',
             'quantity' => '1',
             'rate' => '70.00',
             'subtotal' => '70.00',
@@ -539,12 +535,12 @@ class MothershipAdminProposalsCest
             'name' => 'Test Item',
             'description' => 'Test Description',
             'type' => 'fixed',
-            'time_low' =>NULL,
-            'time' => NULL,
-            'quantity_low' => NULL,
+            'time_low' =>'',
+            'time' => '',
+            'quantity_low' => 0.00,
             'quantity' => 1.00,
             'rate' => 42.00,
-            'subtotal_low' => NULL,
+            'subtotal_low' => 0.00,
             'subtotal' => 42.00 * 1
         ]);
 
@@ -590,14 +586,19 @@ class MothershipAdminProposalsCest
 
         $I->see("ITEMS", "h2");
 
-
-        $I->see("{$proposalItemData[0]['name']}", "table tbody tr:nth-child(1) td:nth-child(1)");
-        $I->see("{$proposalItemData[0]['description']}", "table tbody tr:nth-child(1) td:nth-child(1)");
-        $I->see("{$proposalItemData[0]['time_low']}", "table tbody tr:nth-child(1) td:nth-child(2)");
-        $I->see("{$proposalItemData[0]['time']}", "table tbody tr:nth-child(1) td:nth-child(2)");
-        $I->see("{$proposalItemData[0]['rate']}", "table tbody tr:nth-child(1) td:nth-child(3)");
-        $I->see("{$proposalItemData[0]['subtotal_low']}", "table tbody tr:nth-child(1) td:nth-child(4)");
-        $I->see("{$proposalItemData[0]['subtotal']}", "table tbody tr:nth-child(1) td:nth-child(4)");
+        $row = 0;
+        $I->see("{$proposalItemData[$row]['name']}", "table tbody tr:nth-child(1) td:nth-child(1)");
+        $I->see("{$proposalItemData[$row]['description']}", "table tbody tr:nth-child(1) td:nth-child(1)");
+        $I->see("{$proposalItemData[$row]['time_low']}", "table tbody tr:nth-child(1) td:nth-child(2)");
+        $I->see("{$proposalItemData[$row]['time']}", "table tbody tr:nth-child(1) td:nth-child(2)");
+        $I->see("{$proposalItemData[$row]['rate']}", "table tbody tr:nth-child(1) td:nth-child(3)");
+        $I->see("{$proposalItemData[$row]['subtotal_low']}", "table tbody tr:nth-child(1) td:nth-child(4)");
+        $I->see("{$proposalItemData[$row]['subtotal']}", "table tbody tr:nth-child(1) td:nth-child(4)");
+        $row++;
+        $I->see("{$proposalItemData[$row]['name']}", "table tbody tr:nth-child(2) td:nth-child(1)");
+        $I->see("{$proposalItemData[$row]['description']}", "table tbody tr:nth-child(2) td:nth-child(1)");
+        $I->see("{$proposalItemData[$row]['rate']}", "table tbody tr:nth-child(2) td:nth-child(3)");
+        $I->see("{$proposalItemData[$row]['subtotal']}", "table tbody tr:nth-child(2) td:nth-child(4)");    
 
         $I->see("Total: $222.00", ".totals h3");
     }
