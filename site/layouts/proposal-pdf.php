@@ -148,10 +148,17 @@ $items = $proposal?->items ?? [];
             <?php if (!empty($proposal->items)) : ?>
                 <?php foreach ($proposal->items as $item) : ?>
                     <tr>
+                        <?php if($item['type']==='hourly'): ?>
                         <td><?php echo htmlspecialchars($item['name'] ?? ''); ?><br/><?php echo htmlspecialchars($item['description'] ?? ''); ?></td>
                         <td><?php echo ($item['time_low'] ?? 0); ?> - <?php echo ($item['time'] ?? 0); ?></td>
                         <td><?php echo number_format((float)($item['rate'] ?? 0), 2); ?></td>
                         <td><?php echo number_format((float)($item['subtotal_low'] ?? 0), 2); ?> - <?php echo number_format((float)($item['subtotal'] ?? 0), 2); ?></td>
+                        <?php else: ?>
+                        <td><?php echo htmlspecialchars($item['name'] ?? ''); ?><br/><?php echo htmlspecialchars($item['description'] ?? ''); ?></td>
+                        <td>N/A</td>
+                        <td><?php echo number_format((float)($item['rate'] ?? 0), 2); ?></td>
+                        <td><?php echo number_format((float)($item['subtotal'] ?? 0), 2); ?></td>
+                        <?php endif; ?>
                     </tr>
                 <?php endforeach; ?>
             <?php else : ?>
