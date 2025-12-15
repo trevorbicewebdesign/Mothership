@@ -350,7 +350,7 @@ class MothershipAdminProposalsCest
 
         $I->seeInField("#proposal-items-table input[name='jform[items][0][quantity]']", "2.00");
         $I->seeInField("#proposal-items-table input[name='jform[items][0][rate]']", $this->clientData['default_rate']);
-        $expectedSubtotal = number_format(($this->clientData['default_rate'] * 2), 2); // Update this value if needed based on calculations
+        $expectedSubtotal = number_format(($this->clientData['default_rate'] * 2), 2);
         $I->seeInField("#proposal-items-table input[name='jform[items][0][subtotal]']", $expectedSubtotal);
 
         $I->executeJS("document.querySelector(\"#proposal-items-table input[name='jform[items][0][rate]']\").value = '';");
