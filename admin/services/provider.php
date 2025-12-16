@@ -22,6 +22,7 @@ require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/in
 require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/ProposalItems.php';
 require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/PaymentStatusField.php';
 require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/InvoiceStatusField.php';
+require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/ProposalStatusField.php';
 require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Field/InvoicePdfTemplateList.php';
 
 // Ensure the DomainRule class is autoloaded
