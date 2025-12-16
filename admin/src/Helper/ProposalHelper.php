@@ -42,14 +42,21 @@ class ProposalHelper
                 $status = 'Draft';
                 break;
             case 2:
-                $status = 'Opened';
+                $status = 'Pending';
                 break;
             case 3:
-                $status = 'Cancelled';
+                $status = 'Approved';
                 break;
             case 4:
-                $status = 'Closed';
+                $status = 'Declined';
                 break;
+            case 5:
+                $status = 'Cancelled';
+                break;
+            case 5:
+                $status = 'Expired';
+                break;
+            
             default:
                 $status = 'Unknown';
                 break;
