@@ -285,7 +285,7 @@ class MothershipAdminClientsCest
     public function MothershipEditInvalidClient(AcceptanceTester $I)
     {
         $I->amOnPage(sprintf(self::CLIENT_EDIT_URL, 9999));
-        $I->waitForElementVisible('#system-message-container', 30);
+        $I->waitForElementVisible('#system-message-container joomla-alert[type=danger]', 30);
         $I->see('Client not found. Please select a valid client.', '#system-message-container');
         $I->see('Mothership: Clients', 'h1.page-title');
         $I->seeInCurrentUrl(self::CLIENTS_VIEW_ALL_URL);
