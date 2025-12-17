@@ -21,7 +21,6 @@ use Joomla\CMS\Language\Text;
             <th>Amount</th>
             <th>Status</th>
             <th>Payment Status</th>
-            <th>Due Date</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -50,19 +49,7 @@ use Joomla\CMS\Language\Text;
                     </ul>
                     <?php endif; ?>
                 </td>
-                <td>
-                    <?php if($proposal->status === 'Opened'): ?>
-                    <?php
-                    $dueDate = new DateTime($proposal->due_date, new DateTimeZone('UTC'));
-                    $dueDate->setTime(23, 59, 59);
-                    
-                    $currentDate = new DateTime('now', new DateTimeZone('UTC'));
-                    $interval = $currentDate->diff($dueDate);
-                    echo "Due in {$interval->days} days";
-                    ?>
-                    <?php endif; ?>
-                </td>
-                
+
                 <td>
                     <ul>
                         <li><a href="<?php echo Route::_('index.php?option=com_mothership&task=proposal.edit&id=' . $proposal->id); ?>">View</a></li>
@@ -87,9 +74,11 @@ use Joomla\CMS\Language\Text;
             </div>
             <div class="card-body">
                 <ul class="mb-0">
-                    <li><strong>Opened</strong>: Proposal is awaiting payment.</li>
-                    <li><strong>Cancelled</strong>: Proposal has been voided and is no longer valid.</li>
-                    <li><strong>Closed</strong>: Proposal has been paid and is no longer active.</li>
+                    <li><strong>Pending</strong>: Proposal has been created and is awaiting review or approval.</li>
+                    <li><strong>Approved</strong>: Proposal has been accepted and is ready for payment or further processing.</li>
+                    <li><strong>Declined</strong>: Proposal has been reviewed and was not accepted.</li>
+                    <li><strong>Canceled</strong>: Proposal was canceled and is no longer active.</li>
+                    <li><strong>Expired</strong>: Proposal has passed its valid until date and is no longer valid.</li>
                 </ul>
             </div>
         </div>
