@@ -234,9 +234,9 @@ class MothershipAdminDomainsCest
     public function MothershipEditInvalidDomain(AcceptanceTester $I)
     {
         $I->amOnPage(sprintf(self::DOMAIN_EDIT_URL, 9999));
-        $I->wait(1);
-        $I->waitForText('Domain not found. Please select a valid payment.', 30, '#system-message-container');
-        $I->see('Mothership: system', 'h1.page-title');
+        $I->waitForElementVisible('#system-message-container', 30);
+        $I->see('Domain not found. Please select a valid payment.', '#system-message-container');
+        $I->see('Mothership: Domains', 'h1.page-title');
         $I->seeInCurrentUrl(self::DOMAINS_VIEW_ALL_URL);
     }
 
