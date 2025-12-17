@@ -235,7 +235,7 @@ class MothershipAdminDomainsCest
     {
         $I->amOnPage(sprintf(self::DOMAIN_EDIT_URL, 9999));
         $I->waitForElementVisible('#system-message-container', 30);
-        $I->see('Domain not found. Please select a valid payment.', '#system-message-container');
+        $I->see('Domain not found. Please select a valid domain.', '#system-message-container');
         $I->see('Mothership: Domains', 'h1.page-title');
         $I->seeInCurrentUrl(self::DOMAINS_VIEW_ALL_URL);
     }
