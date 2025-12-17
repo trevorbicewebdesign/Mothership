@@ -39,27 +39,16 @@ use Joomla\CMS\Language\Text;
                 <td>$<?php echo number_format($proposal->total, 2); ?></td>
                 <td><?php echo $proposal->status; ?></td>
                 <td>
-                    <?php echo $proposal->payment_status; ?><br/>
-                    <?php $payment_ids = array_filter(explode(",", $proposal->payment_ids ?? '')); ?>
-                    <?php if (count($payment_ids) > 0): ?>
-                    <ul style="margin-bottom:0px;" class="payment-list">
-                        <?php foreach ($payment_ids as $paymentId): ?>
-                            <li style="list-style: none;"><small><a href="index.php?option=com_mothership&view=payment&id=<?php echo $paymentId; ?>&return=<?php echo base64_encode(Route::_('index.php?option=com_mothership&view=proposals')); ?>" class="payment-link"><?php echo "Payment #" . str_pad($paymentId, 2, "0", STR_PAD_LEFT); ?></a></small></li>
-                        <?php endforeach; ?>
-                    </ul>
-                    <?php endif; ?>
+                    
                 </td>
 
                 <td>
                     <ul>
                         <li><a href="<?php echo Route::_('index.php?option=com_mothership&task=proposal.edit&id=' . $proposal->id); ?>">View</a></li>
-                        <?php if($proposal->status === 'Opened' && $proposal->payment_status != 'Pending Confirmation'): ?>
-                        <li><a href="<?php echo Route::_("index.php?option=com_mothership&task=proposal.payment&id={$proposal->id}"); ?>">Pay</a></li>
-                        <?php elseif($proposal->payment_status ==='Pending Confirmation'):?>
-                        <li><a href="<?php echo Route::_("index.php?option=com_mothership&task=payment.cancel&id={$paymentId}"); ?>">Cancel Pending Payment</a></li>
+                        <?php if($proposal->status === 'Pending' ): ?>
+                        <li><a href="<?php echo Route::_("index.php?option=com_mothership&task=proposal.approve&id={$proposal->id}"); ?>">Approve</a></li>
                         <?php endif; ?>
                     </ul>
-                    
                     
                 </td>
             </tr>
