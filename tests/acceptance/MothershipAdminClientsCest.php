@@ -285,10 +285,27 @@ class MothershipAdminClientsCest
     public function MothershipEditInvalidClient(AcceptanceTester $I)
     {
         $I->amOnPage(sprintf(self::CLIENT_EDIT_URL, 9999));
-        $I->waitForElementVisible('#system-message-container joomla-alert[type=danger]', 30);
-        $I->see('Client not found. Please select a valid client.', '#system-message-container');
-        $I->see('Mothership: Clients', 'h1.page-title');
+
+        // Confirm redirect landed (prevents checking too early / wrong page)
+        $I->waitForText('Mothership: Clients', 30, 'h1.page-title');
         $I->seeInCurrentUrl(self::CLIENTS_VIEW_ALL_URL);
+
+        // Kill animations (makes "visible" deterministic)
+        $I->executeJS(<<<'JS'
+            const s = document.createElement('style');
+            s.innerHTML = `
+                * { animation: none !important; transition: none !important; }
+                joomla-alert { opacity: 1 !important; }
+            `;
+            document.head.appendChild(s);
+        JS);
+
+        // Wait for the message text node, not just the container
+        $I->waitForElementVisible('#system-message-container joomla-alert .alert-message', 30);
+        $I->see('Client not found. Please select a valid client.', '#system-message-container');
+
+        // Optional: assert severity (allow either)
+        $I->seeElement( '#system-message-container joomla-alert[type="danger"]');
     }
 
     /**
