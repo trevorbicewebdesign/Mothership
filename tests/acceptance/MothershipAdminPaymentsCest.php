@@ -469,9 +469,8 @@ class MothershipAdminPaymentsCest
     public function MothershipEditInvalidPayment(AcceptanceTester $I)
     {
         $I->amOnPage(sprintf(self::PAYMENT_EDIT_URL, 9999));
-        $I->waitForText('Mothership: Payments', 30, 'h1.page-title');
-        $I->waitForElementVisible('#system-message-container', 30);
-        $I->see('Payment not found. Please select a valid payment.', '#system-message-container');
+        $I->waitForText('Payment not found. Please select a valid payment.', 30, '#system-message-container');
+        $I->see('Mothership: Payments', 'h1.page-title');
         $I->seeInCurrentUrl(self::PAYMENTS_VIEW_ALL_URL);
     }
 
