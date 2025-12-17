@@ -6,19 +6,19 @@ use TrevorBice\Component\Mothership\Administrator\Helper\ClientHelper;
 use TrevorBice\Component\Mothership\Administrator\Helper\AccountHelper;
 use TrevorBice\Component\Mothership\Administrator\Helper\MothershipHelper;
 
-$invoice = isset($this->item) ? $this->item : null;
-$client = ClientHelper::getClient($invoice->client_id);
-$account = AccountHelper::getAccount($invoice->account_id);
+$proposal = isset($this->item) ? $this->item : null;
+$client = ClientHelper::getClient($proposal->client_id);
+$account = AccountHelper::getAccount($proposal->account_id);
 $business = MothershipHelper::getMothershipOptions();
 
-if (!$invoice) {
+if (!$proposal) {
     echo '<div class="alert alert-warning">Invoice not found.</div>';
     return;
 }
 
-$layout = new FileLayout('pdf', JPATH_ROOT . '/components/com_mothership/layouts');
+$layout = new FileLayout('proposal-pdf', JPATH_ROOT . '/components/com_mothership/layouts');
 echo $layout->render([
-    'invoice' => $invoice,
+    'proposal' => $proposal,
     'client' => $client,
     'account' => $account,
     'business' => $business

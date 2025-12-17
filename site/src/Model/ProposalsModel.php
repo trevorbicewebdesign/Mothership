@@ -53,7 +53,7 @@ class ProposalsModel extends ListModel
             END AS payment_status'
         ]);
 
-        $query->from($db->quoteName('#__mothership_invoices', 'i'))
+        $query->from($db->quoteName('#__mothership_proposals', 'i'))
             ->join('LEFT', '#__mothership_accounts AS a ON i.account_id = a.id')
             ->join('LEFT', '#__mothership_clients AS c ON i.client_id = c.id')
 

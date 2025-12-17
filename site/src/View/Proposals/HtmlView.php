@@ -7,18 +7,18 @@ use Joomla\CMS\Language\Text;
 
 class HtmlView extends BaseHtmlView
 {
-    protected $invoices;
+    protected $proposals;
 
     public function display($tpl = null)
     {
         /*
         $user = Factory::getUser();
-        if (!$user->authorise('mothership.view_invoices', 'com_mothership')) {
+        if (!$user->authorise('mothership.view_proposals', 'com_mothership')) {
             echo Text::_('JERROR_ALERTNOAUTHOR');
             return;
         }
         */
-        $this->invoices = $this->getModel()->getItems();
+        $this->proposals = $this->getModel()->getItems();
         parent::display($tpl);
     }
 }

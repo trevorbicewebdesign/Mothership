@@ -10,30 +10,19 @@ class ProposalModel extends BaseDatabaseModel
 {
     public function getItem($id = null)
     {
-        $id = $id ?? (int) $this->getState('proposal.id');
+        $id ??= (int) $this->getState('proposal.id');
         if (!$id) {
             return null;
         }
 
         $db = $this->getDatabase();
-
-        // Load the proposal
         $query = $db->getQuery(true)
             ->select(
-            'i.*, ' .
-            // Get a comma-separated list of payment IDs for this proposal
-            '(SELECT GROUP_CONCAT(ip.payment_id) FROM #__mothership_proposal_payment AS ip WHERE ip.proposal_id = i.id) AS payment_ids, ' .
-            'COALESCE(pay.applied_amount, 0) AS applied_amount, ' .
-            'CASE ' .
-                'WHEN COALESCE(pay.applied_amount, 0) <= 0 THEN ' . $db->quote('Unpaid') . ' ' .
-                'WHEN COALESCE(pay.applied_amount, 0) < i.total THEN ' . $db->quote('Partially Paid') . ' ' .
-                'ELSE ' . $db->quote('Paid') . ' ' .
-            'END AS payment_status'
+            'proposal.* ' 
             )
-            ->from('#__mothership_proposals AS i')
-            ->leftJoin('#__mothership_proposal_payment AS pay ON pay.proposal_id = i.id')
-            ->where('i.id = ' . (int) $id)
-            ->where('i.status != 1');
+            ->from('#__mothership_proposals AS proposal')
+            ->where('proposal.id = ' . (int) $id)
+        ;
         $db->setQuery($query);
         $proposal = $db->loadObject();
 
