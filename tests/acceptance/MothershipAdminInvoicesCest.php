@@ -727,7 +727,7 @@ class MothershipAdminInvoicesCest
     public function MothershipEditInvalidInvoice(AcceptanceTester $I)
     {
         $I->amOnPage(sprintf(self::INVOICE_EDIT_URL, 9999));
-        $I->waitForElementVisible('#system-message-container', 30);
+        $I->waitForElementVisible('#system-message-container joomla-alert[type=danger]', 30);
         $I->see('Invoice not found. Please select a valid invoice.', '#system-message-container');
         $I->see('Mothership: Invoices', 'h1.page-title');
         $I->seeInCurrentUrl(self::INVOICES_VIEW_ALL_URL);
