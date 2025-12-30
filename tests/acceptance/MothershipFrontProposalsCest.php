@@ -147,7 +147,7 @@ class MothershipFrontProposalsCest
         $I->see($this->proposalData['number'], "table#proposalsTable tbody tr td:nth-child(2)");
         $I->see($this->clientData['name'], "table#proposalsTable tbody tr td:nth-child(3)");
         $I->see($this->accountData['name'], "table#proposalsTable tbody tr td:nth-child(4)");
-        $I->see("$100.00", "table#proposalsTable tbody tr td:nth-child(5)");
+        $I->see("$177.50", "table#proposalsTable tbody tr td:nth-child(5)");
         $I->see("Pending", "table#proposalsTable tbody tr td:nth-child(6)");
         //$I->see("Unpaid", "table#proposalsTable tbody tr td:nth-child(7)");
         $I->see("View", "table#proposalsTable tbody tr td:nth-child(8) ul li");
