@@ -53,10 +53,9 @@ class ProposalHelper
             case 5:
                 $status = 'Cancelled';
                 break;
-            case 5:
+            case 6:
                 $status = 'Expired';
                 break;
-            
             default:
                 $status = 'Unknown';
                 break;
