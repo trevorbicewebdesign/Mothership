@@ -95,11 +95,11 @@ class ProposalHelper
 
         switch ($status) {
             case 1: // Draft
-            case 2: // Opened
-            case 3: // Cancelled
-                break;
-            case 4: // Closed
-                $paidDate = date('Y-m-d H:i:s');
+            case 2: // Pending
+            case 3: // Approved
+            case 4: // Declined
+            case 5: // Cancelled
+            case 6: // Expired
                 break;
             default:
                 throw new \InvalidArgumentException("Invalid status: $status");
@@ -110,10 +110,6 @@ class ProposalHelper
             ->update($db->quoteName('#__mothership_proposals'))
             ->set($db->quoteName('status') . ' = ' . (int) $status);
 
-        if ($paidDate !== null) {
-            $query->set($db->quoteName('paid_date') . ' = ' . $db->quote($paidDate));
-        }
-
         $query->where($db->quoteName('id') . ' = ' . (int) $proposal->id);
 
         $db->transactionStart();
@@ -123,12 +119,6 @@ class ProposalHelper
 
             // Update object & run hooks
             $proposal->status = $status;
-
-            if ($status === 4) {
-                self::onProposalClosed($proposal, $status);
-            } elseif ($status === 2) {
-                self::onProposalOpened($proposal, $status);
-            }
 
             $db->transactionCommit();
         } catch (\Exception $e) {
