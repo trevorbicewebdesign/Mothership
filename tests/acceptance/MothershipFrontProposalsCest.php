@@ -62,7 +62,8 @@ class MothershipFrontProposalsCest
         $this->proposalData = $I->createMothershipProposal([
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
-            'total' => '100.00',
+            'total' => '177.50',
+            'total_low' => '222.00',
             'number' => '1000',
             'status' => 2,
         ]);
@@ -208,7 +209,6 @@ class MothershipFrontProposalsCest
         $I->see("Range");
         $I->see("Rate");
         $I->see("Subtotal");
-
 
         $I->see("{$this->proposalItemData[0]['name']}");
         $I->see("{$this->proposalItemData[0]['description']}");
