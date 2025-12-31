@@ -173,6 +173,8 @@ class MothershipFrontInvoicesCest
         $I->wait(1);
         $I->waitForText("Invoice of Services", 10, "h1");
         $I->dontSee("Warning:");
+
+        $I->makeScreenshot("account-center-view-invoice");
                 
         // Check all the elements in the PDF
         $I->see("{$this->mothershipConfig['company_name']}");
