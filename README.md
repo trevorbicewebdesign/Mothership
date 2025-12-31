@@ -735,6 +735,9 @@ These methods for Codeception's DB module allow the database to be quickly confi
 - **createMothershipUser(array $data)**:
 - **createMothershipAccountData(array $data)**:
 - **createMothershipAccount(array $data)**:
+- **createMothershipProposalData(array $data)**: 
+- **createMothershipProposal(array $data)**: 
+- **createMothershipProposalItemData(array $data)**:
 - **createMothershipInvoiceData(array $data)**: 
 - **createMothershipInvoice(array $data)**: 
 - **createMothershipInvoiceItemData(array $data)**:
@@ -757,6 +760,7 @@ These methods for Codeception's DB module allow the database to be quickly confi
 - **clearUsersTable()**:
 - **setMothershipConfig(array $settings)**:
 - **grabInvoiceRow($invoiceId, $rowNumber)**:
+- **grabProposalRow($proposalId, $rowNumber)**:
 - **grabDomainFromDatabase($domainId)**:
 - **getClientIdByName($clientName)**:
 - **grabLastCompletedPaymentId()**:
@@ -792,6 +796,7 @@ Front end codeception test classes
 
 - **MothershipFrontClientsCest**:
 - **MothershipFrontAccountsCest**:
+- **MothershipFrontProposalsCest**:
 - **MothershipFrontInvoicesCest**:
 - **MothershipFrontProjectsCest**:
 - **MothershipFrontDomainsCest**:
@@ -804,6 +809,7 @@ Back end codeception test classes.
 
 - **MothershipAdminClientsCest**:
 - **MothershipAdminAccountsCest**:
+- **MothershipAdminProposalsCest**:
 - **MothershipAdminInvoicesCest**:
 - **MothershipAdminProjectsCest**:
 - **MothershipAdminDomainsCest**:
@@ -822,6 +828,7 @@ Back end codeception test classes.
 - **MothershipClientHelperTest**:
 - **MothershipAccountHelperTest**:
 - **MothershipProjectHelperTest**:
+- **MothershipProposalHelperTest**:
 - **MothershipInvoiceHelperTest**:
 - **MothershipDomainHelperTest**:
 - **MothershipEmailServiceTest**:
