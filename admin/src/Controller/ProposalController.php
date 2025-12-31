@@ -112,8 +112,6 @@ class ProposalController extends FormController
             'account' => $account,
             'business' => $business
         ]);
-
-        echo $layout->render(['proposal' => $proposal]);
         $html = ob_get_clean();
 
         $pdf = new Mpdf();
