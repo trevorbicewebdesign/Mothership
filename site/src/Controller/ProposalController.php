@@ -65,7 +65,7 @@ class ProposalController extends BaseController
             return;
         }
 
-        // Generate the HTML
+        ob_start();
         $layout = new FileLayout('proposal-pdf', JPATH_ROOT . '/components/com_mothership/layouts');
         echo $layout->render([
             'proposal' => $proposal,
@@ -73,15 +73,8 @@ class ProposalController extends BaseController
             'account' => $account,
             'business' => $business
         ]);
+        $html = ob_get_clean();
 
-        // Turn off Joomla's output
-        ob_end_clean();
-        header('Content-Type: application/pdf');
-        header('Content-Disposition: inline; filename="Proposal-' . $proposal->number . '.pdf"');
-        header('Cache-Control: private, max-age=0, must-revalidate');
-        header('Pragma: public');
-
-        // Generate and output the PDF
         $pdf = new Mpdf();
         $pdf->WriteHTML($html);
         $pdf->Output(null, 'I');
