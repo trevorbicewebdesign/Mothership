@@ -772,6 +772,7 @@ These methods for Codeception's DB module allow the database to be quickly confi
 
 ### Custom Assertions
 
+- **assertProposalHasRows($proposalId, $expectedRows)**:
 - **assertInvoiceHasRows($invoiceId, $expectedRows)**:
 - **assertInvoiceStatus(int $invoiceId, string $expectedStatusLabel)**:
 - **assertInvoiceStatusDraft($invoiceId)**:
