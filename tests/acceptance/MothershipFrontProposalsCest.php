@@ -177,6 +177,8 @@ class MothershipFrontProposalsCest
         $I->wait(1);
         $I->waitForText("Proposal of Services", 10, "h1");
         $I->dontSee("Warning:");
+
+        $I->makeScreenshot("account-center-view-proposal");
                 
         // Check all the elements in the PDF
         $I->see("{$this->mothershipConfig['company_name']}");
