@@ -65,12 +65,6 @@ class ProposalHelper
     }
 
 
-    public static function setProposalClosed($proposalId)
-    {
-        self::updateProposalStatus($proposalId, 4);
-    }
-    
-
     /**
      * Updates the status of an proposal in the database.
      *
