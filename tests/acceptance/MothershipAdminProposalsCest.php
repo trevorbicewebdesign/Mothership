@@ -69,7 +69,7 @@ class MothershipAdminProposalsCest
         $this->proposalData = $I->createMothershipProposal([
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
-            'project_id' => $this->projectData['id'],   
+            'project_id' => $this->projectData['id'],
             'total' => '175.00',
             'number' => 1000,
             'created' => date('Y-m-d H:i:s'),
@@ -101,8 +101,8 @@ class MothershipAdminProposalsCest
         $I->fillField("input[name=username]", "admin");
         $I->fillField("input[name=passwd]", "password123!test");
         $I->click("Log in");
-        $I->waitForText("Hide Forever");
-        $I->click("Hide Forever");
+        //$I->waitForText("Hide Forever");
+        //$I->click("Hide Forever");
     }
 
     /**
@@ -123,38 +123,38 @@ class MothershipAdminProposalsCest
             'status' => 4,
             'locked' => 1,
         ]);
-        
+
         $proposalItemData = [];
         $proposalItemData[] = $I->createMothershipProposalItem(array(
-            'proposal_id'   => $proposalData['id'],
+            'proposal_id' => $proposalData['id'],
             'name' => 'Test Item 1',
             'description' => 'Test Description 1',
             'time_low' => '01:00',
             'time' => '01:30',
-            'quantity_low'  => 1,
+            'quantity_low' => 1,
             'quantity' => 1.5,
             'rate' => 70,
-            'subtotal_low'  => 70,
-            'subtotal'      => 105,
+            'subtotal_low' => 70,
+            'subtotal' => 105,
         ));
 
         $proposalItemData[] = $I->createMothershipProposalItem(array(
-            'proposal_id'   => $proposalData['id'],
+            'proposal_id' => $proposalData['id'],
             'name' => 'Test Item 2',
             'description' => 'Test Description 2',
             'time_low' => '01:00',
             'time' => '01:00',
-            'quantity_low'  => 1,
+            'quantity_low' => 1,
             'quantity' => 1,
             'rate' => 70,
-            'subtotal_low'  => 70,
+            'subtotal_low' => 70,
             'subtotal' => 70,
         ));
-        
+
         $I->amOnPage(self::PROPOSALS_VIEW_ALL_URL);
         $I->waitForText("Mothership: Proposals", 30, "h1.page-title");
 
-        $I->makeScreenshot("mothership-view-proposals");
+        $I->takeFullPageScreenshot("mothership-view-proposals");
 
         $I->dontSee("Warning");
 
@@ -166,7 +166,7 @@ class MothershipAdminProposalsCest
 
         $I->seeElement("#j-main-container ");
         $I->seeElement("#j-main-container thead");
-        
+
         $I->see("ID", "#j-main-container table thead tr th:nth-child(2)");
         $I->see("Proposal Number", "#j-main-container table thead tr th:nth-child(3)");
         $I->see("Title", "#j-main-container table thead tr th:nth-child(4)");
@@ -185,6 +185,7 @@ class MothershipAdminProposalsCest
         $I->dontSeeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(1) i.fa-solid.fa-lock");
         $I->see("{$this->proposalData['id']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(2)");
         $I->see("{$this->proposalData['number']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(3)");
+        $I->see("{$this->proposalData['title']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4)");
         $I->seeNumberOfElements("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5) a", 2);
         $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5) a.downloadPdf");
         $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5) a.previewPdf");
@@ -206,6 +207,7 @@ class MothershipAdminProposalsCest
         $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(1) i.fa-solid.fa-lock");
         $I->see("{$proposalData['id']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(2)");
         $I->see("{$proposalData['number']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(3)");
+        $I->see("{$proposalData['title']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4)");
         $I->seeNumberOfElements("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5) a", 2);
         $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5) a.downloadPdf");
         $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5) a.previewPdf");
@@ -300,7 +302,7 @@ class MothershipAdminProposalsCest
         // Check the form validation
         $I->see("The form cannot be submitted as it's missing required data.");
         $I->see("Please correct the marked fields and try again.");
-        
+
         $I->see("One of the options must be selected", "label#jform_client_id-lbl .form-control-feedback");
         $I->see("Please fill in this field", "label#jform_number-lbl .form-control-feedback");
         $I->see("Please provide an item name.", ".form-group .invalid-feedback");
@@ -330,12 +332,12 @@ class MothershipAdminProposalsCest
         $I->selectOption("#proposal-items-table select[name='jform[items][0][type]']", "Hourly");
         $I->fillField("#proposal-items-table input[name='jform[items][0][time_low]']", "01:00");
         $I->fillField("#proposal-items-table input[name='jform[items][0][time]']", "02:00");
-        
+
 
         $I->seeInField("#proposal-items-table input[name='jform[items][0][quantity_low]']", "1.00");
         $I->seeInField("#proposal-items-table input[name='jform[items][0][quantity]']", "2.00");
         $I->seeInField("#proposal-items-table input[name='jform[items][0][rate]']", $this->clientData['default_rate']);
-        $expectedSubtotalLow = number_format(($this->clientData['default_rate'] * 1), 2); 
+        $expectedSubtotalLow = number_format(($this->clientData['default_rate'] * 1), 2);
         $expectedSubtotal = number_format(($this->clientData['default_rate'] * 2), 2);
         $I->seeInField("#proposal-items-table input[name='jform[items][0][subtotal_low]']", $expectedSubtotalLow);
         $I->seeInField("#proposal-items-table input[name='jform[items][0][subtotal]']", $expectedSubtotal);
@@ -370,7 +372,7 @@ class MothershipAdminProposalsCest
         $I->fillField("#proposal-items-table input[name='jform[items][1][description]']", "Test Description");
 
         $I->fillField("#proposal-items-table input[name='jform[items][1][time_low]']", "01:30");
-        $I->fillField("#proposal-items-table input[name='jform[items][1][time]']", "03:00");    
+        $I->fillField("#proposal-items-table input[name='jform[items][1][time]']", "03:00");
 
         $I->seeInField("#proposal-items-table input[name='jform[items][1][quantity_low]']", "1.50");
         $I->seeInField("#proposal-items-table input[name='jform[items][1][quantity]']", "3.00");
@@ -379,7 +381,7 @@ class MothershipAdminProposalsCest
         $I->seeInField("#proposal-items-table input[name='jform[items][1][subtotal]']", "0.00");
 
         $I->fillField("#proposal-items-table input[name='jform[items][1][time_low]']", "3:00");
-        $I->fillField("#proposal-items-table input[name='jform[items][1][time]']", "06:00");    
+        $I->fillField("#proposal-items-table input[name='jform[items][1][time]']", "06:00");
 
         $I->seeInField("#proposal-items-table input[name='jform[items][1][quantity_low]']", "3.00");
         $I->seeInField("#proposal-items-table input[name='jform[items][1][quantity]']", "6.00");
@@ -409,7 +411,7 @@ class MothershipAdminProposalsCest
 
         // Check that the new proposal has two rows of items
         $I->assertProposalHasRows(($this->proposalData['id'] + 1), 2);
-       
+
         $I->waitForText("Mothership: Proposals", 30, "h1.page-title");
 
         $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 2);
@@ -474,7 +476,7 @@ class MothershipAdminProposalsCest
         $I->see('Proposal not found. Please select a valid proposal.', '#system-message-container');
         $I->see('Mothership: Proposals', 'h1.page-title');
         $I->seeInCurrentUrl(self::PROPOSALS_VIEW_ALL_URL);
-    }  
+    }
 
     /**
      * @group backend
@@ -535,7 +537,7 @@ class MothershipAdminProposalsCest
             'name' => 'Test Item 2',
             'description' => 'Test Description 2',
             'type' => 'fixed',
-            'time_low' =>'',
+            'time_low' => '',
             'time' => '',
             'quantity_low' => 0.00,
             'quantity' => 1.00,
@@ -556,7 +558,7 @@ class MothershipAdminProposalsCest
         $I->click("#j-main-container table.itemList tbody tr:nth-child(2) a.previewPdf");
         $I->amOnPage($html);
         $I->wait(1);
-        
+
         // Check all the elements in the PDF
         $I->see("{$this->mothershipConfig['company_name']}");
         $I->see("{$this->mothershipConfig['company_address_1']}");
@@ -566,7 +568,7 @@ class MothershipAdminProposalsCest
         $I->see("{$this->mothershipConfig['company_zip']}");
         $I->see("{$this->mothershipConfig['company_phone']}");
         $I->see("{$this->mothershipConfig['company_email']}");
-    
+
         // Check for the proposal meta data
         $I->see("Proposal of Services");
         $I->see("Proposal Number: #{$proposalData['number']}");
@@ -598,7 +600,7 @@ class MothershipAdminProposalsCest
         $I->see("{$proposalItemData[$row]['name']}", "table tbody tr:nth-child(2) td:nth-child(1)");
         $I->see("{$proposalItemData[$row]['description']}", "table tbody tr:nth-child(2) td:nth-child(1)");
         $I->see("{$proposalItemData[$row]['rate']}", "table tbody tr:nth-child(2) td:nth-child(3)");
-        $I->see("{$proposalItemData[$row]['subtotal']}", "table tbody tr:nth-child(2) td:nth-child(4)");    
+        $I->see("{$proposalItemData[$row]['subtotal']}", "table tbody tr:nth-child(2) td:nth-child(4)");
 
         $I->see("Total: $222.00", ".totals h3");
     }
