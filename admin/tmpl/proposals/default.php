@@ -47,11 +47,9 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                 <th scope="col" class="w-10">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_PROPOSAL_HEADING_TITLE', 'i.title', $listDirn, $listOrder); ?>
                                 </th>
-
                                 <th scope="col" class="w-10">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_PROPOSAL_HEADING_PDF', 'c.name', $listDirn, $listOrder); ?>
                                 </th>
-
                                 <th scope="col" class="w-10">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_PROPOSAL_HEADING_CLIENT', 'c.name', $listDirn, $listOrder); ?>
                                 </th>
@@ -97,7 +95,7 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                     </td>
                                     <td>
                                         <a
-                                            href="<?php echo Route::_("index.php?option=com_mothership&task=proposal.edit&id={$item->id}"); ?>"><?php echo htmlspecialchars($item->title ?? '', ENT_QUOTES, 'UTF-8'); ?></a>
+                                            href="<?php echo Route::_("index.php?option=com_mothership&task=proposal.edit&id={$item->id}"); ?>"><?php echo htmlspecialchars($item->name ?? '', ENT_QUOTES, 'UTF-8'); ?></a>
                                     </td>
                                     <td>
                                         <a class="downloadPdf"
