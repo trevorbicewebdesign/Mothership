@@ -75,6 +75,7 @@ class ProposalsModel extends ListModel
                 'list.select',
                 [
                     $db->quoteName('i.id'),
+                    $db->quoteName('i.name'),
                     $db->quoteName('i.number'),
                     $db->quoteName('i.client_id'),
                     $db->quoteName('c.name', 'client_name'),
