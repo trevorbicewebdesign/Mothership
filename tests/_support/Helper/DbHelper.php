@@ -259,7 +259,7 @@ class DbHelper extends Db
         return $data;
     }
 
-        /**
+    /**
      * Build default data array for a Mothership proposal.
      *
      * @param  array $data
@@ -270,38 +270,39 @@ class DbHelper extends Db
         // Default values for the proposal
         $defaultData = [
             // Core fields
-            "number"        => rand(1, 1000),
-            "client_id"     => 1,
-            "account_id"    => 1,
-            "project_id"    => null,
+            "number" => rand(1, 1000),
+            'name' => 'Test Proposal Title',
+            "client_id" => 1,
+            "account_id" => 1,
+            "project_id" => null,
 
             // Proposal-level type – matches the <field name="type"> in the form
-            "type"          => 'hourly',
+            "type" => 'hourly',
 
             // Money fields
-            "total_low"     => 80.00,
-            "total"         => 100.00,
-            "rate"          => 100.00,
+            "total_low" => 80.00,
+            "total" => 100.00,
+            "rate" => 100.00,
 
             // Status / dates
-            "status"        => 1,
+            "status" => 1,
             // due_date is DATE in the schema, so use Y-m-d (not datetime)
-            "due_date"      => date('Y-m-d', strtotime('+30 days')),
-            "created"       => null,
+            "due_date" => date('Y-m-d', strtotime('+30 days')),
+            "created" => null,
 
             // Text content
-            "summary"       => 'Test proposal summary',
-            "notes"         => 'Test proposal notes',
+            "summary" => 'Test proposal summary',
+            "notes" => 'Test proposal notes',
 
             // Joomla housekeeping
-            "locked"        => 0,
-            "state"         => 1,
-            "created_by"    => null,
-            "modified"      => null,
-            "modified_by"   => null,
+            "locked" => 0,
+            "state" => 1,
+            "created_by" => null,
+            "modified" => null,
+            "modified_by" => null,
             "checked_out_time" => null,
-            "checked_out"   => null,
-            "version"       => 1,
+            "checked_out" => null,
+            "version" => 1,
         ];
 
         // Merge provided data with defaults
@@ -347,25 +348,25 @@ class DbHelper extends Db
         $faker = \Faker\Factory::create();
 
         $defaultData = [
-            "proposal_id"   => 0,
-            "name"          => "Test Proposal Item",
-            "description"   => "Test Proposal Item Description",
+            "proposal_id" => 0,
+            "name" => "Test Proposal Item",
+            "description" => "Test Proposal Item Description",
 
             // Line item type: hourly vs fixed
-            "type"          => "hourly",
+            "type" => "hourly",
 
             // Time fields: your JS uses HH:MM strings
-            "time"          => "01:30",
-            "time_low"      => "01:00",
+            "time" => "01:30",
+            "time_low" => "01:00",
 
             // Numeric values
-            "quantity"      => 1.50,
-            "quantity_low"  => 1.00,
-            "rate"          => 100.00,
-            "subtotal"      => 150.00,
-            "subtotal_low"  => 100.00,
+            "quantity" => 1.50,
+            "quantity_low" => 1.00,
+            "rate" => 100.00,
+            "subtotal" => 150.00,
+            "subtotal_low" => 100.00,
 
-            "ordering"      => 0,
+            "ordering" => 0,
         ];
 
         $finalData = array_merge($defaultData, $data);
@@ -391,11 +392,11 @@ class DbHelper extends Db
             $data['id'] = $id;
 
             // Normalize numeric formatting if your tests/UI rely on it
-            $data['quantity']      = number_format($data['quantity'], 2);
-            $data['quantity_low']  = number_format($data['quantity_low'], 2);
-            $data['rate']          = number_format($data['rate'], 2);
-            $data['subtotal']      = number_format($data['subtotal'], 2);
-            $data['subtotal_low']  = number_format($data['subtotal_low'], 2);
+            $data['quantity'] = number_format($data['quantity'], 2);
+            $data['quantity_low'] = number_format($data['quantity_low'], 2);
+            $data['rate'] = number_format($data['rate'], 2);
+            $data['subtotal'] = number_format($data['subtotal'], 2);
+            $data['subtotal_low'] = number_format($data['subtotal_low'], 2);
         } catch (\Exception $e) {
             codecept_debug("Error creating proposal item: " . $e->getMessage());
         }
@@ -567,7 +568,7 @@ class DbHelper extends Db
             "created" => date('Y-m-d H:i:s'),
             "notes" => $data['notes'] ?? '',
         ];
-        
+
 
         // Merge provided data with defaults
         $finalData = array_merge($defaultData, $data);
@@ -680,22 +681,22 @@ class DbHelper extends Db
     {
         codecept_debug("Resetting Mothership tables");
 
-         // Turn off foreign key checks
-         $this->Db->_getDriver()->executeQuery("SET FOREIGN_KEY_CHECKS = 0", []);
+        // Turn off foreign key checks
+        $this->Db->_getDriver()->executeQuery("SET FOREIGN_KEY_CHECKS = 0", []);
 
-         // Truncate everything
-         $this->clearInvoiceItemsTable();
-         $this->clearInvoicesTable();
-         $this->clearProposalsTable();
-         $this->clearProposalItemsTable();
-         $this->clearPaymentsTable();
-         $this->clearInvoicePaymentTable();
-         $this->clearAccountsTable();
-         $this->clearClientsTable();
-         $this->clearUsersTable();
- 
-         // Turn it back on
-         $this->Db->_getDriver()->executeQuery("SET FOREIGN_KEY_CHECKS = 1", []);
+        // Truncate everything
+        $this->clearInvoiceItemsTable();
+        $this->clearInvoicesTable();
+        $this->clearProposalsTable();
+        $this->clearProposalItemsTable();
+        $this->clearPaymentsTable();
+        $this->clearInvoicePaymentTable();
+        $this->clearAccountsTable();
+        $this->clearClientsTable();
+        $this->clearUsersTable();
+
+        // Turn it back on
+        $this->Db->_getDriver()->executeQuery("SET FOREIGN_KEY_CHECKS = 1", []);
     }
 
 
@@ -787,7 +788,7 @@ class DbHelper extends Db
     public function assertInvoiceStatus(int $invoiceId, string $expectedStatusLabel)
     {
         // Map of status codes to their labels
-        
+
         $statusLabels = [
             1 => "Draft",
             2 => "Opened",
@@ -924,9 +925,9 @@ class DbHelper extends Db
 
         $domainData = [];
         foreach ($fields as $field) {
-            if($field == 'epp_status'){
+            if ($field == 'epp_status') {
                 $domainData[$field] = json_decode($this->Db->grabFromDatabase("{$this->prefix}mothership_domains", $field, ["id" => $domainId]), true);
-            } else {            
+            } else {
                 $domainData[$field] = $this->Db->grabFromDatabase("{$this->prefix}mothership_domains", $field, ["id" => $domainId]);
             }
         }
@@ -953,7 +954,7 @@ class DbHelper extends Db
 
         $projectData = [];
         foreach ($fields as $field) {
-            if($field == 'metadata') {
+            if ($field == 'metadata') {
                 $projectData[$field] = json_decode($this->Db->grabFromDatabase("{$this->prefix}mothership_projects", $field, ["id" => $projectId]), true);
             } else {
                 $projectData[$field] = $this->Db->grabFromDatabase("{$this->prefix}mothership_projects", $field, ["id" => $projectId]);
@@ -979,7 +980,7 @@ class DbHelper extends Db
 
     public function grabLastCompletedPaymentId()
     {
-        $payment_id = $this->Db->grabFromDatabase("{$this->prefix}mothership_payments", "id", ['status'=>2]);
+        $payment_id = $this->Db->grabFromDatabase("{$this->prefix}mothership_payments", "id", ['status' => 2]);
         codecept_debug("Last payment ID is {$payment_id}");
         return $payment_id;
     }
@@ -1001,11 +1002,11 @@ class DbHelper extends Db
         }
         // Need to put the data into the expected format
         codecept_debug($actualItems);
- 
+
         $newItems = [];
         // Reformat $actualyItems into rows and columns
-        foreach($actualItems as $column => $values) {
-            foreach($values as $index => $value) {
+        foreach ($actualItems as $column => $values) {
+            foreach ($values as $index => $value) {
                 $newItems[$index][$column] = $value;
             }
         }
