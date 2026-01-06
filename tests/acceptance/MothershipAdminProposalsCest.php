@@ -185,7 +185,7 @@ class MothershipAdminProposalsCest
         $I->dontSeeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(1) i.fa-solid.fa-lock");
         $I->see("{$this->proposalData['id']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(2)");
         $I->see("{$this->proposalData['number']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(3)");
-        $I->see("{$this->proposalData['title']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4)");
+        $I->see("{$this->proposalData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4)");
         $I->seeNumberOfElements("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5) a", 2);
         $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5) a.downloadPdf");
         $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5) a.previewPdf");
@@ -207,7 +207,7 @@ class MothershipAdminProposalsCest
         $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(1) i.fa-solid.fa-lock");
         $I->see("{$proposalData['id']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(2)");
         $I->see("{$proposalData['number']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(3)");
-        $I->see("{$proposalData['title']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4)");
+        $I->see("{$proposalData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4)");
         $I->seeNumberOfElements("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5) a", 2);
         $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5) a.downloadPdf");
         $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5) a.previewPdf");
