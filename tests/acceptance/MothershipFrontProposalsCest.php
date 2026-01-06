@@ -114,7 +114,7 @@ class MothershipFrontProposalsCest
         $I->wait(1);
         $I->waitForText("Proposals", 10, "h1");
 
-        $I->makeScreenshot("account-center-view-all-proposals");
+        $I->takeFullPageScreenshot("account-center-view-all-proposals");
         $I->dontSee("Warning:");
 
         // Confirm the correct number of records
@@ -178,7 +178,7 @@ class MothershipFrontProposalsCest
         $I->waitForText("Proposal of Services", 10, "h1");
         $I->dontSee("Warning:");
 
-        $I->makeScreenshot("account-center-view-proposal");
+        $I->takeFullPageScreenshot("account-center-view-proposal");
                 
         // Check all the elements in the PDF
         $I->see("{$this->mothershipConfig['company_name']}");
@@ -256,6 +256,6 @@ class MothershipFrontProposalsCest
         //$I->waitForElement("embed[type='application/pdf']");
         $I->wait(3);
 
-        $I->makeScreenshot("account-center-view-proposal-pdf");
+        $I->takeFullPageScreenshot("account-center-view-proposal-pdf");
     }
 }
