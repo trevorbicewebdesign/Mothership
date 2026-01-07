@@ -102,7 +102,7 @@ class MothershipFrontAccountsCest
         $I->amOnPage(self::ACCOUNTS_VIEW_ALL_URL);
         $I->wait(1);
         $I->waitForText("Accounts", 10, "h1");
-        $I->makeScreenshot("account-center-view-all-accounts");
+        $I->takeFullPageScreenshot("account-center-view-all-accounts");
         $I->dontSee("Warning:");
 
         // Confirm the correct number of records
@@ -131,7 +131,7 @@ class MothershipFrontAccountsCest
         $log_created = date('Y-m-d H:i:s');
         $I->waitForText($this->accountData['name'], 10, "h1");
 
-        $I->makeScreenshot("account-center-view-account");
+        $I->takeFullPageScreenshot("account-center-view-account");
         $I->dontSee("Warning:");
 
         $I->see("Invoices", "h4");

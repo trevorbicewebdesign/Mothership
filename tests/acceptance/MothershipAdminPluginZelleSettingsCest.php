@@ -41,7 +41,7 @@ class MothershipAdminPluginZelleSettingsCest
         $I->see("Mothership Payment - Zelle");
         $I->click("Mothership Payment - Zelle");
         $I->waitForText("Plugins: Mothership Payment - Zelle", 20, "h1.page-title");
-        $I->makeScreenshot("mothership-payments-zelle-settings");
+        $I->takeFullPageScreenshot("mothership-payments-zelle-settings");
 
         $I->see("Payment Display Label", "label");
         $I->see("Zelle Email Address", "label");

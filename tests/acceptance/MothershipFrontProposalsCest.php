@@ -146,19 +146,10 @@ class MothershipFrontProposalsCest
         $I->see("$177.50", "table#proposalsTable tbody tr td:nth-child(6)");
         $I->see("Pending", "table#proposalsTable tbody tr td:nth-child(7)");
         $I->see("View", "table#proposalsTable tbody tr td:nth-child(8) ul li");
-        // $I->see("Approve", "table#proposalsTable tbody tr td:nth-child(9) ul li");
-
-        // change the proposal status to 'paid'
-        $I->setProposalStatus($this->proposalData['id'], 3);
-        $I->amOnPage(self::PROPOSALS_VIEW_ALL_URL);
-        $I->waitForText("Proposals", 10, "h1");
-
-        // When the proposal status is 'paid' or 4 the 'Pay' link should not be displayed and the Due Date should not be displayed
-        // $I->see("Closed", "table#proposalsTable tbody tr td:nth-child(6)");
-        // $I->see("Approe", "table#proposalsTable tbody tr td:nth-child(7)");
-        // $I->dontSee("Due in 30 days", "table#proposalsTable tbody tr td:nth-child(8)");
-        // $I->see("View", "table#proposalsTable tbody tr td:nth-child(9) ul li");
-        // $I->dontSee("Pay", "table#proposalsTable tbody tr td:nth-child(9) ul li");
+        
+        $I->click("Approve");
+        $I->wait(1);
+        $I->waitForText("Approve Proposal", 10, "h1");
     }
 
     /**
@@ -218,6 +209,7 @@ class MothershipFrontProposalsCest
         $I->see("{$this->proposalItemData[1]['time_low']} - {$this->proposalItemData[1]['time']}");
         $I->see("{$this->proposalItemData[1]['rate']}");
         $I->see("{$this->proposalItemData[1]['subtotal']}");
+
         /*
         $created = $I->grabFromDatabase("jos_mothership_logs", "created", [
             'client_id' => $this->clientData['id'],

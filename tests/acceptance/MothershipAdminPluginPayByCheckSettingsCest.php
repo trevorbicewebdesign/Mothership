@@ -41,7 +41,7 @@ class MothershipAdminPluginPayByCheckSettingsCest
         $I->see("Mothership Payment - Pay By Check");
         $I->click("Mothership Payment - Pay By Check");
         $I->waitForText("Plugins: Mothership Payment - Pay by Check", 20, "h1.page-title");
-        $I->makeScreenshot("mothership-payments-paybycheck-settings");
+        $I->takeFullPageScreenshot("mothership-payments-paybycheck-settings");
 
         $I->see("Payment Display Label", "label");
         $I->see("Payee Name", "label");

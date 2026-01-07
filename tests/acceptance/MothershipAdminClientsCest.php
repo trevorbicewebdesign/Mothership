@@ -72,7 +72,7 @@ class MothershipAdminClientsCest
         $I->amOnPage(self::CLIENTS_VIEW_ALL_URL);
         $I->waitForText("Mothership: Clients", 30, "h1.page-title");
 
-        $I->makeScreenshot("mothership-clients-view-all");
+        $I->takeFullPageScreenshot("mothership-clients-view-all");
 
         $I->seeElement(self::TBAR." ".self::TBAR_NEW);
         $I->see("New", self::TBAR." ".self::TBAR_NEW);
@@ -117,7 +117,7 @@ class MothershipAdminClientsCest
         $I->wait(1);
         $I->waitForText("Mothership: New Client", 30, "h1.page-title");
 
-        $I->makeScreenshot("mothership-client-add-new");
+        $I->takeFullPageScreenshot("mothership-client-add-new");
         $I->dontSee("Warning");
 
         $I->see("Save", self::TBAR);
@@ -171,7 +171,7 @@ class MothershipAdminClientsCest
         $I->click("Save", self::TBAR);
         $I->wait(1);
         $I->waitForText("Mothership: New Client", 30, "h1.page-title");
-        $I->makeScreenshot("mothership-client-add-errors");
+        $I->takeFullPageScreenshot("mothership-client-add-errors");
         // The form cannot be submitted as it's missing required data.
         // Please correct the marked fields and try again.
         $I->see("The form cannot be submitted as it's missing required data. Please correct the marked fields and try again.", ".alert-message");
@@ -220,7 +220,7 @@ class MothershipAdminClientsCest
         // Add Owner User
         $I->click(".icon-user");
         $I->wait(1);
-        $I->makeScreenshot("mothership-client-add-contact");
+        $I->takeFullPageScreenshot("mothership-client-add-contact");
         $I->switchToIFrame(".iframe-content");       
         $I->fillField("#filter_search", $this->joomlaUserData['name']);
         $I->click('//button[contains(@class, "btn") and .//span[contains(@class, "icon-search")]]');
@@ -229,7 +229,7 @@ class MothershipAdminClientsCest
         $I->wait(1);
         $I->switchToIFrame();
 
-        $I->makeScreenshot("mothership-client-add-filled");
+        $I->takeFullPageScreenshot("mothership-client-add-filled");
 
         // TEST ACTION Save
         $I->click("Save", self::TBAR);

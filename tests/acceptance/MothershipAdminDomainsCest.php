@@ -79,7 +79,7 @@ class MothershipAdminDomainsCest
         $I->wait(1);
         $I->waitForText("Mothership: Domains", 20, "h1.page-title");
         
-        $I->makeScreenshot("mothership-domains-view-all");
+        $I->takeFullPageScreenshot("mothership-domains-view-all");
 
         $toolbar = "#toolbar";
         $toolbarNew = "#toolbar-new";
@@ -133,7 +133,7 @@ class MothershipAdminDomainsCest
         $I->wait(1);
         $I->see("Mothership: New Domain", "h1.page-title");
 
-        $I->makeScreenshot("mothership-domain-add-details");
+        $I->takeFullPageScreenshot("mothership-domain-add-details");
 
         $I->see("Save", "#toolbar");
         $I->see("Save & Close", "#toolbar");
@@ -149,7 +149,7 @@ class MothershipAdminDomainsCest
         $I->click("Save", "#toolbar");
         $I->wait(1);
         $I->see("One of the options must be selected", "label#jform_client_id-lbl .form-control-feedback");
-        $I->makeScreenshot("mothership-domain-add-details");
+        $I->takeFullPageScreenshot("mothership-domain-add-details");
         // VERIFY & FILL FORM FIELDS
         $I->seeElement("select#jform_client_id");
         $I->dontSee("select#jform_account_id");

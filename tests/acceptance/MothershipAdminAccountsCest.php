@@ -89,7 +89,7 @@ class MothershipAdminAccountsCest
         $I->wait(1);
         $I->waitForText("Mothership: Accounts", 30, "h1.page-title");
         
-        $I->makeScreenshot("mothership-accounts-view-all");
+        $I->takeFullPageScreenshot("mothership-accounts-view-all");
 
         $I->dontSee("Warning");
 
@@ -135,7 +135,7 @@ class MothershipAdminAccountsCest
         $I->wait(1);
         $I->see("Mothership: New Account", "h1.page-title");
 
-        $I->makeScreenshot("mothership-account-add-details");
+        $I->takeFullPageScreenshot("mothership-account-add-details");
 
         $I->see("Save", "#toolbar");
         $I->see("Save & Close", "#toolbar");

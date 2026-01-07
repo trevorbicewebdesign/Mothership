@@ -127,7 +127,7 @@ class MothershipFrontProjectsCest
         // Verify redirection to account center
         $I->amOnPage(self::PROJECTS_VIEW_ALL_URL);
         $I->waitForText("Projects", 10, "h1");
-        $I->makeScreenshot("account-center-view-all-projects");
+        $I->takeFullPageScreenshot("account-center-view-all-projects");
         $I->dontSee("Warning:");
 
         // Confirm the correct number of records
@@ -173,7 +173,7 @@ class MothershipFrontProjectsCest
         $I->dontSee("Warning:");
 
         // Capture a screenshot of the view
-        $I->makeScreenshot("account-center-view-project");
+        $I->takeFullPageScreenshot("account-center-view-project");
 
         $created = $I->grabFromDatabase("jos_mothership_logs", "created", [
             'client_id' => $this->clientData['id'],

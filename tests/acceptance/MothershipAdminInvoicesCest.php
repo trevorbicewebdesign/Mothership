@@ -240,7 +240,7 @@ class MothershipAdminInvoicesCest
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
         $I->waitForText("Mothership: Invoices", 30, "h1.page-title");
 
-        $I->makeScreenshot("mothership-view-invoices");
+        $I->takeFullPageScreenshot("mothership-view-invoices");
 
         $I->dontSee("Warning");
 

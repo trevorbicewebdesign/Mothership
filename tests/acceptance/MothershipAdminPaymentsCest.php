@@ -219,7 +219,7 @@ class MothershipAdminPaymentsCest
         $I->amOnPage(self::PAYMENTS_VIEW_ALL_URL);
         $I->waitForText("Mothership: Payments", 30, "h1.page-title");
 
-        $I->makeScreenshot("mothership-view-payments");
+        $I->takeFullPageScreenshot("mothership-view-payments");
 
         $I->dontSee("Warning");
 
@@ -390,7 +390,7 @@ class MothershipAdminPaymentsCest
         $I->wait(1);
         $I->waitForText("Mothership: New Payment", 30, "h1.page-title");
 
-        $I->makeScreenshot("mothership-add-payment");
+        $I->takeFullPageScreenshot("mothership-add-payment");
 
         $I->dontSee("Warning");
 

@@ -113,7 +113,7 @@ class MothershipFrontDomainsCest
         $I->amOnPage(self::DOMAINS_VIEW_ALL_URL);
         $I->waitForText("Domains", 10, "h1");
 
-        $I->makeScreenshot("account-center-view-all-domains");
+        $I->takeFullPageScreenshot("account-center-view-all-domains");
         $I->dontSee("Warning:");
 
         // Confirm the correct number of records
@@ -159,7 +159,7 @@ class MothershipFrontDomainsCest
         $log_created = date('Y-m-d H:i:s');
         $I->waitForText("Domain: {$domainData['name']}", 10, "h1");
     
-        $I->makeScreenshot("account-center-view-domain");
+        $I->takeFullPageScreenshot("account-center-view-domain");
         $I->dontSee("Warning:");
 
         $created = $I->grabFromDatabase("jos_mothership_logs", "created", [

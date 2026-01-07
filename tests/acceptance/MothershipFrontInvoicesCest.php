@@ -108,7 +108,7 @@ class MothershipFrontInvoicesCest
         $I->wait(1);
         $I->waitForText("Invoices", 10, "h1");
 
-        $I->makeScreenshot("account-center-view-all-invoices");
+        $I->takeFullPageScreenshot("account-center-view-all-invoices");
         $I->dontSee("Warning:");
 
         // Confirm the correct number of records
@@ -174,7 +174,7 @@ class MothershipFrontInvoicesCest
         $I->waitForText("Invoice of Services", 10, "h1");
         $I->dontSee("Warning:");
 
-        $I->makeScreenshot("account-center-view-invoice");
+        $I->takeFullPageScreenshot("account-center-view-invoice");
                 
         // Check all the elements in the PDF
         $I->see("{$this->mothershipConfig['company_name']}");
@@ -243,7 +243,7 @@ class MothershipFrontInvoicesCest
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
         $I->waitForText("Invoices", 10, "h1");
 
-        $I->makeScreenshot("account-center-pay-invoice");
+        $I->takeFullPageScreenshot("account-center-pay-invoice");
         $I->dontSee("Warning:");
 
         $I->see("Pay", "table#invoicesTable tbody tr td:nth-child(9)");
@@ -279,6 +279,6 @@ class MothershipFrontInvoicesCest
         //$I->waitForElement("embed[type='application/pdf']");
         $I->wait(3);
 
-        $I->makeScreenshot("account-center-view-invoice-pdf");
+        $I->takeFullPageScreenshot("account-center-view-invoice-pdf");
     }
 }

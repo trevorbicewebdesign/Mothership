@@ -86,7 +86,7 @@ class MothershipAdminProjectsCest
         $I->wait(1);
         $I->waitForText("Mothership: Projects", 30, "h1.page-title");
 
-        $I->makeScreenshot("mothership-view-projects");
+        $I->takeFullPageScreenshot("mothership-view-projects");
 
         $toolbar = "#toolbar";
         $toolbarNew = "#toolbar-new";
@@ -136,7 +136,7 @@ class MothershipAdminProjectsCest
         $I->wait(1);
         $I->waitForText("Mothership: New Project", 30, "h1.page-title");
 
-        $I->makeScreenshot("mothership-add-project");
+        $I->takeFullPageScreenshot("mothership-add-project");
 
         $I->see("Save", "#toolbar");
         $I->see("Save & Close", "#toolbar");
