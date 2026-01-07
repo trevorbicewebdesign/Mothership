@@ -82,19 +82,8 @@ class ProposalController extends BaseController
         $app->close();
     }
 
-    /**
-     * Handles the payment process for an proposal.
-     *
-     * This method retrieves the proposal ID from the request input, validates it,
-     * and fetches the corresponding proposal. It then loads all enabled payment
-     * plugins, retrieves their payment options, and prepares the data to be
-     * displayed in the payment view.
-     *
-     * @return void
-     *
-     * @throws \RuntimeException If a plugin's layout file or required method is missing.
-     */
-    public function payment()
+   
+    public function approve()
     {
         $app = Factory::getApplication();
         $input = $app->getInput();
@@ -115,68 +104,11 @@ class ProposalController extends BaseController
             return;
         }
 
-        // Check for existing pending payment
-        try {
-            $existingPending = PaymentHelper::getPendingPayments($proposal->id);
-        } catch (\Exception $e) {
-            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_CHECKING_PENDING_PAYMENTS') . ' ' . $e->getMessage(), 'error');
-            $this->setRedirect(Route::_('index.php?option=com_mothership&view=proposal&id=' . $proposal->id, false));
-            return;
-        }
-
-        if ($existingPending) {
-            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_PENDING_PAYMENT_EXISTS'), 'warning');
-            $this->setRedirect(Route::_("index.php?option=com_mothership&view=proposal&id={$proposal->id}", false));
-            return;
-        }
-
-        // Load enabled payment plugins
-        $plugins = \Joomla\CMS\Plugin\PluginHelper::getPlugin('mothership-payment');
-        $paymentOptions = [];
-
-        foreach ($plugins as $plugin) {
-            $params = new \Joomla\Registry\Registry($plugin->params);
-            $pluginName = $params->get('display_name');
-
-            $layoutPath = JPATH_PLUGINS . '/mothership-payment/' . $plugin->name . '/tmpl';
-            if (!file_exists($layoutPath . '/instructions.php')) {
-                throw new \RuntimeException("Layout file 'instructions.php' not found in path: $layoutPath");
-            }
-
-            $pluginInstance = $this->getPluginInstance($plugin->name);
-
-            if (!method_exists($pluginInstance, 'initiate')) {
-                throw new \RuntimeException("Plugin '{$plugin->name}' cannot be initiated.");
-            }
-
-            $fee_amount = $pluginInstance->getFee($proposal->total);
-            $display_fee = $pluginInstance->displayFee($proposal->total);
-
-            $layout = new FileLayout('instructions', $layoutPath);
-
-            // Render the layout, passing data in an array
-            $instructionsHtml = $layout->render([
-                'proposalId' => $id,
-                'id' => null,
-                'amount' => null,
-                'payment_method' => null,
-            ]);
-
-            $paymentOptions[] = [
-                'element' => $plugin->name,
-                'name' => $pluginName,
-                'fee_amount' => $fee_amount,
-                'display_fee' => $display_fee,
-                'instructions_html' => $instructionsHtml,
-            ];
-        }
-
         // Correct way to pass data to the view:
         $view = $this->getView('Proposal', 'html');
         $view->setModel($model, true);
         $view->item = $proposal;
-        $view->paymentOptions = $paymentOptions;
-        $view->setLayout('payment');
+        $view->setLayout('approve');
         $view->display();
     }
 
