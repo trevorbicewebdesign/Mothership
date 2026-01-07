@@ -128,13 +128,6 @@ class MothershipFrontProposalsCest
         $I->see("Expired", ".mt-4 .col-md-6:nth-child(1) ul.mb-0 li:nth-child(5)");
         $I->seeNumberOfElements(".mt-4 .col-md-6:nth-child(1) ul.mb-0 li", 5);
 
-        // $I->see("Payment Status Legend", ".mt-4 .col-md-6:nth-child(2)");
-        // $I->see("Unpaid", ".mt-4 .col-md-6:nth-child(2) ul.mb-0 li:nth-child(1)");
-        // $I->see("Paid", ".mt-4 .col-md-6:nth-child(2) ul.mb-0 li:nth-child(2)");
-        // $I->see("Partially Paid", ".mt-4 .col-md-6:nth-child(2) ul.mb-0 li:nth-child(3)");
-        // $I->see("Pending Confirmation", ".mt-4 .col-md-6:nth-child(2) ul.mb-0 li:nth-child(4)");
-        // $I->seeNumberOfElements(".mt-4 .col-md-6:nth-child(2) ul.mb-0 li", 4);
-
         // Confirm the table headers
         $I->see("PDF", "table#proposalsTable thead tr th:nth-child(1)");
         $I->see("#", "table#proposalsTable thead tr th:nth-child(2)");
@@ -143,8 +136,7 @@ class MothershipFrontProposalsCest
         $I->see("Account", "table#proposalsTable thead tr th:nth-child(5)");
         $I->see("Amount", "table#proposalsTable thead tr th:nth-child(6)");
         $I->see("Status", "table#proposalsTable thead tr th:nth-child(7)");
-        // $I->see("Payment Status", "table#proposalsTable thead tr th:nth-child(8)");
-        $I->see("Actions", "table#proposalsTable thead tr th:nth-child(9)");
+        $I->see("Actions", "table#proposalsTable thead tr th:nth-child(8)");
 
         // Confirm the table data
         $I->see($this->proposalData['number'], "table#proposalsTable tbody tr td:nth-child(2)");
@@ -153,8 +145,7 @@ class MothershipFrontProposalsCest
         $I->see($this->accountData['name'], "table#proposalsTable tbody tr td:nth-child(5)");
         $I->see("$177.50", "table#proposalsTable tbody tr td:nth-child(6)");
         $I->see("Pending", "table#proposalsTable tbody tr td:nth-child(7)");
-        //$I->see("Unpaid", "table#proposalsTable tbody tr td:nth-child(8)");
-        // $I->see("View", "table#proposalsTable tbody tr td:nth-child(8) ul li");
+        $I->see("View", "table#proposalsTable tbody tr td:nth-child(8) ul li");
         // $I->see("Approve", "table#proposalsTable tbody tr td:nth-child(9) ul li");
 
         // change the proposal status to 'paid'
