@@ -72,19 +72,7 @@ use Joomla\CMS\Language\Text;
         </div>
     </div>
     <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                Payment Status Legend
-            </div>
-            <div class="card-body">
-                <ul class="mb-0">
-                    <li><strong>Unpaid</strong>: Payment has not been made yet.</li>
-                    <li><strong>Paid</strong>: Payment has been completed in full.</li>
-                    <li><strong>Partially Paid</strong>: A partial payment has been made, but the full amount is still outstanding.</li>
-                    <li><strong>Pending Confirmation</strong>: Payment has been initiated but is awaiting confirmation.</li>
-                </ul>
-            </div>
-        </div>
+       
     </div>
 </div>
 
