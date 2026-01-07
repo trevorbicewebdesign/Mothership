@@ -21,14 +21,13 @@ use Joomla\CMS\Language\Text;
             <th>Account</th>
             <th>Amount</th>
             <th>Status</th>
-            <th>Payment Status</th>
             <th>Actions</th>
         </tr>
     </thead>
     <tbody>
         <?php if(empty($this->proposals)) : ?>
             <tr>
-                <td colspan="9">No proposals found.</td>
+                <td colspan="8">No proposals found.</td>
             </tr>
         <?php endif; ?>
         <?php foreach ($this->proposals as $proposal) : ?>
@@ -40,7 +39,6 @@ use Joomla\CMS\Language\Text;
                 <td><?php echo $proposal->account_name; ?></td>
                 <td>$<?php echo number_format($proposal->total, 2); ?></td>
                 <td><?php echo $proposal->status; ?></td>
-                <td> </td>
                 <td>
                     <ul>
                         <li><a href="<?php echo Route::_('index.php?option=com_mothership&task=proposal.edit&id=' . $proposal->id); ?>">View</a></li>
