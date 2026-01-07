@@ -138,10 +138,8 @@ class MothershipAdminInvoicesCest
     {
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
         $I->waitForText("Mothership: Invoices", 30, "h1.page-title");
-
         $I->click("Test Account");
-        $I->wait(1);
-         $I->waitForText("Mothership: Edit Account", 30, "h1.page-title");
+        $I->waitForText("Mothership: Edit Account", 30, "h1.page-title");
         $I->click("Close", "#toolbar");
         $I->waitForText("Mothership: Invoices", 30, "h1.page-title");
     }
