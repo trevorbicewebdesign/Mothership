@@ -20,7 +20,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Database\ParameterType;
 use TrevorBice\Component\Mothership\Administrator\Service\EmailService;
-use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper; 
+use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper;
 
 class ProposalHelper
 {
@@ -108,11 +108,15 @@ class ProposalHelper
 
         $db->transactionStart();
 
-        try {
+       try {
             $db->setQuery($query)->execute();
 
             // Update object & run hooks
             $proposal->status = $status;
+
+            if ($status === 2) {
+                self::onProposalPending($proposal, $status);
+            }
 
             $db->transactionCommit();
         } catch (\Exception $e) {
@@ -149,4 +153,48 @@ class ProposalHelper
 
         return $proposal;
     }
+
+    /**
+     * Triggered when an proposal transitions to "pending".
+     *
+     * @param  \Joomla\CMS\Table\Table  $proposal         The proposal table object.
+     * @param  int                      $previousStatus  The previous status ID.
+     *
+     * @return void
+     */
+    public static function onProposalPending($proposal, int $previousStatus): void
+    {
+        try {
+            $client = ClientHelper::getClient($proposal->client_id);
+        } catch (\Exception $e) {
+            // bubble up the exception
+            throw new \RuntimeException("Failed to get client: " . $e->getMessage());
+        }
+
+        // Get the owner id and load that user
+        // Then grab the first name of that user
+        $user = Factory::getUser($client->owner_user_id);
+        $name = explode(" ", $user->name);
+        $firstName = $name[0];
+        $lastName = $name[1] ?? '';
+
+        // Send the invoice email to the client
+        EmailService::sendTemplate(
+            'proposal.user-pending',
+            $user->email,
+            "Proposal #{$proposal->number} Pending",
+            [
+                'fname' => $firstName,
+                'lname' => $lastName,
+                'proposal' => $proposal,
+                'client' => $client,
+            ]
+        );
+
+        \Joomla\CMS\Factory::getApplication()->triggerEvent('onMothershipProposalPending', [$proposal]);
+    }
+
+
+
+
 }
