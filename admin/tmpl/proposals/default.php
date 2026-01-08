@@ -7,7 +7,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Factory;
 use TrevorBice\Component\Mothership\Administrator\Helper\MothershipHelper;
-use TrevorBice\Component\Mothership\Administrator\Helper\InvoiceHelper;
+use TrevorBice\Component\Mothership\Administrator\Helper\ProposalHelper;
 
 /** @var \TrevorBice\Component\Mothership\Administrator\View\Proposals\HtmlView $this */
 
