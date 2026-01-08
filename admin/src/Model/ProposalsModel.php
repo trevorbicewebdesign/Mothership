@@ -93,9 +93,11 @@ class ProposalsModel extends ListModel
                     // Proposal status (Draft, Opened, etc.)
                     'CASE ' . $db->quoteName('i.status') . 
                         ' WHEN 1 THEN ' . $db->quote('Draft') . 
-                        ' WHEN 2 THEN ' . $db->quote('Opened') . 
-                        ' WHEN 3 THEN ' . $db->quote('Cancelled') . 
-                        ' WHEN 4 THEN ' . $db->quote('Closed') .
+                        ' WHEN 2 THEN ' . $db->quote('Pending') . 
+                        ' WHEN 3 THEN ' . $db->quote('Approved') . 
+                        ' WHEN 4 THEN ' . $db->quote('Declined') .
+                        ' WHEN 5 THEN ' . $db->quote('Cancelled') .
+                        ' WHEN 6 THEN ' . $db->quote('Expired') .
                         ' ELSE ' . $db->quote('Unknown') . ' END AS ' . $db->quoteName('status'),
 
                    
