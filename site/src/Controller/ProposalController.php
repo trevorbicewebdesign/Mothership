@@ -7,13 +7,14 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Session\Session;
 use Joomla\Database\DatabaseDriver;
 use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper;
 use TrevorBice\Component\Mothership\Administrator\Service\EmailService;
 use TrevorBice\Component\Mothership\Administrator\Helper\ClientHelper;
 use TrevorBice\Component\Mothership\Administrator\Helper\AccountHelper;
 use TrevorBice\Component\Mothership\Administrator\Helper\MothershipHelper;
-use TrevorBice\Component\Mothership\Administrator\Helper\PaymentHelper;
+use TrevorBice\Component\Mothership\Administrator\Helper\ProposalHelper;
 use Mpdf\Mpdf;
 
 // Add missing imports
@@ -29,6 +30,104 @@ class ProposalController extends BaseController
     {
         $this->input->set('view', $this->input->getCmd('view', 'proposal'));
         parent::display($cachable, $urlparams);
+    }
+
+    public function approveConfirm(): void
+    {
+        $app = Factory::getApplication();
+        $input = $app->getInput();
+
+        // CSRF check
+        if (!Session::checkToken('post')) {
+            $app->enqueueMessage(Text::_('JINVALID_TOKEN'), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=proposals', false));
+            return;
+        }
+
+        $id = $input->getInt('id');
+
+        if (!$id) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVALID_PROPOSAL_ID'), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=proposals', false));
+            return;
+        }
+
+        try {
+            $proposal = ProposalHelper::getProposal($id);
+
+            // Idempotency / safety
+            if ((int) $proposal->status === 3) {
+                $app->enqueueMessage(Text::_('COM_MOTHERSHIP_PROPOSAL_ALREADY_APPROVED'), 'info');
+                $this->setRedirect(Route::_('index.php?option=com_mothership&view=proposal&id=' . $id, false));
+                return;
+            }
+
+            if ((int) $proposal->status === 4) {
+                $app->enqueueMessage(Text::_('COM_MOTHERSHIP_PROPOSAL_ALREADY_DECLINED'), 'warning');
+                $this->setRedirect(Route::_('index.php?option=com_mothership&view=proposal&id=' . $id, false));
+                return;
+            }
+
+            // Approved = 3
+            ProposalHelper::updateProposalStatus($proposal, 3);
+
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_PROPOSAL_APPROVED_SUCCESS'), 'success');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=proposal&id=' . $id, false));
+            return;
+        } catch (\Throwable $e) {
+            $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_ERROR_PROPOSAL_UPDATE_FAILED', $e->getMessage()), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=proposal&layout=approve&id=' . $id, false));
+            return;
+        }
+    }
+
+    public function denyConfirm(): void
+    {
+        $app = Factory::getApplication();
+        $input = $app->getInput();
+
+        // CSRF check
+        if (!Session::checkToken('post')) {
+            $app->enqueueMessage(Text::_('JINVALID_TOKEN'), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=proposals', false));
+            return;
+        }
+
+        $id = $input->getInt('id');
+
+        if (!$id) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVALID_PROPOSAL_ID'), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=proposals', false));
+            return;
+        }
+
+        try {
+            $proposal = ProposalHelper::getProposal($id);
+
+            // Idempotency / safety
+            if ((int) $proposal->status === 4) {
+                $app->enqueueMessage(Text::_('COM_MOTHERSHIP_PROPOSAL_ALREADY_DECLINED'), 'info');
+                $this->setRedirect(Route::_('index.php?option=com_mothership&view=proposal&id=' . $id, false));
+                return;
+            }
+
+            if ((int) $proposal->status === 3) {
+                $app->enqueueMessage(Text::_('COM_MOTHERSHIP_PROPOSAL_ALREADY_APPROVED'), 'warning');
+                $this->setRedirect(Route::_('index.php?option=com_mothership&view=proposal&id=' . $id, false));
+                return;
+            }
+
+            // Declined = 4
+            ProposalHelper::updateProposalStatus($proposal, 4);
+
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_PROPOSAL_DECLINED_SUCCESS'), 'success');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=proposals', false));
+            return;
+        } catch (\Throwable $e) {
+            $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_ERROR_PROPOSAL_UPDATE_FAILED', $e->getMessage()), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=proposal&layout=approve&id=' . $id, false));
+            return;
+        }
     }
 
     /**
@@ -82,7 +181,7 @@ class ProposalController extends BaseController
         $app->close();
     }
 
-   
+
     public function approve()
     {
         $app = Factory::getApplication();
@@ -141,7 +240,7 @@ class ProposalController extends BaseController
             if ($plugin->name === $normalized) {
                 // Build expected class name, e.g., PlgMothershippaymentPaypal
                 $className = 'PlgMothershipPayment' . ucfirst($plugin->name);
-       
+
                 if (!class_exists($className)) {
                     throw new \RuntimeException("Plugin class '$className' not found.");
                 }
@@ -152,7 +251,7 @@ class ProposalController extends BaseController
             }
         }
 
-        throw new \RuntimeException("Payment plugin '$pluginName' not found or not enabled. ".json_encode($plugins));
+        throw new \RuntimeException("Payment plugin '$pluginName' not found or not enabled. " . json_encode($plugins));
     }
 
     /**
@@ -218,7 +317,7 @@ class ProposalController extends BaseController
             $this->setRedirect(Route::_('index.php?option=com_mothership&view=proposal&id=' . $proposalId, false));
             return;
         }
-       
+
         // Create the proposal payment record
         $proposalPayment = Factory::getApplication()
             ->bootComponent('com_mothership')
@@ -234,18 +333,20 @@ class ProposalController extends BaseController
         }
 
         // Send the admin an email notification
-        EmailService::sendTemplate('payment.admin-pending', 
-        $companyEmail, 
-        "New Pending Payment for {$paymentMethod}", 
-        [
-            'admin_fname' => 'Trevor',
-            'admin_email' => $companyEmail,
-            'payment' => $payment,
-            'proposal' => $proposal,
-            'client' => $client,
-            'confirm_link' => "http://localhost:8080/administrator/index.php?option=com_mothership&task=payment.confirm&id={$payment->id}",
-            'view_link' => "http://localhost:8080/administrator/index.php?option=com_mothership&view=proposal&id={$proposalId}",
-        ]);
+        EmailService::sendTemplate(
+            'payment.admin-pending',
+            $companyEmail,
+            "New Pending Payment for {$paymentMethod}",
+            [
+                'admin_fname' => 'Trevor',
+                'admin_email' => $companyEmail,
+                'payment' => $payment,
+                'proposal' => $proposal,
+                'client' => $client,
+                'confirm_link' => "http://localhost:8080/administrator/index.php?option=com_mothership&task=payment.confirm&id={$payment->id}",
+                'view_link' => "http://localhost:8080/administrator/index.php?option=com_mothership&view=proposal&id={$proposalId}",
+            ]
+        );
 
         // Log that the payment was initiated
         LogHelper::logPaymentInitiated(
@@ -272,5 +373,6 @@ class ProposalController extends BaseController
             return;
         }
     }
+
 
 }
