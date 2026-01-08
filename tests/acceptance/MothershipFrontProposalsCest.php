@@ -150,6 +150,7 @@ class MothershipFrontProposalsCest
         $I->click("Approve");
         $I->wait(1);
         $I->waitForText("Approve Proposal", 10, "h1");
+        $I->takeFullPageScreenshot("account-center-approve-proposal");
     }
 
     /**
