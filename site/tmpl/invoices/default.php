@@ -45,7 +45,7 @@ use Joomla\CMS\Language\Text;
                     <?php if (count($payment_ids) > 0): ?>
                     <ul style="margin-bottom:0px;" class="payment-list">
                         <?php foreach ($payment_ids as $paymentId): ?>
-                            <li style="list-style: none;"><small><a href="index.php?option=com_mothership&view=payment&id=<?php echo $paymentId; ?>&return=<?php echo base64_encode(Route::_('index.php?option=com_mothership&view=invoices')); ?>" class="payment-link"><?php echo "Payment #" . str_pad($paymentId, 2, "0", STR_PAD_LEFT); ?></a></small></li>
+                            <li style="list-style: none;white-space:nowrap;"><small><a href="index.php?option=com_mothership&view=payment&id=<?php echo $paymentId; ?>&return=<?php echo base64_encode(Route::_('index.php?option=com_mothership&view=invoices')); ?>" class="payment-link"><?php echo "Payment #" . str_pad($paymentId, 2, "0", STR_PAD_LEFT); ?></a></small></li>
                         <?php endforeach; ?>
                     </ul>
                     <?php endif; ?>
