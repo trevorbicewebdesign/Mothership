@@ -86,7 +86,7 @@ $items = $proposal?->items ?? [];
 </head>
 <body class="proposal">
     <h1>Proposal of Services</h1>
-    <h1>Proposal Number: #<?php echo $proposal->number; ?></h1>
+    <h2>Proposal Number: #<?php echo $proposal->number; ?></h2>
 
 
     <div class="top-row">
