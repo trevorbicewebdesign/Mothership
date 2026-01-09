@@ -215,7 +215,7 @@ CREATE TABLE `jos_mothership_proposals` (
 	`total` DECIMAL(10,2) NOT NULL DEFAULT '0.00',
 	`rate` DECIMAL(10,2) NOT NULL DEFAULT '0.00',
 	`status` INT NOT NULL DEFAULT '1',
-	`due_date` DATE NULL DEFAULT NULL,
+	`expires` DATE NULL DEFAULT NULL,
 	`locked` TINYINT(1) NOT NULL DEFAULT '0',
 	`summary` MEDIUMTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
 	`notes` MEDIUMTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
