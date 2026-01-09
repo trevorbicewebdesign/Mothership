@@ -40,13 +40,12 @@ use Joomla\CMS\Language\Text;
                 <td>$<?php echo number_format($proposal->total, 2); ?></td>
                 <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=proposal&id=' . $proposal->id); ?>"><?php echo $proposal->status; ?></a></td>
                 <td>
-                    <ul>
+                    <ul style="margin-bottom:0px;">
                         <li><a href="<?php echo Route::_('index.php?option=com_mothership&task=proposal.edit&id=' . $proposal->id); ?>">View</a></li>
                         <?php if($proposal->status === 'Pending' ): ?>
                         <li><a href="<?php echo Route::_("index.php?option=com_mothership&task=proposal.approve&id={$proposal->id}"); ?>">Approve</a></li>
                         <?php endif; ?>
                     </ul>
-                    
                 </td>
             </tr>
         <?php endforeach; ?>
