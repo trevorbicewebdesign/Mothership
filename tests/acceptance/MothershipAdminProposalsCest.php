@@ -167,61 +167,64 @@ class MothershipAdminProposalsCest
         $I->seeElement("#j-main-container ");
         $I->seeElement("#j-main-container thead");
 
-        $I->see("ID", "#j-main-container table thead tr th:nth-child(2)");
-        $I->see("Proposal Number", "#j-main-container table thead tr th:nth-child(3)");
-        $I->see("Title", "#j-main-container table thead tr th:nth-child(4)");
-        $I->see("PDF", "#j-main-container table thead tr th:nth-child(5)");
-        $I->see("Client", "#j-main-container table thead tr th:nth-child(6)");
-        $I->see("Account", "#j-main-container table thead tr th:nth-child(7)");
-        $I->see("Project", "#j-main-container table thead tr th:nth-child(8)");
-        $I->see("Total", "#j-main-container table thead tr th:nth-child(9)");
-        $I->see("Status", "#j-main-container table thead tr th:nth-child(10)");
-        $I->see("Created", "#j-main-container table thead tr th:nth-child(11)");
+        $j = 0;
+        $I->see("ID", "#j-main-container table thead tr th:nth-child({$j})"); $j++;
+        $I->see("Proposal Number", "#j-main-container table thead tr th:nth-child({$j})"); $j++;
+        $I->see("Title", "#j-main-container table thead tr th:nth-child({$j})"); $j++;
+        $I->see("PDF", "#j-main-container table thead tr th:nth-child({$j})"); $j++;       
+        $I->see("Account", "#j-main-container table thead tr th:nth-child({$j})"); $j++;
+         $I->see("Client", "#j-main-container table thead tr th:nth-child({$j})"); $j++;
+        $I->see("Project", "#j-main-container table thead tr th:nth-child({$j})"); $j++;
+        $I->see("Total", "#j-main-container table thead tr th:nth-child({$j})"); $j++;
+        $I->see("Status", "#j-main-container table thead tr th:nth-child({$j})"); $j++;
+        $I->see("Created", "#j-main-container table thead tr th:nth-child({$j})"); $j++;
 
         $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 2);
 
         $row = 1;
         // This proposal is not locked, so it should not have the lock icon
-        $I->dontSeeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(1) i.fa-solid.fa-lock");
-        $I->see("{$this->proposalData['id']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(2)");
-        $I->see("{$this->proposalData['number']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(3)");
-        $I->see("{$this->proposalData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4)");
-        $I->seeNumberOfElements("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5) a", 2);
-        $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5) a.downloadPdf");
-        $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5) a.previewPdf");
+        $j = 1;
+        $I->dontSeeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child({$j}) i.fa-solid.fa-lock"); $j++;
+        $I->see("{$this->proposalData['id']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child({$j})"); $j++;
+        $I->see("{$this->proposalData['number']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child({$j})"); $j++;
+        $I->see("{$this->proposalData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child({$j})"); $j++;
+        $I->seeNumberOfElements("#j-main-container table tbody tr:nth-child({$row}) td:nth-child({$j}) a", 2);
+        $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child({$j}) a.downloadPdf");
+        $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child({$j}) a.previewPdf");
 
-        $downloadPdfUrl = $I->grabAttributeFrom("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5) a.downloadPdf", 'href');
-        $previewPdfUrl = $I->grabAttributeFrom("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5) a.previewPdf", 'href');
+        $downloadPdfUrl = $I->grabAttributeFrom("#j-main-container table tbody tr:nth-child({$row}) td:nth-child({$j}) a.downloadPdf", 'href');
+        $previewPdfUrl = $I->grabAttributeFrom("#j-main-container table tbody tr:nth-child({$row}) td:nth-child({$j}) a.previewPdf", 'href');
 
         $I->assertEquals("/administrator/index.php?option=com_mothership&task=proposal.downloadPdf&id={$this->proposalData['id']}", $downloadPdfUrl);
         $I->assertEquals("/administrator/index.php?option=com_mothership&task=proposal.previewPdf&id={$this->proposalData['id']}", $previewPdfUrl);
 
-        $I->see("{$this->clientData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(6)");
-        $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(7)");
-        $I->see("{$this->projectData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(8)");
-        $I->see("{$this->proposalData['total']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(9)");
-        $I->see(date('Y-m-d'), "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(11)");
+        $I->see("{$this->clientData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child({$j})"); $j++;
+        $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child({$j})"); $j++;
+        $I->see("{$this->projectData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child({$j})"); $j++;
+        $I->see("{$this->proposalData['total']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child({$j})"); $j++;
+        $I->see(date('Y-m-d'), "#j-main-container table tbody tr:nth-child({$row}) td:nth-child({$j})"); $j++;
 
         $row = 2;
         // This proposal IS not locked, so it SHOULD have the lock icon
-        $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(1) i.fa-solid.fa-lock");
-        $I->see("{$proposalData['id']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(2)");
-        $I->see("{$proposalData['number']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(3)");
-        $I->see("{$proposalData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4)");
-        $I->seeNumberOfElements("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5) a", 2);
-        $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5) a.downloadPdf");
-        $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5) a.previewPdf");
+        $j = 1;
+        $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child({$j}) i.fa-solid.fa-lock"); $j++;
+        $I->see("{$proposalData['id']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child({$j})"); $j++;
+        $I->see("{$proposalData['number']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child({$j})"); $j++;
+        $I->see("{$proposalData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child({$j})"); $j++;
+        $I->seeNumberOfElements("#j-main-container table tbody tr:nth-child({$row}) td:nth-child({$j}) a", 2);
+        $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child({$j}) a.downloadPdf");
+        $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child({$j}) a.previewPdf");
 
-        $downloadPdfUrl = $I->grabAttributeFrom("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5) a.downloadPdf", 'href');
-        $previewPdfUrl = $I->grabAttributeFrom("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5) a.previewPdf", 'href');
+        $downloadPdfUrl = $I->grabAttributeFrom("#j-main-container table tbody tr:nth-child({$row}) td:nth-child({$j}) a.downloadPdf", 'href');
+        $previewPdfUrl = $I->grabAttributeFrom("#j-main-container table tbody tr:nth-child({$row}) td:nth-child({$j}) a.previewPdf", 'href');
 
         $I->assertEquals("/administrator/index.php?option=com_mothership&task=proposal.downloadPdf&id={$proposalData['id']}", $downloadPdfUrl);
         $I->assertEquals("/administrator/index.php?option=com_mothership&task=proposal.previewPdf&id={$proposalData['id']}", $previewPdfUrl);
 
-        $I->see("{$this->clientData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(6)");
-        $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(7)");
-        $I->see("{$proposalData['total']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(9)");
-        $I->see(date('Y-m-d'), "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(11)");
+        $I->see("{$this->clientData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child({$j})"); $j++;
+        $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child({$j})"); $j++;
+        $I->see("{$proposalData['total']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child({$j})"); $j++;
+        $I->see(date('Y-m-d'), "#j-main-container table tbody tr:nth-child({$row}) td:nth-child({$j})"); $j++;
 
         $I->see("1 - 2 / 2 items", "#j-main-container .pagination__wrapper");
     }
