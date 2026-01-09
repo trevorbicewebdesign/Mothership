@@ -70,7 +70,7 @@ $account = $this->item;
                 <td>
                     <ul style="margin-bottom:0px;">
                         <li><a href="<?php echo Route::_('index.php?option=com_mothership&task=proposal.edit&id=' . $proposal->id); ?>">View</a></li>
-                        <?php if($proposal->status === '2'): ?>
+                        <?php if($proposal->status === 2): ?>
                         <li><a href="<?php echo Route::_("index.php?option=com_mothership&task=proposal.approve&id={$proposal->id}"); ?>">Approve</a></li>
                         <?php endif; ?>
                     </ul>
