@@ -15,9 +15,9 @@ use Joomla\CMS\Language\Text;
     <thead>
         <tr>
             <th>#</th>
-            <th>Name</th>
-            <th>Client</th>
+            <th>Name</th>            
             <th>Account</th>
+            <th>Client</th>
             <th>Type</th>
             <th>Status</th>
             <th>Created</th>
@@ -32,9 +32,9 @@ use Joomla\CMS\Language\Text;
         <?php foreach ($this->projects as $projects) : ?>
             <tr>
                 <td><?php echo $projects->id; ?></td>
-                <td><a href="<?php echo Route::_("index.php?option=com_mothership&view=project&id={$projects->id}"); ?>"><?php echo $projects->name; ?></a></td>
-                <td><a href="<?php echo Route::_("index.php?option=com_mothership&view=client&id={$projects->client_id}"); ?>"><?php echo $projects->client_name; ?></a></td>
+                <td><a href="<?php echo Route::_("index.php?option=com_mothership&view=project&id={$projects->id}"); ?>"><?php echo $projects->name; ?></a></td>                
                 <td><a href="<?php echo Route::_("index.php?option=com_mothership&view=account&id={$projects->account_id}"); ?>"><?php echo $projects->account_name; ?></a></td>
+                <td><a href="<?php echo Route::_("index.php?option=com_mothership&view=client&id={$projects->client_id}"); ?>"><?php echo $projects->client_name; ?></a></td>
                 <td><?php echo $projects->type; ?></td>
                 <td><?php echo $projects->status; ?></td>
                 <td><?php echo $projects->created; ?></td>
