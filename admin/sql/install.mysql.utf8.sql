@@ -91,7 +91,7 @@ CREATE TABLE IF NOT EXISTS `#__mothership_proposals` (
 
   -- Business logic
   `status` INT(11) NOT NULL DEFAULT 1,
-  `due_date` DATE DEFAULT NULL,
+  `expires` DATE DEFAULT NULL,
   `locked` TINYINT(1) NOT NULL DEFAULT 0,
 
   -- Text fields
