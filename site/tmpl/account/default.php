@@ -17,13 +17,14 @@ $account = $this->item;
             <th>Type</th>
             <th>Amount</th>
             <th>Status</th>
+            <th>Expires</th>
             <th>Actions</th>
         </tr>
     </thead>
     <tbody>
         <?php if(empty($account->proposals)) : ?>
             <tr>
-                <td colspan="7">No proposals found.</td>
+                <td colspan="8">No proposals found.</td>
             </tr>
         <?php endif; ?>
         <?php 
@@ -67,7 +68,9 @@ $account = $this->item;
                 }
                 
                 ?></td>
+                <td><?php echo $proposal->expires; ?></td>
                 <td>
+                    
                     <ul style="margin-bottom:0px;">
                         <li><a href="<?php echo Route::_('index.php?option=com_mothership&task=proposal.edit&id=' . $proposal->id); ?>">View</a></li>
                         <?php if($proposal->status === 2): ?>
