@@ -173,7 +173,7 @@ $items = $proposal?->items ?? [];
         <h3>Total: $<?php echo number_format((float)($proposal->total ?? 0), 2); ?></h3>
     </div>
 
-    <div class="section proposal-notes"></div>
+    <div class="section proposal-notes">
         <h2>Notes</h2>
         <?php echo $proposal->notes ?? ''; ?>
     </div>  
