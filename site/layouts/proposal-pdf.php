@@ -33,7 +33,7 @@ $items = $proposal?->items ?? [];
         }
 
         h1 {
-            text-align: center;
+            text-align: left;
             font-size: 24pt;
             margin-bottom: 30px;
             border-bottom: 1px dashed #aac8e4;
@@ -170,7 +170,7 @@ $items = $proposal?->items ?? [];
     </table>
 
     <div class="totals">
-        <h3>Total: $<?php echo number_format((float)($proposal->total ?? 0), 2); ?></h3>
+        <h3>$<?php echo number_format((float)($proposal->total_low ?? 0), 2); ?> - $<?php echo number_format((float)($proposal->total ?? 0), 2); ?> </h3>
     </div>
 
     <div class="section proposal-notes">
