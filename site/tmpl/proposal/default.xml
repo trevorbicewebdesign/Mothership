@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata>
-	<layout title="COM_MOTHERSHIP_MENU_PROPOSAL_TITLE" option="COM_MOTHERSHIP_MENU_PROPOSAL_OPTION">
+	<layout title="COM_MOTHERSHIP_MENU_PROPOSALS_TITLE" option="COM_MOTHERSHIP_MENU_PROPOSALS_OPTION">
 		<help key="Menu_Item:_Mothership_Dashboard" />
 		<message>
-			<![CDATA[COM_MOTHERSHIP_MENU_PROPOSAL_DESC]]>
+			<![CDATA[COM_MOTHERSHIP_MENU_PROPOSALS_DESC]]>
 		</message>
 	</layout>
 
@@ -17,13 +17,4 @@
 		</fieldset>
 	</fields>
 
-	<!-- Optional menu item parameters -->
-	<fields name="params">
-		<fieldset name="basic" label="COM_MOTHERSHIP_MENU_PROPOSAL_OPTIONS">
-			<field name="show_welcome" type="list" label="COM_MOTHERSHIP_SHOW_WELCOME_LABEL" description="COM_MOTHERSHIP_SHOW_WELCOME_DESC" default="1">
-				<option value="1">JYES</option>
-				<option value="0">JNO</option>
-			</field>
-		</fieldset>
-	</fields>
 </metadata>
