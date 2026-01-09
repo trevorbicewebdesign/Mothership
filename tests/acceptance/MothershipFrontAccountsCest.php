@@ -109,14 +109,16 @@ class MothershipFrontAccountsCest
         $I->seeNumberOfElements("table#accountsTable tbody tr", 1);
 
         // Confirm the table headers
-        $I->see("#", "table#accountsTable thead tr th:nth-child(1)");
-        $I->see("Client", "table#accountsTable thead tr th:nth-child(2)");
-        $I->see("Account", "table#accountsTable thead tr th:nth-child(3)");
+        $j = 1;
+        $I->see("#", "table#accountsTable thead tr th:nth-child({$j})"); $j++;
+        $I->see("Account", "table#accountsTable thead tr th:nth-child({$j})"); $j++;
+        $I->see("Client", "table#accountsTable thead tr th:nth-child({$j})"); $j++;
 
         // Confirm the table data
-        $I->see("{$this->accountData['id']}", "table#accountsTable tbody tr td:nth-child(1)");
-        $I->see($this->clientData['name'], "table#accountsTable tbody tr td:nth-child(2)");
-        $I->see($this->accountData['name'], "table#accountsTable tbody tr td:nth-child(3)");
+        $j = 1;
+        $I->see("{$this->accountData['id']}", "table#accountsTable tbody tr td:nth-child({$j})"); $j++;        
+        $I->see($this->accountData['name'], "table#accountsTable tbody tr td:nth-child({$j})"); $j++;
+        $I->see($this->clientData['name'], "table#accountsTable tbody tr td:nth-child({$j})"); $j++;
     }
 
     /**
