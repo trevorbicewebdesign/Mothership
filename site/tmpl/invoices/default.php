@@ -35,10 +35,10 @@ use Joomla\CMS\Language\Text;
             <tr>
                 <td><a href="<?php echo Route::_('index.php?option=com_mothership&task=invoice.downloadPdf&id=' . $invoice->id); ?>" target="_blank">PDF</a></td>
                 <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=invoice&id=' . $invoice->id); ?>"><?php echo $invoice->number; ?></a></td>
-                <td><?php echo $invoice->client_name; ?></td>
-                <td><?php echo $invoice->account_name; ?></td>
+                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=client&id=' . $invoice->client_id); ?>"><?php echo $invoice->client_name; ?></a></td>
+                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=account&id=' . $invoice->account_id); ?>"><?php echo $invoice->account_name; ?></a></td>
                 <td>$<?php echo number_format($invoice->total, 2); ?></td>
-                <td><?php echo $invoice->status; ?></td>
+                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=invoice&id=' . $invoice->id); ?>"><?php echo $invoice->status; ?></a></td>
                 <td>
                     <?php echo $invoice->payment_status; ?><br/>
                     <?php $payment_ids = array_filter(explode(",", $invoice->payment_ids ?? '')); ?>
