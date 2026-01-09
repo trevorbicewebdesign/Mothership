@@ -22,6 +22,7 @@ use Joomla\CMS\Language\Text;
             <th>Client</th>
             <th>Amount</th>
             <th>Status</th>
+            <th>Expires</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -47,6 +48,7 @@ use Joomla\CMS\Language\Text;
                 <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=client&id=' . $proposal->client_id); ?>"><?php echo $proposal->client_name; ?></a></td>
                 <td><span style="white-space:nowrap;">$<?php echo number_format($proposal->total_low, 2); ?> - $<?php echo number_format($proposal->total, 2); ?></span></td>
                 <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=proposal&id=' . $proposal->id); ?>"><?php echo $proposal->status; ?></a></td>
+                <td><span style="white-space:nowrap;"><?php echo $proposal->expires; ?></span></td>
                 <td>
                     <ul style="margin-bottom:0px;">
                         <li><a href="<?php echo Route::_('index.php?option=com_mothership&task=proposal.edit&id=' . $proposal->id); ?>">View</a></li>
