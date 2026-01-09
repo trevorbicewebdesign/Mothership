@@ -62,7 +62,7 @@ $account = $this->item;
                 </td>
                 
                 <td>
-                    <ul>
+                    <ul style="margin-bottom:0px;">
                         <li><a href="<?php echo Route::_('index.php?option=com_mothership&task=invoice.edit&id=' . $invoice->id); ?>">View</a></li>
                         <?php if($invoice->status === 'Opened' || $invoice->status === 'Late'): ?>
                         <li><a href="<?php echo Route::_("index.php?option=com_mothership&task=invoice.payment&id={$invoice->id}"); ?>">Pay</a></li>
@@ -95,7 +95,8 @@ $account = $this->item;
                 <td colspan="7">No payments found.</td>
             </tr>
         <?php endif; ?>
-        <?php foreach ($account->payments as $payment) : ?>
+        <?php foreach ($account->payments as $payment) : 
+            ?>
             <tr>
                 <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=payment&id=' . $payment->id); ?>"><?php echo $payment->id; ?></a></td>
                 <td>$<?php echo number_format($payment->amount, 2); ?></td>
