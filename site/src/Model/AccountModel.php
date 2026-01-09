@@ -31,6 +31,20 @@ class AccountModel extends BaseDatabaseModel
             return null;
         }
 
+         // Load associated payments 
+        $query = $db->getQuery(true)
+            ->select([
+            'proposal.*',
+          
+            ])
+            ->from($db->quoteName('#__mothership_proposals', 'proposal'))
+            ->where('account_id = :accountId')
+            ->where('proposal.status != 1')
+            ->bind(':accountId', $id, \Joomla\Database\ParameterType::INTEGER);
+        $db->setQuery($query);
+        $account->proposals = $db->loadObjectList();
+
+
          $query = $db->getQuery(true)
             ->select([
                 
@@ -60,6 +74,7 @@ class AccountModel extends BaseDatabaseModel
             ->bind(':accountId', $id, \Joomla\Database\ParameterType::INTEGER);
         $db->setQuery($query);
         $account->invoices = $db->loadObjectList();
+        
 
         // Load associated payments 
         $query = $db->getQuery(true)
