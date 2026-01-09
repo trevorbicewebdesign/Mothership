@@ -34,11 +34,11 @@ use Joomla\CMS\Language\Text;
             <tr>
                 <td><a href="<?php echo Route::_('index.php?option=com_mothership&task=proposal.downloadPdf&id=' . $proposal->id); ?>" target="_blank">PDF</a></td>
                 <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=proposal&id=' . $proposal->id); ?>"><?php echo $proposal->number; ?></a></td>
-                <td><?php echo $proposal->name; ?></td>
-                <td><?php echo $proposal->client_name; ?></td>
-                <td><?php echo $proposal->account_name; ?></td>
+                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=proposal&id=' . $proposal->id); ?>"><?php echo $proposal->name; ?></a></td>
+                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=client&id=' . $proposal->client_id); ?>"><?php echo $proposal->client_name; ?></a></td>
+                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=account&id=' . $proposal->account_id); ?>"><?php echo $proposal->account_name; ?></a></td>
                 <td>$<?php echo number_format($proposal->total, 2); ?></td>
-                <td><?php echo $proposal->status; ?></td>
+                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=proposal&id=' . $proposal->id); ?>"><?php echo $proposal->status; ?></a></td>
                 <td>
                     <ul>
                         <li><a href="<?php echo Route::_('index.php?option=com_mothership&task=proposal.edit&id=' . $proposal->id); ?>">View</a></li>
