@@ -63,7 +63,14 @@ class AccountModel extends BaseDatabaseModel
 
         // Load associated payments 
         $query = $db->getQuery(true)
-            ->select(['p.*'])
+            ->select([
+            'p.*',
+            // Subquery to get invoice IDs as comma-separated list for each payment
+            '(SELECT GROUP_CONCAT(ip.invoice_id ORDER BY ip.invoice_id) 
+              FROM ' . $db->quoteName('#__mothership_invoice_payment', 'ip') . ' 
+              WHERE ip.payment_id = p.id
+            ) AS invoice_ids'
+            ])
             ->from($db->quoteName('#__mothership_payments', 'p'))
             ->where('account_id = :accountId')
             ->where('p.status = 2')
