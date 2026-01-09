@@ -60,7 +60,6 @@ $account = $this->item;
                     ?>
                     <?php endif; ?>
                 </td>
-                
                 <td>
                     <ul style="margin-bottom:0px;">
                         <li><a href="<?php echo Route::_('index.php?option=com_mothership&task=invoice.edit&id=' . $invoice->id); ?>">View</a></li>
@@ -68,8 +67,6 @@ $account = $this->item;
                         <li><a href="<?php echo Route::_("index.php?option=com_mothership&task=invoice.payment&id={$invoice->id}"); ?>">Pay</a></li>
                         <?php endif; ?>
                     </ul>
-                    
-                    
                 </td>
             </tr>
         <?php endforeach; ?>
