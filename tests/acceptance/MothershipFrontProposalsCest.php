@@ -137,7 +137,8 @@ class MothershipFrontProposalsCest
         $I->see("Client", "table#proposalsTable thead tr th:nth-child(6)");
         $I->see("Amount", "table#proposalsTable thead tr th:nth-child(7)");
         $I->see("Status", "table#proposalsTable thead tr th:nth-child(8)");
-        $I->see("Actions", "table#proposalsTable thead tr th:nth-child(9)");
+        $I->see("Expires", "table#proposalsTable thead tr th:nth-child(9)");
+        $I->see("Actions", "table#proposalsTable thead tr th:nth-child(10)");
         // Confirm the table data
         $I->see($this->proposalData['number'], "table#proposalsTable tbody tr td:nth-child(2)");
         $I->see($this->proposalData['name'], "table#proposalsTable tbody tr td:nth-child(3)");
@@ -146,7 +147,8 @@ class MothershipFrontProposalsCest
         $I->see($this->clientData['name'], "table#proposalsTable tbody tr td:nth-child(6)");
         $I->see("$177.50", "table#proposalsTable tbody tr td:nth-child(7)");
         $I->see("Pending", "table#proposalsTable tbody tr td:nth-child(8)");
-        $I->see("View", "table#proposalsTable tbody tr td:nth-child(9) ul li");
+        $I->see(date('Y-m-d', strtotime('+30 days')), "table#proposalsTable tbody tr td:nth-child(9)");
+        $I->see("View", "table#proposalsTable tbody tr td:nth-child(10) ul li");
         
         $I->click("Approve");
         $I->wait(1);
