@@ -286,8 +286,8 @@ class DbHelper extends Db
 
             // Status / dates
             "status" => 1,
-            // due_date is DATE in the schema, so use Y-m-d (not datetime)
-            "due_date" => date('Y-m-d', strtotime('+30 days')),
+            // expires is DATE in the schema, so use Y-m-d (not datetime)
+            "expires" => date('Y-m-d', strtotime('+30 days')),
             "created" => null,
 
             // Text content
