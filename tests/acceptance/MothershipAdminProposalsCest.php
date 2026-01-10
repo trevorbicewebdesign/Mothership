@@ -516,6 +516,7 @@ class MothershipAdminProposalsCest
             'account_id' => $this->accountData['id'],
             'number' => 9000,
             'status' => 2,
+            'expires' => date('Y-m-d', strtotime('+30 days')),
             'total_low' => '111.00',
             'total' => '222.00',
         ]);
