@@ -38,7 +38,7 @@ class MothershipProposalHelperTest extends \Codeception\Test\Unit
             'account_id' => $this->accountData['id'],
             'total' => '175.00',
             'number' => 1001,
-            'due_date' => NULL,
+            'expires' => NULL,
             'created' => date('Y-m-d H:i:s'),
             'status' => 1,
         ]);
