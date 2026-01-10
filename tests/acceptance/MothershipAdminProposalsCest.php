@@ -172,6 +172,7 @@ class MothershipAdminProposalsCest
         $I->see("Proposal Number", "#j-main-container table thead tr th:nth-child({$j})"); $j++;
         $I->see("Title", "#j-main-container table thead tr th:nth-child({$j})"); $j++;
         $I->see("PDF", "#j-main-container table thead tr th:nth-child({$j})"); $j++;       
+        $I->see("Type", "#j-main-container table thead tr th:nth-child({$j})"); $j++;
         $I->see("Account", "#j-main-container table thead tr th:nth-child({$j})"); $j++;
          $I->see("Client", "#j-main-container table thead tr th:nth-child({$j})"); $j++;
         $I->see("Project", "#j-main-container table thead tr th:nth-child({$j})"); $j++;
@@ -198,8 +199,9 @@ class MothershipAdminProposalsCest
         $I->assertEquals("/administrator/index.php?option=com_mothership&task=proposal.downloadPdf&id={$this->proposalData['id']}", $downloadPdfUrl);
         $I->assertEquals("/administrator/index.php?option=com_mothership&task=proposal.previewPdf&id={$this->proposalData['id']}", $previewPdfUrl);
 
-        $I->see("{$this->clientData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child({$j})"); $j++;
+        $I->see("{$this->proposalData['type']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child({$j})"); $j++;
         $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child({$j})"); $j++;
+        $I->see("{$this->clientData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child({$j})"); $j++;
         $I->see("{$this->projectData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child({$j})"); $j++;
         $I->see("{$this->proposalData['total']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child({$j})"); $j++;
         $I->see(date('Y-m-d'), "#j-main-container table tbody tr:nth-child({$row}) td:nth-child({$j})"); $j++;
