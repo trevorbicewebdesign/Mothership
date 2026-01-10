@@ -606,6 +606,6 @@ class MothershipAdminProposalsCest
         $I->see("{$proposalItemData[$row]['rate']}", "table tbody tr:nth-child(2) td:nth-child(3)");
         $I->see("{$proposalItemData[$row]['subtotal']}", "table tbody tr:nth-child(2) td:nth-child(4)");
 
-        $I->see("Total: $222.00", ".totals h3");
+        $I->see("$111.00 - $222.00", ".totals h3");
     }
 }
