@@ -167,7 +167,7 @@ class MothershipAdminProposalsCest
         $I->seeElement("#j-main-container ");
         $I->seeElement("#j-main-container thead");
 
-        $j = 0;
+        $j = 1;
         $I->see("ID", "#j-main-container table thead tr th:nth-child({$j})"); $j++;
         $I->see("Proposal Number", "#j-main-container table thead tr th:nth-child({$j})"); $j++;
         $I->see("Title", "#j-main-container table thead tr th:nth-child({$j})"); $j++;
