@@ -39,22 +39,25 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                     <?php echo HTMLHelper::_('grid.checkall'); ?>
                                 </th>
                                 <th scope="col" class="w-3 d-none d-lg-table-cell">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'JGRID_HEADING_ID', 'i.id', $listDirn, $listOrder); ?>
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'JGRID_HEADING_ID', 'proposal.id', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_PROPOSAL_HEADING_NUMBER', 'i.number', $listDirn, $listOrder); ?>
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_PROPOSAL_HEADING_NUMBER', 'proposal.number', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_PROPOSAL_HEADING_TITLE', 'i.title', $listDirn, $listOrder); ?>
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_PROPOSAL_HEADING_TITLE', 'proposal.name', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_PROPOSAL_HEADING_PDF', 'c.name', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
-                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_PROPOSAL_HEADING_CLIENT', 'c.name', $listDirn, $listOrder); ?>
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_PROPOSAL_HEADING_TYPE', 'proposal.type', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_PROPOSAL_HEADING_ACCOUNT', 'a.name', $listDirn, $listOrder); ?>
+                                </th>
+                                <th scope="col" class="w-10">
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_PROPOSAL_HEADING_CLIENT', 'c.name', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_PROPOSAL_HEADING_PROJECT', 'p.name', $listDirn, $listOrder); ?>
@@ -112,10 +115,13 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                         </a>
                                     </td>
                                     <td>
-                                        <a href="<?php echo Route::_("index.php?option=com_mothership&task=client.edit&id={$item->client_id}&return=" . base64_encode(Route::_('index.php?option=com_mothership&view=invoices'))) ?>"><?php echo htmlspecialchars($item->client_name??'', ENT_QUOTES, 'UTF-8'); ?></a>
+                                        <?php echo $item->type; ?>
                                     </td>
                                     <td>
                                         <a href="<?php echo Route::_("index.php?option=com_mothership&task=account.edit&id={$item->account_id}&return=" . base64_encode(Route::_('index.php?option=com_mothership&view=invoices'))) ?>"><?php echo htmlspecialchars($item->account_name??'', ENT_QUOTES, 'UTF-8'); ?></a>
+                                    </td>
+                                    <td>
+                                        <a href="<?php echo Route::_("index.php?option=com_mothership&task=client.edit&id={$item->client_id}&return=" . base64_encode(Route::_('index.php?option=com_mothership&view=invoices'))) ?>"><?php echo htmlspecialchars($item->client_name??'', ENT_QUOTES, 'UTF-8'); ?></a>
                                     </td>
                                     <td>
                                         <a href="<?php echo Route::_("index.php?option=com_mothership&task=project.edit&id={$item->project_id}&return=" . base64_encode(Route::_('index.php?option=com_mothership&view=invoices'))) ?>"><?php echo htmlspecialchars($item->project_name??'', ENT_QUOTES, 'UTF-8'); ?></a>
