@@ -422,8 +422,10 @@ class MothershipAdminProposalsCest
         $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 2);
 
         $I->see("1001", "#j-main-container table.itemList tbody tr td:nth-child(3)");
-        $I->see("Test Client", "#j-main-container table.itemList tbody tr td:nth-child(6)");
+       
+        $I->see("hourly", "#j-main-container table.itemList tbody tr td:nth-child(6)");
         $I->see("Test Account", "#j-main-container table.itemList tbody tr td:nth-child(7)");
+         $I->see("Test Client", "#j-main-container table.itemList tbody tr td:nth-child(8)");
         $I->see(date("Y-m-d"), "#j-main-container table.itemList tbody tr td:nth-child(11)");
 
         // Open the Proposal again and confirm the data is correct
