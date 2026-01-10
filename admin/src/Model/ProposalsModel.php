@@ -24,25 +24,25 @@ class ProposalsModel extends ListModel
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = [
-                'id', 'i.id',
+                'id', 'proposal.id',
                 'client_name', 'c.name',
                 'account_name', 'a.name',
-                'number', 'i.number',
-                'created', 'i.created',
-                'account_id', 'i.account_id',
-                'total', 'i.total',
-                'client_id', 'i.client_id',
-                'locked', 'i.locked',
-                'checked_out', 'i.checked_out',
-                'checked_out_time', 'i.checked_out_time',
-                'created', 'i.created',
+                'number', 'proposal.number',
+                'created', 'proposal.created',
+                'account_id', 'proposal.account_id',
+                'total', 'proposal.total',
+                'client_id', 'proposal.client_id',
+                'locked', 'proposal.locked',
+                'checked_out', 'proposal.checked_out',
+                'checked_out_time', 'proposal.checked_out_time',
+                'created', 'proposal.created',
             ];
         }
 
         parent::__construct($config);
     }
 
-    protected function populateState($ordering = 'a.id', $direction = 'asc')
+    protected function populateState($ordering = 'proposal.id', $direction = 'asc')
     {
         $app = Factory::getApplication();
 
@@ -74,24 +74,25 @@ class ProposalsModel extends ListModel
             $this->getState(
                 'list.select',
                 [
-                    $db->quoteName('i.id'),
-                    $db->quoteName('i.name'),
-                    $db->quoteName('i.number'),
-                    $db->quoteName('i.client_id'),
+                    $db->quoteName('proposal.id'),
+                    $db->quoteName('proposal.name'),
+                    $db->quoteName('proposal.number'),
+                    $db->quoteName('proposal.type'),
+                    $db->quoteName('proposal.client_id'),
                     $db->quoteName('c.name', 'client_name'),
-                    $db->quoteName('i.account_id'),
+                    $db->quoteName('proposal.account_id'),
                     $db->quoteName('a.name', 'account_name'),
-                    $db->quoteName('i.total'),
-                    $db->quoteName('i.checked_out_time'),
-                    $db->quoteName('i.checked_out'),
-                    $db->quoteName('i.locked'),
-                    $db->quoteName('i.created'),
-                    $db->quoteName('i.created_by'),      
-                    $db->quoteName('i.project_id'),
+                    $db->quoteName('proposal.total'),
+                    $db->quoteName('proposal.checked_out_time'),
+                    $db->quoteName('proposal.checked_out'),
+                    $db->quoteName('proposal.locked'),
+                    $db->quoteName('proposal.created'),
+                    $db->quoteName('proposal.created_by'),      
+                    $db->quoteName('proposal.project_id'),
                     $db->quoteName('p.name', 'project_name'),
 
                     // Proposal status (Draft, Opened, etc.)
-                    'CASE ' . $db->quoteName('i.status') . 
+                    'CASE ' . $db->quoteName('proposal.status') . 
                         ' WHEN 1 THEN ' . $db->quote('Draft') . 
                         ' WHEN 2 THEN ' . $db->quote('Pending') . 
                         ' WHEN 3 THEN ' . $db->quote('Approved') . 
@@ -105,10 +106,10 @@ class ProposalsModel extends ListModel
             )
         );
 
-        $query->from($db->quoteName('#__mothership_proposals', 'i'))
-            ->join('LEFT', $db->quoteName('#__mothership_clients', 'c') . ' ON ' . $db->quoteName('i.client_id') . ' = ' . $db->quoteName('c.id'))
-            ->join('LEFT', $db->quoteName('#__mothership_accounts', 'a') . ' ON ' . $db->quoteName('i.account_id') . ' = ' . $db->quoteName('a.id'))
-            ->join('LEFT', $db->quoteName('#__mothership_projects', 'p') . ' ON ' . $db->quoteName('i.project_id') . ' = ' . $db->quoteName('p.id'))
+        $query->from($db->quoteName('#__mothership_proposals', 'proposal'))
+            ->join('LEFT', $db->quoteName('#__mothership_clients', 'c') . ' ON ' . $db->quoteName('proposal.client_id') . ' = ' . $db->quoteName('c.id'))
+            ->join('LEFT', $db->quoteName('#__mothership_accounts', 'a') . ' ON ' . $db->quoteName('proposal.account_id') . ' = ' . $db->quoteName('a.id'))
+            ->join('LEFT', $db->quoteName('#__mothership_projects', 'p') . ' ON ' . $db->quoteName('proposal.project_id') . ' = ' . $db->quoteName('p.id'))
             ;
 
         // Filter by ID search
