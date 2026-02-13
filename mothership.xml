@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<extension type="component" method="upgrade" version="0.0.23">
+<extension type="component" method="upgrade" version="0.0.24">
     <name>com_mothership</name>
     <author>Trevor Bice</author>
     <creationDate>2023-10-01</creationDate>
@@ -7,7 +7,7 @@
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <authorEmail>trevorbicewebdesign@gmail.com</authorEmail>
     <authorUrl>https://webdesign.trevorbice.com</authorUrl>
-    <version>0.0.23</version>
+    <version>0.0.24</version>
     <description>COM_MOTHERSHIP_XML_DESCRIPTION</description>
     <namespace path="src">TrevorBice\Component\Mothership</namespace>
     <install>
