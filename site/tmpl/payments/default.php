@@ -66,8 +66,12 @@ use Joomla\CMS\Language\Text;
                     <td>
                         <?php 
                         $plugin = JPluginHelper::getPlugin('mothership-payment', $payment->payment_method);
-                        $pluginParams = new JRegistry($plugin->params);
-                        echo $pluginParams->get('display_name')?$pluginParams->get('display_name') : $payment->payment_method;
+                        $displayName = null;
+                        if (is_object($plugin) && isset($plugin->params)) {
+                            $pluginParams = new JRegistry($plugin->params);
+                            $displayName = $pluginParams->get('display_name');
+                        }
+                        echo $displayName ?? $payment->payment_method;
                         ?>
                     </td>
                     <td><?php echo $payment->transaction_id; ?></td>

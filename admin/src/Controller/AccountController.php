@@ -45,6 +45,7 @@ class AccountController extends FormController
             $id = !empty($data['id']) ? $data['id'] : $model->getState($model->getName() . '.id');
             $defaultRedirect = Route::_("index.php?option=com_mothership&view=account&layout=edit&id={$id}", false);
         } else {
+            $model->cancelEdit((int) $data['id']);
             $defaultRedirect = Route::_('index.php?option=com_mothership&view=accounts', false);
         }
 

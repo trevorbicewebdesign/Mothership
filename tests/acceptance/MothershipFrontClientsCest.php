@@ -103,7 +103,7 @@ class MothershipFrontClientsCest
         $I->wait(1);
         $I->waitForText("Clients", 10, "h1");
 
-        $I->makeScreenshot("account-center-view-all-clients");
+        $I->takeFullPageScreenshot("account-center-view-all-clients");
         $I->dontSee("Warning:");
 
         // Confirm the correct number of records
@@ -130,7 +130,7 @@ class MothershipFrontClientsCest
         $log_created = date('Y-m-d H:i:s');
         $I->waitForText($this->clientData['name'], 10, "h1");
 
-        $I->makeScreenshot("account-center-view-client");
+        $I->takeFullPageScreenshot("account-center-view-client");
         $I->dontSee("Warning:");
 
         $I->see("Email: {$this->clientData['email']}");

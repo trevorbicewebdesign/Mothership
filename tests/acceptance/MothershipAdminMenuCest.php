@@ -42,6 +42,7 @@ class MothershipAdminMenuCest
         $I->see("Invoices", ".accordion-body a.list-group-item");
         $I->see("Payments", ".accordion-body a.list-group-item");
         $I->see("Projects", ".accordion-body a.list-group-item");
+        $I->see("Proposals", ".accordion-body a.list-group-item");
         $I->switchToIFrame();
     }
 

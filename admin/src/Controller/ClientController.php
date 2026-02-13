@@ -45,7 +45,6 @@ class ClientController extends FormController
             $this->setRedirect(Route::_('index.php?option=com_mothership&view=clients', false));
             return false;
         }
-
         $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_CLIENT_SAVED_SUCCESSFULLY', "<strong>{$data['name']}</strong>"), 'message');
 
         // Always fetch the freshly saved ID from the model state
@@ -54,6 +53,7 @@ class ClientController extends FormController
         if ($task === 'apply') {
             $this->setRedirect(Route::_('index.php?option=com_mothership&view=client&layout=edit&id=' . $id, false));
         } else {
+            $model->cancelEdit((int) $data['id']);
             $this->setRedirect(Route::_('index.php?option=com_mothership&view=clients', false));
         }
 

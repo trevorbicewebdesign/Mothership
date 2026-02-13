@@ -15,8 +15,8 @@ use Joomla\CMS\Language\Text;
     <thead>
         <tr>
             <th>#</th>
+            <th>Account</th>
             <th>Client</th>
-            <th>Account</th>    
         </tr>
     </thead>
     <tbody>
@@ -27,9 +27,9 @@ use Joomla\CMS\Language\Text;
         <?php endif; ?>
         <?php foreach ($this->accounts as $account) : ?>
             <tr>
-                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=account&id=' . $account->id); ?>"><?php echo $account->id; ?></a></td>
-                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=client&id=' . $account->client_id); ?>"><?php echo $account->client_name; ?></a></td>
+                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=account&id=' . $account->id); ?>"><?php echo $account->id; ?></a></td>                
                 <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=account&id=' . $account->id); ?>"><?php echo $account->account_name; ?></a></td>        
+                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=client&id=' . $account->client_id); ?>"><?php echo $account->client_name; ?></a></td>
             </tr>
         <?php endforeach; ?>
     </tbody>

@@ -35,17 +35,17 @@ use Joomla\CMS\Language\Text;
             <tr>
                 <td><a href="<?php echo Route::_('index.php?option=com_mothership&task=invoice.downloadPdf&id=' . $invoice->id); ?>" target="_blank">PDF</a></td>
                 <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=invoice&id=' . $invoice->id); ?>"><?php echo $invoice->number; ?></a></td>
-                <td><?php echo $invoice->client_name; ?></td>
-                <td><?php echo $invoice->account_name; ?></td>
+                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=client&id=' . $invoice->client_id); ?>"><?php echo $invoice->client_name; ?></a></td>
+                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=account&id=' . $invoice->account_id); ?>"><?php echo $invoice->account_name; ?></a></td>
                 <td>$<?php echo number_format($invoice->total, 2); ?></td>
-                <td><?php echo $invoice->status; ?></td>
+                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=invoice&id=' . $invoice->id); ?>"><?php echo $invoice->status; ?></a></td>
                 <td>
                     <?php echo $invoice->payment_status; ?><br/>
                     <?php $payment_ids = array_filter(explode(",", $invoice->payment_ids ?? '')); ?>
                     <?php if (count($payment_ids) > 0): ?>
-                    <ul style="margin-bottom:0px;">
+                    <ul style="margin-bottom:0px;" class="payment-list">
                         <?php foreach ($payment_ids as $paymentId): ?>
-                            <li style="list-style: none;"><small><a href="index.php?option=com_mothership&view=payment&id=<?php echo $paymentId; ?>&return=<?php echo base64_encode(Route::_('index.php?option=com_mothership&view=invoices')); ?>"><?php echo "Payment #" . str_pad($paymentId, 2, "0", STR_PAD_LEFT); ?></a></small></li>
+                            <li style="list-style: none;white-space:nowrap;"><small><a href="index.php?option=com_mothership&view=payment&id=<?php echo $paymentId; ?>&return=<?php echo base64_encode(Route::_('index.php?option=com_mothership&view=invoices')); ?>" class="payment-link"><?php echo "Payment #" . str_pad($paymentId, 2, "0", STR_PAD_LEFT); ?></a></small></li>
                         <?php endforeach; ?>
                     </ul>
                     <?php endif; ?>
@@ -62,18 +62,14 @@ use Joomla\CMS\Language\Text;
                     ?>
                     <?php endif; ?>
                 </td>
-                
                 <td>
-                    <ul>
+                    <ul style="margin-bottom:0px;">
                         <li><a href="<?php echo Route::_('index.php?option=com_mothership&task=invoice.edit&id=' . $invoice->id); ?>">View</a></li>
                         <?php if($invoice->status === 'Opened' && $invoice->payment_status != 'Pending Confirmation'): ?>
                         <li><a href="<?php echo Route::_("index.php?option=com_mothership&task=invoice.payment&id={$invoice->id}"); ?>">Pay</a></li>
                         <?php elseif($invoice->payment_status ==='Pending Confirmation'):?>
                         <li><a href="<?php echo Route::_("index.php?option=com_mothership&task=payment.cancel&id={$paymentId}"); ?>">Cancel Pending Payment</a></li>
                         <?php endif; ?>
-                    </ul>
-                    
-                    
                 </td>
             </tr>
         <?php endforeach; ?>

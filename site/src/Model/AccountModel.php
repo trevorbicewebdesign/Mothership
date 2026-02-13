@@ -31,6 +31,20 @@ class AccountModel extends BaseDatabaseModel
             return null;
         }
 
+         // Load associated payments 
+        $query = $db->getQuery(true)
+            ->select([
+            'proposal.*',
+          
+            ])
+            ->from($db->quoteName('#__mothership_proposals', 'proposal'))
+            ->where('account_id = :accountId')
+            ->where('proposal.status != 1')
+            ->bind(':accountId', $id, \Joomla\Database\ParameterType::INTEGER);
+        $db->setQuery($query);
+        $account->proposals = $db->loadObjectList();
+
+
          $query = $db->getQuery(true)
             ->select([
                 
@@ -60,10 +74,18 @@ class AccountModel extends BaseDatabaseModel
             ->bind(':accountId', $id, \Joomla\Database\ParameterType::INTEGER);
         $db->setQuery($query);
         $account->invoices = $db->loadObjectList();
+        
 
         // Load associated payments 
         $query = $db->getQuery(true)
-            ->select(['p.*'])
+            ->select([
+            'p.*',
+            // Subquery to get invoice IDs as comma-separated list for each payment
+            '(SELECT GROUP_CONCAT(ip.invoice_id ORDER BY ip.invoice_id) 
+              FROM ' . $db->quoteName('#__mothership_invoice_payment', 'ip') . ' 
+              WHERE ip.payment_id = p.id
+            ) AS invoice_ids'
+            ])
             ->from($db->quoteName('#__mothership_payments', 'p'))
             ->where('account_id = :accountId')
             ->where('p.status = 2')

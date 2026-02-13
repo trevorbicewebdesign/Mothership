@@ -138,15 +138,13 @@ class MothershipAdminInvoicesCest
     {
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
         $I->waitForText("Mothership: Invoices", 30, "h1.page-title");
-
         $I->click("Test Account");
-        $I->wait(1);
-         $I->waitForText("Mothership: Edit Account", 30, "h1.page-title");
+        $I->waitForText("Mothership: Edit Account", 30, "h1.page-title");
         $I->click("Close", "#toolbar");
         $I->waitForText("Mothership: Invoices", 30, "h1.page-title");
     }
 
-    /**
+   /**
      * @group backend
      * @group payment
      * @group invoice
@@ -154,29 +152,34 @@ class MothershipAdminInvoicesCest
      */
     public function MothershipCancelPaymentEdit(AcceptanceTester $I)
     {
+        // Arrange: create a payment and link it to the existing test invoice
         $paymentData = $I->createMothershipPayment([
-            'client_id' => $this->clientData['id'],
-            'account_id' => $this->accountData['id'],
-            'amount' => $this->invoiceData['total'],
+            'client_id'      => $this->clientData['id'],
+            'account_id'     => $this->accountData['id'],
+            'amount'         => $this->invoiceData['total'],
             'payment_method' => 'paypal',
-            'status' => 2,
+            'status'         => 2, // whatever "normal" editable status is
         ]);
-        $invoicePaymentData = $I->createMothershipInvoicePayment([
-            'invoice_id' => $this->invoiceData['id'],
-            'payment_id' => $paymentData['id'],
+
+        $I->createMothershipInvoicePayment([
+            'invoice_id'     => $this->invoiceData['id'],
+            'payment_id'     => $paymentData['id'],
             'applied_amount' => $this->invoiceData['total'],
         ]);
 
+        // Go to invoices list
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
-        $I->waitForText("Mothership: Invoices", 30, "h1.page-title");
+        $I->waitForText('Mothership: Invoices', 30, 'h1.page-title');
 
-        $I->click("Payment #{$paymentData['id']}");
+        // Click the specific Payment link (data-test added in the layout)
+        $I->click("Payment #{$paymentData['id']}", "ul.payment-list li");
+
         $I->waitForText("Mothership: Edit Payment", 30, "h1.page-title");
         $I->click("Close", "#toolbar");
-        $I->wait(1);
-        $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
-        $I->see("Mothership: Invoices", "h1.page-title");
+        $I->waitForText("Mothership: Invoices", 30, "h1.page-title");
+        $I->seeInCurrentUrl(self::INVOICES_VIEW_ALL_URL);
     }
+
 
     /**
      * @group backend
@@ -237,7 +240,7 @@ class MothershipAdminInvoicesCest
         $I->amOnPage(self::INVOICES_VIEW_ALL_URL);
         $I->waitForText("Mothership: Invoices", 30, "h1.page-title");
 
-        $I->makeScreenshot("mothership-view-invoices");
+        $I->takeFullPageScreenshot("mothership-view-invoices");
 
         $I->dontSee("Warning");
 
@@ -721,10 +724,10 @@ class MothershipAdminInvoicesCest
      */
     public function MothershipEditInvalidInvoice(AcceptanceTester $I)
     {
-        $I->amOnPage(sprintf(self::INVOICE_EDIT_URL, "9999"));
-        $I->wait(1);
-        $I->waitForText('Mothership: Invoices', 30, 'h1.page-title');
-        $I->waitForText("Invoice not found. Please select a valid invoice.", 30, "#system-message-container .alert-message");
+        $I->amOnPage(sprintf(self::INVOICE_EDIT_URL, 9999));
+        $I->waitForElementVisible('#system-message-container joomla-alert[type=danger]', 30);
+        $I->see('Invoice not found. Please select a valid invoice.', '#system-message-container');
+        $I->see('Mothership: Invoices', 'h1.page-title');
         $I->seeInCurrentUrl(self::INVOICES_VIEW_ALL_URL);
     }
 

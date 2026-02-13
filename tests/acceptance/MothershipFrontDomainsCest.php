@@ -113,7 +113,7 @@ class MothershipFrontDomainsCest
         $I->amOnPage(self::DOMAINS_VIEW_ALL_URL);
         $I->waitForText("Domains", 10, "h1");
 
-        $I->makeScreenshot("account-center-view-all-domains");
+        $I->takeFullPageScreenshot("account-center-view-all-domains");
         $I->dontSee("Warning:");
 
         // Confirm the correct number of records
@@ -121,9 +121,9 @@ class MothershipFrontDomainsCest
 
         // Confirm the table headers
         $I->see("#", "table#domainsTable thead tr th:nth-child(1)");
-        $I->see("Domain", "table#domainsTable thead tr th:nth-child(2)");
-        $I->see("Client", "table#domainsTable thead tr th:nth-child(3)");
-        $I->see("Account", "table#domainsTable thead tr th:nth-child(4)");
+        $I->see("Domain", "table#domainsTable thead tr th:nth-child(2)");        
+        $I->see("Account", "table#domainsTable thead tr th:nth-child(3)");
+        $I->see("Client", "table#domainsTable thead tr th:nth-child(4)");
         $I->see("Registrar", "table#domainsTable thead tr th:nth-child(5)");
         $I->see("Reseller", "table#domainsTable thead tr th:nth-child(6)");
         $I->see("DNS", "table#domainsTable thead tr th:nth-child(7)");
@@ -132,9 +132,9 @@ class MothershipFrontDomainsCest
 
         // Confirm the table data
         $I->see("{$domainData['id']}", "table#domainsTable tbody tr td:nth-child(1)");
-        $I->see($domainData['name'], "table#domainsTable tbody tr td:nth-child(2)");
-        $I->see($this->clientData['name'], "table#domainsTable tbody tr td:nth-child(3)");
-        $I->see($this->accountData['name'], "table#domainsTable tbody tr td:nth-child(4)");
+        $I->see($domainData['name'], "table#domainsTable tbody tr td:nth-child(2)");        
+        $I->see($this->accountData['name'], "table#domainsTable tbody tr td:nth-child(3)");
+        $I->see($this->clientData['name'], "table#domainsTable tbody tr td:nth-child(4)");
         $I->see($domainData['registrar'], "table#domainsTable tbody tr td:nth-child(5)");
         $I->see($domainData['reseller'], "table#domainsTable tbody tr td:nth-child(6)");
         $I->see($domainData['dns_provider'], "table#domainsTable tbody tr td:nth-child(7)");
@@ -159,7 +159,7 @@ class MothershipFrontDomainsCest
         $log_created = date('Y-m-d H:i:s');
         $I->waitForText("Domain: {$domainData['name']}", 10, "h1");
     
-        $I->makeScreenshot("account-center-view-domain");
+        $I->takeFullPageScreenshot("account-center-view-domain");
         $I->dontSee("Warning:");
 
         $created = $I->grabFromDatabase("jos_mothership_logs", "created", [

@@ -68,6 +68,89 @@ CREATE TABLE IF NOT EXISTS `#__mothership_domains` (
   KEY `idx_name` (`name`(100))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1;
 
+-- Proposals Table
+CREATE TABLE IF NOT EXISTS `#__mothership_proposals` (
+  `id` INT(10) NOT NULL AUTO_INCREMENT,
+
+  -- Optional but required by prepareTable()
+  `name` VARCHAR(255) NULL COLLATE 'utf8mb4_unicode_ci',
+
+  -- Relationship fields from form XML
+  `client_id` INT(10) DEFAULT NULL,
+  `account_id` INT(10) DEFAULT NULL,
+  `project_id` INT(10) DEFAULT NULL,
+
+  -- Proposal-level type
+  `type` VARCHAR(50) NOT NULL DEFAULT '' COLLATE 'utf8mb4_unicode_ci',
+
+  -- Visible proposal-level fields
+  `number` VARCHAR(50) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+  `total_low` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `total` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `rate` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+
+  -- Business logic
+  `status` INT(11) NOT NULL DEFAULT 1,
+  `expires` DATE DEFAULT NULL,
+  `locked` TINYINT(1) NOT NULL DEFAULT 0,
+
+  -- Text fields
+  `summary` MEDIUMTEXT NULL COLLATE 'utf8mb4_unicode_ci',
+  `notes` MEDIUMTEXT NULL COLLATE 'utf8mb4_unicode_ci',
+
+  -- Joomla core fields
+  `state` TINYINT(3) NOT NULL DEFAULT 0,
+  `created` DATETIME NULL DEFAULT (CURRENT_TIMESTAMP),
+  `created_by` INT(11) DEFAULT NULL,
+  `modified` DATETIME DEFAULT NULL,
+  `modified_by` INT(11) DEFAULT NULL,
+  `checked_out` INT(11) DEFAULT NULL,
+  `checked_out_time` DATETIME DEFAULT NULL,
+  `version` INT(11) NOT NULL DEFAULT 1,
+
+  PRIMARY KEY (`id`),
+  KEY `idx_client_id` (`client_id`),
+  KEY `idx_account_id` (`account_id`),
+  KEY `idx_project_id` (`project_id`),
+  KEY `idx_number` (`number`),
+  
+  CONSTRAINT `fk_proposal_client_mship`
+    FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_proposal_account_mship`
+    FOREIGN KEY (`account_id`) REFERENCES `#__mothership_accounts` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_proposal_project_mship`
+    FOREIGN KEY (`project_id`) REFERENCES `#__mothership_projects` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+
+-- Proposal Items Table
+CREATE TABLE IF NOT EXISTS `#__mothership_proposal_items` (
+  `id` INT(10) NOT NULL AUTO_INCREMENT,
+  `proposal_id` INT(10) NOT NULL,
+
+  `name` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+  `description` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+
+  `type` ENUM('hourly','fixed')
+        NOT NULL DEFAULT 'hourly'
+        COLLATE 'utf8mb4_unicode_ci',
+
+  `time` VARCHAR(10) NOT NULL DEFAULT '' COLLATE 'utf8mb4_unicode_ci',
+  `time_low` VARCHAR(10) NOT NULL DEFAULT '' COLLATE 'utf8mb4_unicode_ci',
+
+  `quantity` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `quantity_low` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `rate` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `subtotal` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `subtotal_low` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+
+  `ordering` INT(11) NOT NULL DEFAULT 0,
+
+  PRIMARY KEY (`id`),
+  KEY `idx_proposal_id` (`proposal_id`),
+
+  CONSTRAINT `fk_proposal_items_proposal_mship`
+    FOREIGN KEY (`proposal_id`) REFERENCES `#__mothership_proposals` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 -- Invoices Table
 CREATE TABLE IF NOT EXISTS `#__mothership_invoices` (

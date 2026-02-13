@@ -171,6 +171,132 @@ CREATE TABLE IF NOT EXISTS `#__mothership_domains` (
 - **Pending**: The domain is awaiting activation or completion of a required process.
 - **Suspended**: The domain has been temporarily disabled due to policy violations or other issues.
 
+## Proposals
+
+The **Proposals** object represents proposed scopes of work generated for clients. A proposal may represent a fixed price, a range estimate, or a rate-based engagement, and can optionally be associated with a client account and project.
+
+Each proposal includes the following attributes:
+
+- **ID**: Unique identifier for the proposal.
+- **Name**: Optional human-readable name or title for the proposal.
+- **Number**: Proposal reference number (used for external identification and indexing).
+- **Type**: Proposal type (e.g. fixed, range, hourly). Stored as a short string for flexibility.
+- **Client ID**: The client to whom the proposal belongs.
+- **Account ID**: Optional account associated with the proposal (for clients with multiple accounts).
+- **Project ID**: Optional project this proposal is related to.
+- **Rate**: Billing rate associated with the proposal (used primarily for hourly or hybrid proposals).
+- **Total (Low)**: The lower bound of the proposal total, used for range-based proposals.
+- **Total**: The primary or upper total amount of the proposal.
+- **Status**: Numeric proposal status (e.g. draft, sent, approved, rejected). Status values are managed at the application level.
+- **Due Date**: Optional target or expiration date for the proposal.
+- **Locked**: When set, the proposal becomes read-only and cannot be modified.
+- **Summary**: High-level summary or scope description of the proposal.
+- **Notes**: Internal notes related to the proposal (not intended for client visibility).
+- **State**: Publish state flag (used for soft deletion and visibility control).
+- **Created**: Timestamp when the proposal was created.
+- **Created By**: User ID of the creator.
+- **Modified**: Timestamp of the most recent modification.
+- **Modified By**: User ID of the last editor.
+- **Checked Out**: User ID of the user currently editing the proposal.
+- **Checked Out Time**: Timestamp when the proposal was checked out for editing.
+- **Version**: Incrementing version number used for optimistic locking and change tracking.
+
+### Proposal Tables
+```
+CREATE TABLE `jos_mothership_proposals` (
+	`id` INT NOT NULL AUTO_INCREMENT,
+	`name` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+	`client_id` INT NULL DEFAULT NULL,
+	`account_id` INT NULL DEFAULT NULL,
+	`project_id` INT NULL DEFAULT NULL,
+	`type` VARCHAR(50) NOT NULL DEFAULT '' COLLATE 'utf8mb4_unicode_ci',
+	`number` VARCHAR(50) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+	`total_low` DECIMAL(10,2) NOT NULL DEFAULT '0.00',
+	`total` DECIMAL(10,2) NOT NULL DEFAULT '0.00',
+	`rate` DECIMAL(10,2) NOT NULL DEFAULT '0.00',
+	`status` INT NOT NULL DEFAULT '1',
+	`expires` DATE NULL DEFAULT NULL,
+	`locked` TINYINT(1) NOT NULL DEFAULT '0',
+	`summary` MEDIUMTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+	`notes` MEDIUMTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+	`state` TINYINT NOT NULL DEFAULT '0',
+	`created` DATETIME NULL DEFAULT (now()),
+	`created_by` INT NULL DEFAULT NULL,
+	`modified` DATETIME NULL DEFAULT NULL,
+	`modified_by` INT NULL DEFAULT NULL,
+	`checked_out` INT NULL DEFAULT NULL,
+	`checked_out_time` DATETIME NULL DEFAULT NULL,
+	`version` INT NOT NULL DEFAULT '1',
+	PRIMARY KEY (`id`) USING BTREE,
+	INDEX `idx_client_id` (`client_id`) USING BTREE,
+	INDEX `idx_account_id` (`account_id`) USING BTREE,
+	INDEX `idx_project_id` (`project_id`) USING BTREE,
+	INDEX `idx_number` (`number`) USING BTREE,
+	CONSTRAINT `fk_proposal_account_mship` FOREIGN KEY (`account_id`) REFERENCES `jos_mothership_accounts` (`id`) ON UPDATE NO ACTION ON DELETE SET NULL,
+	CONSTRAINT `fk_proposal_client_mship` FOREIGN KEY (`client_id`) REFERENCES `jos_mothership_clients` (`id`) ON UPDATE NO ACTION ON DELETE SET NULL,
+	CONSTRAINT `fk_proposal_project_mship` FOREIGN KEY (`project_id`) REFERENCES `jos_mothership_projects` (`id`) ON UPDATE NO ACTION ON DELETE SET NULL
+)
+COLLATE='utf8mb4_unicode_ci'
+ENGINE=InnoDB
+ROW_FORMAT=DYNAMIC
+AUTO_INCREMENT=2
+;
+```
+
+### Proposal Lifecycle Status Levels
+Invoices that are set from `Draft` to `Opened` will have their `Locked` status set to true. Opened invoices should not be modified. Invoices that are in a `Locked` state can be `Unlocked` if it is necessary to override for some reason.
+
+- **Draft**: The proposal is being created or edited and has not yet been finalized or shared with the client.
+- **Pending**: The proposal has been finalized and sent to the client for review and is awaiting a response.
+- **Approved**: The proposal has been accepted by the client and is eligible for conversion into an invoice or project.
+- **Declined**: The proposal has been reviewed and explicitly rejected by the client.
+- **Cancelled**: The proposal was withdrawn or invalidated before a final decision was made.
+- **Expired**: The proposal was not approved within the allowed time window and is no longer valid.
+
+## Proposal Items
+The **Proposal Items** object represents the individual items listed on an proposal. Each proposal item has the following attributes:
+
+- **ID**: A unique identifier for the invoice item.
+- **Invoice ID**: The ID of the invoice to which the item belongs.
+- **Name**: The name of the item.
+- **Description**: A description of the item.
+- **Type**: The type of proposal item (Hourly or Fixed). 
+- **Time**: The estimated or actual time required for the item, typically expressed in hours or as a time string.
+- **Time Low**: The lower bound estimate of time required for the item, useful for range-based proposals.
+- **Quantity**: The number of units or amount of the item being proposed (e.g., hours, licenses, deliverables).
+- **Quantity Low**: The minimum or lower bound quantity estimate for the item, used in range or estimate proposals.
+- **Subtotal**: The calculated cost for this item (quantity × rate), representing the main or upper estimate.
+- **Subtotal Low**: The lower bound cost estimate for this item, based on the lower quantity or time.
+- **Ordering**: The position or order in which the item appears on the proposal, used for sorting or display.
+
+
+### Proposal Items Table
+```
+CREATE TABLE `jos_mothership_proposal_items` (
+	`id` INT NOT NULL AUTO_INCREMENT,
+	`proposal_id` INT NOT NULL,
+	`name` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+	`description` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+	`type` ENUM('hourly','fixed') NOT NULL DEFAULT 'hourly' COLLATE 'utf8mb4_unicode_ci',
+	`time` VARCHAR(10) NOT NULL DEFAULT '' COLLATE 'utf8mb4_unicode_ci',
+	`time_low` VARCHAR(10) NOT NULL DEFAULT '' COLLATE 'utf8mb4_unicode_ci',
+	`quantity` DECIMAL(10,2) NOT NULL DEFAULT '0.00',
+	`quantity_low` DECIMAL(10,2) NOT NULL DEFAULT '0.00',
+	`rate` DECIMAL(10,2) NOT NULL DEFAULT '0.00',
+	`subtotal` DECIMAL(10,2) NOT NULL DEFAULT '0.00',
+	`subtotal_low` DECIMAL(10,2) NOT NULL DEFAULT '0.00',
+	`ordering` INT NOT NULL DEFAULT '0',
+	PRIMARY KEY (`id`) USING BTREE,
+	INDEX `idx_proposal_id` (`proposal_id`) USING BTREE,
+	CONSTRAINT `fk_proposal_items_proposal_mship` FOREIGN KEY (`proposal_id`) REFERENCES `jos_mothership_proposals` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE
+)
+COLLATE='utf8mb4_unicode_ci'
+ENGINE=InnoDB
+ROW_FORMAT=DYNAMIC
+AUTO_INCREMENT=3
+;
+```
+
 ## Invoices
 The **Invoices** object represents the invoices generated for clients. Each invoice has the following attributes:
 
@@ -609,6 +735,9 @@ These methods for Codeception's DB module allow the database to be quickly confi
 - **createMothershipUser(array $data)**:
 - **createMothershipAccountData(array $data)**:
 - **createMothershipAccount(array $data)**:
+- **createMothershipProposalData(array $data)**: 
+- **createMothershipProposal(array $data)**: 
+- **createMothershipProposalItemData(array $data)**:
 - **createMothershipInvoiceData(array $data)**: 
 - **createMothershipInvoice(array $data)**: 
 - **createMothershipInvoiceItemData(array $data)**:
@@ -631,6 +760,7 @@ These methods for Codeception's DB module allow the database to be quickly confi
 - **clearUsersTable()**:
 - **setMothershipConfig(array $settings)**:
 - **grabInvoiceRow($invoiceId, $rowNumber)**:
+- **grabProposalRow($proposalId, $rowNumber)**:
 - **grabDomainFromDatabase($domainId)**:
 - **getClientIdByName($clientName)**:
 - **grabLastCompletedPaymentId()**:
@@ -642,6 +772,7 @@ These methods for Codeception's DB module allow the database to be quickly confi
 
 ### Custom Assertions
 
+- **assertProposalHasRows($proposalId, $expectedRows)**:
 - **assertInvoiceHasRows($invoiceId, $expectedRows)**:
 - **assertInvoiceStatus(int $invoiceId, string $expectedStatusLabel)**:
 - **assertInvoiceStatusDraft($invoiceId)**:
@@ -666,6 +797,7 @@ Front end codeception test classes
 
 - **MothershipFrontClientsCest**:
 - **MothershipFrontAccountsCest**:
+- **MothershipFrontProposalsCest**:
 - **MothershipFrontInvoicesCest**:
 - **MothershipFrontProjectsCest**:
 - **MothershipFrontDomainsCest**:
@@ -678,6 +810,7 @@ Back end codeception test classes.
 
 - **MothershipAdminClientsCest**:
 - **MothershipAdminAccountsCest**:
+- **MothershipAdminProposalsCest**:
 - **MothershipAdminInvoicesCest**:
 - **MothershipAdminProjectsCest**:
 - **MothershipAdminDomainsCest**:
@@ -696,6 +829,7 @@ Back end codeception test classes.
 - **MothershipClientHelperTest**:
 - **MothershipAccountHelperTest**:
 - **MothershipProjectHelperTest**:
+- **MothershipProposalHelperTest**:
 - **MothershipInvoiceHelperTest**:
 - **MothershipDomainHelperTest**:
 - **MothershipEmailServiceTest**:

@@ -79,7 +79,7 @@ class MothershipAdminDomainsCest
         $I->wait(1);
         $I->waitForText("Mothership: Domains", 20, "h1.page-title");
         
-        $I->makeScreenshot("mothership-domains-view-all");
+        $I->takeFullPageScreenshot("mothership-domains-view-all");
 
         $toolbar = "#toolbar";
         $toolbarNew = "#toolbar-new";
@@ -133,7 +133,7 @@ class MothershipAdminDomainsCest
         $I->wait(1);
         $I->see("Mothership: New Domain", "h1.page-title");
 
-        $I->makeScreenshot("mothership-domain-add-details");
+        $I->takeFullPageScreenshot("mothership-domain-add-details");
 
         $I->see("Save", "#toolbar");
         $I->see("Save & Close", "#toolbar");
@@ -149,7 +149,7 @@ class MothershipAdminDomainsCest
         $I->click("Save", "#toolbar");
         $I->wait(1);
         $I->see("One of the options must be selected", "label#jform_client_id-lbl .form-control-feedback");
-        $I->makeScreenshot("mothership-domain-add-details");
+        $I->takeFullPageScreenshot("mothership-domain-add-details");
         // VERIFY & FILL FORM FIELDS
         $I->seeElement("select#jform_client_id");
         $I->dontSee("select#jform_account_id");
@@ -233,12 +233,30 @@ class MothershipAdminDomainsCest
      */
     public function MothershipEditInvalidDomain(AcceptanceTester $I)
     {
-        $I->amOnPage(sprintf(self::DOMAIN_EDIT_URL, "9999"));
-        $I->wait(1);
+        $I->amOnPage(sprintf(self::DOMAIN_EDIT_URL, 9999));
+
+        // Confirm redirect landed (prevents checking too early / wrong page)
         $I->waitForText('Mothership: Domains', 30, 'h1.page-title');
         $I->seeInCurrentUrl(self::DOMAINS_VIEW_ALL_URL);
-        $I->waitForText("Domain not found. Please select a valid domain.", 30, "#system-message-container .alert-message");
+
+        // Kill animations (makes "visible" deterministic)
+        $I->executeJS(<<<'JS'
+            const s = document.createElement('style');
+            s.innerHTML = `
+                * { animation: none !important; transition: none !important; }
+                joomla-alert { opacity: 1 !important; }
+            `;
+            document.head.appendChild(s);
+        JS);
+
+        // Wait for the message text node, not just the container
+        $I->waitForElementVisible('#system-message-container joomla-alert .alert-message', 30);
+        $I->see('Domain not found. Please select a valid domain.', '#system-message-container');
+
+        // Optional: assert severity (allow either)
+        $I->seeElement( '#system-message-container joomla-alert[type="danger"]');
     }
+
 
     /**
      * @group backend

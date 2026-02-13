@@ -165,7 +165,7 @@ class MothershipAdminLogsCest
         $I->wait(1);
         $I->waitForText("Mothership: Logs", 20, "h1.page-title");
 
-        $I->makeScreenshot("mothership-logs-view-all");
+        $I->takeFullPageScreenshot("mothership-logs-view-all");
 
         $toolbar = "#toolbar";
         $toolbarNew = "#toolbar-new";
@@ -214,7 +214,7 @@ class MothershipAdminLogsCest
         $I->wait(1);
         $I->waitForText("Mothership: View Log", 20, "h1.page-title");
 
-        $I->makeScreenshot("mothership-log-view");
+        $I->takeFullPageScreenshot("mothership-log-view");
 
         $toolbar = "#toolbar";
         $toolbarCancel = "#toolbar-cancel";

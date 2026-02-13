@@ -39,7 +39,7 @@ class MothershipAdminOptionsCest
         $I->amOnPage(self::OPTIONS_URL);
         $I->waitForText("Mothership: Configuration", 10);
 
-        $I->makeScreenshot("mothership-view-options");
+        $I->takeFullPageScreenshot("mothership-view-options");
 
         $I->seeElement("label[for='jform_company_name']");
         $I->seeElement("#jform_company_name");

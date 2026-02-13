@@ -72,7 +72,7 @@ class MothershipAdminClientsCest
         $I->amOnPage(self::CLIENTS_VIEW_ALL_URL);
         $I->waitForText("Mothership: Clients", 30, "h1.page-title");
 
-        $I->makeScreenshot("mothership-clients-view-all");
+        $I->takeFullPageScreenshot("mothership-clients-view-all");
 
         $I->seeElement(self::TBAR." ".self::TBAR_NEW);
         $I->see("New", self::TBAR." ".self::TBAR_NEW);
@@ -117,7 +117,7 @@ class MothershipAdminClientsCest
         $I->wait(1);
         $I->waitForText("Mothership: New Client", 30, "h1.page-title");
 
-        $I->makeScreenshot("mothership-client-add-new");
+        $I->takeFullPageScreenshot("mothership-client-add-new");
         $I->dontSee("Warning");
 
         $I->see("Save", self::TBAR);
@@ -171,7 +171,7 @@ class MothershipAdminClientsCest
         $I->click("Save", self::TBAR);
         $I->wait(1);
         $I->waitForText("Mothership: New Client", 30, "h1.page-title");
-        $I->makeScreenshot("mothership-client-add-errors");
+        $I->takeFullPageScreenshot("mothership-client-add-errors");
         // The form cannot be submitted as it's missing required data.
         // Please correct the marked fields and try again.
         $I->see("The form cannot be submitted as it's missing required data. Please correct the marked fields and try again.", ".alert-message");
@@ -220,7 +220,7 @@ class MothershipAdminClientsCest
         // Add Owner User
         $I->click(".icon-user");
         $I->wait(1);
-        $I->makeScreenshot("mothership-client-add-contact");
+        $I->takeFullPageScreenshot("mothership-client-add-contact");
         $I->switchToIFrame(".iframe-content");       
         $I->fillField("#filter_search", $this->joomlaUserData['name']);
         $I->click('//button[contains(@class, "btn") and .//span[contains(@class, "icon-search")]]');
@@ -229,7 +229,7 @@ class MothershipAdminClientsCest
         $I->wait(1);
         $I->switchToIFrame();
 
-        $I->makeScreenshot("mothership-client-add-filled");
+        $I->takeFullPageScreenshot("mothership-client-add-filled");
 
         // TEST ACTION Save
         $I->click("Save", self::TBAR);
@@ -284,11 +284,28 @@ class MothershipAdminClientsCest
      */
     public function MothershipEditInvalidClient(AcceptanceTester $I)
     {
-        $I->amOnPage(sprintf(self::CLIENT_EDIT_URL, "9999"));
-        $I->wait(1);
+        $I->amOnPage(sprintf(self::CLIENT_EDIT_URL, 9999));
+
+        // Confirm redirect landed (prevents checking too early / wrong page)
         $I->waitForText('Mothership: Clients', 30, 'h1.page-title');
-        $I->waitForText("Client not found. Please select a valid client.", 30, "#system-message-container .alert-message");
         $I->seeInCurrentUrl(self::CLIENTS_VIEW_ALL_URL);
+
+        // Kill animations (makes "visible" deterministic)
+        $I->executeJS(<<<'JS'
+            const s = document.createElement('style');
+            s.innerHTML = `
+                * { animation: none !important; transition: none !important; }
+                joomla-alert { opacity: 1 !important; }
+            `;
+            document.head.appendChild(s);
+        JS);
+
+        // Wait for the message text node, not just the container
+        $I->waitForElementVisible('#system-message-container joomla-alert .alert-message', 30);
+        $I->see('Client not found. Please select a valid client.', '#system-message-container');
+
+        // Optional: assert severity (allow either)
+        $I->seeElement( '#system-message-container joomla-alert[type="danger"]');
     }
 
     /**

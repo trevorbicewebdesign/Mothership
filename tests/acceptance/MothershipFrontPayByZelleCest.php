@@ -115,17 +115,17 @@ class MothershipFrontPayByZelleCest
         $I->wait(1);
         $I->waitForText("Pay Invoice", 30, "h1");
         $I->waitForText("Pay Invoice #{$this->invoiceData['number']}", 30, "h1");
-        $I->makeScreenshot("account-center-pay-invoice");
+        $I->takeFullPageScreenshot("account-center-pay-invoice");
         codecept_debug($I->grabFromCurrentUrl()); // output the current url into the debug
         $I->see("Pay Now");
         $I->see("Total Due: \${$this->invoiceData['total']}");
         // Click Pay By Check
         $I->selectOption(['css' => 'input[name="payment_method"]'], 'zelle');
-        $I->makeScreenshot("account-center-pay-invoice-zelle-instructions");
+        $I->takeFullPageScreenshot("account-center-pay-invoice-zelle-instructions");
         $I->click("Pay Now");
         $I->wait(1);
         $I->waitForText("Thank You", 30, "h1");
-        $I->makeScreenshot("account-center-pay-invoice-zelle-thank-you");
+        $I->takeFullPageScreenshot("account-center-pay-invoice-zelle-thank-you");
         // Once the user clicks `Pay Now` the payment is created and the user is redirected to the thank you page
         // The Admin should receive an email regarding the pending payment
         $I->getEmailBySubject("New Pending Payment for zelle");
@@ -224,7 +224,7 @@ class MothershipFrontPayByZelleCest
         $I->click("Cancel Pending Payment", "table#invoicesTable tbody tr td:nth-child(9)");
         $I->wait(1);
         $I->waitForText("Cancel Payment", 20, "h4");
-        $I->makeScreenshot("account-center-pay-invoice-zelle");
+        $I->takeFullPageScreenshot("account-center-pay-invoice-zelle");
         codecept_debug($I->grabFromCurrentUrl()); // output the current url into the debug
         $I->click("Cancel Payment");
         // Accept javascript confirm
@@ -238,7 +238,7 @@ class MothershipFrontPayByZelleCest
         $I->click("Pay Now");
         $I->wait(1);
         $I->waitForText("Thank You", 20, "h1");
-        $I->makeScreenshot("account-center-pay-invoice-zelle-thank-you");
+        $I->takeFullPageScreenshot("account-center-pay-invoice-zelle-thank-you");
         // Once the user clicks `Pay Now` the payment is created and the user is redirected to the thank you page
         // The Admin should receive an email regarding the pending payment
         $I->getEmailBySubject("New Pending Payment for zelle");

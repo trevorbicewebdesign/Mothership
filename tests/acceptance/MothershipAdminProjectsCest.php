@@ -86,7 +86,7 @@ class MothershipAdminProjectsCest
         $I->wait(1);
         $I->waitForText("Mothership: Projects", 30, "h1.page-title");
 
-        $I->makeScreenshot("mothership-view-projects");
+        $I->takeFullPageScreenshot("mothership-view-projects");
 
         $toolbar = "#toolbar";
         $toolbarNew = "#toolbar-new";
@@ -136,7 +136,7 @@ class MothershipAdminProjectsCest
         $I->wait(1);
         $I->waitForText("Mothership: New Project", 30, "h1.page-title");
 
-        $I->makeScreenshot("mothership-add-project");
+        $I->takeFullPageScreenshot("mothership-add-project");
 
         $I->see("Save", "#toolbar");
         $I->see("Save & Close", "#toolbar");
@@ -232,11 +232,11 @@ class MothershipAdminProjectsCest
      */
     public function MothershipEditInvalidProject(AcceptanceTester $I)
     {
-        $I->amOnPage(sprintf(self::PROJECT_EDIT_URL, "9999"));
-        $I->wait(1);
-        $I->waitForText('Mothership: Projects', 30, 'h1.page-title');
+        $I->amOnPage(sprintf(self::PROJECT_EDIT_URL, 9999));
+        $I->waitForElementVisible('#system-message-container', 30);
+        $I->see('Project not found. Please select a valid project.', '#system-message-container');
+        $I->see('Mothership: Projects', 'h1.page-title');
         $I->seeInCurrentUrl(self::PROJECTS_VIEW_ALL_URL);
-        $I->waitForText("Project not found. Please select a valid project.", 30, "#system-message-container .alert-message");
     }
 
     /**

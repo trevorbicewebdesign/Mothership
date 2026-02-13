@@ -30,6 +30,8 @@ jobs:
           - suite: acceptance
             group: backend-invoice
           - suite: acceptance
+            group: backend-proposal            
+          - suite: acceptance
             group: backend-payment
           - suite: acceptance
             group: backend-options

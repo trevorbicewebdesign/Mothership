@@ -123,7 +123,7 @@ class MothershipFrontPaymentsCest
         // Verify redirection to account center
         $I->amOnPage(self::PAYMENTS_VIEW_ALL_URL);
         $I->waitForText("Payments", 30, "h1");
-        $I->makeScreenshot("account-center-view-all-payments");
+        $I->takeFullPageScreenshot("account-center-view-all-payments");
         $I->dontSee("Warning:");
 
         // Confirm the correct number of records
@@ -200,7 +200,7 @@ class MothershipFrontPaymentsCest
         $I->waitForText("Payment #{$this->paymentData['id']}", 30);
 
         // Capture a screenshot of the view
-        $I->makeScreenshot("account-center-view-payment");
+        $I->takeFullPageScreenshot("account-center-view-payment");
         $I->dontSee("Warning:");
 
         // Verify payment details are displayed correctly

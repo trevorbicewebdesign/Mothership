@@ -7,6 +7,84 @@ $account = $this->item;
 ?>
 <h1><?php echo $account->name; ?></h1>
 <hr/>
+<h4>Proposals</h4>
+<table class="table" id="proposalsTable">
+    <thead>
+        <tr>
+            <th>PDF</th>
+            <th>#</th>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Expires</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php if(empty($account->proposals)) : ?>
+            <tr>
+                <td colspan="8">No proposals found.</td>
+            </tr>
+        <?php endif; ?>
+        <?php 
+        if( isset($account->proposals) && is_array($account->proposals)):
+        foreach ($account->proposals as $proposal ) : ?>
+            <tr>
+                <td>    
+                    <a href="<?php echo Route::_('index.php?option=com_mothership&task=proposal.downloadPdf&id=' . $proposal->id); ?>" target="_blank">PDF</a>
+                </td>
+                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=proposal&id=' . $proposal->id); ?>"><?php echo $proposal->number; ?></a></td>                
+                <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=proposal&id=' . $proposal->id); ?>"><?php echo $proposal->name; ?></a></td>
+                <td><?php 
+                switch($proposal->type) {
+                    case 'hourly':
+                        $proposal->type = "Hourly";
+                        break;
+                }
+                echo $proposal->type; 
+                ?></td>
+                <td>$<?php echo number_format($proposal->total_low, 2); ?> - $<?php echo number_format($proposal->total, 2); ?></td>
+                <td><?php 
+                switch ($proposal->status) {
+                    case '2':
+                        echo "Pending";
+                        break;
+                    case '3':
+                        echo "Approved";
+                        break;
+                    case '4':
+                        echo "Declined";
+                        break;
+                    case '5':
+                        echo "Cancelled";
+                        break;
+                    case '6':
+                        echo "Expired";
+                        break;
+                    default:
+                        echo "Unknown";
+                        break;
+                }
+                
+                ?></td>
+                <td><?php echo $proposal->expires; ?></td>
+                <td>
+                    
+                    <ul style="margin-bottom:0px;">
+                        <li><a href="<?php echo Route::_('index.php?option=com_mothership&task=proposal.edit&id=' . $proposal->id); ?>">View</a></li>
+                        <?php if($proposal->status === 2): ?>
+                        <li><a href="<?php echo Route::_("index.php?option=com_mothership&task=proposal.approve&id={$proposal->id}"); ?>">Approve</a></li>
+                        <?php endif; ?>
+                    </ul>
+                </td>
+            </tr>
+        <?php endforeach;
+        endif;
+        ?>
+    </tbody>
+</table>
+<hr/>
 <h4>Invoices</h4>
 <table class="table" id="invoicesTable">
     <thead>
@@ -60,16 +138,13 @@ $account = $this->item;
                     ?>
                     <?php endif; ?>
                 </td>
-                
                 <td>
-                    <ul>
+                    <ul style="margin-bottom:0px;">
                         <li><a href="<?php echo Route::_('index.php?option=com_mothership&task=invoice.edit&id=' . $invoice->id); ?>">View</a></li>
                         <?php if($invoice->status === 'Opened' || $invoice->status === 'Late'): ?>
                         <li><a href="<?php echo Route::_("index.php?option=com_mothership&task=invoice.payment&id={$invoice->id}"); ?>">Pay</a></li>
                         <?php endif; ?>
                     </ul>
-                    
-                    
                 </td>
             </tr>
         <?php endforeach; ?>
@@ -95,7 +170,8 @@ $account = $this->item;
                 <td colspan="7">No payments found.</td>
             </tr>
         <?php endif; ?>
-        <?php foreach ($account->payments as $payment) : ?>
+        <?php foreach ($account->payments as $payment) : 
+            ?>
             <tr>
                 <td><a href="<?php echo Route::_('index.php?option=com_mothership&view=payment&id=' . $payment->id); ?>"><?php echo $payment->id; ?></a></td>
                 <td>$<?php echo number_format($payment->amount, 2); ?></td>

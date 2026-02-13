@@ -9,7 +9,6 @@ $invoice  = $displayData['invoice'] ?? null;
 $account  = $displayData['account'] ?? null;
 $client   = $displayData['client'] ?? null;
 $business = $displayData['business'] ?? null;
-
 // Items fallback to array
 $items = $invoice?->items ?? [];
 ?>
@@ -242,6 +241,7 @@ $items = $invoice?->items ?? [];
         echo $invoice?->notes ?? '';
         ?>
     </div>
-
+    
 </body>
 </html>
+
