@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form addfieldprefix="TrevorBice\Component\Mothership\Administrator\Field">
+	<fields name="filter">
+		<field name="search" type="text" inputmode="search" label="COM_MOTHERSHIP_TICKETS_FILTER_SEARCH_LABEL" description="COM_MOTHERSHIP_TICKETS_FILTER_SEARCH_DESC" hint="JSEARCH_FILTER" />
+
+		<field name="client_id" type="sql" default="" onchange="this.form.submit();"
+			header="COM_MOTHERSHIP_FILTER_SELECT_CLIENT" key_field="value" value_field="text"
+			query="SELECT id AS value, name AS text FROM #__mothership_clients ORDER BY name ASC"
+			label="COM_MOTHERSHIP_FILTER_CLIENT_LABEL" description="" />
+
+		<field name="account_id" type="accountfilter" default="" onchange="this.form.submit();"
+			label="COM_MOTHERSHIP_FILTER_ACCOUNT_LABEL" description="" />
+
+		<field name="status" type="list" label="COM_MOTHERSHIP_FIELD_TICKET_STATUS_LABEL" description="COM_MOTHERSHIP_FIELD_TICKET_STATUS_DESC" onchange="this.form.submit();">
+			<option value="">COM_MOTHERSHIP_TICKETS_FILTER_STATUS_ALL</option>
+			<option value="new">COM_MOTHERSHIP_TICKET_STATUS_NEW</option>
+			<option value="open">COM_MOTHERSHIP_TICKET_STATUS_OPEN</option>
+			<option value="in_progress">COM_MOTHERSHIP_TICKET_STATUS_IN_PROGRESS</option>
+			<option value="waiting">COM_MOTHERSHIP_TICKET_STATUS_WAITING</option>
+			<option value="resolved">COM_MOTHERSHIP_TICKET_STATUS_RESOLVED</option>
+			<option value="closed">COM_MOTHERSHIP_TICKET_STATUS_CLOSED</option>
+		</field>
+
+		<field name="priority" type="list" label="COM_MOTHERSHIP_FIELD_TICKET_PRIORITY_LABEL" description="COM_MOTHERSHIP_FIELD_TICKET_PRIORITY_DESC" onchange="this.form.submit();">
+			<option value="">COM_MOTHERSHIP_TICKETS_FILTER_PRIORITY_ALL</option>
+			<option value="low">COM_MOTHERSHIP_TICKET_PRIORITY_LOW</option>
+			<option value="normal">COM_MOTHERSHIP_TICKET_PRIORITY_NORMAL</option>
+			<option value="high">COM_MOTHERSHIP_TICKET_PRIORITY_HIGH</option>
+			<option value="urgent">COM_MOTHERSHIP_TICKET_PRIORITY_URGENT</option>
+		</field>
+	</fields>
+	<fields name="list">
+		<field name="fullordering" type="list" label="JGLOBAL_SORT_BY" class="js-select-submit-on-change" default="t.created DESC" validate="options">
+			<option value="">JGLOBAL_SORT_BY</option>
+			<option value="t.id ASC">JGRID_HEADING_ID_ASC</option>
+			<option value="t.id DESC">JGRID_HEADING_ID_DESC</option>
+			<option value="t.subject ASC">COM_MOTHERSHIP_TICKET_HEADING_SUBJECT_ASC</option>
+			<option value="t.subject DESC">COM_MOTHERSHIP_TICKET_HEADING_SUBJECT_DESC</option>
+			<option value="t.created ASC">COM_MOTHERSHIP_TICKET_HEADING_CREATED_ASC</option>
+			<option value="t.created DESC">COM_MOTHERSHIP_TICKET_HEADING_CREATED_DESC</option>
+		</field>
+		<field name="limit" type="limitbox" label="JGLOBAL_LIST_LIMIT" default="25" class="js-select-submit-on-change" />
+	</fields>
+</form>
