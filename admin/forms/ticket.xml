@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form
+	addfieldprefix="TrevorBice\Component\Mothership\Administrator\Field"
+	>
+	<fieldset name="basic">
+		<field name="id" type="text" default="0" readonly="true" class="readonly" label="JGLOBAL_FIELD_ID_LABEL" />
+
+		<field name="subject" type="text" default="" class="input-xxlarge input-large-text" required="true"
+			label="COM_MOTHERSHIP_FIELD_TICKET_SUBJECT_LABEL" description="COM_MOTHERSHIP_FIELD_TICKET_SUBJECT_DESC" />
+
+		<field name="client_id" type="clientlist" default="" required="true"
+			label="COM_MOTHERSHIP_FIELD_CLIENT_ID_LABEL" description="COM_MOTHERSHIP_FIELD_CLIENT_NAME_DESC" />
+
+		<field name="account_id" type="accountlist" default=""
+			label="COM_MOTHERSHIP_FIELD_ACCOUNT_ID_LABEL" description="COM_MOTHERSHIP_FIELD_ACCOUNT_NAME_DESC" />
+
+		<field name="project_id" type="projectlist" default=""
+			label="COM_MOTHERSHIP_FIELD_PROJECT_ID_LABEL" description="COM_MOTHERSHIP_FIELD_PROJECT_NAME_DESC" />
+
+		<field name="status" type="list" default="new"
+			label="COM_MOTHERSHIP_FIELD_TICKET_STATUS_LABEL" description="COM_MOTHERSHIP_FIELD_TICKET_STATUS_DESC" validate="options">
+			<option value="new">COM_MOTHERSHIP_TICKET_STATUS_NEW</option>
+			<option value="open">COM_MOTHERSHIP_TICKET_STATUS_OPEN</option>
+			<option value="in_progress">COM_MOTHERSHIP_TICKET_STATUS_IN_PROGRESS</option>
+			<option value="waiting">COM_MOTHERSHIP_TICKET_STATUS_WAITING</option>
+			<option value="resolved">COM_MOTHERSHIP_TICKET_STATUS_RESOLVED</option>
+			<option value="closed">COM_MOTHERSHIP_TICKET_STATUS_CLOSED</option>
+		</field>
+
+		<field name="priority" type="list" default="normal"
+			label="COM_MOTHERSHIP_FIELD_TICKET_PRIORITY_LABEL" description="COM_MOTHERSHIP_FIELD_TICKET_PRIORITY_DESC" validate="options">
+			<option value="low">COM_MOTHERSHIP_TICKET_PRIORITY_LOW</option>
+			<option value="normal">COM_MOTHERSHIP_TICKET_PRIORITY_NORMAL</option>
+			<option value="high">COM_MOTHERSHIP_TICKET_PRIORITY_HIGH</option>
+			<option value="urgent">COM_MOTHERSHIP_TICKET_PRIORITY_URGENT</option>
+		</field>
+
+		<field name="type" type="text" default=""
+			label="COM_MOTHERSHIP_FIELD_TICKET_TYPE_LABEL" description="COM_MOTHERSHIP_FIELD_TICKET_TYPE_DESC" />
+
+		<field name="assigned_to" type="user" default=""
+			label="COM_MOTHERSHIP_FIELD_TICKET_ASSIGNED_TO_LABEL" description="COM_MOTHERSHIP_FIELD_TICKET_ASSIGNED_TO_DESC" />
+
+		<field name="reference_url" type="url" default="" class="input-xxlarge"
+			label="COM_MOTHERSHIP_FIELD_TICKET_REFERENCE_URL_LABEL" description="COM_MOTHERSHIP_FIELD_TICKET_REFERENCE_URL_DESC" />
+
+		<field name="description" type="textarea" default="" rows="8" class="input-xxlarge input-large-text"
+			label="COM_MOTHERSHIP_FIELD_TICKET_DESCRIPTION_LABEL" description="COM_MOTHERSHIP_FIELD_TICKET_DESCRIPTION_DESC" />
+	</fieldset>
+
+	<fieldset name="billing" label="COM_MOTHERSHIP_FIELDSET_TICKET_BILLING">
+		<field name="billable" type="radio" default="0" layout="joomla.form.field.radio.switcher"
+			label="COM_MOTHERSHIP_FIELD_TICKET_BILLABLE_LABEL" description="COM_MOTHERSHIP_FIELD_TICKET_BILLABLE_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+
+		<field name="estimated_minutes" type="number" default="" min="0" step="5"
+			label="COM_MOTHERSHIP_FIELD_TICKET_ESTIMATED_MINUTES_LABEL" description="COM_MOTHERSHIP_FIELD_TICKET_ESTIMATED_MINUTES_DESC" />
+
+		<field name="logged_minutes" type="number" default="" min="0" step="5"
+			label="COM_MOTHERSHIP_FIELD_TICKET_LOGGED_MINUTES_LABEL" description="COM_MOTHERSHIP_FIELD_TICKET_LOGGED_MINUTES_DESC" />
+
+		<field name="rate" type="number" default="" min="0" step="0.01"
+			label="COM_MOTHERSHIP_FIELD_TICKET_RATE_LABEL" description="COM_MOTHERSHIP_FIELD_TICKET_RATE_DESC" />
+	</fieldset>
+</form>
