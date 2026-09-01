@@ -14,18 +14,32 @@ $pluginParams = new JRegistry($plugin->params);
 /** @var array $displayData */
 $invoiceId = (int) ($displayData['invoiceId'] ?? 0);
 $paymentId = (int) ($displayData['id'] ?? 0);
+
+// Show the human-facing invoice number, never the internal id.
+$invoiceNumber = $displayData['invoiceNumber'] ?? '';
+if ($invoiceNumber === '' && $invoiceId) {
+    $db = \Joomla\CMS\Factory::getContainer()->get('DatabaseDriver');
+    $db->setQuery(
+        $db->getQuery(true)
+            ->select($db->quoteName('number'))
+            ->from($db->quoteName('#__mothership_invoices'))
+            ->where($db->quoteName('id') . ' = ' . $invoiceId)
+    );
+    $invoiceNumber = (string) $db->loadResult();
+}
+$invoiceNumber = htmlspecialchars($invoiceNumber !== '' ? $invoiceNumber : (string) $invoiceId);
 ?>
 
-<h1>Pay By Check Payment Instructions</h1>
+<h3>Pay By Check Payment Instructions</h3>
 
-<p><strong>Invoice #<?= $invoiceId ?></strong></p>
+<p><strong>Invoice #<?= $invoiceNumber ?></strong></p>
 
 <p>
   Please make your check payable to: <strong><?= htmlspecialchars($pluginParams->get('checkpayee', '')); ?></strong>
 </p>
 
 <p>
-  Be sure to include the invoice number <strong>#<?= $invoiceId ?></strong> in the memo line of the check.
+  Be sure to include the invoice number <strong>#<?= $invoiceNumber ?></strong> in the memo line of the check.
 </p>
 
 <p>
