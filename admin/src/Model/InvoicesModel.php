@@ -20,6 +20,8 @@ use Joomla\Database\ParameterType;
 
 class InvoicesModel extends ListModel
 {
+    use HasClientAccountFilter;
+
     public function __construct($config = [])
     {
         if (empty($config['filter_fields'])) {
@@ -42,7 +44,7 @@ class InvoicesModel extends ListModel
         parent::__construct($config);
     }
 
-    protected function populateState($ordering = 'a.id', $direction = 'asc')
+    protected function populateState($ordering = 'i.created', $direction = 'desc')
     {
         $app = Factory::getApplication();
 
@@ -55,12 +57,17 @@ class InvoicesModel extends ListModel
         $this->setState('filter.client_name', $clientName);
 
         parent::populateState($ordering, $direction);
+
+        // Shared, cascading Client / Account filter (see HasClientAccountFilter).
+        // Runs AFTER parent so its raw filter[] read does not clobber it.
+        $this->reconcileClientAccountFilterState();
     }
 
     protected function getStoreId($id = '')
     {
         // Compile the store id.
         $id .= ':' . $this->getState('filter.search');
+        $id = $this->clientAccountStoreId($id);
 
         return parent::getStoreId($id);
     }
@@ -76,6 +83,7 @@ class InvoicesModel extends ListModel
                 [
                     $db->quoteName('i.id'),
                     $db->quoteName('i.number'),
+                    $db->quoteName('i.title'),
                     $db->quoteName('i.client_id'),
                     $db->quoteName('c.name', 'client_name'),
                     $db->quoteName('i.account_id'),
@@ -101,6 +109,7 @@ class InvoicesModel extends ListModel
                     // 👇 Add total_paid and payment_status
                     'COALESCE(pay.total_paid, 0) AS total_paid',
                     'CASE' .
+                        ' WHEN i.total <= 0 THEN ' . $db->quote('Paid') .
                         ' WHEN COALESCE(pay.total_paid, 0) <= 0 THEN ' . $db->quote('Unpaid') .
                         ' WHEN COALESCE(pay.total_paid, 0) < i.total THEN ' . $db->quote('Partially Paid') .
                         ' ELSE ' . $db->quote('Paid') .
@@ -135,6 +144,10 @@ class InvoicesModel extends ListModel
                     ->bind(':search', $search, ParameterType::INTEGER);
             }
         }
+
+        // Filter by client / account (shared, cascading).
+        $this->applyClientAccountFilterQuery($query, 'i');
+
 
         $query->order(
             $db->quoteName($db->escape($this->getState('list.ordering', 'i.id'))) . ' ' .
