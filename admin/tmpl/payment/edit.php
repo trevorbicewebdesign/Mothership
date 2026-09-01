@@ -54,6 +54,7 @@ $user = $this->getCurrentUser();
                             <?php echo $this->form->renderField('account_id'); ?>
                         </div>
                     </div>
+                    <?php echo $this->form->renderField('invoice_id'); ?>
                     <?php echo $this->form->renderField('amount'); ?>
                     <?php echo $this->form->renderField('payment_date'); ?>
                     <?php echo $this->form->renderField('fee_amount'); ?>
