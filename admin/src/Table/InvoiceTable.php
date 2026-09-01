@@ -72,6 +72,12 @@ class InvoiceTable extends Table implements VersionableTableInterface
      */
     public function check()
     {
+        // Project is optional — normalise an empty selection to NULL so the
+        // invoice bills to the account alone (avoids a bogus project_id = 0).
+        if (empty($this->project_id)) {
+            $this->project_id = null;
+        }
+
         try {
             parent::check();
         } catch (\Exception $e) {
