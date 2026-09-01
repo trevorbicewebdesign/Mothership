@@ -19,6 +19,8 @@ use Joomla\Database\ParameterType;
 
 class PaymentsModel extends ListModel
 {
+    use HasClientAccountFilter;
+
     public function __construct($config = [])
     {
         if (empty($config['filter_fields'])) {
@@ -43,7 +45,7 @@ class PaymentsModel extends ListModel
         parent::__construct($config);
     }
 
-    protected function populateState($ordering = 'p.payment_date', $direction = 'asc')
+    protected function populateState($ordering = 'p.payment_date', $direction = 'desc')
     {
         $app = Factory::getApplication();
         if (empty($this->context)) {
@@ -53,12 +55,19 @@ class PaymentsModel extends ListModel
         $this->setState('filter.client_name', $clientName);
 
         parent::populateState($ordering, $direction);
+
+        // Shared, cascading Client / Account filter (see HasClientAccountFilter).
+        // Runs AFTER parent so its raw filter[] read does not clobber it.
+        $this->reconcileClientAccountFilterState();
     }
 
     protected function getStoreId($id = '')
     {
         // Compile the store id.
         $id .= ':' . $this->getState('filter.search');
+        $id = $this->clientAccountStoreId($id);
+        $id .= ':' . $this->getState('filter.payment_method');
+        $id .= ':' . $this->getState('filter.status');
         return parent::getStoreId($id);
     }
 
@@ -125,6 +134,22 @@ class PaymentsModel extends ListModel
                 $query->where($db->quoteName('p.payment_method') . ' LIKE :search')
                     ->bind(':search', $search);
             }
+        }
+
+        // Filter by client / account (shared, cascading).
+        $this->applyClientAccountFilterQuery($query, 'p');
+
+        // Filter by payment method.
+        if (($method = $this->getState('filter.payment_method', '')) !== '' && $method !== null) {
+            $query->where($db->quoteName('p.payment_method') . ' = :fmethod')
+                ->bind(':fmethod', $method);
+        }
+
+        // Filter by status.
+        if (($status = $this->getState('filter.status', '')) !== '' && $status !== null) {
+            $st = (int) $status;
+            $query->where($db->quoteName('p.status') . ' = :fstatus')
+                ->bind(':fstatus', $st, ParameterType::INTEGER);
         }
 
         // Ordering
