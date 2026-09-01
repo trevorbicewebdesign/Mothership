@@ -15,6 +15,8 @@ use Joomla\CMS\MVC\Model\AdminModel;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\Versioning\VersionableModelTrait;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Language\Text;
+use TrevorBice\Component\Mothership\Administrator\Helper\PaymentHelper;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -119,6 +121,17 @@ class PaymentModel extends AdminModel
             $data = $this->getItem();
         }
 
+        // Populate the currently-linked invoice so the picker shows it on edit
+        // (single-invoice assignment; first linked invoice wins).
+        if (\is_object($data) && !empty($data->id)) {
+            try {
+                $invoices         = PaymentHelper::getPaymentInvoices((int) $data->id);
+                $data->invoice_id = !empty($invoices) ? (int) $invoices[0]->id : '';
+            } catch (\Throwable $e) {
+                $data->invoice_id = '';
+            }
+        }
+
         $this->preprocessData('com_mothership.payment', $data);
 
         return $data;
@@ -187,7 +200,32 @@ class PaymentModel extends AdminModel
 
         // Set the new record ID into the model state
         $this->setState($this->getName() . '.id', $table->id);
-    
+
+        // Sync the payment's invoice allocation (single-invoice assignment):
+        // clear any existing links for this payment, then link the chosen invoice
+        // for the full payment amount. An empty selection leaves it unallocated.
+        $paymentId = (int) $table->id;
+        $invoiceId = isset($data['invoice_id']) ? (int) $data['invoice_id'] : 0;
+
+        try {
+            $db = $this->getDatabase();
+            $db->setQuery(
+                $db->getQuery(true)
+                    ->delete($db->quoteName('#__mothership_invoice_payment'))
+                    ->where($db->quoteName('payment_id') . ' = ' . $paymentId)
+            )->execute();
+
+            if ($invoiceId > 0) {
+                PaymentHelper::insertInvoicePayments($invoiceId, $paymentId, (float) $table->amount);
+            }
+        } catch (\Throwable $e) {
+            Log::add('Invoice allocation failed: ' . $e->getMessage(), Log::WARNING, 'com_mothership');
+            Factory::getApplication()->enqueueMessage(
+                Text::sprintf('COM_MOTHERSHIP_PAYMENT_INVOICE_LINK_FAILED', $e->getMessage()),
+                'warning'
+            );
+        }
+
         return true;
     }
 

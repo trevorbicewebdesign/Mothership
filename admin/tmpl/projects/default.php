@@ -77,11 +77,17 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                             <?php echo HTMLHelper::_('jgrid.checkedout', $i, $item->editor ?? '', $item->checked_out_time, 'articles.', $canCheckin); ?>
                                         <?php endif; ?>
 
-                                        <?php if($metadata['status'] == 'online'):?>
-                                            <span class="badge bg-success" title="<?php echo Text::_('COM_MOTHERSHIP_PROJECT_STATUS_ONLINE'); ?>" style="border-radius: 50%; display: inline-block; width: 10px; height: 10px;"></span>
-                                        <?php else: ?>
-                                            <span class="badge bg-danger" title="<?php echo Text::_('COM_MOTHERSHIP_PROJECT_STATUS_OFFLINE'); ?>" style="border-radius: 50%; display: inline-block; width: 10px; height: 10px;"></span>
-                                        <?php endif; ?>
+                                        <?php
+                                        // Dot reflects the scan result stored in metadata.status,
+                                        // the same value shown on the front end and set on the edit form.
+                                        switch ($metadata['status'] ?? '') {
+                                            case 'online':  $stColor = 'bg-success';   $stLabel = 'COM_MOTHERSHIP_PROJECT_STATUS_ONLINE';  break;
+                                            case 'error':   $stColor = 'bg-warning';   $stLabel = 'COM_MOTHERSHIP_PROJECT_STATUS_ERROR';   break;
+                                            case 'offline': $stColor = 'bg-danger';    $stLabel = 'COM_MOTHERSHIP_PROJECT_STATUS_OFFLINE'; break;
+                                            default:        $stColor = 'bg-secondary'; $stLabel = 'COM_MOTHERSHIP_PROJECT_STATUS_UNKNOWN'; break;
+                                        }
+                                        ?>
+                                        <span class="badge <?php echo $stColor; ?>" title="<?php echo Text::_($stLabel); ?>" style="border-radius: 50%; display: inline-block; width: 10px; height: 10px;"></span>
 
                                         <?php if ($canEdit || $canEditOwn) : ?>
                                             <a href="<?= Route::_("index.php?option=com_mothership&task=project.edit&id={$item->id}") ?>" title="<?= Text::_('JACTION_EDIT') ?> <?= $this->escape($item->name) ?>">

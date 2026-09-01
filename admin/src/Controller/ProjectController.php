@@ -61,9 +61,22 @@ class ProjectController extends FormController
 
         LogHelper::logProjectScanned($project->id, $project->client_id, $project->account_id);
 
-        if (strpos($scanResults['data']['response_code'], '200 OK') !== false) {
+        // Multi-state, because a single HTTP code can't always confirm "up":
+        //   200-399 -> online  : confirmed serving (a positive).
+        //   400-499 -> unknown : reachable, but blocked/unverified (WAF 403, auth
+        //                        wall, 404) — NOT a confirmed up, NOT a down.
+        //   500-599 -> error   : server responded but is erroring.
+        //   0       -> offline : no response at all — genuinely unreachable.
+        // Only a definitive result flips the project's active/inactive flag; an
+        // ambiguous (unknown/error) scan leaves it untouched.
+        $httpCode = (int) ($scanResults['data']['http_code'] ?? 0);
+        if ($httpCode >= 200 && $httpCode < 400) {
             $project->status = 'active';
             $project->metadata['status'] = 'online';
+        } elseif ($httpCode >= 400 && $httpCode < 500) {
+            $project->metadata['status'] = 'unknown';
+        } elseif ($httpCode >= 500) {
+            $project->metadata['status'] = 'error';
         } else {
             $project->status = 'inactive';
             $project->metadata['status'] = 'offline';

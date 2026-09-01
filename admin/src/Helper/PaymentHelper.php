@@ -143,6 +143,51 @@ class PaymentHelper
     }
 
     /**
+     * Mark a pending payment as completed (status 2), recording the gateway
+     * transaction id and fee. Idempotent: a payment already completed is
+     * returned unchanged and not re-processed. Does NOT run the completion
+     * side-effects — call onPaymentCompleted() after this.
+     *
+     * @param int    $paymentId  The pending payment id.
+     * @param string $txnId      Gateway transaction id (audit + idempotency).
+     * @param float  $feeAmount  Gateway fee.
+     *
+     * @return object The re-loaded payment record.
+     */
+    public static function completePayment(int $paymentId, string $txnId = '', float $feeAmount = 0.0)
+    {
+        $payment = self::getPayment($paymentId);
+        if (!$payment || empty($payment->id)) {
+            throw new \RuntimeException("Payment not found: {$paymentId}");
+        }
+
+        // Already completed — nothing to do (gateways resend notifications).
+        if ((int) $payment->status === 2) {
+            return $payment;
+        }
+
+        $db = Factory::getContainer()->get(DatabaseDriver::class);
+        $query = $db->getQuery(true)
+            ->update($db->quoteName('#__mothership_payments'))
+            ->set($db->quoteName('status') . ' = 2')
+            ->set($db->quoteName('transaction_id') . ' = ' . $db->quote($txnId))
+            ->set($db->quoteName('fee_amount') . ' = ' . (string) (float) $feeAmount)
+            ->set($db->quoteName('processed_date') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+            ->where($db->quoteName('id') . ' = ' . (int) $paymentId)
+            ->where($db->quoteName('status') . ' <> 2'); // guard against a concurrent complete
+        $db->setQuery($query);
+
+        try {
+            $db->execute();
+        } catch (\Exception $e) {
+            Log::add('Failed to complete payment: ' . $e->getMessage(), Log::ERROR, 'payment');
+            throw new \RuntimeException('Failed to complete payment: ' . $e->getMessage());
+        }
+
+        return self::getPayment($paymentId);
+    }
+
+    /**
      * Returns the payment status as a string based on the provided status ID.
      *
      * @param int $status_id The status ID to convert (1: Pending, 2: Completed, 3: Failed, 4: Cancelled, 5: Refunded).

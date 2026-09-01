@@ -77,6 +77,12 @@
 	</fieldset>
 	
 
+	<fieldset name="scanning" label="COM_MOTHERSHIP_OPTIONS_SCANNING" description="COM_MOTHERSHIP_OPTIONS_SCANNING_DESC">
+		<field name="scan_secret" type="text" default="" class="input-xxlarge input-large-text"
+			label="COM_MOTHERSHIP_OPTIONS_SCAN_SECRET_LABEL"
+			description="COM_MOTHERSHIP_OPTIONS_SCAN_SECRET_DESC" />
+	</fieldset>
+
 	<fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC">
 		<field name="rules" type="rules" label="JCONFIG_PERMISSIONS_LABEL" filter="rules" validate="rules" component="com_mothership" section="component">
 		</field>

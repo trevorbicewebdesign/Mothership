@@ -35,7 +35,24 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                         <?php echo Text::_('JGLOBAL_NO_MATCHING_RESULTS'); ?>
                     </div>
                 <?php else: ?>
-                    <table class="table itemList" id="invoiceList">
+                    <?php
+                    // Default-hide low-value columns (ID, Due) for first-time users.
+                    // The core table.columns toggler is driven entirely by this localStorage
+                    // key (it strips responsive classes on load), so we seed it once when unset.
+                    // Users can still re-enable any column from the "Columns" dropdown and their
+                    // choice then persists. Column index map (checkbox = 0): 1 = ID, 11 = Due.
+                    ?>
+                    <script>
+                        (function () {
+                            try {
+                                var key = 'joomla-tablecolumns-mothershipInvoices';
+                                if (window.localStorage.getItem(key) === null) {
+                                    window.localStorage.setItem(key, '1,11');
+                                }
+                            } catch (e) {}
+                        })();
+                    </script>
+                    <table class="table itemList" id="invoiceList" data-name="mothershipInvoices">
                         <thead>
                             <tr>
                                 <th width="1%" class="text-center">
@@ -46,6 +63,9 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                 </th>
                                 <th scope="col" class="w-10">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_INVOICE_HEADING_NUMBER', 'i.number', $listDirn, $listOrder); ?>
+                                </th>
+                                <th scope="col" class="w-15">
+                                    <?php echo HTMLHelper::_('searchtools.sort', 'JGLOBAL_TITLE', 'i.title', $listDirn, $listOrder); ?>
                                 </th>
                                 <th scope="col" class="w-10">
                                     <?php echo HTMLHelper::_('searchtools.sort', 'COM_MOTHERSHIP_INVOICE_HEADING_PDF', 'c.name', $listDirn, $listOrder); ?>
@@ -103,6 +123,9 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                             href="<?php echo Route::_("index.php?option=com_mothership&task=invoice.edit&id={$item->id}"); ?>"><?php echo (int) $item->number; ?></a>
                                     </td>
                                     <td>
+                                        <a href="<?php echo Route::_("index.php?option=com_mothership&task=invoice.edit&id={$item->id}"); ?>"><?php echo htmlspecialchars($item->title ?? '', ENT_QUOTES, 'UTF-8'); ?></a>
+                                    </td>
+                                    <td>
                                         <a class="downloadPdf"
                                             href="<?php echo Route::_('index.php?option=com_mothership&task=invoice.downloadPdf&id=' . (int) $item->id); ?>"
                                             target="_blank">
@@ -134,7 +157,7 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                         <?php echo $item->payment_status; ?><br/>
                                         <?php $payment_ids = array_filter(explode(",", $item->payment_ids ?? '')); ?>
                                         <?php if (count($payment_ids) > 0): ?>
-                                        <ul style="margin-bottom:0px;" class="payment-list">
+                                        <ul style="margin-bottom:0;padding-left:0;" class="payment-list">
                                             <?php foreach ($payment_ids as $paymentId): ?>
                                                 <li style="list-style: none;white-space:nowrap;"><small><a href="index.php?option=com_mothership&view=payment&layout=edit&id=<?php echo $paymentId; ?>&return=<?php echo base64_encode(Route::_('index.php?option=com_mothership&view=invoices')); ?>" class="payment-link"><?php echo "Payment #{$paymentId}"; ?></a></small></li>
                                             <?php endforeach; ?>

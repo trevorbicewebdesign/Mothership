@@ -20,6 +20,8 @@ use Joomla\Database\ParameterType;
 
 class DomainsModel extends ListModel
 {
+    use HasClientAccountFilter;
+
     public function __construct($config = [])
     {
         if (empty($config['filter_fields'])) {
@@ -56,12 +58,17 @@ class DomainsModel extends ListModel
         $this->setState('filter.client_name', $clientName);
 
         parent::populateState($ordering, $direction);
+
+        // Shared, cascading Client / Account filter (see HasClientAccountFilter).
+        // Runs AFTER parent so its raw filter[] read does not clobber it.
+        $this->reconcileClientAccountFilterState();
     }
 
     protected function getStoreId($id = '')
     {
         // Compile the store id.
         $id .= ':' . $this->getState('filter.search');
+        $id = $this->clientAccountStoreId($id);
 
         return parent::getStoreId($id);
     }
@@ -110,6 +117,9 @@ class DomainsModel extends ListModel
                       ->bind(':search', $search);
             }
         }
+
+        // Filter by client / account (shared, cascading).
+        $this->applyClientAccountFilterQuery($query, 'd');
 
         // Add the ordering clause.
         $query->order(
