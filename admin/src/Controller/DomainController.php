@@ -115,9 +115,11 @@ class DomainController extends FormController
 
         // ✅ Check the item back in if we're leaving the edit screen
         if ($task !== 'apply' && $id) {
-            // JModelAdmin provides checkin($pk) if the table has checked_out/checked_out_time
+            // JModelAdmin provides checkin($pk) if the table has checked_out/checked_out_time.
+            // checkin() returns the COUNT checked in (0 when already checked in) or FALSE on
+            // real failure — only treat FALSE as an error, not a 0 count.
             if (method_exists($model, 'checkin')) {
-                if (!$model->checkin($id)) {
+                if ($model->checkin($id) === false) {
                     // Not fatal, but let us know
                     $app->enqueueMessage(
                         Text::sprintf('JLIB_APPLICATION_CHECKIN_FAILED', htmlspecialchars($model->getError(), ENT_QUOTES, 'UTF-8')),
