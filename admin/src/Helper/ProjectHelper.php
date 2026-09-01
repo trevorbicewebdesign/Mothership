@@ -86,50 +86,72 @@ class ProjectHelper
         $html = '';
         $cookies = [];
 
-        // Attempt to retrieve headers
-        try {
-            $contextOptions = [];
-            $context = stream_context_create($contextOptions);
-    
-            // Attempt to retrieve headers with disabled SSL checks
-            $headers = get_headers($url, 1, $context);
-        } catch (\Exception $e) {
-            Log::add('Failed to retrieve headers: ' . $e->getMessage(), Log::ERROR, 'scanWebsiteProject');
-        }
+        // A real browser UA so security layers (RS Firewall, Cloudflare, WAFs)
+        // and picky servers don't 403 the health check.
+        $userAgent = 'Mozilla/5.0 (compatible; MothershipScanner/1.0; +https://webdesign.trevorbice.com)';
 
-        // Attempt to retrieve HTML content
-        try {
-            $contextOptions = [];
-            $context = stream_context_create($contextOptions);
-            $html = file_get_contents($url, false, $context);
-        } catch (\Exception $e) {
-            Log::add('Failed to retrieve HTML content: ' . $e->getMessage(), Log::ERROR, 'scanWebsiteProject');
-        }
+        // Optional shared secret so a site's WAF can *allowlist* this scanner:
+        // set com_mothership's "scan_secret", then add a WAF rule that allows
+        // requests carrying the X-Mothership-Scan header. When allowlisted the
+        // scanner gets real content (status + keyword + TTFB) instead of a 403.
+        $scanSecret   = (string) \Joomla\CMS\Component\ComponentHelper::getParams('com_mothership')->get('scan_secret', '');
+        $extraHeaders = $scanSecret !== '' ? ['X-Mothership-Scan: ' . $scanSecret] : [];
 
-        // Attempt to retrieve cookies using cURL
+        // Authoritative reachability + final status via cURL: follows redirects
+        // (http->https, www), sends a UA, and returns an INTEGER code — HTTP/2
+        // status lines have no "200 OK" reason phrase, so string matching fails.
+        $httpCode  = 0;
+        $curlError = '';
+        $finalUrl  = $url;
+
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS      => 5,
+            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_TIMEOUT        => 25,
+            CURLOPT_SSL_VERIFYPEER => false, // health check: don't fail on cert quirks
+            CURLOPT_SSL_VERIFYHOST => 0,
+            CURLOPT_USERAGENT      => $userAgent,
+            CURLOPT_ENCODING       => '',
+            CURLOPT_HTTPHEADER     => $extraHeaders,
+        ]);
+        $body = curl_exec($ch);
+        if ($body === false) {
+            $curlError = curl_error($ch);
+            Log::add('Scan cURL error for ' . $url . ': ' . $curlError, Log::WARNING, 'scanWebsiteProject');
+        } else {
+            $html = (string) $body;
+        }
+        $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $finalUrl = (string) curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+        curl_close($ch);
+
+        // Response headers (for CMS detection) — UA-aware + follows redirects.
         try {
-            $ch = curl_init($url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_HEADER, true);
-            curl_setopt($ch, CURLOPT_NOBODY, true);
-            curl_setopt($ch, CURLOPT_COOKIEFILE, '');
-            curl_exec($ch);
-            $cookies = curl_getinfo($ch, CURLINFO_COOKIELIST);
-            curl_close($ch);
+            $context = stream_context_create([
+                'http' => ['user_agent' => $userAgent, 'follow_location' => 1, 'timeout' => 15, 'ignore_errors' => true, 'header' => implode("\r\n", $extraHeaders)],
+                'ssl'  => ['verify_peer' => false, 'verify_peer_name' => false],
+            ]);
+            $headers = @get_headers($url, 1, $context) ?: [];
         } catch (\Exception $e) {
-            Log::add('Failed to retrieve cookies: ' . $e->getMessage(), Log::ERROR, 'scanWebsiteProject');
+            Log::add('Failed to retrieve headers: ' . $e->getMessage(), Log::WARNING, 'scanWebsiteProject');
         }
 
         return [
             'status' => 'success',
             'message' => 'Scan completed successfully.',
             'data' => [
-                'response_code' => $headers[0] ?? null,
-                'host' => $host,
-                'path' => $path,
-                'headers' => $headers,
-                'html' => $html,
-                'cookies' => $cookies,
+                'http_code'     => $httpCode,           // reliable integer status
+                'response_code' => $headers[0] ?? null, // kept for backward compatibility
+                'curl_error'    => $curlError,
+                'final_url'     => $finalUrl,
+                'host'          => $host,
+                'path'          => $path,
+                'headers'       => $headers,
+                'html'          => $html,
+                'cookies'       => $cookies,
             ]
         ];
     }
