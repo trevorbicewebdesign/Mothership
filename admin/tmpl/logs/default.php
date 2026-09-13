@@ -73,6 +73,9 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                 $canEdit = $user->authorise('core.edit', "com_mothership.log.{$item->id}");
                                 $canEditOwn = $user->authorise('core.edit.own', "com_mothership.log.{$item->id}");
                                 $canCheckin = $user->authorise('core.manage', 'com_mothership');
+                                // Who did it, by name. Falls back to the username, then the id for a
+                                // deleted account, then "a visitor" for guests. Escaped: names are user-entered.
+                                $who = htmlspecialchars((string) ($item->user_name ?: ($item->user_username ?: ((int) $item->user_id ? '#' . (int) $item->user_id : Text::_('COM_MOTHERSHIP_LOG_GUEST')))), ENT_QUOTES, 'UTF-8');
                                 ?>
                                 <tr class="row<?php echo $i % 2; ?>">
                                     <td class="text-center">
@@ -128,34 +131,34 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                     <?php 
                                         if($item->action == 'status_changed' && $item->object_type == 'payment'){
                                             
-                                            echo sprintf(Text::_('COM_MOTHERSHIP_LOG_PAYMENT_STATUS_CHANGED_DESC'), $item->object_id,$meta->old_status, $meta->new_status, $item->user_id);
+                                            echo sprintf(Text::_('COM_MOTHERSHIP_LOG_PAYMENT_STATUS_CHANGED_DESC'), $item->object_id,$meta->old_status, $meta->new_status, $who);
                                         }
                                         else if($item->action == 'viewed' && $item->object_type == 'payment'){
-                                            echo sprintf(Text::_('COM_MOTHERSHIP_LOG_PAYMENT_VIEWED_DESC'), $item->object_id, $item->user_id);                                        
+                                            echo sprintf(Text::_('COM_MOTHERSHIP_LOG_PAYMENT_VIEWED_DESC'), $item->object_id, $who);                                        
                                         }
                                         else if($item->action == 'initiated' && $item->object_type == 'payment'){
-                                            echo sprintf(Text::_('COM_MOTHERSHIP_LOG_PAYMENT_INITIATED_DESC'), $item->object_id, $meta->payment_method,$item->user_id, $meta->invoice_id);                                        
+                                            echo sprintf(Text::_('COM_MOTHERSHIP_LOG_PAYMENT_INITIATED_DESC'), $item->object_id, $meta->payment_method,$who, $meta->invoice_id);                                        
                                         }
                                         else if($item->action == 'viewed' && $item->object_type =='invoice'){
-                                            echo sprintf(Text::_('COM_MOTHERSHIP_LOG_INVOICE_VIEWED_DESC'), $item->object_id, $item->user_id);                                        
+                                            echo sprintf(Text::_('COM_MOTHERSHIP_LOG_INVOICE_VIEWED_DESC'), $item->object_id, $who);                                        
                                         }
                                         else if($item->action == 'viewed' && $item->object_type =='account'){
-                                            echo sprintf(Text::_('COM_MOTHERSHIP_LOG_ACCOUNT_VIEWED_DESC'), $item->account_name, $item->user_id);                                        
+                                            echo sprintf(Text::_('COM_MOTHERSHIP_LOG_ACCOUNT_VIEWED_DESC'), $item->account_name, $who);                                        
                                         }
                                         else if($item->action == 'viewed' && $item->object_type =='project'){
-                                            echo sprintf(Text::_('COM_MOTHERSHIP_LOG_PROJECT_VIEWED_DESC'), $item->object_id, $item->user_id);                                                                             
+                                            echo sprintf(Text::_('COM_MOTHERSHIP_LOG_PROJECT_VIEWED_DESC'), $item->object_id, $who);                                                                             
                                         }
                                         else if($item->action == 'viewed' && $item->object_type =='domain'){
-                                            echo sprintf(Text::_('COM_MOTHERSHIP_LOG_DOMAIN_VIEWED_DESC'), $item->object_id, $item->user_id);   
+                                            echo sprintf(Text::_('COM_MOTHERSHIP_LOG_DOMAIN_VIEWED_DESC'), $item->object_id, $who);   
                                         }
                                         else if($item->action == 'scanned' && $item->object_type =='domain'){
-                                            echo sprintf(Text::_('COM_MOTHERSHIP_LOG_DOMAIN_SCANNED_DESC'), $item->object_id, $item->user_id);                                        
+                                            echo sprintf(Text::_('COM_MOTHERSHIP_LOG_DOMAIN_SCANNED_DESC'), $item->object_id, $who);                                        
                                         }
                                         else if($item->action == 'scanned' && $item->object_type =='project'){
-                                            echo sprintf(Text::_('COM_MOTHERSHIP_LOG_PROJECT_SCANNED_DESC'), $item->object_id, $item->user_id);                                        
+                                            echo sprintf(Text::_('COM_MOTHERSHIP_LOG_PROJECT_SCANNED_DESC'), $item->object_id, $who);                                        
                                         }
                                         else if($item->action == 'payment_status_changed' && $item->object_type == 'payment'){
-                                            echo sprintf(Text::_('COM_MOTHERSHIP_LOG_PAYMENT_STATUS_CHANGED_DESC'), $item->object_id,$meta->old_status, $meta->new_status, $item->user_id);
+                                            echo sprintf(Text::_('COM_MOTHERSHIP_LOG_PAYMENT_STATUS_CHANGED_DESC'), $item->object_id,$meta->old_status, $meta->new_status, $who);
                                         }
                                        
                                         ?>
