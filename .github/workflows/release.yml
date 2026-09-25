@@ -13,6 +13,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   release:
@@ -49,11 +50,22 @@ jobs:
             --generate-notes \
             --verify-tag
 
-      - name: Point the update server at the new package
+      - name: Open a pull request pointing the update server at the new package
+        # main only accepts changes through pull requests. A PR opened with the
+        # workflow token does not trigger the test workflow, so it is merged by hand
+        # (or by auto-merge where the repository allows it).
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          git switch -C main origin/main
+          BRANCH="update-server/$GITHUB_REF_NAME"
+          git switch -C "$BRANCH" origin/main
           build/update-server.sh "dist/Mothership-$GITHUB_REF_NAME.zip"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -am "Point update server at $GITHUB_REF_NAME"
-          git push origin main
+          git push -u origin "$BRANCH"
+          PR_URL=$(gh pr create --base main --head "$BRANCH" \
+            --title "Point update server at $GITHUB_REF_NAME" \
+            --body "Length and SHA-256 of the published Mothership-$GITHUB_REF_NAME.zip. Opened by the release workflow; merge to make the update visible to sites.")
+          echo "Opened $PR_URL"
+          gh pr merge "$PR_URL" --auto --merge || echo "Auto-merge not available; merge $PR_URL by hand."
