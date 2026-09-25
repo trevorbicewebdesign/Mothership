@@ -3,15 +3,22 @@ name: Run Mothership Tests
 on:
   workflow_dispatch:
   pull_request:
-    types: [opened, synchronize]
+    types: [opened, synchronize, reopened]
   push:
     branches:
       - main
 
+# A new push to the same PR/branch supersedes the run still in progress.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
-    name: Testing ${{ matrix.suite}}  ${{ matrix.group || '' }}
+    name: Testing ${{ matrix.suite }} ${{ matrix.group || '' }}
     runs-on: ubuntu-latest
+    # The old wait loops had no upper bound; a stuck container burned the 6h default.
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -30,7 +37,7 @@ jobs:
           - suite: acceptance
             group: backend-invoice
           - suite: acceptance
-            group: backend-proposal            
+            group: backend-proposal
           - suite: acceptance
             group: backend-payment
           - suite: acceptance
@@ -38,112 +45,77 @@ jobs:
           - suite: acceptance
             group: backend-log
           - suite: acceptance
-            group: backend-menus           
+            group: backend-menus
           - suite: acceptance
             group: frontend
 
+    env:
+      # Only the browser suite needs Selenium (~1 GB image); the others don't pull it.
+      COMPOSE_SERVICES: ${{ matrix.suite == 'acceptance' && 'joomla db mailpit selenium' || 'joomla db mailpit' }}
+      ARTIFACT_NAME: ${{ matrix.suite }}-${{ matrix.group || 'default' }}
+
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
+      # Every image lives on GHCR; nothing is pulled from Docker Hub.
       - name: Login to GHCR
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GHCR_PAT }}
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          registry: docker.io
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Prepare test config
+        run: cp tests/.env.sample tests/.env
 
-      - name: Pull Joomla Docker Image from GHCR
-        run: |
-          docker pull ghcr.io/trevorbicewebdesign/mothership:php8.2-joomla5.3.0
-          docker pull ghcr.io/trevorbicewebdesign/mysql:8.0
-          docker pull ghcr.io/trevorbicewebdesign/selenium-standalone-chrome:129.0
-          docker pull ghcr.io/trevorbicewebdesign/mailpit:1.18.0
+      - name: Pull images
+        # One parallel pull of just the services this job uses (the old step pulled
+        # all four images one after another).
+        run: docker compose pull --quiet $COMPOSE_SERVICES
 
-      - name: Rename .env.sample to .env
-        run: mv ./tests/.env.sample ./tests/.env
-
-      - name: Start Docker Services
-        run: docker compose up -d
-
-      - name: Wait for Database to be ready
-        run: |
-          echo "Waiting for Database..."
-          until docker compose exec db mysqladmin ping -h "localhost" --silent; do
-            echo "Still waiting for MySQL server to start..."
-            sleep 5
-          done
-          echo "MySQL server is up."
-
-          echo "Waiting for Joomla Database..."
-          until docker compose exec db mysql -uroot -proot -e "USE local"; do
-            echo "Still waiting for Joomla database to be ready..."
-            sleep 5
-          done
-          echo "Joomla Database is ready."
-
-      - name: Wait for Joomla Web to be ready
-        run: |
-          echo "Waiting for Joomla Web..."
-          until curl --fail --silent --output /dev/null http://localhost:8080; do
-            echo "Still waiting for Joomla Web..."
-            sleep 5
-          done
-          echo "Joomla Web is ready."
+      - name: Start services
+        # Returns once every service's healthcheck passes (see docker-compose.yml),
+        # which replaces the sleep-5 polling loops and the TCP-vs-init-server race
+        # in the old "mysqladmin ping" check.
+        run: docker compose up -d --wait --wait-timeout 180 $COMPOSE_SERVICES
 
       - name: Discover & Install Mothership via CLI
         run: |
-          docker compose exec joomla sh -c "php /var/www/html/cli/joomla.php extension:discover"
-          docker compose exec joomla sh -c "php /var/www/html/cli/joomla.php extension:discover:install"
-          docker compose exec db mysql -uroot -proot -e "UPDATE local.jos_extensions SET enabled = 1 WHERE type = 'plugin' AND folder = 'mothership-payment' AND element = 'zelle';"
-          docker compose exec db mysql -uroot -proot -e "UPDATE local.jos_extensions SET enabled = 1 WHERE type = 'plugin' AND folder = 'mothership-payment' AND element = 'paybycheck';"
+          docker compose exec -T joomla php /var/www/html/cli/joomla.php extension:discover
+          docker compose exec -T joomla php /var/www/html/cli/joomla.php extension:discover:install
+          docker compose exec -T db mysql -uroot -proot -e "UPDATE local.jos_extensions SET enabled = 1 WHERE type = 'plugin' AND folder = 'mothership-payment' AND element IN ('zelle', 'paybycheck');"
 
-      - name: Add Joomla User & Suppress Popup
-        run: |
-          docker compose exec joomla sh -c "php /var/www/html/cli/joomla.php user:add \
-          --username=admin \
-          --name='Site Admin' \
-          --password='password123!test' \
-          --email='admin@example.com' \
-          --usergroup='Super Users' --quiet"
+      - name: Add Joomla admin user
+        run: docker compose exec -T joomla php /var/www/html/cli/joomla.php user:add --username=admin --name='Site Admin' --password='password123!test' --email='admin@example.com' --usergroup='Super Users' --quiet
 
       - name: Export Database
-        run: |
-          docker compose exec db sh -c "mysqldump -uroot -proot --no-tablespaces --skip-comments --extended-insert=false local" | docker compose exec -T joomla sh -c "cat > /var/www/html/tests/_support/Data/db/dump.sql"
+        # tests/ is bind-mounted into the joomla container, so writing the dump on
+        # the host is enough for the Codeception Db module to find it.
+        run: docker compose exec -T db mysqldump -uroot -proot --no-tablespaces --skip-comments --extended-insert=false local > tests/_support/Data/db/dump.sql
 
       - name: Run Codeception Tests for ${{ matrix.suite }}
         run: |
-          if [ "${{ matrix.group }}" != "" ]; then
-            docker compose exec joomla sh -c "/var/www/html/vendor/bin/codecept run ${{ matrix.suite }} --group ${{ matrix.group }} --skip-group skipCI"
-          else
-            docker compose exec joomla sh -c "/var/www/html/vendor/bin/codecept run ${{ matrix.suite }} --skip-group skipCI"
+          GROUP_ARG=""
+          if [ -n "${{ matrix.group }}" ]; then
+            GROUP_ARG="--group ${{ matrix.group }}"
           fi
+          docker compose exec -T joomla /var/www/html/vendor/bin/codecept run ${{ matrix.suite }} $GROUP_ARG --skip-group skipCI
 
-      - name: Copy Test Artifacts (always)
-        if: always()
+      - name: Collect service logs
+        if: failure()
         run: |
-          mkdir -p test-artifacts/${{ matrix.suite }}-${{ matrix.group || 'default' }}
-          cp -v tests/_output/* test-artifacts/${{ matrix.suite }}-${{ matrix.group || 'default' }}/ || true
-            if [ "${{ github.ref_name }}" = "main" ]; then
-            cp -v tests/_output/debug/* test-artifacts/${{ matrix.suite }}-${{ matrix.group || 'default' }}/ || true
-            fi
-          cp -v wp-content/debug.log test-artifacts/${{ matrix.suite }}-${{ matrix.group || 'default' }}/ || true
-          cp -v /var/log/php_errors.log test-artifacts/${{ matrix.suite }}-${{ matrix.group || 'default' }}/ || true
+          mkdir -p service-logs
+          docker compose logs --no-color --timestamps > service-logs/docker-compose.log 2>&1 || true
+          docker compose exec -T joomla sh -c 'cat /var/log/apache2/error.log 2>/dev/null' > service-logs/apache-error.log || true
 
-      - name: Upload Artifacts for Suite
+      - name: Upload test output
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.suite }}-${{ matrix.group || 'default' }}-output-${{ github.sha }}
-          path: test-artifacts/${{ matrix.suite }}-${{ matrix.group || 'default' }}/
-
-      - name: Teardown
-        if: always()
-        run: docker compose down -v
+          name: ${{ env.ARTIFACT_NAME }}-output-${{ github.sha }}
+          path: |
+            tests/_output/
+            service-logs/
+          if-no-files-found: ignore
+          retention-days: 14

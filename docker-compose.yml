@@ -4,9 +4,17 @@ services:
     pull_policy: if_not_present
     ports:
       - "8080:80"
+    # Selenium is only a dependency of the acceptance tests, not of Joomla itself,
+    # so it is not listed here: `docker compose up joomla` must not drag it in.
     depends_on:
-      - db
-      - selenium
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS -o /dev/null http://localhost/ || exit 1"]
+      interval: 2s
+      timeout: 5s
+      retries: 60
+      start_period: 5s
     volumes:
       - ./tests:/var/www/html/tests
       - ./site:/var/www/html/components/com_mothership
@@ -43,6 +51,14 @@ services:
       MYSQL_DATABASE: local
     ports:
       - "3306:3306"
+    # TCP only comes up after the entrypoint has run tests/sql/*.sql on its
+    # socket-only init server, so a TCP ping means the schema is loaded.
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -proot --silent"]
+      interval: 2s
+      timeout: 5s
+      retries: 60
+      start_period: 10s
     volumes:
       - ./tests/sql:/docker-entrypoint-initdb.d
       - db_data:/var/lib/mysql
@@ -53,6 +69,13 @@ services:
     ports:
       - "4444:4444"
     shm_size: 2gb
+    healthcheck:
+      # Ships with the Selenium images; reports ready once the grid accepts sessions.
+      test: ["CMD", "/opt/bin/check-grid.sh", "--host", "0.0.0.0", "--port", "4444"]
+      interval: 2s
+      timeout: 10s
+      retries: 60
+      start_period: 5s
   
   mailpit:
     image: ghcr.io/trevorbicewebdesign/mailpit:1.18.0
@@ -60,6 +83,12 @@ services:
     ports:
       - "8025:8025"   # Web UI
       - "1025:1025"   # SMTP port
+    healthcheck:
+      # The image's own healthcheck polls every 15s; this keeps `up --wait` snappy.
+      test: ["CMD", "/mailpit", "readyz"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
     restart: always
 
 volumes:

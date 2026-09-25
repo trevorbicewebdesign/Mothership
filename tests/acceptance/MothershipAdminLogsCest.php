@@ -164,12 +164,7 @@ class MothershipAdminLogsCest
         $this->logTextDetails[$this->logData[$j]['id']] = sprintf(self::LOG_PAYMENT_INITIATED_DETAILS, 97, 'Paypal', $userName, 2);
         $j++;
 
-        $I->amOnPage("/administrator/");
-        $I->fillField("input[name=username]", "admin");
-        $I->fillField("input[name=passwd]", "password123!test");
-        $I->click("Log in");
-        $I->waitForText("Hide Forever");
-        $I->click("Hide Forever");
+        $I->loginAsAdmin();
     }
 
     /**
