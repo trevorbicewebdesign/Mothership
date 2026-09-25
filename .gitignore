@@ -5,3 +5,4 @@
 /tests/_support/
 plugins/mothership-invoice-pdf/tbwebdesign/*
 .DS_Store
+/dist/

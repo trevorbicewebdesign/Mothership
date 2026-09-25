@@ -1,0 +1,59 @@
+name: Release
+
+# Pushing a version tag (e.g. 0.0.25) builds the packages, publishes the GitHub
+# release with them attached, and points updates.xml on main at the new zip.
+#
+#   build/set-version.sh 0.0.25
+#   git commit -am "Release 0.0.25" && git tag 0.0.25 && git push origin main 0.0.25
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check the tag matches mothership.xml
+        run: |
+          MANIFEST=$(sed -n 's/.*<version>\([^<]*\)<\/version>.*/\1/p' mothership.xml | head -1)
+          if [ "$MANIFEST" != "$GITHUB_REF_NAME" ]; then
+            echo "Tag is $GITHUB_REF_NAME but mothership.xml says $MANIFEST. Run build/set-version.sh $GITHUB_REF_NAME first." >&2
+            exit 1
+          fi
+
+      - name: Check the tagged commit is on main
+        # The test workflow runs on every push to main, so this is what has been tested.
+        run: git merge-base --is-ancestor "$GITHUB_SHA" origin/main || { echo "The tagged commit is not on main." >&2; exit 1; }
+
+      - name: Build packages
+        run: build/build.sh
+
+      - name: Publish GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" dist/*.zip \
+            --title "Version $GITHUB_REF_NAME" \
+            --generate-notes \
+            --verify-tag
+
+      - name: Point the update server at the new package
+        run: |
+          git switch -C main origin/main
+          build/update-server.sh "dist/Mothership-$GITHUB_REF_NAME.zip"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "Point update server at $GITHUB_REF_NAME"
+          git push origin main
