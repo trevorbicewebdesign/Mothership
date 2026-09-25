@@ -24,3 +24,4 @@
 /admin/vendor/**/phpstan-baseline.neon export-ignore
 /admin/vendor/mpdf/mpdf/.gitignore export-ignore
 /admin/vendor/mpdf/psr-log-aware-trait/.gitignore export-ignore
+/admin/vendor/**/composer.json export-ignore
