@@ -26,6 +26,22 @@ class AcceptanceTester extends \Codeception\Actor
     /**
      * Define custom actions here
      */
+    /**
+     * Log in to the administrator as the CI super user and wait until the
+     * dashboard has rendered, so the next amOnPage() runs with a live session.
+     */
+    public function loginAsAdmin()
+    {
+        $I = $this;
+        $I->amOnPage("/administrator/");
+        $I->waitForElement("input[name=username]", 30);
+        $I->fillField("input[name=username]", "admin");
+        $I->fillField("input[name=passwd]", "password123!test");
+        $I->click("Log in");
+        // The sidebar only exists on logged-in admin pages.
+        $I->waitForElement("#sidebar-wrapper", 30);
+    }
+
     public function logInAs($username, $password)
     {
         $I = $this;

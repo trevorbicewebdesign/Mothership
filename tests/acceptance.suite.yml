@@ -25,7 +25,6 @@ modules:
               "--start-maximized", 
               "--ignore-certificate-errors", 
               "--headless", 
-              "--window-size=${WINDOW_SIZE}", 
               "--no-sandbox", 
               "--disable-gpu"
               ]

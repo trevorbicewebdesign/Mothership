@@ -265,11 +265,27 @@ class LogHelper extends ContentHelper
      *
      * @return void
      */
-    public static function logStatusChange(object $payment, string $newStatus): void
+    public static function logStatusChange(object $payment, $newStatus): void
     {
-        $oldStatus = $payment->status ?? null;
+        // A brand-new payment has no prior record, so there is nothing to compare
+        // against. Logging here produced rows with no payment, no client and an
+        // "Unknown" old status.
+        if (empty($payment->id)) {
+            return;
+        }
+
+        // Status not posted (e.g. a disabled field): no change was requested.
+        if ($newStatus === null || $newStatus === '') {
+            return;
+        }
+
+        // Compare as integers. The database driver returns native ints while form
+        // input arrives as strings, so a strict compare of the raw values was never
+        // equal and every save logged a change, e.g. Completed -> Completed.
+        $oldStatus = (int) ($payment->status ?? 0);
+        $newStatus = (int) $newStatus;
+
         if ($oldStatus === $newStatus) {
-            // Don't log if there's no actual change
             return;
         }
 

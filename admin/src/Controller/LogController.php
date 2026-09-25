@@ -17,6 +17,39 @@ class LogController extends FormController
 {
     protected $default_view = 'log';
 
+    /**
+     * Logs are an audit trail written by the system. Nothing is added or edited by
+     * hand, so the form routes refuse rather than opening an editor whose save
+     * could never succeed.
+     */
+    protected function allowAdd($data = [])
+    {
+        return false;
+    }
+
+    protected function allowEdit($data = [], $key = 'id')
+    {
+        return false;
+    }
+
+    public function edit($key = null, $urlVar = null)
+    {
+        return $this->refuseReadOnly();
+    }
+
+    public function save($key = null, $urlVar = null)
+    {
+        return $this->refuseReadOnly();
+    }
+
+    private function refuseReadOnly(): bool
+    {
+        $this->app->enqueueMessage(Text::_('COM_MOTHERSHIP_LOG_READ_ONLY'), 'warning');
+        $this->setRedirect(Route::_('index.php?option=com_mothership&view=logs', false));
+
+        return false;
+    }
+
 
     public function display($cachable = false, $urlparams = [])
     {

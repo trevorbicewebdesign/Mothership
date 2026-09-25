@@ -100,14 +100,7 @@ class MothershipAdminInvoicesCest
         ]);
 
         // Navigate to the login page
-        $I->amOnPage("/administrator/");
-
-        // Log in with valid credentials
-        $I->fillField("input[name=username]", "admin");
-        $I->fillField("input[name=passwd]", "password123!test");
-        $I->click("Log in");
-        $I->waitForText("Hide Forever");
-        $I->click("Hide Forever");
+        $I->loginAsAdmin();
     }
 
     /**
@@ -253,65 +246,72 @@ class MothershipAdminInvoicesCest
         $I->seeElement("#j-main-container ");
         $I->seeElement("#j-main-container thead");
         
-        $I->see("ID", "#j-main-container table thead tr th:nth-child(2)");
-        $I->see("Invoice Number", "#j-main-container table thead tr th:nth-child(3)");
-        $I->see("PDF", "#j-main-container table thead tr th:nth-child(4)");
-        $I->see("Client", "#j-main-container table thead tr th:nth-child(5)");
-        $I->see("Account", "#j-main-container table thead tr th:nth-child(6)");
-        $I->see("Project", "#j-main-container table thead tr th:nth-child(7)");
-        $I->see("Total", "#j-main-container table thead tr th:nth-child(8)");
-        $I->see("Status", "#j-main-container table thead tr th:nth-child(9)");
-        $I->see("Payment Status", "#j-main-container table thead tr th:nth-child(10)");
-        $I->see("Due", "#j-main-container table thead tr th:nth-child(11)");
-        $I->see("Created", "#j-main-container table thead tr th:nth-child(12)");
+        // The ID and Due columns are hidden by default (admin/tmpl/invoices/default.php seeds
+        // the table.columns localStorage key), so they are in the DOM but not visible.
+        $I->seeElementInDOM("#j-main-container table thead tr th:nth-child(2)");
+        $I->dontSeeElement("#j-main-container table thead tr th:nth-child(2)");
+        $I->see("#", "#j-main-container table thead tr th:nth-child(3)");
+        $I->see("Title", "#j-main-container table thead tr th:nth-child(4)");
+        $I->see("PDF", "#j-main-container table thead tr th:nth-child(5)");
+        $I->see("Client", "#j-main-container table thead tr th:nth-child(6)");
+        $I->see("Account", "#j-main-container table thead tr th:nth-child(7)");
+        $I->see("Project", "#j-main-container table thead tr th:nth-child(8)");
+        $I->see("Total", "#j-main-container table thead tr th:nth-child(9)");
+        $I->see("Status", "#j-main-container table thead tr th:nth-child(10)");
+        $I->see("Payment Status", "#j-main-container table thead tr th:nth-child(11)");
+        $I->seeElementInDOM("#j-main-container table thead tr th:nth-child(12)");
+        $I->dontSeeElement("#j-main-container table thead tr th:nth-child(12)");
+        $I->see("Created", "#j-main-container table thead tr th:nth-child(13)");
 
         $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 2);
 
         $row = 1;
         // This invoice is not locked, so it should not have the lock icon
         $I->dontSeeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(1) i.fa-solid.fa-lock");
-        $I->see("{$this->invoiceData['id']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(2)");
+        // ID column is hidden by default.
+        $I->dontSeeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(2)");
         $I->see("{$this->invoiceData['number']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(3)");
-        $I->seeNumberOfElements("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4) a", 2);
-        $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4) a.downloadPdf");
-        $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4) a.previewPdf");
+        $I->seeNumberOfElements("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5) a", 2);
+        $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5) a.downloadPdf");
+        $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5) a.previewPdf");
 
-        $downloadPdfUrl = $I->grabAttributeFrom("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4) a.downloadPdf", 'href');
-        $previewPdfUrl = $I->grabAttributeFrom("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4) a.previewPdf", 'href');
+        $downloadPdfUrl = $I->grabAttributeFrom("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5) a.downloadPdf", 'href');
+        $previewPdfUrl = $I->grabAttributeFrom("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5) a.previewPdf", 'href');
 
         $I->assertEquals("/administrator/index.php?option=com_mothership&task=invoice.downloadPdf&id={$this->invoiceData['id']}", $downloadPdfUrl);
         $I->assertEquals("/administrator/index.php?option=com_mothership&task=invoice.previewPdf&id={$this->invoiceData['id']}", $previewPdfUrl);
 
-        $I->see("{$this->clientData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5)");
-        $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(6)");
-        $I->see("{$this->projectData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(7)");
-        $I->see("{$this->invoiceData['total']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(8)");
-        $I->see("Draft", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(9)");
-        $I->see("Unpaid", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(10)");
-        $I->see(date('Y-m-d'), "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(12)");
+        $I->see("{$this->clientData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(6)");
+        $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(7)");
+        $I->see("{$this->projectData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(8)");
+        $I->see("{$this->invoiceData['total']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(9)");
+        $I->see("Draft", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(10)");
+        $I->see("Unpaid", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(11)");
+        $I->see(date('Y-m-d'), "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(13)");
 
         $row = 2;
         // This invoice IS not locked, so it SHOULD have the lock icon
         $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(1) i.fa-solid.fa-lock");
-        $I->see("{$invoiceData['id']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(2)");
+        // ID column is hidden by default.
+        $I->dontSeeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(2)");
         $I->see("{$invoiceData['number']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(3)");
-        $I->seeNumberOfElements("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4) a", 2);
-        $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4) a.downloadPdf");
-        $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4) a.previewPdf");
+        $I->seeNumberOfElements("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5) a", 2);
+        $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5) a.downloadPdf");
+        $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5) a.previewPdf");
 
-        $downloadPdfUrl = $I->grabAttributeFrom("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4) a.downloadPdf", 'href');
-        $previewPdfUrl = $I->grabAttributeFrom("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(4) a.previewPdf", 'href');
+        $downloadPdfUrl = $I->grabAttributeFrom("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5) a.downloadPdf", 'href');
+        $previewPdfUrl = $I->grabAttributeFrom("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5) a.previewPdf", 'href');
 
         $I->assertEquals("/administrator/index.php?option=com_mothership&task=invoice.downloadPdf&id={$invoiceData['id']}", $downloadPdfUrl);
         $I->assertEquals("/administrator/index.php?option=com_mothership&task=invoice.previewPdf&id={$invoiceData['id']}", $previewPdfUrl);
 
-        $I->see("{$this->clientData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(5)");
-        $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(6)");
-        $I->see("{$invoiceData['total']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(8)");
-        $I->see("Closed", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(9)");
-        $I->see("Paid", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(10)");
-        $I->see("Payment #{$paymentData['id']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(10)"); 
-        $I->see(date('Y-m-d'), "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(12)");
+        $I->see("{$this->clientData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(6)");
+        $I->see("{$this->accountData['name']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(7)");
+        $I->see("{$invoiceData['total']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(9)");
+        $I->see("Closed", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(10)");
+        $I->see("Paid", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(11)");
+        $I->see("Payment #{$paymentData['id']}", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(11)"); 
+        $I->see(date('Y-m-d'), "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(13)");
 
         $I->see("1 - 2 / 2 items", "#j-main-container .pagination__wrapper");
     }
@@ -430,7 +430,7 @@ class MothershipAdminInvoicesCest
         // Confirm only the closed one remains
         $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 1);
         $I->see("{$closedInvoiceData['number']}", "#j-main-container table.itemList tbody tr td:nth-child(3)");
-        $I->see("Closed", "#j-main-container table.itemList tbody tr td:nth-child(9)");
+        $I->see("Closed", "#j-main-container table.itemList tbody tr td:nth-child(10)");
 
         // Database cleanup checks
         $I->dontSeeInDatabase('jos_mothership_invoices', ['id' => $draftInvoiceData['id']]);
@@ -670,9 +670,9 @@ class MothershipAdminInvoicesCest
         $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 2);
 
         $I->see("1001", "#j-main-container table.itemList tbody tr td:nth-child(3)");
-        $I->see("Test Client", "#j-main-container table.itemList tbody tr td:nth-child(5)");
-        $I->see("Test Account", "#j-main-container table.itemList tbody tr td:nth-child(6)");
-        $I->see(date("Y-m-d"), "#j-main-container table.itemList tbody tr td:nth-child(12)");
+        $I->see("Test Client", "#j-main-container table.itemList tbody tr td:nth-child(6)");
+        $I->see("Test Account", "#j-main-container table.itemList tbody tr td:nth-child(7)");
+        $I->see(date("Y-m-d"), "#j-main-container table.itemList tbody tr td:nth-child(13)");
 
         // Open the Invoice again and confirm the data is correct
         $I->amOnPage(sprintf(self::INVOICE_EDIT_URL, ($this->invoiceData['id'] + 1)));

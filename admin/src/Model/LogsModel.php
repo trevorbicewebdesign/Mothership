@@ -78,13 +78,16 @@ class LogsModel extends ListModel
                     $db->quoteName('l.created'),
                     $db->quoteName('c.name', 'client_name'),
                     $db->quoteName('a.name', 'account_name'),
+                    $db->quoteName('u.name', 'user_name'),
+                    $db->quoteName('u.username', 'user_username'),
                 ]
             )
         );
 
         $query->from($db->quoteName('#__mothership_logs', 'l'))
                 ->join('LEFT', $db->quoteName('#__mothership_clients', 'c') . ' ON l.client_id = c.id')
-                ->join('LEFT', $db->quoteName('#__mothership_accounts', 'a') . ' ON l.account_id = a.id');  
+                ->join('LEFT', $db->quoteName('#__mothership_accounts', 'a') . ' ON l.account_id = a.id')
+                ->join('LEFT', $db->quoteName('#__users', 'u') . ' ON l.user_id = u.id');  
 
 
 

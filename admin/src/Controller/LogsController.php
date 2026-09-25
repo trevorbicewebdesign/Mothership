@@ -24,86 +24,31 @@ class LogsController extends BaseController
     }
 
     /**
-     * Check in selected client items.
+     * Delete the selected log entries.
+     *
+     * Logs have no dependants, so selected ids are deleted as given. (This was
+     * previously copied from the clients controller: it treated log ids as client
+     * ids and refused to delete any log whose id matched a client with accounts.)
      *
      * @return  void
      */
-    public function checkIn()
-    {
-        $app   = Factory::getApplication();
-        $input = $app->input;
-
-        // Get the list of IDs from the request.
-        $ids = $input->get('cid', [], 'array');
-
-        if (empty($ids)) {
-            $app->enqueueMessage(Text::_('JGLOBAL_NO_ITEM_SELECTED'), 'warning');
-        } else {
-            $model = $this->getModel('Logs');
-            if ($model->checkin($ids)) {
-                // this uses sprint f to insert the number of items checked in into the message
-                $app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_CLIENT_CHECK_IN_SUCCESS', count($ids)), 'message');
-            } else {
-                $app->enqueueMessage(Text::_('COM_MOTHERSHIP_CLIENT_CHECK_IN_FAILED'), 'error');
-            }
-        }
-
-        $this->setRedirect(Route::_('index.php?option=com_mothership&view=logs', false));
-    }
-
     public function delete()
     {
-        $app   = Factory::getApplication();
-        $input = $app->input;
-        $db    = Factory::getDbo();
+        $this->checkToken();
 
-        $ids = $input->get('cid', [], 'array');
+        $app = Factory::getApplication();
+        $ids = array_values(array_filter(array_map('intval', (array) $this->input->get('cid', [], 'array'))));
 
-        if (empty($ids)) {
-            $app->enqueueMessage(Text::_('JGLOBAL_NO_ITEM_SELECTED'), 'warning');
+        if (!$app->getIdentity()->authorise('core.delete', 'com_mothership')) {
+            $app->enqueueMessage(Text::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'), 'error');
+        } elseif (empty($ids)) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_NO_LOG_SELECTED'), 'warning');
+        } elseif ($this->getModel('Logs')->delete($ids)) {
+            $app->enqueueMessage(Text::plural('COM_MOTHERSHIP_LOGS_N_ITEMS_DELETED', count($ids)), 'message');
         } else {
-            $allowed = [];
-            $blocked = [];
-
-            foreach ($ids as $clientId) {
-                $clientId = (int) $clientId;
-
-                $query = $db->getQuery(true)
-                    ->select('COUNT(*)')
-                    ->from($db->quoteName('#__mothership_accounts'))
-                    ->where($db->quoteName('client_id') . ' = ' . $clientId);
-                $db->setQuery($query);
-                $accountCount = (int) $db->loadResult();
-
-                if ($accountCount > 0) {
-                    $blocked[] = $clientId;
-                } else {
-                    $allowed[] = $clientId;
-                }
-            }
-
-            if (!empty($allowed)) {
-                $model = $this->getModel('Logs');
-
-                if ($model->delete($allowed)) {
-                    $app->enqueueMessage(
-                        Text::sprintf('COM_MOTHERSHIP_CLIENT_DELETE_SUCCESS', count($allowed), count($allowed) === 1 ? '' : 's'),
-                        'message'
-                    );
-                } else {
-                    $app->enqueueMessage(Text::_('COM_MOTHERSHIP_CLIENT_DELETE_FAILED'), 'error');
-                }
-            }
-
-            if (!empty($blocked)) {
-                $app->enqueueMessage(
-                    Text::sprintf('COM_MOTHERSHIP_CLIENT_DELETE_HAS_ACCOUNTS', implode(', ', $blocked)),
-                    'warning'
-                );
-            }
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_LOG_DELETE_FAILED'), 'error');
         }
 
         $this->setRedirect(Route::_('index.php?option=com_mothership&view=logs', false));
     }
-
 }

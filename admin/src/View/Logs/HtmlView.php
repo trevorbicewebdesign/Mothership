@@ -115,7 +115,7 @@ class HtmlView extends BaseHtmlView
 
         ToolbarHelper::title(Text::_('COM_MOTHERSHIP_MANAGER_LOGS'), 'bookmark mothership-logs');
 
-        if (!$this->isEmptyState && ($canDo->get('core.edit.state') || $canDo->get('core.admin'))) {
+        if (!$this->isEmptyState && ($canDo->get('core.delete') || $canDo->get('core.admin'))) {
             $dropdown = $toolbar->dropdownButton('status-group', 'JTOOLBAR_CHANGE_STATUS')
                 ->toggleSplit(false)
                 ->icon('icon-ellipsis-h')
@@ -124,11 +124,7 @@ class HtmlView extends BaseHtmlView
         
             $childBar = $dropdown->getChildToolbar();
         
-            if ($canDo->get('core.admin')) {
-                $childBar->checkin('logs.checkIn')->listCheck(true);
-            }
-        
-            $childBar->edit('log.edit')->listCheck(true);
+            // Logs are an audit trail written by the system: no edit or check-in.
             $childBar->delete('logs.delete')
                 ->listCheck(true)
                 ->attributes([
