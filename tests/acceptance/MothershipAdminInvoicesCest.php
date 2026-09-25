@@ -250,7 +250,7 @@ class MothershipAdminInvoicesCest
         // the table.columns localStorage key), so they are in the DOM but not visible.
         $I->seeElementInDOM("#j-main-container table thead tr th:nth-child(2)");
         $I->dontSeeElement("#j-main-container table thead tr th:nth-child(2)");
-        $I->see("Invoice Number", "#j-main-container table thead tr th:nth-child(3)");
+        $I->see("#", "#j-main-container table thead tr th:nth-child(3)");
         $I->see("Title", "#j-main-container table thead tr th:nth-child(4)");
         $I->see("PDF", "#j-main-container table thead tr th:nth-child(5)");
         $I->see("Client", "#j-main-container table thead tr th:nth-child(6)");

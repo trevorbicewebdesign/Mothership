@@ -51,6 +51,12 @@ class MothershipAdminLogsCest
 
     public function _before(AcceptanceTester $I)
     {
+        // Codeception reuses this object for every test in the class, so the
+        // fixtures must be rebuilt from scratch rather than appended to.
+        $this->logData = [];
+        $this->logTextDescription = [];
+        $this->logTextDetails = [];
+
         $I->resetMothershipTables();
 
         $this->clientData = $I->createMothershipClient([
