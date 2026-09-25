@@ -14,9 +14,9 @@
         </tags>
         <enclosure 
             url="https://github.com/trevorbicewebdesign/Mothership/releases/download/0.0.25/Mothership-0.0.25.zip" 
-            length="47548014" 
+            length="47216653" 
             type="application/zip" 
-            hash="9472F3960877B6723ED0A2487E8B895517906780CBA0DBE8069ED52574780F58" />
+            hash="700D4BC2B5083BAC97FF70134AD605A176E069946CA0F253229495B0C003A488" />
         <targetplatform name="joomla" version="5.*" />
         <client>administrator</client>
     </update>
