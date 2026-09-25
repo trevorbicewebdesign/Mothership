@@ -269,7 +269,8 @@ class MothershipLogHelperTest extends \Codeception\Test\Unit
         );
         codecept_debug($metas);
 
-        $this->assertContains(
+        // MySQL stores JSON object keys in its own order, so compare by value, not position.
+        $this->assertContainsEquals(
             ['old_status' => 'Cancelled', 'new_status' => 'Refunded'],
             $metas,
             'The log meta should carry the old and new status labels.'
