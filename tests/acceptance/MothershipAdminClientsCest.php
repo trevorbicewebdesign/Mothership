@@ -23,8 +23,23 @@ class MothershipAdminClientsCest
     public const TBAR            = '#toolbar';
     public const TBAR_NEW        = '#toolbar-new';
 
+    private $form_fields;
+
     public function _before(AcceptanceTester $I)
     {
+        $this->form_fields = [
+            'name'=>['type'=>'text','required'=>true],
+            'email'=>['type'=>'email','required'=>true],
+            'phone'=>['type'=>'tel','required'=>true],
+            'address_1'=>['type'=>'text','required'=>true],
+            'address_2'=>['type'=>'text','required'=>false],
+            'city'=>['type'=>'text','required'=>true],
+            'state'=>['type'=>'select','required'=>true],
+            'zip'=>['type'=>'text','required'=>true],
+            'default_rate'=>['type'=>'text','required'=>true],
+            'owner_user_id'=>['type'=>'modal','required'=>true],
+        ];
+
         $I->resetMothershipTables();
 
         $this->clientData = $I->createMothershipClient([
@@ -66,31 +81,24 @@ class MothershipAdminClientsCest
     {
         $I->amOnPage(self::CLIENTS_VIEW_ALL_URL);
         $I->waitForText("Mothership: Clients", 30, "h1.page-title");
-
-        $I->takeFullPageScreenshot("mothership-clients-view-all");
-
-        $I->seeElement(self::TBAR." ".self::TBAR_NEW);
-        $I->see("New", self::TBAR." ".self::TBAR_NEW);
-
-        $I->seeElement("#j-main-container ");
-        $I->seeElement("#j-main-container thead");
-
+        $I->makeScreenshot("mothership-clients-view-all");
+        $I->validateJoomlaItemActions(['New', ], $I);
         $I->see("Client Name Asc");
-
-        $I->see("Id", "#j-main-container table thead tr th:nth-child(2)");
-        $I->see("Name", "#j-main-container table thead tr th:nth-child(3)");
-        $I->see("Phone", "#j-main-container table thead tr th:nth-child(4)");
-        $I->see("Default Rate", "#j-main-container table thead tr th:nth-child(5)");
-        $I->see("Created", "#j-main-container table thead tr th:nth-child(6)");
-
-        $I->see("1", "#j-main-container table tbody tr td:nth-child(2)");
-        $I->see("Test Client", "#j-main-container table tbody tr td:nth-child(3)");
-        $I->see($this->clientData['phone'], "#j-main-container table tbody tr td:nth-child(4)");
-        $I->see("$100.00", "#j-main-container table tbody tr td:nth-child(5)");
-        $I->see(date("Y-m-d"), "#j-main-container table tbody tr td:nth-child(6)");
-
-        $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 1);
-
+        $I->validateJoomlaViewAllTableHeaders([
+            'Id'=>2, 
+            'Name'=>3, 
+            'Phone'=>4, 
+            'Default Rate'=>5, 
+            'Created'=>6
+        ], $I);
+        $I->validateJoomlaViewAllTableRowData(1, [
+            'Id' => ['value' => $this->clientData['id'], 'position' => 2],
+            'Name' => ['value' => 'Test Client', 'position' => 3],
+            'Phone' => ['value' => $this->clientData['phone'], 'position' => 4],
+            'Default Rate' => ['value' => '$100.00', 'position' => 5],
+            'Created' => ['value' => date("Y-m-d"), 'position' => 6],
+        ], $I);
+        $I->validateJoomlaViewAllNumberRows(1, $I);
         $I->see("1 - 1 / 1 items", "#j-main-container .pagination__wrapper");
     }
 
@@ -124,43 +132,7 @@ class MothershipAdminClientsCest
 
         $I->seeElement("#myTab");
         $I->see("Client Details", "#myTab");
-
-        // Define the form fields
-        $form_fields = [
-            'name'=>'text',
-            'email'=>'text',
-            'phone'=>'text',
-            'address_1'=>'text',
-            'address_2'=>'text',
-            'city'=>'text',
-            'state'=>'select',
-            'zip'=>'text',
-            'default_rate'=>'text',
-            'owner_user_id'=>'modal',
-            'invoice_pdf_template'=>'select',
-        ];
-        $required_fields = [
-            'name',
-            'email',
-            'phone',
-            'address_1',
-            'city',
-            'state',
-            'zip',
-            'default_rate',
-            'owner_user_id',
-            // 'invoice_pdf_template',
-        ];
-        // Verify fields exist
-        foreach($form_fields as $field=> $type) {
-            switch($type){
-                case 'select':
-                    $I->seeElement("select#jform_{$field}");
-                    break;
-                default:
-                    $I->seeElement("input#jform_{$field}");
-            }
-        }
+        $I->validateJoomlaForm("client-form", $this->form_fields, $I);
 
         // TEST Error Validation - Submit empty form
         $I->click("Save", self::TBAR);
@@ -170,21 +142,7 @@ class MothershipAdminClientsCest
         // The form cannot be submitted as it's missing required data.
         // Please correct the marked fields and try again.
         $I->see("The form cannot be submitted as it's missing required data. Please correct the marked fields and try again.", ".alert-message");
-        foreach($form_fields as $field=> $type) {
-             if(!in_array($field, $required_fields)){
-                continue;
-            }
-            switch($type){
-                case 'select':
-                    $I->see("One of the options must be selected", "#jform_{$field}-lbl");
-                    $I->seeElement("select#jform_{$field}.invalid[aria-invalid=true]");
-                    break;
-                case 'modal':
-                default:
-                    $I->see("Please fill in this field", "#jform_{$field}-lbl");
-                    $I->seeElement("input#jform_{$field}.invalid[aria-invalid=true]");
-            }
-        }
+        $I->validateJoomlaFormErrors($this->form_fields, $I);
 
         $form_data = [
             'name' => 'Another Client',
@@ -196,22 +154,10 @@ class MothershipAdminClientsCest
             'state' => 'California',
             'zip' => '95524',
             'default_rate' => '100.00',
-            // 'owner_user_id' => $this->joomlaUserData['name']
         ];
-
         // Fill in the form fields
-        foreach ($form_fields as $field => $type) {
-           if(!in_array($field, array_keys($form_data))){
-                continue;
-            }
-            switch($type){
-                case 'select':
-                    $I->selectOption("select#jform_{$field}", $form_data[$field]);
-                    break;
-                default:
-                    $I->fillField("input#jform_{$field}", $form_data[$field]);
-            }
-        }
+        $I->fillJoomlaForm($this->form_fields, $form_data, $I);
+
         // Add Owner User
         $I->click(".icon-user");
         $I->wait(1);
@@ -223,8 +169,7 @@ class MothershipAdminClientsCest
         $I->click($this->joomlaUserData['name']);
         $I->wait(1);
         $I->switchToIFrame();
-
-        $I->takeFullPageScreenshot("mothership-client-add-filled");
+        $I->makeScreenshot("mothership-client-add-filled");
 
         // TEST ACTION Save
         $I->click("Save", self::TBAR);

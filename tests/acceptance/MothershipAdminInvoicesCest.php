@@ -265,7 +265,16 @@ class MothershipAdminInvoicesCest
 
         $I->seeNumberOfElements("#j-main-container table.itemList tbody tr", 2);
 
-        $row = 1;
+        // The list sorts by created date and both fixtures were created today, so the
+        // order of the two rows is a tie the database does not guarantee. Locate each
+        // invoice's row by its number instead of assuming a position.
+        $numbers = array_map('trim', $I->grabMultiple("#j-main-container table.itemList tbody tr td:nth-child(3)"));
+        $unlockedRow = array_search((string) $this->invoiceData['number'], $numbers, true);
+        $lockedRow = array_search((string) $invoiceData['number'], $numbers, true);
+        $I->assertNotFalse($unlockedRow, "Invoice {$this->invoiceData['number']} is not listed");
+        $I->assertNotFalse($lockedRow, "Invoice {$invoiceData['number']} is not listed");
+
+        $row = $unlockedRow + 1;
         // This invoice is not locked, so it should not have the lock icon
         $I->dontSeeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(1) i.fa-solid.fa-lock");
         // ID column is hidden by default.
@@ -289,8 +298,8 @@ class MothershipAdminInvoicesCest
         $I->see("Unpaid", "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(11)");
         $I->see(date('Y-m-d'), "#j-main-container table tbody tr:nth-child({$row}) td:nth-child(13)");
 
-        $row = 2;
-        // This invoice IS not locked, so it SHOULD have the lock icon
+        $row = $lockedRow + 1;
+        // This invoice IS locked, so it SHOULD have the lock icon
         $I->seeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(1) i.fa-solid.fa-lock");
         // ID column is hidden by default.
         $I->dontSeeElement("#j-main-container table tbody tr:nth-child({$row}) td:nth-child(2)");
