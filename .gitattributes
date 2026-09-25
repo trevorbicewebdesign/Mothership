@@ -11,3 +11,16 @@
 /codeception.yml export-ignore
 /docker-compose.yml export-ignore
 
+
+# Keep development leftovers out of the release packages. build/build.sh cuts the zips
+# with `git archive`, which honours these rules. The vendor entries are tooling that
+# ships inside the composer packages; the library code itself is untouched.
+/admin/composer.json export-ignore
+/admin/composer.lock export-ignore
+/admin/vendor/**/.github/ export-ignore
+/admin/vendor/**/docs/ export-ignore
+/admin/vendor/**/phpunit.xml export-ignore
+/admin/vendor/**/phpstan.neon export-ignore
+/admin/vendor/**/phpstan-baseline.neon export-ignore
+/admin/vendor/mpdf/mpdf/.gitignore export-ignore
+/admin/vendor/mpdf/psr-log-aware-trait/.gitignore export-ignore
