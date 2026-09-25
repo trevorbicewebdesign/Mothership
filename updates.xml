@@ -5,7 +5,8 @@
         <element>com_mothership</element>
         <type>component</type>
         <version>0.0.25</version>
-        <infourl title="Mothership on GitHub">https://github.com/trevorbice/mothership</infourl>
+        <sha256>700d4bc2b5083bac97ff70134ad605a176e069946ca0f253229495b0c003a488</sha256>
+        <infourl title="Mothership on GitHub">https://github.com/trevorbicewebdesign/Mothership</infourl>
         <downloads>
             <downloadurl type="full" format="zip">https://github.com/trevorbicewebdesign/Mothership/releases/download/0.0.25/Mothership-0.0.25.zip</downloadurl>
         </downloads>
