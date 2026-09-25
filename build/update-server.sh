@@ -4,8 +4,8 @@
 #
 #   build/update-server.sh dist/Mothership-0.0.25.zip
 #
-# Rewrites the version, both download URLs, and the enclosure length and SHA-256 hash
-# so Joomla's updater accepts the published asset. Run after the zip is uploaded to the
+# Rewrites the version, both download URLs, the <sha256> element Joomla checks, and the
+# enclosure length and hash so Joomla's updater accepts the published asset. Run after the zip is uploaded to the
 # GitHub release, since the update server is the copy of updates.xml on main.
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
@@ -28,6 +28,8 @@ s, n = re.subn(r'<version>[^<]*</version>', f'<version>{v}</version>', s, count=
 s, n = re.subn(r'https://github\.com/[^"<]*/releases/download/[^"<]+\.zip', url, s); assert n == 2, n
 s, n = re.subn(r'length="\d*"', f'length="{length}"', s, count=1); assert n == 1
 s, n = re.subn(r'hash="[0-9A-Fa-f]*"', f'hash="{h}"', s, count=1); assert n == 1
+# Joomla only verifies the <sha256> element (lowercase hex); the enclosure hash attribute is ignored.
+s, n = re.subn(r'<sha256>[0-9a-fA-F]*</sha256>', f'<sha256>{h.lower()}</sha256>', s, count=1); assert n == 1, 'updates.xml has no <sha256> element'
 open(p, 'w').write(s)
 print(f'updates.xml -> {v}  length={length}  sha256={h}')
 PY
