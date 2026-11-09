@@ -347,7 +347,7 @@ class MothershipAdminDomainsCest
             'name' => 'google.com',
             'client_id' => $clientData['id'],
             'account_id' => $accountData['id'],
-            'registrar' => 'MarkMonitor, Inc.',
+            'registrar' => 'Markmonitor Inc.',
             'reseller' => '',
             'purchase_date' => '1997-09-15 07:00:00',
             'expiration_date' => '2028-09-14 07:00:00',
