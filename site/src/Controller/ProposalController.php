@@ -20,6 +20,7 @@ use Mpdf\Mpdf;
 // Add missing imports
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
+use Joomla\CMS\Uri\Uri;
 
 // Load all enabled payment plugins
 PluginHelper::importPlugin('mothership-payment');
@@ -338,13 +339,13 @@ class ProposalController extends BaseController
             $companyEmail,
             "New Pending Payment for {$paymentMethod}",
             [
-                'admin_fname' => 'Trevor',
+                'admin_fname' => 'Admin',
                 'admin_email' => $companyEmail,
                 'payment' => $payment,
                 'proposal' => $proposal,
                 'client' => $client,
-                'confirm_link' => "http://localhost:8080/administrator/index.php?option=com_mothership&task=payment.confirm&id={$payment->id}",
-                'view_link' => "http://localhost:8080/administrator/index.php?option=com_mothership&view=proposal&id={$proposalId}",
+                'confirm_link' => Uri::root() . "administrator/index.php?option=com_mothership&task=payment.confirm&id={$payment->id}",
+                'view_link' => Uri::root() . "administrator/index.php?option=com_mothership&view=proposal&id={$proposalId}",
             ]
         );
 
