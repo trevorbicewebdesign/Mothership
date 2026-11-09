@@ -333,25 +333,24 @@ class MothershipAdminDomainsCest
         $epp_status = $domain['epp_status'];
         codecept_debug($epp_status);
 
-        $I->assertEquals([
-            "clientUpdateProhibited",
-            "clientTransferProhibited",
-            "clientDeleteProhibited",
-            "serverUpdateProhibited",
-            "serverTransferProhibited",
-            "serverDeleteProhibited"
-        ], $epp_status);
+        // This is a live WHOIS lookup, and the answer differs between the registrar's server
+        // and the registry fallback (status order, registrar capitalisation, dates a few
+        // hours apart). Exact values are pinned against a recorded response in
+        // MothershipDomainHelperTest; here only what both variants agree on is asserted.
+        $I->assertContains("clientTransferProhibited", $epp_status);
+        $I->assertContains("serverDeleteProhibited", $epp_status);
 
         $I->seeInDatabase("jos_mothership_domains", [
             'id' => $domainData['id'],
             'name' => 'google.com',
             'client_id' => $clientData['id'],
             'account_id' => $accountData['id'],
-            'registrar' => 'Markmonitor Inc.',
             'reseller' => '',
-            'purchase_date' => '1997-09-15 07:00:00',
-            'expiration_date' => '2028-09-14 07:00:00',
         ]);
+        $I->assertEquals('markmonitor inc.', strtolower($domain['registrar']));
+        $I->assertStringStartsWith('1997-09-15', $domain['purchase_date']);
+        $I->assertNotEmpty($domain['expiration_date']);
+        $I->assertContains('ns1.google.com', [strtolower($domain['ns1']), strtolower($domain['ns2']), strtolower($domain['ns3']), strtolower($domain['ns4'])]);
 
         $I->seeInDatabase("jos_mothership_logs", [
             'client_id' => $clientData['id'],

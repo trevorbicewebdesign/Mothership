@@ -1,7 +1,8 @@
 name: Release
 
-# Pushing a version tag (e.g. 0.0.25) builds the packages, publishes the GitHub
-# release with them attached, and points updates.xml on main at the new zip.
+# Pushing a version tag (e.g. 0.0.25) runs the full test workflow, then builds the
+# packages, publishes the GitHub release with them attached, and points updates.xml
+# on main at the new zip.
 #
 #   build/set-version.sh 0.0.25
 #   git commit -am "Release 0.0.25" && git tag 0.0.25 && git push origin main 0.0.25
@@ -16,7 +17,16 @@ permissions:
   pull-requests: write
 
 jobs:
+  # The same lint and test matrix that guards main, run against the tagged commit so a
+  # release can never ship untested code.
+  test:
+    uses: ./.github/workflows/codeception.tests.yml
+    permissions:
+      contents: read
+    secrets: inherit
+
   release:
+    needs: test
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -35,7 +45,7 @@ jobs:
           fi
 
       - name: Check the tagged commit is on main
-        # The test workflow runs on every push to main, so this is what has been tested.
+        # Releases are cut from main only; the test job above has already tested this commit.
         run: git merge-base --is-ancestor "$GITHUB_SHA" origin/main || { echo "The tagged commit is not on main." >&2; exit 1; }
 
       - name: Build packages
