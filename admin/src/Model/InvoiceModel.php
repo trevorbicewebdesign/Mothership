@@ -3,6 +3,7 @@
 namespace TrevorBice\Component\Mothership\Administrator\Model;
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Model\AdminModel;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\Versioning\VersionableModelTrait;
@@ -133,7 +134,7 @@ class InvoiceModel extends AdminModel
     public function save($data)
     {
         $table = $this->getTable();
-        $db = $this->getDbo();
+        $db = $this->getDatabase();
 
         Log::add('Data received for saving: ' . json_encode($data), Log::DEBUG, 'com_mothership');
 
@@ -147,7 +148,7 @@ class InvoiceModel extends AdminModel
             $newStatus = (int) $data['status'];
         
             if (!empty($existingTable->locked)) {
-                $this->setError(JText::_('COM_MOTHERSHIP_ERROR_INVOICE_LOCKED'));
+                $this->setError(Text::_('COM_MOTHERSHIP_ERROR_INVOICE_LOCKED'));
                 return false;
             }
         }
@@ -265,7 +266,7 @@ class InvoiceModel extends AdminModel
         $result = parent::delete($pks);
 
         if ($result) {
-            $db = $this->getDbo();
+            $db = $this->getDatabase();
             $query = $db->getQuery(true)
                 ->delete($db->quoteName('#__mothership_invoice_items'))
                 ->where($db->quoteName('invoice_id') . ' IN (' . implode(',', array_map('intval', $pks)) . ')');

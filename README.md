@@ -18,6 +18,12 @@ One of the standout features in the initial release is the projects module. Ofte
 
 In short, Mothership is built to streamline your workflow and let you focus on what really matters—delivering great work and growing your business.
 
+# Requirements
+
+- Joomla 5.x or 6.x (verified against 5.4.10 and 6.2.0)
+- PHP 8.1 or newer for the component; Joomla 6 itself requires PHP 8.3 or newer
+- MySQL 8 or MariaDB
+
 # Back End
 
 ## Creating an Invoice

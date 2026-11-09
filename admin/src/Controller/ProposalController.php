@@ -32,7 +32,7 @@ class ProposalController extends FormController
     // Returns a list of accounts for a given client in JSON format
     public function getAccountsList()
     {
-        $client_id = Factory::getApplication()->input->getInt('client_id');
+        $client_id = Factory::getApplication()->getInput()->getInt('client_id');
         $accountList = AccountHelper::getAccountListOptions($client_id);
         echo json_encode($accountList);
         Factory::getApplication()->close();
@@ -40,7 +40,7 @@ class ProposalController extends FormController
 
     public function getProjectsList()
     {
-        $account_id = Factory::getApplication()->input->getInt('account_id');
+        $account_id = Factory::getApplication()->getInput()->getInt('account_id');
         $projectList = ProjectHelper::getProjectListOptions($account_id);
         echo json_encode($projectList);
         Factory::getApplication()->close();
@@ -125,7 +125,7 @@ class ProposalController extends FormController
     {
         // Get the Joomla application and input
         $app = Factory::getApplication();
-        $input = $app->input;
+        $input = $app->getInput();
 
         // Get the submitted form data
         $data = $input->get('jform', [], 'array');

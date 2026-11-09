@@ -167,7 +167,7 @@ class PaymentModel extends AdminModel
             $newStatus = (int) $data['status'];
         
             if (!empty($existingTable->locked)) {
-                $this->setError(\JText::_('COM_MOTHERSHIP_ERROR_PAYMENT_LOCKED'));
+                $this->setError(Text::_('COM_MOTHERSHIP_ERROR_PAYMENT_LOCKED'));
                 return false;
             }
         }

@@ -12,7 +12,7 @@ class HtmlView extends BaseHtmlView
     public function display($tpl = null)
     {
         /*
-        $user = Factory::getUser();
+        $user = Factory::getApplication()->getIdentity();
         if (!$user->authorise('mothership.view_proposals', 'com_mothership')) {
             echo Text::_('JERROR_ALERTNOAUTHOR');
             return;

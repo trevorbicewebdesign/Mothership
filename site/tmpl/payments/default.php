@@ -3,6 +3,8 @@
 
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\Registry\Registry;
 
 ?>
 <style>
@@ -65,10 +67,10 @@ use Joomla\CMS\Language\Text;
                     <td>$<?php echo number_format($payment->fee_amount, 2); ?></td>
                     <td>
                         <?php 
-                        $plugin = JPluginHelper::getPlugin('mothership-payment', $payment->payment_method);
+                        $plugin = PluginHelper::getPlugin('mothership-payment', $payment->payment_method);
                         $displayName = null;
                         if (is_object($plugin) && isset($plugin->params)) {
-                            $pluginParams = new JRegistry($plugin->params);
+                            $pluginParams = new Registry($plugin->params);
                             $displayName = $pluginParams->get('display_name');
                         }
                         echo $displayName ?? $payment->payment_method;

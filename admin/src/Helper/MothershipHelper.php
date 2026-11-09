@@ -35,7 +35,7 @@ class MothershipHelper extends ContentHelper
      */
     public static function getReturnRedirect($default = null)
     {
-        $input = Factory::getApplication()->input;
+        $input = Factory::getApplication()->getInput();
 
         // Check URL param
         $return = $input->getString('return', '');

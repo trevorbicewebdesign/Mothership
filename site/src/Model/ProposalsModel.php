@@ -17,7 +17,7 @@ class ProposalsModel extends ListModel
             return [];
         }
 
-        $db = $this->getDbo();
+        $db = $this->getDatabase();
         $query = $db->getQuery(true);
 
         $query->select([

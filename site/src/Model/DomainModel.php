@@ -39,7 +39,7 @@ class DomainModel extends BaseDatabaseModel
     protected function populateState()
     {
         $app = \Joomla\CMS\Factory::getApplication();
-        $id = $app->input->getInt('id');
+        $id = $app->getInput()->getInt('id');
         $this->setState('domain.id', $id);
     }
 

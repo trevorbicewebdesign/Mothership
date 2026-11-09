@@ -28,7 +28,7 @@ class DomainController extends FormController
     public function whoisScan()
     {
         $app = Factory::getApplication();
-        $input = $app->input;
+        $input = $app->getInput();
         $model = $this->getModel('Domain');
 
         $domain = $model->getItem($input->getInt('id'));
@@ -96,7 +96,7 @@ class DomainController extends FormController
     public function save($key = null, $urlVar = null)
     {
         $app   = Factory::getApplication();
-        $input = $app->input;
+        $input = $app->getInput();
         $data  = $input->get('jform', [], 'array');
         $model = $this->getModel('Domain');
 
@@ -160,7 +160,7 @@ class DomainController extends FormController
     public function delete()
     {
         $app = Factory::getApplication();
-        $input = $app->input;
+        $input = $app->getInput();
         $model = $this->getModel('Domain');
         $cid = $input->get('cid', [], 'array');
 

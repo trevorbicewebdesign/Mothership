@@ -56,7 +56,6 @@ class HtmlView extends BaseHtmlView
         
         HTMLHelper::_('bootstrap.tooltip');
 		HTMLHelper::_('behavior.multiselect');
-		HTMLHelper::_('formbehavior.chosen', 'select');
 
         /** @var InvoicesModel $model */
         $model = $this->getModel();

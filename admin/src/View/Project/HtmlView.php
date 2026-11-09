@@ -86,7 +86,7 @@ class HtmlView extends BaseHtmlView
             // Redirect to the list view if no item is found
             $app = Factory::getApplication();
             $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_PROJECT_NOT_FOUND'), 'error');
-            $app->redirect(Factory::getApplication()->input->get('return', 'index.php?option=com_mothership&view=projects', 'raw'));    
+            $app->redirect(Factory::getApplication()->getInput()->get('return', 'index.php?option=com_mothership&view=projects', 'raw'));    
         }
         $this->form = $model->getForm();
         $this->state = $model->getState();

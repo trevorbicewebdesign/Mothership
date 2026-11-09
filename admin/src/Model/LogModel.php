@@ -87,7 +87,7 @@ class LogModel extends AdminModel
 
     public function canDeleteLog(int $logId): bool
     {
-        $db = Factory::getDbo();
+        $db = $this->getDatabase();
 
         $hasAccounts = $db->setQuery(
             $db->getQuery(true)

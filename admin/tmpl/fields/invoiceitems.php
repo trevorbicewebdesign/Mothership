@@ -1,12 +1,14 @@
 <?php
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use TrevorBice\Component\Mothership\Administrator\Helper\InvoiceHelper;
 
 defined('_JEXEC') or die;
 
 // There is deff a better way to handle this, but for now this is a quick fix
-$app = JFactory::getApplication();
-$input = $app->input;
+$app = Factory::getApplication();
+$input = $app->getInput();
 $id = $input->getInt('id', 0);
 try{
     $invoice = InvoiceHelper::getInvoice($id);
@@ -27,14 +29,14 @@ $items = $field->value ?? [];
     <thead>
         <tr>
             <th width="1%"></th>
-            <th><?php echo JText::_('COM_MOTHERSHIP_ITEM_NAME'); ?></th>
-            <th><?php echo JText::_('COM_MOTHERSHIP_ITEM_DESCRIPTION'); ?></th>
-            <th width="1%"><?php echo JText::_('COM_MOTHERSHIP_ITEM_HOURS'); ?></th>
-            <th width="1%"><?php echo JText::_('COM_MOTHERSHIP_ITEM_MINUTES'); ?></th>
-            <th width="1%"><?php echo JText::_('COM_MOTHERSHIP_ITEM_QUANTITY'); ?></th>
-            <th width="6%"><?php echo JText::_('COM_MOTHERSHIP_ITEM_RATE'); ?></th>
-            <th width="1%"><?php echo JText::_('COM_MOTHERSHIP_ITEM_SUBTOTAL'); ?></th>
-            <th width="1%"><?php echo JText::_('COM_MOTHERSHIP_ITEM_ACTIONS'); ?></th>
+            <th><?php echo Text::_('COM_MOTHERSHIP_ITEM_NAME'); ?></th>
+            <th><?php echo Text::_('COM_MOTHERSHIP_ITEM_DESCRIPTION'); ?></th>
+            <th width="1%"><?php echo Text::_('COM_MOTHERSHIP_ITEM_HOURS'); ?></th>
+            <th width="1%"><?php echo Text::_('COM_MOTHERSHIP_ITEM_MINUTES'); ?></th>
+            <th width="1%"><?php echo Text::_('COM_MOTHERSHIP_ITEM_QUANTITY'); ?></th>
+            <th width="6%"><?php echo Text::_('COM_MOTHERSHIP_ITEM_RATE'); ?></th>
+            <th width="1%"><?php echo Text::_('COM_MOTHERSHIP_ITEM_SUBTOTAL'); ?></th>
+            <th width="1%"><?php echo Text::_('COM_MOTHERSHIP_ITEM_ACTIONS'); ?></th>
         </tr>
     </thead>
     <tbody>
@@ -80,7 +82,7 @@ $items = $field->value ?? [];
 </table>
 <?php if (!$isLocked) : ?>
 <button type="button" class="btn btn-success" id="add-invoice-item">
-    <?php echo JText::_('COM_MOTHERSHIP_ADD_ITEM'); ?>
+    <?php echo Text::_('COM_MOTHERSHIP_ADD_ITEM'); ?>
 </button>
 <?php endif; ?>
 

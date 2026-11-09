@@ -12,6 +12,7 @@ namespace TrevorBice\Component\Mothership\Administrator\Helper;
 
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\Database\DatabaseInterface;
 use Joomla\CMS\Helper\ContentHelper;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
@@ -48,11 +49,11 @@ class LogHelper extends ContentHelper
      */
     public static function log(array $params): bool
     {
-        $user = Factory::getUser();
+        $user = Factory::getApplication()->getIdentity();
         $user_id = $user->id;
 
         try {
-            $db = Factory::getDbo();
+            $db = Factory::getContainer()->get(DatabaseInterface::class);
             $columns = [
                 'client_id',
                 'account_id',
@@ -112,7 +113,7 @@ class LogHelper extends ContentHelper
             'account_id' => $accountId,
             'action' => $event,
             //'meta' => [],
-            //'user_id' => Factory::getUser()->id,
+            //'user_id' => Factory::getApplication()->getIdentity()->id,
         ];
 
         self::log($criteria);
@@ -120,7 +121,7 @@ class LogHelper extends ContentHelper
 
     public static function logPaymentInitiated($invoice_id, $payment_id, $client_id, $account_id, $invoiceTotal, $paymentMethod): void
     {
-        $user = Factory::getUser();
+        $user = Factory::getApplication()->getIdentity();
         $userId = $user->id;
         $username = $user->name ?: $user->username;
 
@@ -163,7 +164,7 @@ class LogHelper extends ContentHelper
         $accountId = $payment->account_id ?? null;
         $invoiceTotal = $payment->amount ?? 0.0;
         $paymentMethod = $payment->payment_method ?? '';
-        $user = Factory::getUser();
+        $user = Factory::getApplication()->getIdentity();
         $userId = $user->id;
         
         self::log([
@@ -187,7 +188,7 @@ class LogHelper extends ContentHelper
 
     public static function logObjectViewed($object_type, $object_id, $client_id, $account_id): bool
     {
-        $user = Factory::getUser();
+        $user = Factory::getApplication()->getIdentity();
         $userId = $user->id;
         $username = $user->name ?: $user->username;
 

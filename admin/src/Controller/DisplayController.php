@@ -15,7 +15,7 @@ class DisplayController extends BaseController
 
     public function display($cachable = false, $urlparams = [])
     {
-        $input = $this->app->input;
+        $input = $this->app->getInput();
         $view  = $input->getCmd('view', $this->default_view);
         $input->set('view', $view);
 
