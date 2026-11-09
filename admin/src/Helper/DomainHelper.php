@@ -13,6 +13,7 @@ namespace TrevorBice\Component\Mothership\Administrator\Helper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Helper\ContentHelper;
 use Iodev\Whois\Factory as WhoisFactory;
+use Iodev\Whois\Loaders\ILoader;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -64,7 +65,9 @@ class DomainHelper extends ContentHelper
     /**
      * Scans the WHOIS information of a given domain name and returns the details.
      *
-     * @param string $domainName The domain name to scan.
+     * @param string       $domainName The domain name to scan.
+     * @param ILoader|null $loader     Optional WHOIS loader; defaults to a live socket lookup.
+     *                                 Tests pass a loader that replays recorded responses.
      *
      * @return array An associative array containing the following keys:
      *               - 'available' (bool): Indicates if the domain is available.
@@ -103,9 +106,9 @@ class DomainHelper extends ContentHelper
      *     echo 'Status: ' . implode(', ', $result['status']) . PHP_EOL;
      * }
      */
-    public static function scanDomain(string $domainName): array
+    public static function scanDomain(string $domainName, ?ILoader $loader = null): array
     {
-        $whois = WhoisFactory::get()->createWhois();
+        $whois = WhoisFactory::get()->createWhois($loader);
 
         try {
             $info = $whois->loadDomainInfo($domainName);

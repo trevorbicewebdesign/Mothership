@@ -3,6 +3,8 @@
 namespace Tests\Integration;
 
 use \Tests\Support\IntegrationTester;
+use Iodev\Whois\Exceptions\ConnectionException;
+use Iodev\Whois\Loaders\ILoader;
 use TrevorBice\Component\Mothership\Administrator\Helper\DomainHelper;
 
 class MothershipDomainHelperTest extends \Codeception\Test\Unit
@@ -22,10 +24,55 @@ class MothershipDomainHelperTest extends \Codeception\Test\Unit
 
     }
 
-    public function testScanDomain()
+    /**
+     * A WHOIS loader that replays the responses recorded in tests/_data/whois/<domain>.json
+     * (WHOIS host => response text), so the scan never touches the network. A host with no
+     * recorded response fails the lookup instead of falling through to a live query.
+     */
+    protected function recordedWhoisLoader(string $domain): ILoader
+    {
+        $responses = json_decode(file_get_contents(codecept_root_dir("tests/_data/whois/{$domain}.json")), true);
+
+        return new class ($responses) implements ILoader {
+            public function __construct(private array $responses)
+            {
+            }
+
+            public function loadText($whoisHost, $query)
+            {
+                if (!isset($this->responses[$whoisHost])) {
+                    throw new ConnectionException("No recorded WHOIS response for {$whoisHost}");
+                }
+
+                return $this->responses[$whoisHost];
+            }
+        };
+    }
+
+    /**
+     * The live lookup, kept out of CI because the answer depends on which WHOIS server
+     * responds and on the network being reachable. Run it with: codecept run integration -g network
+     *
+     * @group network
+     * @group skipCI
+     */
+    public function testScanDomainLive()
     {
         $domain = "google.com";
         $results = DomainHelper::scanDomain($domain);
+
+        codecept_debug($results);
+
+        $this->assertArrayNotHasKey('error', $results);
+        $this->assertEquals($domain, $results['domain']);
+        $this->assertNotEmpty($results['registrar']);
+        $this->assertNotEmpty($results['name_servers']);
+    }
+
+    public function testScanDomain()
+    {
+        $domain = "google.com";
+        $results = DomainHelper::scanDomain($domain, $this->recordedWhoisLoader($domain));
 
         codecept_debug($results);
         

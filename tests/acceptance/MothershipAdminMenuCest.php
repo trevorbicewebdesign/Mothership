@@ -41,6 +41,11 @@ class MothershipAdminMenuCest
         $I->switchToIFrame();
     }
 
+    /**
+     * @group backend
+     * @group menus
+     * @group backend-menus
+     */
     public function MothershipMenuAddAccountsPage(AcceptanceTester $I)
     {
         $I->amOnPage("/administrator/index.php?option=com_menus&view=items&menutype=mainmenu");

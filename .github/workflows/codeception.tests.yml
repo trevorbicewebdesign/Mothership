@@ -2,6 +2,8 @@ name: Run Mothership Tests
 
 on:
   workflow_dispatch:
+  # Lets release.yml run this whole workflow before it publishes anything.
+  workflow_call:
   pull_request:
     types: [opened, synchronize, reopened]
   push:
@@ -14,6 +16,53 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Fast checks that need no containers. They also cover code no test reaches.
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # The oldest PHP the component supports (composer.json), so newer syntax is caught.
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          coverage: none
+
+      - name: PHP syntax
+        run: |
+          failed=0
+          while IFS= read -r file; do
+            php -l "$file" > /dev/null || failed=1
+          done < <(git ls-files '*.php' ':!:admin/vendor')
+          exit $failed
+
+      - name: shellcheck
+        run: shellcheck build/*.sh
+
+      - name: Install actionlint
+        env:
+          ACTIONLINT_VERSION: 1.7.12
+          ACTIONLINT_SHA256: 8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8
+        run: |
+          set -eu
+          curl -fsSL -o actionlint.tar.gz \
+            "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz"
+          echo "${ACTIONLINT_SHA256}  actionlint.tar.gz" | sha256sum -c -
+          tar -xzf actionlint.tar.gz actionlint
+          ./actionlint -version
+
+      - name: actionlint
+        run: ./actionlint -color
+
+      # The acceptance suite runs one --group per matrix row below, so a test without one
+      # of those groups would never run.
+      - name: Every acceptance test belongs to a CI group
+        run: php tests/check-groups.php
+
   test:
     name: Testing ${{ matrix.suite }} ${{ matrix.group || '' }}
     runs-on: ubuntu-latest
@@ -72,13 +121,18 @@ jobs:
       - name: Pull images
         # One parallel pull of just the services this job uses (the old step pulled
         # all four images one after another).
-        run: docker compose pull --quiet $COMPOSE_SERVICES
+        # COMPOSE_SERVICES is a space-separated list, so it must stay unquoted.
+        run: |
+          # shellcheck disable=SC2086
+          docker compose pull --quiet $COMPOSE_SERVICES
 
       - name: Start services
         # Returns once every service's healthcheck passes (see docker-compose.yml),
         # which replaces the sleep-5 polling loops and the TCP-vs-init-server race
         # in the old "mysqladmin ping" check.
-        run: docker compose up -d --wait --wait-timeout 180 $COMPOSE_SERVICES
+        run: |
+          # shellcheck disable=SC2086
+          docker compose up -d --wait --wait-timeout 180 $COMPOSE_SERVICES
 
       - name: Discover & Install Mothership via CLI
         run: |
@@ -95,12 +149,15 @@ jobs:
         run: docker compose exec -T db mysqldump -uroot -proot --no-tablespaces --skip-comments --extended-insert=false local > tests/_support/Data/db/dump.sql
 
       - name: Run Codeception Tests for ${{ matrix.suite }}
+        env:
+          SUITE: ${{ matrix.suite }}
+          GROUP: ${{ matrix.group }}
         run: |
-          GROUP_ARG=""
-          if [ -n "${{ matrix.group }}" ]; then
-            GROUP_ARG="--group ${{ matrix.group }}"
+          GROUP_ARGS=()
+          if [ -n "$GROUP" ]; then
+            GROUP_ARGS=(--group "$GROUP")
           fi
-          docker compose exec -T joomla /var/www/html/vendor/bin/codecept run ${{ matrix.suite }} $GROUP_ARG --skip-group skipCI
+          docker compose exec -T joomla /var/www/html/vendor/bin/codecept run "$SUITE" "${GROUP_ARGS[@]}" --skip-group skipCI
 
       - name: Collect service logs
         if: failure()

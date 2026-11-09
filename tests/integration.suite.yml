@@ -19,6 +19,9 @@ modules:
             password: '%DBPASS%'
             dump: '%DBDUMP%'
             createIfNotExists: true
-            # populate: true
-            # cleanup: true
+            # Reload the dump before each test so tests never inherit each other's rows.
+            # Safe because DSN names the separate test database: check tests/.env first.
+            populate: true
+            populator: '%DBPOPULATOR%'
+            cleanup: true
             reconnect: true
