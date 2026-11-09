@@ -1,15 +1,16 @@
 ![Run Mothership Tests](https://github.com/trevorbicewebdesign/mothership/actions/workflows/codeception.tests.yml/badge.svg)
 # Mothership
-Mothership is a friendly, open-source Joomla extension built for solo developers and small businesses. It started as a personal project designed to simplify everyday challenges like invoicing, support tickets, time tracking, expenses, taxes, and logs. Over time, it evolved into a tool that handles all these essential functions in one place—making life easier not just for me, but for anyone juggling the many hats of a web development operation.
+Mothership is a friendly, open-source Joomla extension built for solo developers and small businesses. It started as a personal project designed to simplify everyday challenges like proposals, invoicing, payments, domain tracking, and logs. Over time, it evolved into a tool that handles these essential functions in one place—making life easier not just for me, but for anyone juggling the many hats of a web development operation. Support tickets, time tracking, expenses, and taxes are planned but are not part of the current release.
 
-At its core, Mothership organizes your business around five main objects:
+At its core, Mothership organizes your business around eight main objects:
 
 - **Clients**
 - **Accounts**
 - **Projects**
+- **Domains**
+- **Proposals**
 - **Invoices**
 - **Payments**
-- **Domains**
 - **Logs**
 
 The model is flexible enough to accommodate real-world complexities. For example, a single client might manage multiple accounts—whether these represent different parts of the business, subdomains, or entirely separate brands. Each account can then have its own projects. While projects currently focus on websites, the architecture is designed to eventually support other types of work, like graphic design or any other service you might offer.
@@ -35,14 +36,13 @@ In short, Mothership is built to streamline your workflow and let you focus on w
 ### Steps:
 1) Visit the `View All Invoices Page`
 2) Click `Pay` next to the invoice you wish to settle
-3) User is taken to the Select Payment Page, user must select a payment type
-4) Payment is initiated
-5) User is taken to the `Instructions` page where payment instructions are displayed
-6) User Writes payment check
-7) User clicks `Payment Sent` button
-8) User is taken to the `Thank You` page where details about the pending transaction are listed
-9) Administrator sets payment status to `Confirmed`
-10) User receives an email letting them know the process completed
+3) User is taken to the Select Payment Page, where each enabled payment method is listed with its fee and payment instructions. An invoice that already has a pending payment cannot start a second one.
+4) User selects a payment method and clicks `Pay Now`
+5) A payment is created with the status `Pending` and the administrator is emailed
+6) User is taken to the `Thank You` page where details about the pending transaction are listed
+7) User sends the payment (for example mails the check or sends the Zelle transfer)
+8) Administrator opens the payment and clicks `Confirm Payment`, which sets the payment status to `Completed`
+9) User receives an email letting them know the process completed, and the invoice is closed once it is fully paid
 
 <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between;">
   <img src="https://github.com/user-attachments/assets/25a09847-0867-4a2e-a665-db72e5038fe4" width="24%" />
@@ -64,6 +64,7 @@ The **Clients** object represents the individuals or organizations you work with
 - **Tax ID**: The client's tax identification number.
 - **Default Rate**: The default billing rate for the client.
 - **Owner User ID**: The ID of the user who owns the client record.
+- **Invoice PDF Template**: The invoice PDF template used for this client's invoices. Defaults to `default`.
 - **Created**: The timestamp when the client record was created.
 - **Created By**: The ID of the user who created the client record.
 - **Checked Out Time**: The timestamp when the client record was last checked out.
@@ -84,6 +85,7 @@ CREATE TABLE IF NOT EXISTS `#__mothership_clients` (
   `tax_id` VARCHAR(30) NOT NULL,
   `default_rate` DECIMAL(10,2) DEFAULT NULL,
   `owner_user_id` INT(11) DEFAULT NULL,
+  `invoice_pdf_template` VARCHAR(100) NOT NULL DEFAULT 'default' COLLATE 'utf8mb4_unicode_ci',
   `created` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `created_by` INT(11) DEFAULT NULL,
   `checked_out_time` DATETIME DEFAULT NULL,
@@ -130,6 +132,7 @@ The **Domains** object represents the domains associated with client accounts.
 - **Client Id**: The ID of the client who owns the domain.
 - **Account Id**: The ID of the account associated with the domain.
 - **Status**: The current status of the domain (e.g., active, expired).
+- **EPP Status**: The EPP status codes reported for the domain (e.g., `ok`, `clientTransferProhibited`), stored as a JSON list.
 - **Registrar**: The registrar where the domain is registered.
 - **Reseller**: The reseller through whom the domain was purchased, if applicable.
 - **DNS Provider**: The provider managing the domain's DNS settings.
@@ -139,6 +142,12 @@ The **Domains** object represents the domains associated with client accounts.
 - **NS4**: An optional quaternary nameserver for the domain.
 - **Purchase Date**: The date when the domain was purchased.
 - **Expiration Date**: The date when the domain is set to expire.
+- **Auto Renew**: Whether the domain is set to renew automatically.
+- **Notes**: Free-form notes about the domain.
+- **Created**: The timestamp when the domain record was created.
+- **Modified**: The timestamp when the domain record was last modified.
+- **Checked Out**: The ID of the user who last checked out the domain record.
+- **Checked Out Time**: The timestamp when the domain record was last checked out.
 
 ### Domains Table
 ```
@@ -148,7 +157,7 @@ CREATE TABLE IF NOT EXISTS `#__mothership_domains` (
   `client_id` INT(10) NOT NULL,
   `account_id` INT(10) DEFAULT NULL,
   `status` VARCHAR(255) NOT NULL DEFAULT '' COLLATE 'utf8mb4_unicode_ci',
-  `epp_status` varchar(255) DEFAULT NULL,
+  `epp_status` JSON DEFAULT NULL,
   `registrar` VARCHAR(255) DEFAULT NULL,
   `reseller` VARCHAR(255) DEFAULT NULL,
   `dns_provider` VARCHAR(255) DEFAULT NULL,
@@ -162,8 +171,8 @@ CREATE TABLE IF NOT EXISTS `#__mothership_domains` (
   `notes` TEXT DEFAULT NULL,
   `created` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `modified` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `checked_out` DATETIME DEFAULT NULL,
-  `checked_out_time` INT(11) DEFAULT NULL,
+  `checked_out` INT(11) DEFAULT NULL,
+  `checked_out_time` DATETIME DEFAULT NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_domains_client_mship` FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients`(`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_domains_account_mship` FOREIGN KEY (`account_id`) REFERENCES `#__mothership_accounts`(`id`) ON DELETE SET NULL,
@@ -176,6 +185,9 @@ CREATE TABLE IF NOT EXISTS `#__mothership_domains` (
 - **Inactive**: The domain is not currently in use or has been deactivated.
 - **Pending**: The domain is awaiting activation or completion of a required process.
 - **Suspended**: The domain has been temporarily disabled due to policy violations or other issues.
+
+### Domain WHOIS Scan
+The domain edit screen can run a WHOIS lookup (`domain.whoisScan`, backed by `DomainHelper::scanDomain()` and the `io-developer/php-whois` library). The scan fills in the registrar, name servers, DNS provider, EPP status, and the purchase and expiration dates, and records a `scanned` entry in the logs.
 
 ## Proposals
 
@@ -194,7 +206,7 @@ Each proposal includes the following attributes:
 - **Total (Low)**: The lower bound of the proposal total, used for range-based proposals.
 - **Total**: The primary or upper total amount of the proposal.
 - **Status**: Numeric proposal status (e.g. draft, sent, approved, rejected). Status values are managed at the application level.
-- **Due Date**: Optional target or expiration date for the proposal.
+- **Expires**: Optional expiration date for the proposal.
 - **Locked**: When set, the proposal becomes read-only and cannot be modified.
 - **Summary**: High-level summary or scope description of the proposal.
 - **Notes**: Internal notes related to the proposal (not intended for client visibility).
@@ -209,48 +221,43 @@ Each proposal includes the following attributes:
 
 ### Proposal Tables
 ```
-CREATE TABLE `jos_mothership_proposals` (
-	`id` INT NOT NULL AUTO_INCREMENT,
-	`name` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
-	`client_id` INT NULL DEFAULT NULL,
-	`account_id` INT NULL DEFAULT NULL,
-	`project_id` INT NULL DEFAULT NULL,
-	`type` VARCHAR(50) NOT NULL DEFAULT '' COLLATE 'utf8mb4_unicode_ci',
-	`number` VARCHAR(50) NOT NULL COLLATE 'utf8mb4_unicode_ci',
-	`total_low` DECIMAL(10,2) NOT NULL DEFAULT '0.00',
-	`total` DECIMAL(10,2) NOT NULL DEFAULT '0.00',
-	`rate` DECIMAL(10,2) NOT NULL DEFAULT '0.00',
-	`status` INT NOT NULL DEFAULT '1',
-	`expires` DATE NULL DEFAULT NULL,
-	`locked` TINYINT(1) NOT NULL DEFAULT '0',
-	`summary` MEDIUMTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
-	`notes` MEDIUMTEXT NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
-	`state` TINYINT NOT NULL DEFAULT '0',
-	`created` DATETIME NULL DEFAULT (now()),
-	`created_by` INT NULL DEFAULT NULL,
-	`modified` DATETIME NULL DEFAULT NULL,
-	`modified_by` INT NULL DEFAULT NULL,
-	`checked_out` INT NULL DEFAULT NULL,
-	`checked_out_time` DATETIME NULL DEFAULT NULL,
-	`version` INT NOT NULL DEFAULT '1',
-	PRIMARY KEY (`id`) USING BTREE,
-	INDEX `idx_client_id` (`client_id`) USING BTREE,
-	INDEX `idx_account_id` (`account_id`) USING BTREE,
-	INDEX `idx_project_id` (`project_id`) USING BTREE,
-	INDEX `idx_number` (`number`) USING BTREE,
-	CONSTRAINT `fk_proposal_account_mship` FOREIGN KEY (`account_id`) REFERENCES `jos_mothership_accounts` (`id`) ON UPDATE NO ACTION ON DELETE SET NULL,
-	CONSTRAINT `fk_proposal_client_mship` FOREIGN KEY (`client_id`) REFERENCES `jos_mothership_clients` (`id`) ON UPDATE NO ACTION ON DELETE SET NULL,
-	CONSTRAINT `fk_proposal_project_mship` FOREIGN KEY (`project_id`) REFERENCES `jos_mothership_projects` (`id`) ON UPDATE NO ACTION ON DELETE SET NULL
-)
-COLLATE='utf8mb4_unicode_ci'
-ENGINE=InnoDB
-ROW_FORMAT=DYNAMIC
-AUTO_INCREMENT=2
-;
+CREATE TABLE IF NOT EXISTS `#__mothership_proposals` (
+  `id` INT(10) NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(255) NULL COLLATE 'utf8mb4_unicode_ci',
+  `client_id` INT(10) DEFAULT NULL,
+  `account_id` INT(10) DEFAULT NULL,
+  `project_id` INT(10) DEFAULT NULL,
+  `type` VARCHAR(50) NOT NULL DEFAULT '' COLLATE 'utf8mb4_unicode_ci',
+  `number` VARCHAR(50) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+  `total_low` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `total` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `rate` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `status` INT(11) NOT NULL DEFAULT 1,
+  `expires` DATE DEFAULT NULL,
+  `locked` TINYINT(1) NOT NULL DEFAULT 0,
+  `summary` MEDIUMTEXT NULL COLLATE 'utf8mb4_unicode_ci',
+  `notes` MEDIUMTEXT NULL COLLATE 'utf8mb4_unicode_ci',
+  `state` TINYINT(3) NOT NULL DEFAULT 0,
+  `created` DATETIME NULL DEFAULT (CURRENT_TIMESTAMP),
+  `created_by` INT(11) DEFAULT NULL,
+  `modified` DATETIME DEFAULT NULL,
+  `modified_by` INT(11) DEFAULT NULL,
+  `checked_out` INT(11) DEFAULT NULL,
+  `checked_out_time` DATETIME DEFAULT NULL,
+  `version` INT(11) NOT NULL DEFAULT 1,
+  PRIMARY KEY (`id`),
+  KEY `idx_client_id` (`client_id`),
+  KEY `idx_account_id` (`account_id`),
+  KEY `idx_project_id` (`project_id`),
+  KEY `idx_number` (`number`),
+  CONSTRAINT `fk_proposal_client_mship` FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_proposal_account_mship` FOREIGN KEY (`account_id`) REFERENCES `#__mothership_accounts` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `fk_proposal_project_mship` FOREIGN KEY (`project_id`) REFERENCES `#__mothership_projects` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 ```
 
 ### Proposal Lifecycle Status Levels
-Invoices that are set from `Draft` to `Opened` will have their `Locked` status set to true. Opened invoices should not be modified. Invoices that are in a `Locked` state can be `Unlocked` if it is necessary to override for some reason.
+Proposal status is stored as an integer from 1 (`Draft`) to 6 (`Expired`), in the order listed below. Setting a proposal to `Pending` fires the `onMothershipProposalPending` event. A proposal can be `Locked` and `Unlocked` from the proposal edit screen.
 
 - **Draft**: The proposal is being created or edited and has not yet been finalized or shared with the client.
 - **Pending**: The proposal has been finalized and sent to the client for review and is awaiting a response.
@@ -260,10 +267,10 @@ Invoices that are set from `Draft` to `Opened` will have their `Locked` status s
 - **Expired**: The proposal was not approved within the allowed time window and is no longer valid.
 
 ## Proposal Items
-The **Proposal Items** object represents the individual items listed on an proposal. Each proposal item has the following attributes:
+The **Proposal Items** object represents the individual items listed on a proposal. Each proposal item has the following attributes:
 
-- **ID**: A unique identifier for the invoice item.
-- **Invoice ID**: The ID of the invoice to which the item belongs.
+- **ID**: A unique identifier for the proposal item.
+- **Proposal ID**: The ID of the proposal to which the item belongs.
 - **Name**: The name of the item.
 - **Description**: A description of the item.
 - **Type**: The type of proposal item (Hourly or Fixed). 
@@ -271,6 +278,7 @@ The **Proposal Items** object represents the individual items listed on an propo
 - **Time Low**: The lower bound estimate of time required for the item, useful for range-based proposals.
 - **Quantity**: The number of units or amount of the item being proposed (e.g., hours, licenses, deliverables).
 - **Quantity Low**: The minimum or lower bound quantity estimate for the item, used in range or estimate proposals.
+- **Rate**: The billing rate for the item.
 - **Subtotal**: The calculated cost for this item (quantity × rate), representing the main or upper estimate.
 - **Subtotal Low**: The lower bound cost estimate for this item, based on the lower quantity or time.
 - **Ordering**: The position or order in which the item appears on the proposal, used for sorting or display.
@@ -278,29 +286,24 @@ The **Proposal Items** object represents the individual items listed on an propo
 
 ### Proposal Items Table
 ```
-CREATE TABLE `jos_mothership_proposal_items` (
-	`id` INT NOT NULL AUTO_INCREMENT,
-	`proposal_id` INT NOT NULL,
-	`name` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_unicode_ci',
-	`description` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_unicode_ci',
-	`type` ENUM('hourly','fixed') NOT NULL DEFAULT 'hourly' COLLATE 'utf8mb4_unicode_ci',
-	`time` VARCHAR(10) NOT NULL DEFAULT '' COLLATE 'utf8mb4_unicode_ci',
-	`time_low` VARCHAR(10) NOT NULL DEFAULT '' COLLATE 'utf8mb4_unicode_ci',
-	`quantity` DECIMAL(10,2) NOT NULL DEFAULT '0.00',
-	`quantity_low` DECIMAL(10,2) NOT NULL DEFAULT '0.00',
-	`rate` DECIMAL(10,2) NOT NULL DEFAULT '0.00',
-	`subtotal` DECIMAL(10,2) NOT NULL DEFAULT '0.00',
-	`subtotal_low` DECIMAL(10,2) NOT NULL DEFAULT '0.00',
-	`ordering` INT NOT NULL DEFAULT '0',
-	PRIMARY KEY (`id`) USING BTREE,
-	INDEX `idx_proposal_id` (`proposal_id`) USING BTREE,
-	CONSTRAINT `fk_proposal_items_proposal_mship` FOREIGN KEY (`proposal_id`) REFERENCES `jos_mothership_proposals` (`id`) ON UPDATE NO ACTION ON DELETE CASCADE
-)
-COLLATE='utf8mb4_unicode_ci'
-ENGINE=InnoDB
-ROW_FORMAT=DYNAMIC
-AUTO_INCREMENT=3
-;
+CREATE TABLE IF NOT EXISTS `#__mothership_proposal_items` (
+  `id` INT(10) NOT NULL AUTO_INCREMENT,
+  `proposal_id` INT(10) NOT NULL,
+  `name` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+  `description` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_unicode_ci',
+  `type` ENUM('hourly','fixed') NOT NULL DEFAULT 'hourly' COLLATE 'utf8mb4_unicode_ci',
+  `time` VARCHAR(10) NOT NULL DEFAULT '' COLLATE 'utf8mb4_unicode_ci',
+  `time_low` VARCHAR(10) NOT NULL DEFAULT '' COLLATE 'utf8mb4_unicode_ci',
+  `quantity` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `quantity_low` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `rate` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `subtotal` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `subtotal_low` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `ordering` INT(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `idx_proposal_id` (`proposal_id`),
+  CONSTRAINT `fk_proposal_items_proposal_mship` FOREIGN KEY (`proposal_id`) REFERENCES `#__mothership_proposals` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 ```
 
 ## Invoices
@@ -310,13 +313,18 @@ The **Invoices** object represents the invoices generated for clients. Each invo
 - **Number**: The invoice number.
 - **Client ID**: The ID of the client to whom the invoice belongs.
 - **Account ID**: The ID of the account associated with the invoice.
+- **Project ID**: The ID of the project associated with the invoice, if any.
 - **Rate**: The billing rate for the invoice.
+- **Title**: An optional title for the invoice.
 - **Status**: The status of the invoice (e.g., draft, opened, canceled, closed).
 - **Total**: The total amount of the invoice.
 - **Due Date**: The date by which the invoice should be paid.
 - **Sent Date**: The date the invoice was sent to the client.
 - **Paid Date**: The date the invoice was paid.
 - **Locked**: Setting this to true will make the invoice view only.
+- **Summary**: A summary of the work covered by the invoice.
+- **Notes**: Notes for the invoice.
+- **Invoice PDF Template**: The PDF template used to render the invoice. Defaults to `default`.
 - **Created**: The timestamp when the invoice was created.
 - **Created By**: The ID of the user who created the invoice.
 - **Checked Out Time**: The timestamp when the invoice record was last checked out.
@@ -324,18 +332,23 @@ The **Invoices** object represents the invoices generated for clients. Each invo
 
 ### Invoices Tables
 ```
-CREATE TABLE `#__mothership_invoices` (
+CREATE TABLE IF NOT EXISTS `#__mothership_invoices` (
   `id` INT(10) NOT NULL AUTO_INCREMENT,
   `number` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
   `client_id` INT(10) NULL DEFAULT NULL,
   `account_id` INT(10) NULL DEFAULT NULL,
+  `project_id` INT(10) NULL DEFAULT NULL,
   `rate` DECIMAL(10,2) NULL DEFAULT NULL,
+  `title` VARCHAR(255) NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
   `status` INT(11) NULL DEFAULT NULL,
   `total` DECIMAL(10,2) NULL DEFAULT NULL,
   `due_date` DATE NULL DEFAULT NULL,
   `sent_date` DATE NULL DEFAULT NULL,
   `paid_date` DATE NULL DEFAULT NULL,
-  `locked` BOOLEAN NOT NULL DEFAULT 0,
+  `locked` TINYINT(1) NOT NULL DEFAULT 0,
+  `summary` TEXT NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+  `notes` TEXT NULL DEFAULT NULL COLLATE 'utf8mb4_unicode_ci',
+  `invoices_pdf_template` VARCHAR(100) NULL DEFAULT 'default' COLLATE 'utf8mb4_unicode_ci',
   `created` DATETIME NULL DEFAULT (CURRENT_TIMESTAMP),
   `created_by` INT(11) NULL DEFAULT NULL,
   `checked_out_time` DATETIME NULL DEFAULT NULL,
@@ -402,20 +415,24 @@ CREATE TABLE IF NOT EXISTS `#__mothership_invoice_items` (
 The **Payments** object represents the payments made by clients. Each payment has the following attributes:
 
 - **ID**: A unique identifier for the payment.
-- **User ID**: The ID of the user who made the payment.
 - **Client ID**: The ID of the client associated with the payment.
 - **Account ID**: The ID of the account associated with the payment.
-- **Payer Email**: The email address of the payer.
-- **Invoices**: The invoices associated with the payment.
-- **Method**: The method of payment (e.g., credit card, PayPal).
 - **Amount**: The total amount of the payment.
-- **Transaction Fee**: The transaction fee associated with the payment.
-- **Net Total**: The net total amount after deducting the transaction fee.
-- **Transaction ID**: The transaction ID of the payment.
 - **Payment Date**: The date and time when the payment was made.
+- **Fee Amount**: The transaction fee associated with the payment.
+- **Fee Passed On**: Whether the transaction fee was passed on to the client.
+- **Payment Method**: The payment plugin used for the payment (e.g., `paybycheck`, `zelle`).
+- **Transaction ID**: The transaction ID of the payment.
 - **Status**: The status of the payment.
+- **Processed Date**: The date and time when the payment was completed.
 - **Locked**: Setting this to true will make the payment view only.
+- **Created By**: The ID of the user who created the payment.
+- **Created At**: The timestamp when the payment record was created.
+- **Updated At**: The timestamp when the payment record was last updated.
+- **Checked Out Time**: The timestamp when the payment record was last checked out.
 - **Checked Out**: The ID of the user who last checked out the payment record.
+
+The invoices a payment applies to are stored in the Invoice Payments table.
 
 ### Payments Table
 ```
@@ -434,6 +451,8 @@ CREATE TABLE IF NOT EXISTS `#__mothership_payments` (
   `locked` TINYINT(1) NOT NULL DEFAULT 0,
   `created_by` INT(11) DEFAULT NULL,
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `checked_out_time` DATETIME DEFAULT NULL,
+  `checked_out` INT(11) DEFAULT NULL,
   `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `fk_payments_client` (`client_id`),
@@ -443,12 +462,11 @@ CREATE TABLE IF NOT EXISTS `#__mothership_payments` (
 ```
 
 ### Payment Status Levels
-- **Pending**: The payment has been initiated but not yet completed.
-- **Completed**: The payment has been successfully processed.
-- **Failed**: The payment attempt was unsuccessful.
-- **Refunded**: The payment has been refunded to the client.
-- **Canceled**: The payment was canceled before completion.
-- **Disputed**: The payment is under dispute and is being reviewed.
+- **Pending** (1): The payment has been initiated but not yet completed.
+- **Completed** (2): The payment has been confirmed and successfully processed.
+- **Failed** (3): The payment attempt was unsuccessful.
+- **Cancelled** (4): The payment was cancelled before completion.
+- **Refunded** (5): The payment has been refunded to the client.
 
 ## Invoice Payments
 The **Invoice Payments** object represents payments that are applied to specific invoices. Invoice payments have a many to many relationship with payments and invoices. One payment can go to multiple invoices or multiple payments can go to one invoice.
@@ -456,7 +474,7 @@ The **Invoice Payments** object represents payments that are applied to specific
 - **ID**: A unique identifier for the payment.
 - **invoice_id**: The invoice that this payment will be applied to
 - **payment_id**: The payment that is being applied to the invoice
-- **allocated_amount**: The amount of the payment that is applied to this invoice
+- **applied_amount**: The amount of the payment that is applied to this invoice
 
 ### Invoice Payments Table
 ```
@@ -510,19 +528,44 @@ CREATE TABLE IF NOT EXISTS `#__mothership_projects` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1;
 ```
 
+## Users
+The **Users** object links Joomla users to clients and gives each user a role for that client.
+
+- **ID**: A unique identifier for the record.
+- **User ID**: The ID of the Joomla user.
+- **Client ID**: The ID of the client the user belongs to.
+- **Role**: The user's role for the client: `owner`, `employee`, or `administrator`.
+
+### Users Table
+```
+CREATE TABLE IF NOT EXISTS `#__mothership_users` (
+  `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `user_id` INT(11) NOT NULL,
+  `client_id` INT(11) NOT NULL,
+  `role` ENUM('owner', 'employee', 'administrator') NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_client_id` (`client_id`),
+  KEY `idx_user_id` (`user_id`),
+  CONSTRAINT `fk_users_client` FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
+
 ## Logs 
 
 ### Logs Table
 
-- **ID**:
-- **Client Id**:
-- **Account Id**:
-- **User Id**: 
-- **Object Id**:
-- **Object Type**:
-- **Action**:
-- **Meta**:
-- **Created**:
+- **ID**: A unique identifier for the log entry.
+- **Client Id**: The ID of the client the entry relates to.
+- **Account Id**: The ID of the account the entry relates to.
+- **Object Type**: The type of object the entry is about (e.g., invoice, payment, domain, project).
+- **Object Id**: The ID of that object.
+- **Action**: The action that was logged (e.g., `viewed`, `scanned`, `status_opened`, `status_closed`, `payment_status_changed`).
+- **Meta**: JSON data with additional details about the action.
+- **Description**: A human-readable description of the entry.
+- **Details**: Additional details about the entry.
+- **User Id**: The ID of the user who performed the action.
+- **Created**: The timestamp when the entry was created.
+- **Notes**: Notes added to the entry.
 
 ```
 CREATE TABLE IF NOT EXISTS `#__mothership_logs` (
@@ -545,7 +588,7 @@ CREATE TABLE IF NOT EXISTS `#__mothership_logs` (
 ## Payment Flow
 
 1. **`InvoiceController->payment()`**  
-   The payment process begins when the `invoice.payment` task is called.
+   The payment process begins when the `invoice.payment` task is called. If the invoice already has a pending payment, the user is sent back to the invoice with a warning.
 
 2. **Payment Layout (`payment.php`)**  
    The `payment.php` layout is rendered by the invoice controller (located alongside the default layout).  
@@ -555,7 +598,8 @@ CREATE TABLE IF NOT EXISTS `#__mothership_logs` (
 
 3. **`InvoiceController->processPayment()`**  
    After selecting a payment method, the user clicks the **Pay Now** button.  
-   - A new record is created in both the `#__mothership_payments` and `#__mothership_payment_invoice` tables.  
+   - A new record is created in both the `#__mothership_payments` and `#__mothership_invoice_payment` tables.  
+   - The administrator is emailed the `payment.admin-pending` template and the initiation is logged.  
    - The selected plugin’s `initiate()` method is called, which begins processing the payment.  
    - Since payment methods may behave differently, the plugin is responsible for controlling the next steps.
 
@@ -567,15 +611,24 @@ CREATE TABLE IF NOT EXISTS `#__mothership_logs` (
 5. **Payment Completion (Thank You Page)**  
    The user is redirected to a **Thank You** page to confirm that the payment process has completed.
 
+6. **Payment Confirmation (`PaymentController->confirm()`, administrator)**  
+   An administrator confirms the payment with the `payment.confirm` task.  
+   - `PaymentHelper::onPaymentCompleted()` emails the client and the administrator and logs the completion.  
+   - The status of each invoice linked to the payment is recalculated, so a fully paid invoice is closed.  
+   - The `onMothershipPaymentCompleted` event is fired.
+
 
 ---
 
-## Payment Supported Events
-- **onAfterInitialiseMothership**: Runs after mothership initializes
-- **onMothershipPaymentRequest**: Runs whenever a payment request is being made
+## Supported Events
+- **onAfterInitialiseMothership**: Dispatched by the site dispatcher after the `mothership-payment` plugins are loaded.
+- **onMothershipInvoiceOpened($invoice)**: Fired after an invoice is set to `Opened`.
+- **onMothershipInvoiceClosed($invoice)**: Fired after an invoice is set to `Closed`.
+- **onMothershipPaymentCompleted($payment)**: Fired after a payment is completed and its invoices have been updated.
+- **onMothershipProposalPending($proposal)**: Fired after a proposal is set to `Pending`.
 
 ## Payment Plugins
-There are two payment plugins: Paypal and Zelle. The payment plugin type is 'Mothership Payments'.
+Two payment plugins ship with Mothership and are installed with the component: **Pay By Check** and **Zelle**. Payment plugins belong to the `mothership-payment` plugin group. A PayPal plugin is not included in this release.
 
 ### Creating a Payment Plugin
 To create a Mothership Payment plugin, follow these steps:
@@ -585,35 +638,50 @@ To create a Mothership Payment plugin, follow these steps:
 2. **Create the Plugin Files**: Inside your plugin directory, create the following files:
     - `mypaymentmethod.php`: This is the main plugin file.
     - `mypaymentmethod.xml`: This is the manifest file that describes your plugin.
+    - `tmpl/instructions.php`: The payment instructions layout. It is required; the Select Payment Page renders it for every enabled plugin. It receives `invoiceId`, `invoiceNumber`, `id`, `amount`, and `payment_method` in `$displayData`.
 
-3. **Define the Plugin Class**: In `mypaymentmethod.php`, define a class that extends `MothershipPaymentsPlugin`. Implement the required methods for processing payments.
+3. **Define the Plugin Class**: In `mypaymentmethod.php`, define a class named `PlgMothershipPayment` followed by the plugin name with its first letter capitalized, extending Joomla's `CMSPlugin`. Mothership calls the three methods below.
 
     ```php
     defined('_JEXEC') or die;
 
-    class PlgMothershipPaymentsmypaymentmethod extends MothershipPaymentsPlugin
+    use Joomla\CMS\Plugin\CMSPlugin;
+
+    class PlgMothershipPaymentMypaymentmethod extends CMSPlugin
     {
-         public function initiate($payment, $invoice) {
-          /* Initiates the payment process for this plugin whatever that is */
+         public function initiate($payment, $invoice): bool {
+          /* Initiates the payment process for this plugin, usually ending in a redirect */
          }
-         
+
+         public function getFee($amount): float {
+          /* The fee this payment method adds to the given amount */
+         }
+
+         public function displayFee($amount): string {
+          /* The fee as shown to the user on the Select Payment Page */
+         }
     }
     ```
 
-4. **Create the Manifest File**: In `mypaymentmethod.xml`, define the plugin metadata and files.
+4. **Create the Manifest File**: In `mypaymentmethod.xml`, define the plugin metadata and files. The `display_name` parameter is the name shown on the Select Payment Page.
 
     ```xml
-    <extension type="plugin" group="mothershippayments" method="upgrade">
-         <name>PLG_MOTHERSHIPPAYMENTS_mypaymentmethod</name>
+    <extension type="plugin" group="mothership-payment" method="upgrade">
+         <name>PLG_MOTHERSHIP_PAYMENT_MYPAYMENTMETHOD</name>
          <author>Your Name</author>
          <version>1.0.0</version>
          <description>My custom payment plugin for Mothership</description>
          <files>
               <filename plugin="mypaymentmethod">mypaymentmethod.php</filename>
+              <folder>tmpl</folder>
          </files>
-         <fieldset name="basic">
-              <field name="display_name" type="text" label="Display Name" description="Description here" default="mypaymentmethod" />
-          </fieldset>
+         <config>
+              <fields name="params">
+                   <fieldset name="basic">
+                        <field name="display_name" type="text" label="Display Name" description="Description here" default="My Payment Method" />
+                   </fieldset>
+              </fields>
+         </config>
     </extension>
     ```
 
@@ -623,21 +691,41 @@ To create a Mothership Payment plugin, follow these steps:
 
 By following these steps, you can create a custom payment plugin for Mothership that integrates with your preferred payment gateway.
 
-### PayPal
-This payment method allows clients to pay invoices using PayPal. Once the payment is completed, the status of the payment will be automatically updated to confirmed.
-
 ### Zelle
-This payment method is essentially a digital version of "Pay by Check". Once the payment has been confirmed, an administrator will need to manually update the status of the payment to confirmed.
+This payment method is essentially a digital version of "Pay by Check". Once the payment has been confirmed, an administrator will need to manually confirm the payment.
 
 ### Pay By Check
-This payment method allows clients to pay invoices by mailing a physical check. Once the check is received and processed, an administrator will need to manually update the status of the payment to confirmed. This method is ideal for clients who prefer traditional payment methods or do not use digital payment platforms.
+This payment method allows clients to pay invoices by mailing a physical check. Once the check is received and processed, an administrator will need to manually confirm the payment. This method is ideal for clients who prefer traditional payment methods or do not use digital payment platforms.
+
+---
+
+# PDFs
+Invoices and proposals can be previewed and downloaded as PDFs, rendered with mPDF. Invoice PDF templates can be supplied by plugins in the `mothership-invoice-pdf` plugin group; the template is selected in the component options and can be set per client.
+
+# Administrator Modules
+Four administrator dashboard modules live in `modules/`. They are packaged as separate zips and installed separately from the component.
+
+- **mod_mothership_invoices**: Lists open (unpaid or partially paid) invoices.
+- **mod_mothership_invoiced**: Bar chart of monthly invoiced totals for the current year, with the all-time total.
+- **mod_mothership_payments**: Bar chart of monthly completed-payment totals for the current year, with the all-time total.
+- **mod_mothership_tickets**: Lists the most recently updated support tickets. It belongs to the planned support tickets feature, which is not part of the current release.
+
+# Releases
+Release packages are built by the scripts in `build/`:
+
+- **build/set-version.sh <version>**: Sets the version in `mothership.xml`, `composer.json`, and `updates.xml`.
+- **build/build.sh**: Builds the installable zips into `dist/` from the committed tree: the component, one zip per payment plugin, and one zip per module.
+- **build/update-server.sh <zip>**: Points `updates.xml` (the Joomla update server) at a built component zip, including its size and checksum.
+
+Pushing a version tag runs the `Release` workflow, which first runs the full lint and test workflow against the tagged commit, then checks the tag against `mothership.xml`, builds the packages, publishes the GitHub release, and opens a pull request that points `updates.xml` at the new package.
 
 ---
 
 # Helpers
 
 ## Mothership Helper
-- **getReturnRedirect($default = null)**:
+- **getReturnRedirect($default = null)**: Returns the `return` URL from the request, or `$default` when there is none.
+- **getMothershipOptions($option_name = null)**: Returns the company options from the component configuration (name, email, address, phone, default rate), or a single option when a name is given.
 
 ## Client Helper
 - **getClientListOptions()**: Retrieves a list of client options for selection.
@@ -655,10 +743,12 @@ This payment method allows clients to pay invoices by mailing a physical check. 
 - **setInvoiceClosed($invoiceId)**: Marks the specified invoice as paid.
 - **getInvoiceAppliedPayments($invoiceID)**: Retrieves all payments applied to the specified invoice.
 - **sumInvoiceAppliedPayments($invoiceId)**: Calculates the total amount of payments applied to the specified invoice.
-- **updateInvoiceStatus($invoiceId, $status)**: Updates the status of the specified invoice.
+- **getInvoice($invoice_id)**: Retrieves the invoice record for the given ID. Throws a `RuntimeException` when it is not found.
+- **getInvoicePayments($invoiceId)**: Retrieves the Invoice Payments records for the specified invoice.
+- **updateInvoiceStatus($invoice, $status)**: Updates the status of the given invoice object, setting the paid date when the invoice is closed.
 - **recalculateInvoiceStatus(int $invoiceId)**: Calculates the status of the specified invoice based on its current payment data and returns the appropriate status; it does not update the invoice record.
-- **onInvoiceOpened($invoice, int $previousStatus): void**: Method called when the invoice status is set to opened. Then calls the event `onInvoiceOpened`.
-- **onInvoiceClosed($invoice, int $previousStatus): void**: Method called when the invoice status is set to closed. Then calls the event `onInvoiceClosed`.
+- **onInvoiceOpened($invoice, int $previousStatus): void**: Method called when the invoice status is set to opened. Emails the client owner, logs the change, then calls the event `onMothershipInvoiceOpened`.
+- **onInvoiceClosed($invoice, int $previousStatus): void**: Method called when the invoice status is set to closed. Emails the client owner, logs the change, then calls the event `onMothershipInvoiceClosed`.
 
 
 ## Payments Helper
@@ -666,27 +756,26 @@ The **Payments Helper** provides several methods to manage and update payment re
 
 - **getPayment($paymentId)**: Retrieves the payment details for the given payment ID.
 - **getInvoicePayment($invoiceId, $paymentId)**: Retrieves the payment allocation details for a specific invoice and payment ID.
-- **updateStatus($paymentId, $status_id)**: Updates the status of a payment based on the provided status ID.
-- **getStatus($status_id)**: Retrieves the status details for the given status ID.
-- **updatePaymentStatus($paymentId, $status)**: Updates the payment status with the provided status value.
-- **insertPaymentRecord(int $clientId, ?int $accountId, float $amount, string $paymentDate, float $fee, bool $feePassedOn, string $paymentMethod, ?string $txnId, int $status)**: Inserts a new payment record with the specified details.
-- **insertInvoicePayments(int $invoiceId, int $paymentId, float $appliedAmount)**: Inserts a payment allocation record for a specific invoice with the applied amount.
-- **sumInvoicePayments(int $invoiceId)**: Returns the total amount of payments applied to a given invoice.
-- **getAppliedPayments(int $invoiceId)**: Retrieves all payment allocations applied to a given invoice.
-- **setPaymentLocked(int $paymentId)**: Sets the payment record as locked (read-only).
-- **setPaymentUnlocked(int $paymentId)**: Unlocks the payment record for editing.
-- **recalculatePaymentStatus(int $paymentId)**: Calculates and returns the appropriate status for a payment based on its allocations and current state.
-- **onPaymentCompleted($payment)**: Method called when the payment status is set to `Completed`. It process the downstream processes related to payments becoming completed. This method calls the event `onPaymentComplete` which plugins can tie into.
+- **getStatus($status_id)**: Retrieves the status label for the given status ID.
+- **insertPaymentRecord(int $clientId, int $accountId, float $amount, $paymentDate, float $fee, $feePassedOn, $paymentMethod, $txnId, int $status)**: Inserts a new payment record with the specified details.
+- **insertInvoicePayments($invoiceId, $paymentId, $applied_amount)**: Inserts a payment allocation record for a specific invoice with the applied amount.
+- **getPaymentInvoices($paymentId): array**: Retrieves the invoices a payment is applied to.
+- **getPendingPayments($invoiceId)**: Retrieves the pending payments for the specified invoice.
+- **completePayment(int $paymentId, string $txnId = '', float $feeAmount = 0.0)**: Marks a pending payment as `Completed`, recording the transaction ID and fee. A payment that is already completed is returned unchanged. It does not run the completion side effects; call `onPaymentCompleted()` afterwards.
+- **onPaymentCompleted($payment)**: Method called when the payment status is set to `Completed`. It emails the client and the administrator, logs the completion, and recalculates the status of the invoices the payment applies to. This method calls the event `onMothershipPaymentCompleted` which plugins can tie into.
 
 ## Domains Helper
 
 - **getDomain(int $domain_id)**: Retrieves the domain information based on the provided domain ID.
 - **getStatus(int $status_id)**: Retrieves the domain status based on a provided integer status level
+- **scanDomain(string $domainName): array**: Runs a WHOIS lookup for the domain and returns its availability, registrar, dates, name servers, DNS provider, and EPP status.
+- **getDomainStatus($epp_status): array**: Cleans up the raw EPP status values returned by WHOIS, removing the trailing description and URL.
+- **getDnsProvider(array $name_servers): string**: Derives the DNS provider name from the domain's name servers.
 
 ## Project Helper
 
 - **scanWebsiteProject(string $url): array**: Scans the given website URL and returns an array containing information about the website's structure, metadata, and other relevant details.
-- **getGenerator($html)**: Extracts and returns the generator meta tag from the provided HTML content, which typically indicates the CMS or framework used by the website.
+- **getGeneratorMeta($html)**: Extracts and returns the generator meta tag from the provided HTML content, which typically indicates the CMS or framework used by the website.
 - **detectJoomla(array $headers, string $html): bool**: Analyzes the provided HTTP headers and HTML content to determine if the website is powered by Joomla. Returns `true` if Joomla is detected, otherwise `false`.
 - **detectWordpress(array $headers, string $html): bool**: Analyzes the provided HTTP headers and HTML content to determine if the website is powered by WordPress. Returns `true` if WordPress is detected, otherwise `false`.
 - **getProjectListOptions($account_id = NULL)**: Retrieves a list of project options associated with the specified account. If no account ID is provided, it fetches project options for all accounts. This function is useful for populating dropdowns or selection lists with project data.
@@ -705,30 +794,61 @@ The **Payments Helper** provides several methods to manage and update payment re
 - **logInvoiceViewed($client_id, $account_id, $invoice_id)**: Logs when an invoice is viewed by a user.
 - **logAccountViewed($client_id, $account_id)**: Logs when an account is viewed by a user.
 - **logInvoiceStatusOpened($invoice_id, $client_id, $account_id)**: Logs when an invoice status is changed to "Opened."
-- **logStatusChange(object $payment, string $newStatus)**: Logs a status change for a payment, including the new status.
+- **logInvoiceStatusClosed($invoice_id, $client_id, $account_id)**: Logs when an invoice status is changed to "Closed."
+- **logStatusChange(object $payment, $newStatus)**: Logs a status change for a payment, including the new status.
+- **logDomainScanned($domain_id, $client_id, $account_id = NULL)**: Logs when a domain is scanned.
+- **logProjectScanned($project_id, $client_id, $account_id)**: Logs when a project is scanned.
+
+## Proposal Helper
+- **getStatus($status_id)**: Retrieves the status label for the given status ID.
+- **getProposal($proposal_id)**: Retrieves the proposal record for the given ID. Throws a `RuntimeException` when it is not found.
+- **updateProposalStatus($proposal, $status): bool**: Updates the status of the given proposal object.
+- **onProposalPending($proposal, int $previousStatus): void**: Method called when the proposal status is set to pending. Then calls the event `onMothershipProposalPending`.
+
+## Provider Helper
+- **loadProviders()**: Loads the hosting, DNS, and registrar provider lists from the component's domain services config file.
+- **getOptionsByType($type)**: Returns the providers of one type (e.g., `dns`, `registrars`).
+
+## Site Mothership Helper
+The front end has its own `MothershipHelper`.
+
+- **getUserClientIds($userId = null): ?array**: Returns the IDs of the clients the user belongs to. Defaults to the current user.
+- **getClient($clientId): ?object**: Retrieves the client record for the given client ID.
 
 # Notification Emails
+Email templates are layouts in `admin/layouts/emails`, sent through `EmailService::sendTemplate()` and wrapped in the `wrapper` layout.
 
 ## User - Invoice Opened
-The invoice has been set from `Draft` to `Opened`. This will send the email template `invoice.opened` to the Client Owner and BCC an administrator.
+The invoice has been set to `Opened`. This will send the email template `invoice.user-opened` to the Client Owner.
 
 ## User - Invoice Closed 
-The invoice has been set from `Draft` to `Opened`. This will send the email template `invoice.opened` to the Client Owner and BCC an administrator.
+The invoice has been set to `Closed`. This will send the email template `invoice.user-closed` to the Client Owner.
 
 ## User - Payment Confirmed
-The payment has been updated from `Pending` to `Confirmed` and has been completed.
+The payment has been confirmed and updated from `Pending` to `Completed`. This will send the email template `payment.user-confirmed` to the client's email address.
 
 ## Admin - Payment Confirmed
-The Payment has been updated from `Pending` to `Confirmed` and has been completed.
+The payment has been confirmed and updated from `Pending` to `Completed`. This will send the email template `payment.admin-confirmed` to the company email address.
 
 ## Admin - Payment Pending
-The user has started a new payment.
+The user has started a new payment. This will send the email template `payment.admin-pending` to the company email address.
 
 
 # Testing
 Mothership is built with stability and confidence in mind. Our automated testing suite uses Codeception to simulate real-world usage across backend and frontend features, ensuring every update works as expected. From invoice lifecycle logic to payment integration and PDF generation, our tests catch regressions early and help maintain a high standard of code quality. Whether you're contributing or deploying, the suite gives you peace of mind that Mothership remains reliable.
 
 **WORK IS NOT CONSIDERED DONE UNTIL IT IS COVERED BY TESTS**
+
+### Continuous Integration
+Every pull request and push to `main` runs the `Run Mothership Tests` workflow:
+
+- **Lint**: PHP syntax on the oldest supported PHP version, `shellcheck` on the build scripts, `actionlint` on the workflows, and `php tests/check-groups.php`.
+- **Tests**: the functional, api, and integration suites, and the acceptance suite split into one job per `@group` (`backend-client`, `backend-invoice`, `frontend`, and so on).
+
+Every acceptance test must carry one of the groups in the workflow matrix, otherwise it would never run; `tests/check-groups.php` fails the build when one does not. Tests in the `skipCI` group are skipped in CI.
+
+### WHOIS in tests
+`MothershipDomainHelperTest::testScanDomain` replays a recorded WHOIS response from `tests/_data/whois/google.com.json`, so its exact values do not drift. The live lookup is `testScanDomainLive` in the `network` group, which is not run in CI: `codecept run integration -g network`.
 
 ### DB Helpers
 These methods for Codeception's DB module allow the database to be quickly configured for testing.
@@ -744,12 +864,15 @@ These methods for Codeception's DB module allow the database to be quickly confi
 - **createMothershipProposalData(array $data)**: 
 - **createMothershipProposal(array $data)**: 
 - **createMothershipProposalItemData(array $data)**:
+- **createMothershipProposalItem(array $data)**:
 - **createMothershipInvoiceData(array $data)**: 
 - **createMothershipInvoice(array $data)**: 
 - **createMothershipInvoiceItemData(array $data)**:
+- **createMothershipInvoiceItem(array $data)**:
 - **createMothershipPaymentData(array $data)**:
 - **createMothershipPayment(array $data)**:
 - **createMothershipProjectData(array $data)**:
+- **createMothershipProject(array $data)**:
 - **createMothershipInvoicePaymentData(array $data)**:
 - **createMothershipInvoicePayment(array $data)**:
 - **createMothershipDomainData(array $data)**:
@@ -757,17 +880,21 @@ These methods for Codeception's DB module allow the database to be quickly confi
 - **createMothershipLogData(array $data)**:
 - **createMothershipLog(array $data)**:
 - **setInvoiceStatus($invoiceId, $status)**:
+- **setProposalStatus($proposalId, $status)**:
 - **clearClientsTable()**:
 - **clearAccountsTable()**:
 - **clearInvoicesTable()**:
+- **clearProposalsTable()**:
 - **clearInvoiceItemsTable()**:
+- **clearProposalItemsTable()**:
 - **clearPaymentsTable()**:
 - **clearInvoicePaymentTable()**:
 - **clearUsersTable()**:
+- **resetMothershipTables()**:
 - **setMothershipConfig(array $settings)**:
 - **grabInvoiceRow($invoiceId, $rowNumber)**:
-- **grabProposalRow($proposalId, $rowNumber)**:
 - **grabDomainFromDatabase($domainId)**:
+- **grabProjectFromDatabase($projectId)**:
 - **getClientIdByName($clientName)**:
 - **grabLastCompletedPaymentId()**:
 - **setPaymentStatus($paymentId, $status)**:
@@ -787,6 +914,7 @@ These methods for Codeception's DB module allow the database to be quickly confi
 - **assertPaymentStatus(int $paymentId, string $expectedStatusLabel)**:
 - **assertPaymentStatusDraft($paymentId)**:
 - **assertPaymentStatusOpened($paymentId)**:
+- **assertPaymentStatusLate($paymentId)**:
 - **assertPaymentStatusCompleted($paymentId)**:
 - **assertInvoiceClientId($invoiceId, $expectedClientId)**:
 - **assertInvoiceHasItems(int $invoiceId, array $expectedItems)**:
@@ -808,7 +936,7 @@ Front end codeception test classes
 - **MothershipFrontProjectsCest**:
 - **MothershipFrontDomainsCest**:
 - **MothershipFrontPayByCheckCest**:
-- **MothershipFrontZelleCest**:
+- **MothershipFrontPayByZelleCest**:
 - **MothershipFrontPaymentsCest**:
 
 ### Back End
@@ -821,6 +949,9 @@ Back end codeception test classes.
 - **MothershipAdminProjectsCest**:
 - **MothershipAdminDomainsCest**:
 - **MothershipAdminPaymentsCest**:
+- **MothershipAdminLogsCest**:
+- **MothershipAdminMenuCest**:
+- **MothershipAdminOptionsCest**:
 - **MothershipAdminPluginPayByCheckSettingsCest**:
 - **MothershipAdminPluginZelleSettingsCest**:
 
@@ -829,6 +960,7 @@ Back end codeception test classes.
 - **homepageIsVisible(FunctionalTester $I)**:
 
 ## API
+There are no API tests yet.
 
 ## Integration
 
