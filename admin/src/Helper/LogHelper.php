@@ -50,7 +50,7 @@ class LogHelper extends ContentHelper
     public static function log(array $params): bool
     {
         $user = Factory::getApplication()->getIdentity();
-        $user_id = $user->id;
+        $user_id = $user ? (int) $user->id : 0;
 
         try {
             $db = Factory::getContainer()->get(DatabaseInterface::class);
@@ -122,8 +122,8 @@ class LogHelper extends ContentHelper
     public static function logPaymentInitiated($invoice_id, $payment_id, $client_id, $account_id, $invoiceTotal, $paymentMethod): void
     {
         $user = Factory::getApplication()->getIdentity();
-        $userId = $user->id;
-        $username = $user->name ?: $user->username;
+        $userId = $user ? (int) $user->id : 0;
+        $username = $user ? ($user->name ?: $user->username) : '';
 
         self::log([
             'client_id' => $client_id,
@@ -165,7 +165,7 @@ class LogHelper extends ContentHelper
         $invoiceTotal = $payment->amount ?? 0.0;
         $paymentMethod = $payment->payment_method ?? '';
         $user = Factory::getApplication()->getIdentity();
-        $userId = $user->id;
+        $userId = $user ? (int) $user->id : 0;
         
         self::log([
             'client_id' => $clientId,
@@ -189,8 +189,8 @@ class LogHelper extends ContentHelper
     public static function logObjectViewed($object_type, $object_id, $client_id, $account_id): bool
     {
         $user = Factory::getApplication()->getIdentity();
-        $userId = $user->id;
-        $username = $user->name ?: $user->username;
+        $userId = $user ? (int) $user->id : 0;
+        $username = $user ? ($user->name ?: $user->username) : '';
 
         if(self::log([
             'client_id' => $client_id,

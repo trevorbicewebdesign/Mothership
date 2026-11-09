@@ -350,7 +350,7 @@ class MothershipAdminDomainsCest
             'registrar' => 'MarkMonitor, Inc.',
             'reseller' => '',
             'purchase_date' => '1997-09-15 07:00:00',
-            'expiration_date' => '2028-09-13 07:00:00',
+            'expiration_date' => '2028-09-14 07:00:00',
         ]);
 
         $I->seeInDatabase("jos_mothership_logs", [

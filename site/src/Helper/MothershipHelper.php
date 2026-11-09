@@ -22,13 +22,13 @@ class MothershipHelper
         // Determine user
         if ($userId === null) {
             $user = Factory::getApplication()->getIdentity();
-            $userId = (int) $user->id;
+            $userId = $user ? (int) $user->id : 0;
         } else {
             $user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
         }
 
         // Bail out if not logged in or invalid
-        if ($user->guest || !$userId) {
+        if (!$user || $user->guest || !$userId) {
             return null;
         }
 
