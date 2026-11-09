@@ -17,7 +17,7 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Component\ComponentHelper;
 use Symfony\Component\Yaml\Yaml;
-use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\Factory;
 
 class ProviderHelper
 {
@@ -25,14 +25,14 @@ class ProviderHelper
     {
         $path = JPATH_ADMINISTRATOR . '/components/com_mothership/config/domain_services.yaml';
 
-        if (!File::exists($path)) {
+        if (!is_file($path)) {
             return [];
         }
 
         try {
             return Yaml::parseFile($path);
         } catch (\Exception $e) {
-            \JFactory::getApplication()->enqueueMessage('Error parsing YAML: ' . $e->getMessage(), 'error');
+            Factory::getApplication()->enqueueMessage('Error parsing YAML: ' . $e->getMessage(), 'error');
             return [];
         }
     }

@@ -5,6 +5,7 @@ namespace TrevorBice\Component\Mothership\Administrator\Service;
 \defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Mail\MailerFactoryInterface;
 use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\Mail\Mail;
 use Joomla\CMS\Component\ComponentHelper;
@@ -26,7 +27,7 @@ class EmailService
     public static function sendEmail($to, string $subject, array $body, array $options = []): bool
     {
         /** @var Mail $mailer */
-        $mailer = Factory::getMailer();
+        $mailer = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer();
         $mailer->addRecipient($to);
         $mailer->setSubject($subject);
         $mailer->isHtml(true);

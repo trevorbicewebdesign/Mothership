@@ -31,7 +31,7 @@ class ProjectsController extends BaseController
     public function checkin()
     {
         $app   = Factory::getApplication();
-        $input = $app->input;
+        $input = $app->getInput();
 
         // Get the list of IDs from the request.
         $ids = $input->get('cid', [], 'array');
@@ -54,7 +54,7 @@ class ProjectsController extends BaseController
     public function delete()
     {
         $app   = Factory::getApplication();
-        $input = $app->input;
+        $input = $app->getInput();
 
         // Get the list of IDs from the request.
         $ids = $input->get('cid', [], 'array');

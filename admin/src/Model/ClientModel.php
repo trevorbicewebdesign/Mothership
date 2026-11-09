@@ -87,7 +87,7 @@ class ClientModel extends AdminModel
 
     public function canDeleteClient(int $clientId): bool
     {
-        $db = Factory::getDbo();
+        $db = $this->getDatabase();
 
         $hasAccounts = $db->setQuery(
             $db->getQuery(true)

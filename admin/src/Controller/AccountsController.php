@@ -5,6 +5,7 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Factory;
+use Joomla\Database\DatabaseInterface;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
 
@@ -31,7 +32,7 @@ class AccountsController extends BaseController
     public function checkIn()
     {
         $app   = Factory::getApplication();
-        $input = $app->input;
+        $input = $app->getInput();
 
         // Get the list of IDs from the request.
         $ids = $input->get('cid', [], 'array');
@@ -54,8 +55,8 @@ class AccountsController extends BaseController
     public function delete()
     {
         $app   = Factory::getApplication();
-        $input = $app->input;
-        $db    = Factory::getDbo();
+        $input = $app->getInput();
+        $db    = Factory::getContainer()->get(DatabaseInterface::class);
 
         $ids = $input->get('cid', [], 'array');
 

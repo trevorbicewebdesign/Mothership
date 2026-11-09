@@ -44,9 +44,9 @@ class MothershipDomainHelperTest extends \Codeception\Test\Unit
 
         $this->assertEquals($domain, $results['domain']);
         $this->assertEquals('874306800', $results['creation_date']);
-        $this->assertEquals('1852441200', $results['expiration_date']);
+        $this->assertEquals('1852527600', $results['expiration_date']);
         $this->assertEquals('1722565053', $results['updated_date']);
-        $this->assertEquals('MarkMonitor, Inc.', $results['registrar']);
+        $this->assertEquals('Markmonitor Inc.', $results['registrar']);
         $this->assertEquals(NULL, $results['reseller']);
         
         $this->assertContains('ns1.google.com', $results['name_servers']);

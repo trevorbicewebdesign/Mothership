@@ -4,6 +4,7 @@ namespace TrevorBice\Component\Mothership\Site\Model;
 use TrevorBice\Component\Mothership\Site\Helper\MothershipHelper;
 use Joomla\CMS\MVC\Model\BaseModel;
 use Joomla\CMS\Factory;
+use Joomla\Database\DatabaseInterface;
 
 class DashboardModel extends BaseModel
 {
@@ -15,7 +16,7 @@ class DashboardModel extends BaseModel
             return 0.0; // No client = no outstanding invoices
         }
 
-        $db = Factory::getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true)
             ->select('SUM(total)')
             ->from($db->quoteName('#__mothership_invoices'))

@@ -8,8 +8,11 @@
 
 defined('_JEXEC') or die;
 
-$plugin = JPluginHelper::getPlugin('mothership-payment', 'zelle');
-$pluginParams = new JRegistry($plugin->params);
+use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\Registry\Registry;
+
+$plugin = PluginHelper::getPlugin('mothership-payment', 'zelle');
+$pluginParams = new Registry($plugin->params);
 
 /** @var array $displayData */
 $invoiceId = (int) ($displayData['invoiceId'] ?? 0);

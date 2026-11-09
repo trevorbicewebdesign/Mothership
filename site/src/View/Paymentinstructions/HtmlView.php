@@ -16,8 +16,8 @@ class HtmlView extends BaseHtmlView
         $app = Factory::getApplication();
 
         // e.g. grabbing 'invoice_id' and 'method' from the request
-        $invoiceId = $app->input->getInt('invoice_id', 0);
-        $paymentMethod = $app->input->getCmd('paymentmethod', '');
+        $invoiceId = $app->getInput()->getInt('invoice_id', 0);
+        $paymentMethod = $app->getInput()->getCmd('paymentmethod', '');
 
         // Here, you could load an invoice record from your DB or model:
         // $this->invoice = $this->getModel()->getInvoice($invoiceId);

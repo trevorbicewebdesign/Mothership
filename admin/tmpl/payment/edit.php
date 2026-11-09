@@ -15,8 +15,7 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
 
-JHtml::_('behavior.formvalidator');
-// JHtml::_('formbehavior.chosen', 'select');
+HTMLHelper::_('behavior.formvalidator');
 
 /** @var \TrevorBice\Component\Mothership\Administrator\View\Payment\HtmlView $this */
 

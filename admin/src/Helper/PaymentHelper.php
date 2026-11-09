@@ -16,6 +16,7 @@ namespace TrevorBice\Component\Mothership\Administrator\Helper;
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseDriver;
 use TrevorBice\Component\Mothership\Administrator\Helper\ClientHelper;
@@ -93,7 +94,7 @@ class PaymentHelper
 
         // Get the owner id and load that user
         // Then grab the first name of that user
-        $user = Factory::getUser($client->owner_user_id);
+        $user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($client->owner_user_id);
         $name = explode(" ", $user->name);
         $firstName = $name[0];
         $lastName = $name[1] ?? '';

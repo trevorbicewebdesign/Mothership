@@ -5,6 +5,7 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Factory;
+use Joomla\Database\DatabaseInterface;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
 use TrevorBice\Component\Mothership\Administrator\Helper\ProposalHelper;
@@ -27,7 +28,7 @@ class ProposalsController extends BaseController
         // Returns a list of accounts for a given client in JSON format
     public function getAccountsList()
     {
-        $client_id = Factory::getApplication()->input->getInt('client_id');
+        $client_id = Factory::getApplication()->getInput()->getInt('client_id');
         $accountList = AccountHelper::getAccountListOptions($client_id);
         echo json_encode($accountList);
         Factory::getApplication()->close();
@@ -42,7 +43,7 @@ class ProposalsController extends BaseController
     public function checkIn()
     {
         $app   = Factory::getApplication();
-        $input = $app->input;
+        $input = $app->getInput();
 
         // Get the list of IDs from the request.
         $ids = $input->get('cid', [], 'array');
@@ -65,8 +66,8 @@ class ProposalsController extends BaseController
     public function delete()
     {
         $app   = Factory::getApplication();
-        $input = $app->input;
-        $db    = Factory::getDbo();
+        $input = $app->getInput();
+        $db    = Factory::getContainer()->get(DatabaseInterface::class);
 
         $ids = array_map('intval', $input->get('cid', [], 'array'));
 

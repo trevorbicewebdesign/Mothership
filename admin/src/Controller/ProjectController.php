@@ -28,7 +28,7 @@ class ProjectController extends FormController
     public function mothershipScan()
     {
         $app = Factory::getApplication();
-        $input = $app->input;
+        $input = $app->getInput();
         $model = $this->getModel('Project');
 
         $project = $model->getItem($input->getInt('id'));
@@ -109,7 +109,7 @@ class ProjectController extends FormController
     public function save($key = null, $urlVar = null)
     {
         $app   = Factory::getApplication();
-        $input = $app->input;
+        $input = $app->getInput();
         $data  = $input->get('jform', [], 'array');
         $model = $this->getModel('Project');
 
@@ -155,7 +155,7 @@ class ProjectController extends FormController
     public function delete()
     {
         $app = Factory::getApplication();
-        $input = $app->input;
+        $input = $app->getInput();
         $model = $this->getModel('Project');
         $cid = $input->get('cid', [], 'array');
 

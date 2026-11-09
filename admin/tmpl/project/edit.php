@@ -17,8 +17,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Session\Session;
 
-JHtml::_('behavior.formvalidator');
-// JHtml::_('formbehavior.chosen', 'select');
+HTMLHelper::_('behavior.formvalidator');
 
 /** @var \TrevorBice\Component\Mothership\Administrator\View\Project\HtmlView $this */
 
@@ -77,5 +76,5 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
     <input type="hidden" name="jform[id]" value="<?php echo (isset($this->item->id) && $this->item->id > 0) ? (int) $this->item->id : ""; ?>" />
     <input type="hidden" name="jform[return]" value="<?php echo isset($_REQUEST['return'])?$_REQUEST['return']:''; ?>" />
     <input type="hidden" name="task" value="" />
-    <?php echo JHtml::_('form.token'); ?>
+    <?php echo HTMLHelper::_('form.token'); ?>
 </form>

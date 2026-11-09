@@ -66,7 +66,7 @@ class PaymentModel extends BaseDatabaseModel
     protected function populateState()
     {
         $app = \Joomla\CMS\Factory::getApplication();
-        $id = $app->input->getInt('id');
+        $id = $app->getInput()->getInt('id');
         $this->setState('payment.id', $id);
     }
 
@@ -119,7 +119,7 @@ class PaymentModel extends BaseDatabaseModel
             ];
 
             // Get current user ID
-            $user = Factory::getUser();
+            $user = Factory::getApplication()->getIdentity();
             $userId = $user ? (int) $user->id : 0;
 
             $params = [

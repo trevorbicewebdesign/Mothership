@@ -20,7 +20,7 @@ use Joomla\CMS\Language\Text;
 class DomainRule extends FormRule
 {
 
-    public function test(\SimpleXMLElement $element, $value, $group = null, Registry $input = null, Form $form = null)
+    public function test(\SimpleXMLElement $element, $value, $group = null, ?Registry $input = null, ?Form $form = null)
 	{
         die("JFormRuleDomain Loaded");
 		// If the field is empty and not required, the field is valid.

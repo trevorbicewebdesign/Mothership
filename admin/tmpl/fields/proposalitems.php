@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
 
 // There is deff a better way to handle this, but for now this is a quick fix
 $app   = Factory::getApplication();
-$input = $app->input;
+$input = $app->getInput();
 $id    = $input->getInt('id', 0);
 
 try {

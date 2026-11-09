@@ -84,7 +84,7 @@ class AccountModel extends AdminModel
 
     public function canDeleteAccount(int $clientId): bool
     {
-        $db = Factory::getDbo();
+        $db = $this->getDatabase();
 
         $hasInvoices = $db->setQuery(
             $db->getQuery(true)

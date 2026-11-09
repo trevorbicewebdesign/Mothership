@@ -4,8 +4,9 @@ namespace TrevorBice\Component\Mothership\Site\Helper;
 \defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\User;
-use Joomla\CMS\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
 use Joomla\CMS\Language\Text;
 
 class MothershipHelper
@@ -20,18 +21,18 @@ class MothershipHelper
     {
         // Determine user
         if ($userId === null) {
-            $user = Factory::getUser();
-            $userId = (int) $user->id;
+            $user = Factory::getApplication()->getIdentity();
+            $userId = $user ? (int) $user->id : 0;
         } else {
-            $user = Factory::getApplication()->getIdentity($userId);
+            $user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
         }
 
         // Bail out if not logged in or invalid
-        if ($user->guest || !$userId) {
+        if (!$user || $user->guest || !$userId) {
             return null;
         }
 
-        $db = Factory::getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true)
             ->select($db->quoteName('id'))
             ->from($db->quoteName('#__mothership_clients'))
@@ -45,7 +46,7 @@ class MothershipHelper
         
     public static function getClient($clientId): ?object
     {
-        $db = Factory::getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true)
             ->select('*')
             ->from('#__mothership_clients')

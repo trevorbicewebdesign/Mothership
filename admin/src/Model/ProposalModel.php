@@ -104,7 +104,7 @@ class ProposalModel extends AdminModel
     public function save($data)
     {
         $table = $this->getTable();
-        $db = $this->getDbo();
+        $db = $this->getDatabase();
 
         Log::add('Data received for saving: ' . json_encode($data), Log::DEBUG, 'com_mothership');
 
@@ -217,7 +217,7 @@ class ProposalModel extends AdminModel
         $result = parent::delete($pks);
 
         if ($result) {
-            $db = $this->getDbo();
+            $db = $this->getDatabase();
             $query = $db->getQuery(true)
                 ->delete($db->quoteName('#__mothership_proposal_items'))
                 ->where($db->quoteName('proposal_id') . ' IN (' . implode(',', array_map('intval', $pks)) . ')');

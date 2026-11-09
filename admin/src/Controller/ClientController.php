@@ -27,7 +27,7 @@ class ClientController extends FormController
     public function save($key = null, $urlVar = null)
     {
         $app   = Factory::getApplication();
-        $input = $app->input;
+        $input = $app->getInput();
         $data  = $input->get('jform', [], 'array');
         $model = $this->getModel('Client');
         $task  = $input->getCmd('task');
@@ -77,7 +77,7 @@ class ClientController extends FormController
     public function delete()
     {
         $app = Factory::getApplication();
-        $input = $app->input;
+        $input = $app->getInput();
         $model = $this->getModel('Client');
         $cid = $input->get('cid', [], 'array');
 
@@ -98,7 +98,7 @@ class ClientController extends FormController
     public function getDefaultRate()
     {
         $app = Factory::getApplication();
-        $id = $app->input->getInt('id');
+        $id = $app->getInput()->getInt('id');
         
         $defaultCompanyRate = MothershipHelper::getMothershipOptions('company_default_rate');
         

@@ -73,7 +73,7 @@ class LogController extends FormController
     public function delete()
     {
         $app = Factory::getApplication();
-        $input = $app->input;
+        $input = $app->getInput();
         $model = $this->getModel('Log');
         $cid = $input->get('cid', [], 'array');
 

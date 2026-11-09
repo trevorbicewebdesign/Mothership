@@ -30,7 +30,7 @@ class PaymentController extends FormController
     public function save($key = null, $urlVar = null)
     {
         $app   = Factory::getApplication();
-        $input = $app->input;
+        $input = $app->getInput();
         $data  = $input->get('jform', [], 'array');
         $model = $this->getModel('Payment');
 
@@ -68,7 +68,7 @@ class PaymentController extends FormController
     public function confirm($key = null)
     {
         $app = Factory::getApplication();
-        $input = $app->input;
+        $input = $app->getInput();
         $model = $this->getModel('Payment');
         $id = $input->getInt('id');
 
@@ -106,7 +106,7 @@ class PaymentController extends FormController
     public function delete()
     {
         $app = Factory::getApplication();
-        $input = $app->input;
+        $input = $app->getInput();
         $model = $this->getModel('Payment');
         $cid = $input->get('cid', [], 'array');
 
