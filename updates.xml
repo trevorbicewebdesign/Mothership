@@ -4,21 +4,22 @@
         <description>Mothership update server</description>
         <element>com_mothership</element>
         <type>component</type>
-        <version>0.0.25</version>
+        <version>0.0.26</version>
         <sha256>700d4bc2b5083bac97ff70134ad605a176e069946ca0f253229495b0c003a488</sha256>
         <infourl title="Mothership on GitHub">https://github.com/trevorbicewebdesign/Mothership</infourl>
         <downloads>
-            <downloadurl type="full" format="zip">https://github.com/trevorbicewebdesign/Mothership/releases/download/0.0.25/Mothership-0.0.25.zip</downloadurl>
+            <downloadurl type="full" format="zip">https://github.com/trevorbicewebdesign/Mothership/releases/download/0.0.26/Mothership-0.0.26.zip</downloadurl>
         </downloads>
         <tags>
             <tag>stable</tag>
         </tags>
         <enclosure 
-            url="https://github.com/trevorbicewebdesign/Mothership/releases/download/0.0.25/Mothership-0.0.25.zip" 
+            url="https://github.com/trevorbicewebdesign/Mothership/releases/download/0.0.26/Mothership-0.0.26.zip" 
             length="47216653" 
             type="application/zip" 
             hash="700D4BC2B5083BAC97FF70134AD605A176E069946CA0F253229495B0C003A488" />
-        <targetplatform name="joomla" version="5.*" />
+        <targetplatform name="joomla" version="(5|6)\.[0-9]+" />
+        <php_minimum>8.1</php_minimum>
         <client>administrator</client>
     </update>
 </updates>
