@@ -22,6 +22,7 @@ use Joomla\CMS\Toolbar\Toolbar;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use TrevorBice\Component\Mothership\Administrator\Model\InvoiceModel;
 use TrevorBice\Component\Mothership\Administrator\Helper\MothershipHelper;
+use TrevorBice\Component\Mothership\Administrator\Service\EmailLog;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -67,6 +68,13 @@ class HtmlView extends BaseHtmlView
     protected $canDo;
 
     /**
+     * Every email the site tried to send about this invoice
+     *
+     * @var    array
+     */
+    public $emailLog = [];
+
+    /**
      * Display the view
      *
      * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
@@ -91,6 +99,7 @@ class HtmlView extends BaseHtmlView
         $this->form = $model->getForm();
         $this->state = $model->getState();
         $this->helper = new MothershipHelper;
+        $this->emailLog = EmailLog::forObject('invoice', (int) ($this->item->id ?? 0));
         $this->canDo = ContentHelper::getActions('com_mothership');
 
         // Check for errors.

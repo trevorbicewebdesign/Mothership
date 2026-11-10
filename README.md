@@ -11,6 +11,7 @@ At its core, Mothership organizes your business around eight main objects:
 - **Proposals**
 - **Invoices**
 - **Payments**
+- **Emails**
 - **Logs**
 
 The model is flexible enough to accommodate real-world complexities. For example, a single client might manage multiple accounts—whether these represent different parts of the business, subdomains, or entirely separate brands. Each account can then have its own projects. While projects currently focus on websites, the architecture is designed to eventually support other types of work, like graphic design or any other service you might offer.
@@ -818,6 +819,13 @@ The front end has its own `MothershipHelper`.
 # Notification Emails
 Email templates are layouts in `admin/layouts/emails`, sent through `EmailService::sendTemplate()` and wrapped in the `wrapper` layout.
 
+## Email Log
+Every email `EmailService` tries to send is recorded in `#__mothership_emails`: the recipient, the subject, the rendered body, the record it was about, and whether it was `sent`, `failed` (with the reason), `skipped` or left `pending`. A send that fails no longer throws; it returns `false`, is written to the Joomla log and, in the administrator, shows a warning, so the action that caused it still completes.
+
+- **Emails** in the administrator menu lists the log, with filters for status, client, account, record type and template. Opening an entry shows the message as it was sent; **Resend** sends it again as a new entry that points back at the original.
+- Invoices, payments and proposals have an **Email** tab listing the messages sent about that record.
+- Pass `EmailService::about('invoice', $invoice)` (or `payment`, `proposal`) as the options argument to tie a new email to its record.
+
 ## User - Invoice Opened
 The invoice has been set to `Opened`. This will send the email template `invoice.user-opened` to the Client Owner.
 
@@ -970,6 +978,7 @@ There are no API tests yet.
 - **MothershipProposalHelperTest**:
 - **MothershipInvoiceHelperTest**:
 - **MothershipDomainHelperTest**:
+- **MothershipEmailLogTest**: Every send leaves a log entry: sent, skipped and failed sends, entries per record, resends.
 - **MothershipEmailServiceTest**:
 - **MothershipPaymentHelperTest**:
 - **MothershipPaymentPluginZelleTest**:

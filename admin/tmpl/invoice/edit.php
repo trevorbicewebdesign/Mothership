@@ -103,6 +103,11 @@ $listDirn = $this->escape($this->state->get('list.direction'));
         </div>
 
         <?php echo HTMLHelper::_('uitab.endTab'); ?>
+        <?php if (!empty($this->item->id)) : ?>
+        <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'email', Text::sprintf('COM_MOTHERSHIP_FORM_EMAIL_TAB', count($this->emailLog))); ?>
+        <?php echo LayoutHelper::render('emaillog.tab', ['items' => $this->emailLog], JPATH_ADMINISTRATOR . '/components/com_mothership/layouts'); ?>
+        <?php echo HTMLHelper::_('uitab.endTab'); ?>
+        <?php endif; ?>
         <?php echo HTMLHelper::_('uitab.endTabSet'); ?>
     </div>
 

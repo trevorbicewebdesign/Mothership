@@ -321,7 +321,8 @@ class InvoiceController extends BaseController
             'client' => $client,
             'confirm_link' => Uri::root() . "administrator/index.php?option=com_mothership&task=payment.confirm&id={$payment->id}",
             'view_link' => Uri::root() . "administrator/index.php?option=com_mothership&view=invoice&id={$invoiceId}",
-        ]);
+        ],
+        EmailService::about('payment', $payment));
 
         // Log that the payment was initiated
         LogHelper::logPaymentInitiated(

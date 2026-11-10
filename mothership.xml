@@ -20,6 +20,11 @@
             <file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file>
         </sql>
     </uninstall>
+    <update>
+        <schemas>
+            <schemapath type="mysql">sql/updates/mysql</schemapath>
+        </schemas>
+    </update>
     <updateservers>
         <server type="extension" priority="1" name="Mothership Update Server">https://raw.githubusercontent.com/trevorbicewebdesign/Mothership/refs/heads/main/updates.xml</server>
     </updateservers>
@@ -42,6 +47,7 @@
             <menu link="option=com_mothership&amp;view=proposals" view="proposals">com_mothership_proposals</menu>
 			<menu link="option=com_mothership&amp;view=invoices" view="invoices">com_mothership_invoices</menu>
             <menu link="option=com_mothership&amp;view=payments" view="payments">com_mothership_payments</menu>
+            <menu link="option=com_mothership&amp;view=emails" view="emails">com_mothership_emails</menu>
             <menu link="option=com_mothership&amp;view=logs" view="logs">com_mothership_logs</menu>
         </submenu>
 

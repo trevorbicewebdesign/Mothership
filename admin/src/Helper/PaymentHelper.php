@@ -109,7 +109,8 @@ class PaymentHelper
                 'payment' => $payment,
                 'client' => $client,
                 'account' => $account,
-            ]
+            ],
+            EmailService::about('payment', $payment)
         );
 
         // Send an email to the admin that the payment has been completed
@@ -121,7 +122,8 @@ class PaymentHelper
                 'payment' => $payment,
                 'client' => $client,
                 'account' => $account,
-            ]
+            ],
+            EmailService::about('payment', $payment)
         );
 
         // Log the payment completion
