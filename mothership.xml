@@ -37,6 +37,11 @@
         <language tag="en-GB">/language/en-GB/com_mothership.ini</language>
         <language tag="en-GB">/language/en-GB/com_mothership.sys.ini</language>
     </languages>
+    <api>
+        <files folder="api">
+            <folder>src</folder>
+        </files>
+    </api>
     <administration>
         <menu>com_mothership</menu>
         <submenu>

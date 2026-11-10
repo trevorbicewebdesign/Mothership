@@ -1,0 +1,47 @@
+$kind: http-example
+name: 200 OK
+request:
+  method: GET
+  url: '{{base_url}}/api/index.php/v1/mothership/domains/:id'
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    - key: Content-Type
+      value: application/vnd.api+json; charset=utf-8
+  body:
+    type: json
+    content: |-
+      {
+        "links": {
+          "self": "{{base_url}}/api/index.php/v1/mothership/domains/9001"
+        },
+        "data": {
+          "type": "domains",
+          "id": "9001",
+          "attributes": {
+            "id": 9001,
+            "name": "postman-test.example.com",
+            "client_id": 9001,
+            "account_id": 9001,
+            "status": "active",
+            "epp_status": [
+              "clientTransferProhibited"
+            ],
+            "registrar": "Example Registrar",
+            "reseller": null,
+            "dns_provider": "Example DNS",
+            "ns1": "ns1.example.com",
+            "ns2": null,
+            "ns3": null,
+            "ns4": null,
+            "purchase_date": null,
+            "expiration_date": null,
+            "auto_renew": 1,
+            "notes": null,
+            "created": "2026-01-02 03:04:05",
+            "modified": "2026-11-10 03:06:51"
+          }
+        }
+      }
+order: 1000

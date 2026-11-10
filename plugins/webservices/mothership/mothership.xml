@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="plugin" group="webservices" method="upgrade">
+	<name>plg_webservices_mothership</name>
+	<author>Trevor Bice</author>
+	<creationDate>2026-11</creationDate>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<version>0.0.27</version>
+	<description>PLG_WEBSERVICES_MOTHERSHIP_XML_DESCRIPTION</description>
+	<namespace path="src">TrevorBice\Plugin\WebServices\Mothership</namespace>
+	<files>
+		<folder plugin="mothership">services</folder>
+		<folder>src</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">language/en-GB/plg_webservices_mothership.ini</language>
+		<language tag="en-GB">language/en-GB/plg_webservices_mothership.sys.ini</language>
+	</languages>
+</extension>

@@ -6,6 +6,7 @@
 /.dockerignore export-ignore
 /docker/ export-ignore
 /tests/ export-ignore
+/postman/ export-ignore
 /vendor/ export-ignore
 /.gitignore export-ignore
 /codeception.yml export-ignore

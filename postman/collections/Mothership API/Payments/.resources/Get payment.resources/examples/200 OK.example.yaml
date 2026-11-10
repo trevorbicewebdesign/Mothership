@@ -1,0 +1,41 @@
+$kind: http-example
+name: 200 OK
+request:
+  method: GET
+  url: '{{base_url}}/api/index.php/v1/mothership/payments/:id'
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    - key: Content-Type
+      value: application/vnd.api+json; charset=utf-8
+  body:
+    type: json
+    content: |-
+      {
+        "links": {
+          "self": "{{base_url}}/api/index.php/v1/mothership/payments/9001"
+        },
+        "data": {
+          "type": "payments",
+          "id": "9001",
+          "attributes": {
+            "id": 9001,
+            "client_id": 9001,
+            "account_id": 9001,
+            "amount": "100.00",
+            "payment_date": "2026-01-10 00:00:00",
+            "fee_amount": "0.00",
+            "fee_passed_on": 0,
+            "payment_method": "zelle",
+            "transaction_id": "POSTMAN-9001",
+            "status": "Completed",
+            "processed_date": null,
+            "locked": 0,
+            "created_by": null,
+            "created_at": "2026-01-10 00:00:00",
+            "updated_at": "2026-11-10 03:06:51"
+          }
+        }
+      }
+order: 1000

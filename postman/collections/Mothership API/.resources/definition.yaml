@@ -1,0 +1,16 @@
+$kind: collection
+name: Mothership API
+description: |-
+  The read-only web services API of the Mothership Joomla component, served by the
+  "Web Services - Mothership" plugin under /api/index.php/v1/mothership/.
+
+  Every request needs a Joomla API token (User profile > Joomla API Token) sent as a
+  Bearer token, and the token's user must be allowed to manage Mothership. Responses
+  are JSON:API documents. Set base_url and api_token in an environment.
+
+  The assertions expect the records in tests/postman/seed.sql.
+auth:
+  type: bearer
+  credentials:
+    - key: token
+      value: '{{api_token}}'

@@ -1,0 +1,32 @@
+$kind: http-example
+name: 200 OK
+request:
+  method: GET
+  url: '{{base_url}}/api/index.php/v1/mothership/accounts/:id'
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    - key: Content-Type
+      value: application/vnd.api+json; charset=utf-8
+  body:
+    type: json
+    content: |-
+      {
+        "links": {
+          "self": "{{base_url}}/api/index.php/v1/mothership/accounts/9001"
+        },
+        "data": {
+          "type": "accounts",
+          "id": "9001",
+          "attributes": {
+            "id": 9001,
+            "client_id": 9001,
+            "name": "Postman Test Account",
+            "rate": "125.00",
+            "created": "2026-01-02 03:04:05",
+            "created_by": null
+          }
+        }
+      }
+order: 1000
