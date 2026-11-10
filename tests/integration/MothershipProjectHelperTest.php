@@ -96,6 +96,89 @@ class MothershipProjectHelperTest extends \Codeception\Test\Unit
         $this->tester->assertFalse($isWordpress, 'Wordpress detection failed.');
     }
 
+    public function testDetectShopifyFromHeaders()
+    {
+        $html = '<html><head></head><body></body></html>';
+
+        // get_headers() keeps the server's casing and returns one value per redirect hop.
+        $this->tester->assertTrue(ProjectHelper::detectShopify(['X-ShopId' => '12345678'], $html), 'Shopify detection failed.');
+        $this->tester->assertTrue(ProjectHelper::detectShopify(['x-shopify-stage' => ['production', 'production']], $html), 'Shopify detection failed.');
+        $this->tester->assertTrue(ProjectHelper::detectShopify(['powered-by' => 'Shopify'], $html), 'Shopify detection failed.');
+    }
+
+    public function testDetectShopifyFromHtml()
+    {
+        $html = '<html><head><script>var Shopify = Shopify || {}; Shopify.shop = "example.myshopify.com"; Shopify.theme = {"name":"Dawn","id":1};</script></head><body></body></html>';
+        $isShopify = ProjectHelper::detectShopify([], $html);
+        codecept_debug($isShopify);
+
+        $this->tester->assertTrue($isShopify, 'Shopify detection failed.');
+    }
+
+    public function testDetectShopifyFailed()
+    {
+        // A Buy Button embedded in another site is not a Shopify storefront.
+        $html = '<html><head><script src="https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js"></script></head><body><img src="https://cdn.shopify.com/s/files/1/product.jpg"></body></html>';
+        $isShopify = ProjectHelper::detectShopify(['Server' => 'nginx'], $html);
+        codecept_debug($isShopify);
+
+        $this->tester->assertFalse($isShopify, 'Shopify detection failed.');
+    }
+
+    public function testDetectWixFromHeaders()
+    {
+        $html = '<html><head></head><body></body></html>';
+        $isWix = ProjectHelper::detectWix(['X-Wix-Request-Id' => '1731110400.123456789'], $html);
+        codecept_debug($isWix);
+
+        $this->tester->assertTrue($isWix, 'Wix detection failed.');
+    }
+
+    public function testDetectWixFromHtml()
+    {
+        $html = '<html><head><meta name="generator" content="Wix.com Website Builder" /></head><body></body></html>';
+        $this->tester->assertTrue(ProjectHelper::detectWix([], $html), 'Wix detection failed.');
+
+        $html = '<html><head><script src="https://static.parastorage.com/services/wix-thunderbolt/dist/main.js"></script></head><body></body></html>';
+        $this->tester->assertTrue(ProjectHelper::detectWix([], $html), 'Wix detection failed.');
+    }
+
+    public function testDetectWixFailed()
+    {
+        $html = '<html><head><meta name="generator" content="WordPress 6.7.2" /></head><body></body></html>';
+        $isWix = ProjectHelper::detectWix(['Server' => 'nginx'], $html);
+        codecept_debug($isWix);
+
+        $this->tester->assertFalse($isWix, 'Wix detection failed.');
+    }
+
+    public function testDetectSquarespaceFromHeaders()
+    {
+        $html = '<html><head></head><body></body></html>';
+        $isSquarespace = ProjectHelper::detectSquarespace(['Server' => ['Squarespace', 'Squarespace']], $html);
+        codecept_debug($isSquarespace);
+
+        $this->tester->assertTrue($isSquarespace, 'Squarespace detection failed.');
+    }
+
+    public function testDetectSquarespaceFromHtml()
+    {
+        $html = '<html><head><!-- This is Squarespace. --><script>Static.SQUARESPACE_CONTEXT = {"websiteId":"abc"};</script></head><body></body></html>';
+        $isSquarespace = ProjectHelper::detectSquarespace([], $html);
+        codecept_debug($isSquarespace);
+
+        $this->tester->assertTrue($isSquarespace, 'Squarespace detection failed.');
+    }
+
+    public function testDetectSquarespaceFailed()
+    {
+        $html = '<html><head></head><body><a href="https://www.squarespace.com">Squarespace</a></body></html>';
+        $isSquarespace = ProjectHelper::detectSquarespace(['Server' => 'nginx'], $html);
+        codecept_debug($isSquarespace);
+
+        $this->tester->assertFalse($isSquarespace, 'Squarespace detection failed.');
+    }
+
     public function testGetGeneratorMeta()
     {
         $html = '<html><head><meta name="generator" content="WordPress 6.7.2" /></head><body></body></html>';
