@@ -19,7 +19,7 @@ class MothershipFrontAccessCest
     private $otherInvoiceData;
     private $otherProposalData;
 
-    const NOT_AUTHORISED = "You are not authorised to view this resource.";
+    const NOT_AUTHORISED = "You don't have permission to access this.";
 
     const INVOICE_VIEW_URL = "index.php?option=com_mothership&view=invoice&layout=default&id=%s";
     const INVOICE_PAY_URL = "index.php?option=com_mothership&task=invoice.payment&id=%s";
