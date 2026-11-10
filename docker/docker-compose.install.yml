@@ -1,0 +1,7 @@
+# Overlay for docker/install-test.sh: the same Joomla and database as docker-compose.yml,
+# but without the component mounted from the checkout. Mothership is not there until the
+# test installs the built zips through Joomla's installer, which is the point.
+services:
+  joomla:
+    volumes: !override
+      - ./tests/configuration.php:/var/www/html/configuration.php

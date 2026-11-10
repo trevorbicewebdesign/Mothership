@@ -138,13 +138,6 @@ class HtmlView extends BaseHtmlView
             ['defer' => true]
         );
     
-        $wa->registerAndUseScript(
-            'com_mothership.invoice_items',
-            'media/com_mothership/js/invoice-items.js',
-            [],
-            ['defer' => true]
-        );
-    
         $this->addToolbar();
 
         parent::display($tpl);

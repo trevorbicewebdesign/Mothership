@@ -63,6 +63,42 @@ jobs:
       - name: Every acceptance test belongs to a CI group
         run: php tests/check-groups.php
 
+  # The suites below run against source mounted into Joomla. This is the only job that
+  # installs the zips a release ships: install, update, uninstall, install again.
+  install:
+    name: Install, update and uninstall the packages
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          # The update is tested from the previous release, which is found by its tag.
+          fetch-depth: 0
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_PAT }}
+
+      - name: Install test
+        run: docker/install-test.sh
+
+      - name: Collect service logs
+        if: failure()
+        run: docker compose -p mothership-install-test logs --no-color --timestamps > install-test.log 2>&1 || true
+
+      - name: Upload service logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: install-output-${{ github.sha }}
+          path: install-test.log
+          if-no-files-found: ignore
+          retention-days: 14
+
   test:
     name: Testing ${{ matrix.suite }} ${{ matrix.group || '' }}
     runs-on: ubuntu-latest

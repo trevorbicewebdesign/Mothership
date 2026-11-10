@@ -99,7 +99,6 @@ class HtmlView extends BaseHtmlView
         $wa->useScript('jquery');
         $wa->registerAndUseScript('com_mothership.domain-edit', 'administrator/components/com_mothership/assets/js/domain-edit.js', [], ['defer' => true, 'version' => $jsVersion]);
 
-        $wa->registerAndUseStyle('com_mothership.domain-edit', 'media/com_mothership/css/domain-edit.css');
 
         // Check for errors.
         if (\count($errors = $this->get('Errors'))) {

@@ -796,7 +796,7 @@ The API is described by a Postman collection in `postman/collections/Mothership 
 # Releases
 Release packages are built by the scripts in `build/`:
 
-- **build/set-version.sh <version>**: Sets the version in `mothership.xml`, `package/pkg_mothership.xml`, and `composer.json`. The payment and web services plugin manifests carry the same version and are updated by hand.
+- **build/set-version.sh <version>**: Sets the version in `mothership.xml`, the payment and web services plugin manifests, `package/pkg_mothership.xml`, and `composer.json`.
 - **build/build.sh**: Builds the installable zips into `dist/` from the committed tree: the component, one zip per payment plugin, the web services plugin, one zip per module, and `pkg_mothership-<version>.zip`, the package that installs them together. The package is what a site should install; `package/pkg_mothership.xml` lists what it contains and `package/script.php` is its install script.
 - **build/update-server.sh <zip>**: Points the Joomla update servers at a built package zip, including its size and checksum. `updates-package.xml` is the package's update server and moves with every release; the first package release creates it. `updates.xml` is the update server of sites that installed the component alone, before the package existed: it is pointed at the first package release and then left there, so those sites are offered one update that installs the package. There are two files because Joomla reads only one extension from an update server of this kind.
 
@@ -965,6 +965,7 @@ Every pull request and push to `main` runs the `Run Mothership Tests` workflow:
 - **Lint**: PHP syntax on the oldest supported PHP version, `shellcheck` on the build scripts, `actionlint` on the workflows, and `php tests/check-groups.php`.
 - **Postman**: the collection in `postman/` run against the web services API (see API below).
 - **Tests**: the functional, api, and integration suites, and the acceptance suite split into one job per `@group` (`backend-client`, `backend-invoice`, `frontend`, and so on).
+- **Install**: `docker/install-test.sh` builds the release zips and puts them through Joomla's installer on a site that has never had Mothership: install the previous release, update it, uninstall, install from nothing, install each plugin and module zip, then install the package over them. It fails if the update leaves a different schema than a fresh install, or if the uninstall leaves a table, menu item or file behind.
 
 Every acceptance test must carry one of the groups in the workflow matrix, otherwise it would never run; `tests/check-groups.php` fails the build when one does not. Tests in the `skipCI` group are skipped in CI.
 
@@ -981,6 +982,8 @@ Fixed ports mean only one copy can run at a time. To give each checkout (a git w
 - **docker/instance.sh list**: Lists every instance on the machine.
 
 Put `-n <name>` before the command to run more than one instance from the same checkout. They share `tests/`, so run their test suites one at a time.
+
+The suites above run against source mounted into Joomla, so they never touch the packages. `docker/install-test.sh` does: it needs a clean working tree (it packages `HEAD`, like `build/build.sh`) and the release tags, and runs in a stack of its own that it deletes afterwards. A change to `admin/sql/install.mysql.utf8.sql` needs a matching file in `admin/sql/updates/mysql/`, and a new table needs a `DROP` in `uninstall.mysql.utf8.sql`; this is the test that notices when one is missing.
 
 ### WHOIS in tests
 `MothershipDomainHelperTest::testScanDomain` replays a recorded WHOIS response from `tests/_data/whois/google.com.json`, so its exact values do not drift. The live lookup is `testScanDomainLive` in the `network` group, which is not run in CI: `codecept run integration -g network`.
