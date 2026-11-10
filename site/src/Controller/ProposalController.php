@@ -54,7 +54,14 @@ class ProposalController extends BaseController
         }
 
         try {
-            $proposal = ProposalHelper::getProposal($id);
+            // The model only returns proposals this user may see
+            $proposal = $this->getModel('Proposal')->getItem($id);
+
+            if (!$proposal) {
+                $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_PROPOSAL_NOT_FOUND'), 'error');
+                $this->setRedirect(Route::_('index.php?option=com_mothership&view=proposals', false));
+                return;
+            }
 
             // Idempotency / safety
             if ((int) $proposal->status === 3) {
@@ -103,7 +110,14 @@ class ProposalController extends BaseController
         }
 
         try {
-            $proposal = ProposalHelper::getProposal($id);
+            // The model only returns proposals this user may see
+            $proposal = $this->getModel('Proposal')->getItem($id);
+
+            if (!$proposal) {
+                $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_PROPOSAL_NOT_FOUND'), 'error');
+                $this->setRedirect(Route::_('index.php?option=com_mothership&view=proposals', false));
+                return;
+            }
 
             // Idempotency / safety
             if ((int) $proposal->status === 4) {
@@ -155,15 +169,16 @@ class ProposalController extends BaseController
 
         $model = $this->getModel('Proposal');
         $proposal = $model->getItem($id);
-        $client = ClientHelper::getClient($proposal->client_id);
-        $account = AccountHelper::getAccount($proposal->account_id);
-        $business = MothershipHelper::getMothershipOptions();
 
         if (!$proposal) {
             $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_PROPOSAL_NOT_FOUND'), 'error');
             $this->setRedirect(Route::_('index.php?option=com_mothership&view=proposals', false));
             return;
         }
+
+        $client = ClientHelper::getClient($proposal->client_id);
+        $account = AccountHelper::getAccount($proposal->account_id);
+        $business = MothershipHelper::getMothershipOptions();
 
         ob_start();
         $layout = new FileLayout('proposal-pdf', JPATH_ROOT . '/components/com_mothership/layouts');
@@ -270,8 +285,14 @@ class ProposalController extends BaseController
         $app = Factory::getApplication();
         $input = $app->getInput();
 
-        $proposalId = $input->getCmd('id');
+        $proposalId = $input->getInt('id');
         $paymentMethod = $input->getCmd('payment_method');
+
+        if (!Session::checkToken('post')) {
+            $app->enqueueMessage(Text::_('JINVALID_TOKEN'), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=proposals', false));
+            return;
+        }
 
         if (!$proposalId || !$paymentMethod) {
             $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVALID_PAYMENT_REQUEST'), 'error');
@@ -279,9 +300,15 @@ class ProposalController extends BaseController
             return;
         }
 
-        // Load the proposal
+        // Load the proposal (the model only returns proposals this user may see)
         $proposalModel = $this->getModel('Proposal');
         $proposal = $proposalModel->getItem($proposalId);
+
+        if (!$proposal) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_PROPOSAL_NOT_FOUND'), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=proposals', false));
+            return;
+        }
 
         // Create the payment record
         $payment = Factory::getApplication()

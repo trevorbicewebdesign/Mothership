@@ -5,6 +5,7 @@ namespace TrevorBice\Component\Mothership\Site\Model;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
+use TrevorBice\Component\Mothership\Site\Helper\MothershipHelper;
 
 class ProjectModel extends BaseDatabaseModel
 {
@@ -33,6 +34,11 @@ class ProjectModel extends BaseDatabaseModel
 
         $db->setQuery($query);
         $project = $db->loadObject();
+
+        // Only the client's own users and component administrators may load it.
+        if ($project && !MothershipHelper::canAccessClient($project->client_id)) {
+            return null;
+        }
 
         // ✅ Decode metadata if present
         if ($project && isset($project->metadata) && is_string($project->metadata)) {

@@ -7,6 +7,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Layout\FileLayout;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Session\Session;
 use Joomla\Database\DatabaseDriver;
 use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper;
 use TrevorBice\Component\Mothership\Administrator\Service\EmailService;
@@ -56,15 +57,16 @@ class InvoiceController extends BaseController
 
         $model = $this->getModel('Invoice');
         $invoice = $model->getItem($id);
-        $client = ClientHelper::getClient($invoice->client_id);
-        $account = AccountHelper::getAccount($invoice->account_id);
-        $business = MothershipHelper::getMothershipOptions();
 
         if (!$invoice) {
             $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVOICE_NOT_FOUND'), 'error');
             $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoices', false));
             return;
         }
+
+        $client = ClientHelper::getClient($invoice->client_id);
+        $account = AccountHelper::getAccount($invoice->account_id);
+        $business = MothershipHelper::getMothershipOptions();
 
         // Generate the HTML
         $layout = new FileLayout('pdf', JPATH_ROOT . '/components/com_mothership/layouts');
@@ -246,8 +248,14 @@ class InvoiceController extends BaseController
         $app = Factory::getApplication();
         $input = $app->getInput();
 
-        $invoiceId = $input->getCmd('id');
+        $invoiceId = $input->getInt('id');
         $paymentMethod = $input->getCmd('payment_method');
+
+        if (!Session::checkToken('post')) {
+            $app->enqueueMessage(Text::_('JINVALID_TOKEN'), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoices', false));
+            return;
+        }
 
         if (!$invoiceId || !$paymentMethod) {
             $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVALID_PAYMENT_REQUEST'), 'error');
@@ -255,9 +263,15 @@ class InvoiceController extends BaseController
             return;
         }
 
-        // Load the invoice
+        // Load the invoice (the model only returns invoices this user may see)
         $invoiceModel = $this->getModel('Invoice');
         $invoice = $invoiceModel->getItem($invoiceId);
+
+        if (!$invoice) {
+            $app->enqueueMessage(Text::_('COM_MOTHERSHIP_ERROR_INVOICE_NOT_FOUND'), 'error');
+            $this->setRedirect(Route::_('index.php?option=com_mothership&view=invoices', false));
+            return;
+        }
 
         // Create the payment record
         $payment = Factory::getApplication()

@@ -12,8 +12,8 @@ class HtmlView extends BaseHtmlView
     public $item;
     public function display($tpl = null)
     {
-        $user = Factory::getUser();
-        if (!$user->authorise('mothership.clients', 'com_mothership')) {
+        $user = Factory::getApplication()->getIdentity();
+        if (!$user || $user->guest) {
             echo Text::_('JERROR_ALERTNOAUTHOR');
             return;
         }
