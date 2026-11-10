@@ -5,7 +5,7 @@
         <element>com_mothership</element>
         <type>component</type>
         <version>0.0.26</version>
-        <sha256>700d4bc2b5083bac97ff70134ad605a176e069946ca0f253229495b0c003a488</sha256>
+        <sha256>da256ee61740ba003947930d957499b8bf97c91252a42f31639dd177f90eca6e</sha256>
         <infourl title="Mothership on GitHub">https://github.com/trevorbicewebdesign/Mothership</infourl>
         <downloads>
             <downloadurl type="full" format="zip">https://github.com/trevorbicewebdesign/Mothership/releases/download/0.0.26/Mothership-0.0.26.zip</downloadurl>
@@ -15,9 +15,9 @@
         </tags>
         <enclosure 
             url="https://github.com/trevorbicewebdesign/Mothership/releases/download/0.0.26/Mothership-0.0.26.zip" 
-            length="47216653" 
+            length="47215178" 
             type="application/zip" 
-            hash="700D4BC2B5083BAC97FF70134AD605A176E069946CA0F253229495B0C003A488" />
+            hash="DA256EE61740BA003947930D957499B8BF97C91252A42F31639DD177F90ECA6E" />
         <targetplatform name="joomla" version="(5|6)\.[0-9]+" />
         <php_minimum>8.1</php_minimum>
         <client>administrator</client>
