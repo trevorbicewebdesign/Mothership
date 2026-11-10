@@ -8,6 +8,7 @@ use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\User;
 use Joomla\Database\DatabaseInterface;
 use Joomla\CMS\Language\Text;
+use TrevorBice\Component\Mothership\Administrator\Service\ClientAccess;
 
 class MothershipHelper
 {
@@ -15,7 +16,7 @@ class MothershipHelper
      * Get the client IDs for the current user.
      *
      * @param  int|null  $userId  The user ID (optional; defaults to the current user).
-     * @return array|null  An array of client IDs the user owns, or null if none found.
+     * @return array|null  An array of client IDs the user owns or was given access to, or null if none found.
      */
     public static function getUserClientIds($userId = null): ?array
     {
@@ -32,14 +33,7 @@ class MothershipHelper
             return null;
         }
 
-        $db = Factory::getContainer()->get(DatabaseInterface::class);
-        $query = $db->getQuery(true)
-            ->select($db->quoteName('id'))
-            ->from($db->quoteName('#__mothership_clients'))
-            ->where($db->quoteName('owner_user_id') . ' = ' . (int) $userId);
-
-        $db->setQuery($query);
-        $results = $db->loadColumn(); // returns an array of all ids
+        $results = ClientAccess::clientIds((int) $userId);
 
         return !empty($results) ? array_map('intval', $results) : null;
     }

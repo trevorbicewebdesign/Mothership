@@ -64,7 +64,7 @@ The **Clients** object represents the individuals or organizations you work with
 - **Address**: Includes address lines, city, state, and zip code.
 - **Tax ID**: The client's tax identification number.
 - **Default Rate**: The default billing rate for the client.
-- **Owner User ID**: The ID of the user who owns the client record.
+- **Owner User ID**: The ID of the user who owns the client record. The owner sees the client in the portal; other people are given access as [Users](#users).
 - **Invoice PDF Template**: The invoice PDF template used for this client's invoices. Defaults to `default`.
 - **Created**: The timestamp when the client record was created.
 - **Created By**: The ID of the user who created the client record.
@@ -530,12 +530,21 @@ CREATE TABLE IF NOT EXISTS `#__mothership_projects` (
 ```
 
 ## Users
-The **Users** object links Joomla users to clients and gives each user a role for that client.
+The **Users** object is portal access: a row gives one Joomla user access to one client's portal. A client's owner (the client's **Owner User ID**) is not in this table and always sees their client; everyone else is here. It is in use from 0.0.28; before that the table existed but nothing read it, and the portal showed a client to its owner only.
 
 - **ID**: A unique identifier for the record.
 - **User ID**: The ID of the Joomla user.
-- **Client ID**: The ID of the client the user belongs to.
-- **Role**: The user's role for the client: `owner`, `employee`, or `administrator`.
+- **Client ID**: The ID of the client the user can see.
+- **Role**: `full_admin` (shown as Administrator) sees and does everything the owner can. It is the only level that can be given. `account_admin` and `billing_admin` are reserved for narrower levels and open nothing in the portal yet.
+- **All Accounts**: Reserved for the two narrower levels.
+- **Created**: When access was given.
+- **Created By**: The ID of the user who gave it.
+- **Invited As**: The ID of the user named as the inviter in the email, when that is not who sent it: the client's owner, when staff invite on their behalf.
+- **Invite Token Hash**: A SHA-256 hash of the one-time link's token. The token itself is only ever in the email.
+- **Invite Expires**: When the link stops working, 7 days after it was sent.
+- **Accepted**: When the person set their password, or when access was given to someone who already had a login. Empty while the invite is pending.
+- **Invite Sent At**: When the invite email last left the site.
+- **Invite Error**: Why the last invite email failed, if it did.
 
 ### Users Table
 ```
@@ -543,13 +552,36 @@ CREATE TABLE IF NOT EXISTS `#__mothership_users` (
   `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` INT(11) NOT NULL,
   `client_id` INT(11) NOT NULL,
-  `role` ENUM('owner', 'employee', 'administrator') NOT NULL,
+  `role` ENUM('full_admin', 'account_admin', 'billing_admin') NOT NULL,
+  `all_accounts` TINYINT(1) NOT NULL DEFAULT 0,
+  `created` DATETIME NULL DEFAULT NULL,
+  `created_by` INT(11) NULL DEFAULT NULL,
+  `invited_as` INT(11) NULL DEFAULT NULL,
+  `invite_token_hash` CHAR(64) NULL DEFAULT NULL,
+  `invite_expires` DATETIME NULL DEFAULT NULL,
+  `accepted` DATETIME NULL DEFAULT NULL,
+  `invite_sent_at` DATETIME NULL DEFAULT NULL,
+  `invite_error` VARCHAR(255) NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_user_client` (`user_id`, `client_id`),
   KEY `idx_client_id` (`client_id`),
   KEY `idx_user_id` (`user_id`),
+  KEY `idx_invite_token` (`invite_token_hash`),
   CONSTRAINT `fk_users_client` FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ```
+
+`#__mothership_user_accounts` (`user_access_id`, `account_id`) is created alongside it for the reserved levels and is not read yet.
+
+### Portal Users
+New in 0.0.28; updating from an earlier version alters the table. Rows that were already in it become live access: `owner` and `administrator` rows become `full_admin`, `employee` rows become `account_admin` (which opens nothing), and where a user had more than one row for a client the oldest is kept.
+
+- **Giving access**: Open a client and use its **Users** tab, or open a person under **Portal Users** and give them another client. Someone with no login gets one (username is their email, in the site's default user group) and an email with a one-time link to set a password. Someone who already has a login gets access straight away and an email saying so. By default the email names the client's owner as the inviter and replies go to the owner; untick the box to send it as yourself.
+- **Portal Users** in the administrator menu lists everyone who can use a portal, one row per person, with the invites nobody has accepted yet above the list. A person's page shows every client they can reach, by level. Ownership is shown there but is changed on the client.
+- **Pending invites** can be resent, which replaces the link, or cancelled. An invite is also accepted when the person signs in by any other route, such as a password reset.
+- **Removing access** deletes the row. The login stays, so it can still reach other clients.
+- **In the portal** an Administrator sees the client's accounts, projects, domains, proposals, invoices and payments exactly as its owner does. The group the login is in still needs the component's front end permissions, as an owner's does.
+- Notification emails about invoices and payments still go to the client's owner only.
 
 ## Emails
 The **Emails** object is the email log: one record for every email the component tries to send, whatever became of it. It is new in 0.0.27; see [Email Log](#email-log) for how it is used.
@@ -557,7 +589,7 @@ The **Emails** object is the email log: one record for every email the component
 - **ID**: A unique identifier for the log entry.
 - **Client Id**: The ID of the client the email relates to.
 - **Account Id**: The ID of the account the email relates to.
-- **Object Type**: The type of record the email was about (`invoice`, `payment`, or `proposal`).
+- **Object Type**: The type of record the email was about (`invoice`, `payment`, `proposal`, or `user_access` for a portal invite).
 - **Object Id**: The ID of that record.
 - **Template**: The email layout that was used (e.g., `invoice.user-opened`).
 - **Recipient**: The address, or addresses, the email was sent to.
@@ -906,6 +938,22 @@ The front end has its own `InvoiceHelper`.
 - **statusLabel(string $status): string**: The translated label for a status.
 - **pill(string $status): string**: The coloured status pill used by the list, the detail screen and the tabs.
 
+## Client Access Service
+`ClientAccess` (in `admin/src/Service`) decides who can use a client's portal and handles invites. See [Portal Users](#portal-users).
+
+- **clientIds(?int $userId = null): array**: The clients a user sees in the portal: the ones they own or administer.
+- **roleFor(int $clientId, ?int $userId = null): ?string**: `owner`, `full_admin`, or `null` when the user has nothing to do with the client.
+- **members(int $clientId): array**: The client's owner, then everyone given access.
+- **personAccess(int $userId): array**: Every client one person can reach, ownership included.
+- **pendingInvites(): array**: Invites nobody has accepted yet, newest first.
+- **invite(int $clientId, string $name, string $email, ?int $byUserId = null, ?int $onBehalfOf = null): array**: Gives someone access, creating and emailing a login when the email has none. Throws a `RuntimeException` with a message for the person inviting when it cannot.
+- **resendInvite(int $accessId): array**: Sends a pending invite again with a new link.
+- **remove(int $accessId, ?int $byUserId = null): void**: Takes access away.
+- **findInvite(string $token): ?object**: The pending, unexpired invite for a link's token.
+- **acceptInvite(string $token, string $password, string $confirm): object**: Sets the invited person's password and uses up the link.
+- **acceptPendingForUser(int $userId): int**: Marks a signed-in user's pending invites accepted.
+- **passwordProblem(string $password): ?string**: Why a password is not allowed under the site's user options, or `null`.
+
 # Notification Emails
 Email templates are layouts in `admin/layouts/emails`, sent through `EmailService::sendTemplate()` and wrapped in the `wrapper` layout.
 
@@ -915,6 +963,9 @@ New in 0.0.27; updating from an earlier version creates the table. Every email `
 - **Emails** in the administrator menu lists the log, with filters for status, client, account, record type and template. Opening an entry shows the message as it was sent; **Resend** sends it again as a new entry that points back at the original.
 - Invoices, payments and proposals have an **Email** tab listing the messages sent about that record.
 - Pass `EmailService::about('invoice', $invoice)` (or `payment`, `proposal`) as the options argument to tie a new email to its record.
+
+## User - Portal Invite
+Someone has been given access to a client's portal. This will send the email template `user.invite` to that person: a one-time link to set a password when they have no login yet, otherwise a notice that they now have access.
 
 ## User - Invoice Opened
 The invoice has been set to `Opened`. This will send the email template `invoice.user-opened` to the Client Owner.
@@ -941,7 +992,7 @@ Mothership is built with stability and confidence in mind. Our automated testing
 Every pull request and push to `main` runs the `Run Mothership Tests` workflow:
 
 - **Lint**: PHP syntax on the oldest supported PHP version, `shellcheck` on the build scripts, `actionlint` on the workflows, and `php tests/check-groups.php`.
-- **Tests**: the functional, api, and integration suites, and the acceptance suite split into one job per `@group` (`backend-client`, `backend-invoice`, `frontend`, and so on).
+- **Tests**: the functional, api, and integration suites, and the acceptance suite split into one job per `@group` (`backend-client`, `backend-portaluser`, `backend-invoice`, `frontend`, and so on).
 
 Every acceptance test must carry one of the groups in the workflow matrix, otherwise it would never run; `tests/check-groups.php` fails the build when one does not. Tests in the `skipCI` group are skipped in CI.
 
@@ -970,7 +1021,7 @@ These methods for Codeception's DB module allow the database to be quickly confi
 - **createJoomlaUserData(array $data)**:
 - **createJoomlaUser(array $data)**:
 - **createMothershipUserData(array $data)**:
-- **createMothershipUser(array $data)**:
+- **createMothershipUser(array $data)**: Portal access for `user_id` to `client_id`: an accepted Administrator unless told otherwise.
 - **createMothershipAccountData(array $data)**:
 - **createMothershipAccount(array $data)**:
 - **createMothershipProposalData(array $data)**: 
@@ -1042,6 +1093,7 @@ These methods for Codeception's DB module allow the database to be quickly confi
 Front end codeception test classes
 
 - **MothershipFrontClientsCest**:
+- **MothershipFrontPortalUsersCest**: Someone given access sees the client; an invited person sets their password from the link.
 - **MothershipFrontAccountsCest**:
 - **MothershipFrontProposalsCest**:
 - **MothershipFrontInvoicesCest**:
@@ -1055,6 +1107,7 @@ Front end codeception test classes
 Back end codeception test classes.
 
 - **MothershipAdminClientsCest**:
+- **MothershipAdminPortalUsersCest**: The Portal Users list, a person's page, pending invites, and the Users tab on a client.
 - **MothershipAdminAccountsCest**:
 - **MothershipAdminProposalsCest**:
 - **MothershipAdminInvoicesCest**:
@@ -1078,6 +1131,7 @@ There are no API tests yet.
 ## Integration
 
 - **MothershipClientHelperTest**:
+- **MothershipClientAccessTest**: Inviting, accepting, resending and removing portal access, and which clients the portal shows.
 - **MothershipAccountHelperTest**:
 - **MothershipProjectHelperTest**:
 - **MothershipProposalHelperTest**:

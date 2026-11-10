@@ -9,6 +9,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Dispatcher\ComponentDispatcher;
 use Joomla\CMS\Router\Route;
 use Joomla\Event\Event;
+use TrevorBice\Component\Mothership\Administrator\Service\ClientAccess;
 
 
 
@@ -28,6 +29,14 @@ class Dispatcher extends ComponentDispatcher
         $dispatcher = Factory::getApplication()->getDispatcher();
         $event = new Event('onAfterInitialiseMothership');
         $dispatcher->dispatch('onAfterInitialiseMothership', $event);
+
+        // Signing in proves an invited person has a password, whether it came from the invite
+        // link or a password reset, so their invites stop being pending.
+        $user = Factory::getApplication()->getIdentity();
+
+        if ($user && !$user->guest) {
+            ClientAccess::acceptPendingForUser((int) $user->id);
+        }
 
         return parent::dispatch();
 

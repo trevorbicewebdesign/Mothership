@@ -59,6 +59,14 @@ $listDirn  = $this->escape($this->state->get('list.direction'));
         </div>
 
         <?php echo HTMLHelper::_('uitab.endTab'); ?>
+
+        <?php // Portal users belong to a saved client. ?>
+        <?php if ((int) $this->item->id > 0) : ?>
+            <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'users', Text::_('COM_MOTHERSHIP_CLIENT_USERS_TAB')); ?>
+            <?php echo $this->loadTemplate('users'); ?>
+            <?php echo HTMLHelper::_('uitab.endTab'); ?>
+        <?php endif; ?>
+
         <?php echo HTMLHelper::_('uitab.endTabSet'); ?>
     </div>
 

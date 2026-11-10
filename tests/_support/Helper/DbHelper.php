@@ -118,9 +118,15 @@ class DbHelper extends Db
     }
     public function createMothershipUserData(array $data)
     {
+        // An accepted Administrator: portal access to client_id for user_id. Pass
+        // 'accepted' => null (with invite_token_hash and invite_expires) for a pending invite.
         $defaultData = [
             'user_id' => 0,
             'client_id' => 0,
+            'role' => 'full_admin',
+            'all_accounts' => 1,
+            'created' => date('Y-m-d H:i:s'),
+            'accepted' => date('Y-m-d H:i:s'),
         ];
 
         $finalData = array_merge($defaultData, $data);
