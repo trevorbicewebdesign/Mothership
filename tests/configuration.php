@@ -70,5 +70,13 @@ class JConfig {
 		if (preg_match('#HeadlessChrome#', $HTTP_USER_AGENT)) {
 			$HTTP_USER_AGENT = 'HeadlessChrome';
 		}
+
+		// docker-compose.yml passes this through. docker/instance.sh sets it to '' so a
+		// stack published on a random host port builds its URLs from the request host.
+		$liveSite = getenv('MOTHERSHIP_LIVE_SITE');
+
+		if ($liveSite !== false) {
+			$this->live_site = $liveSite;
+		}
 	}
 }

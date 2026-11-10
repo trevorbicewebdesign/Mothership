@@ -2,8 +2,14 @@ services:
   joomla:
     image: ghcr.io/trevorbicewebdesign/mothership:php8.2-joomla5.3.0
     pull_policy: if_not_present
+    # Host ports and the restart policy are overridable so that several copies of this
+    # stack can run side by side; docker/instance.sh does that (see README, "Testing").
     ports:
-      - "8080:80"
+      - "${JOOMLA_PORT:-8080}:80"
+    environment:
+      # Overrides $live_site in tests/configuration.php. Empty means Joomla builds its
+      # URLs from the request host, which is what a stack on another host port needs.
+      MOTHERSHIP_LIVE_SITE: ${MOTHERSHIP_LIVE_SITE-http://joomla}
     # Selenium is only a dependency of the acceptance tests, not of Joomla itself,
     # so it is not listed here: `docker compose up joomla` must not drag it in.
     depends_on:
@@ -40,17 +46,17 @@ services:
 
       - ./codeception.yml:/var/www/html/codeception.yml
       - ./tests/configuration.php:/var/www/html/configuration.php
-    restart: always
+    restart: ${MOTHERSHIP_RESTART:-always}
 
   db:
     image: ghcr.io/trevorbicewebdesign/mysql:8.0
     pull_policy: if_not_present
-    restart: always
+    restart: ${MOTHERSHIP_RESTART:-always}
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: local
     ports:
-      - "3306:3306"
+      - "${DB_PORT:-3306}:3306"
     # TCP only comes up after the entrypoint has run tests/sql/*.sql on its
     # socket-only init server, so a TCP ping means the schema is loaded.
     healthcheck:
@@ -66,8 +72,11 @@ services:
   selenium:
     image: ghcr.io/trevorbicewebdesign/selenium-standalone-chrome:129.0
     pull_policy: if_not_present
+    # Only the acceptance suite needs a browser, so a plain `docker compose up` leaves
+    # this out. Start it with `--profile selenium` (or COMPOSE_PROFILES=selenium).
+    profiles: ["selenium"]
     ports:
-      - "4444:4444"
+      - "${SELENIUM_PORT:-4444}:4444"
     shm_size: 2gb
     healthcheck:
       # Ships with the Selenium images; reports ready once the grid accepts sessions.
@@ -81,15 +90,15 @@ services:
     image: ghcr.io/trevorbicewebdesign/mailpit:1.18.0
     pull_policy: if_not_present
     ports:
-      - "8025:8025"   # Web UI
-      - "1025:1025"   # SMTP port
+      - "${MAILPIT_UI_PORT:-8025}:8025"   # Web UI
+      - "${MAILPIT_SMTP_PORT:-1025}:1025"   # SMTP port
     healthcheck:
       # The image's own healthcheck polls every 15s; this keeps `up --wait` snappy.
       test: ["CMD", "/mailpit", "readyz"]
       interval: 2s
       timeout: 5s
       retries: 30
-    restart: always
+    restart: ${MOTHERSHIP_RESTART:-always}
 
 volumes:
   db_data:

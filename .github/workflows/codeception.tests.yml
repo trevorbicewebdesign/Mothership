@@ -41,7 +41,7 @@ jobs:
           exit $failed
 
       - name: shellcheck
-        run: shellcheck build/*.sh
+        run: shellcheck build/*.sh docker/*.sh
 
       - name: Install actionlint
         env:
@@ -101,6 +101,8 @@ jobs:
     env:
       # Only the browser suite needs Selenium (~1 GB image); the others don't pull it.
       COMPOSE_SERVICES: ${{ matrix.suite == 'acceptance' && 'joomla db mailpit selenium' || 'joomla db mailpit' }}
+      # Selenium sits behind a compose profile; this makes pull, logs and exec see it too.
+      COMPOSE_PROFILES: ${{ matrix.suite == 'acceptance' && 'selenium' || '' }}
       ARTIFACT_NAME: ${{ matrix.suite }}-${{ matrix.group || 'default' }}
 
     steps:
