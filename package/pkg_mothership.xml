@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="package" method="upgrade">
+    <name>Mothership</name>
+    <packagename>mothership</packagename>
+    <author>Trevor Bice</author>
+    <creationDate>2026-11-09</creationDate>
+    <copyright>(C) 2026 Trevor Bice</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>trevorbicewebdesign@gmail.com</authorEmail>
+    <authorUrl>https://webdesign.trevorbice.com</authorUrl>
+    <version>0.0.27</version>
+    <description>Mothership with its payment plugins and administrator dashboard modules.</description>
+    <scriptfile>script.php</scriptfile>
+    <!-- build/build.sh puts these zips beside this manifest. mod_mothership_tickets is not
+         listed: it reads tables that the component does not create yet. -->
+    <files>
+        <file type="component" id="com_mothership">com_mothership.zip</file>
+        <file type="plugin" id="paybycheck" group="mothership-payment">plg_mothership-payment_paybycheck.zip</file>
+        <file type="plugin" id="zelle" group="mothership-payment">plg_mothership-payment_zelle.zip</file>
+        <file type="module" id="mod_mothership_invoices" client="administrator">mod_mothership_invoices.zip</file>
+        <file type="module" id="mod_mothership_invoiced" client="administrator">mod_mothership_invoiced.zip</file>
+        <file type="module" id="mod_mothership_payments" client="administrator">mod_mothership_payments.zip</file>
+    </files>
+    <updateservers>
+        <server type="extension" priority="1" name="Mothership Update Server">https://raw.githubusercontent.com/trevorbicewebdesign/Mothership/refs/heads/main/updates-package.xml</server>
+    </updateservers>
+</extension>

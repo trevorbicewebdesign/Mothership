@@ -25,9 +25,7 @@
             <schemapath type="mysql">sql/updates/mysql</schemapath>
         </schemas>
     </update>
-    <updateservers>
-        <server type="extension" priority="1" name="Mothership Update Server">https://raw.githubusercontent.com/trevorbicewebdesign/Mothership/refs/heads/main/updates.xml</server>
-    </updateservers>
+    <!-- The update server is declared by the package, package/pkg_mothership.xml (updates-package.xml). -->
     <files folder="site">
         <folder>layouts</folder>
         <folder>src</folder>
@@ -37,8 +35,14 @@
         <language tag="en-GB">/language/en-GB/com_mothership.ini</language>
         <language tag="en-GB">/language/en-GB/com_mothership.sys.ini</language>
     </languages>
+    <!-- index.php?option=com_cpanel&amp;view=cpanel&amp;dashboard=mothership shows the modules
+         in position cpanel-mothership. The package's install script puts ours there. -->
+    <dashboards>
+        <dashboard title="COM_MOTHERSHIP_DASHBOARD_TITLE" icon="icon-chart">mothership</dashboard>
+    </dashboards>
     <administration>
-        <menu>com_mothership</menu>
+        <!-- No whitespace inside: Joomla uses the element's text as the menu alias. -->
+        <menu>com_mothership<params><dashboard>mothership</dashboard></params></menu>
         <submenu>
             <menu link="option=com_mothership&amp;view=clients" view="clients">com_mothership_clients</menu>
 			<menu link="option=com_mothership&amp;view=accounts" view="accounts">com_mothership_accounts</menu>

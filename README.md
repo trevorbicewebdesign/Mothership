@@ -689,7 +689,7 @@ CREATE TABLE IF NOT EXISTS `#__mothership_logs` (
 - **onMothershipProposalPending($proposal)**: Fired after a proposal is set to `Pending`.
 
 ## Payment Plugins
-Two payment plugins ship with Mothership: **Pay By Check** and **Zelle**. They are packaged as separate zips and are not installed with the component; install and enable each one through the Joomla Extension Manager. Until a payment plugin is enabled, the Select Payment Page has no payment methods to offer. Payment plugins belong to the `mothership-payment` plugin group. A PayPal plugin is not included in this release.
+Two payment plugins ship with Mothership: **Pay By Check** and **Zelle**. The Mothership package installs both, disabled: each one shows clients payment details (a payee, a Zelle address) that are empty until you enter them, so enter them in the plugin's options and then enable it. Until a payment plugin is enabled, the Select Payment Page has no payment methods to offer. Payment plugins belong to the `mothership-payment` plugin group. A PayPal plugin is not included in this release.
 
 ### Creating a Payment Plugin
 To create a Mothership Payment plugin, follow these steps:
@@ -764,21 +764,21 @@ This payment method allows clients to pay invoices by mailing a physical check. 
 Invoices and proposals can be previewed and downloaded as PDFs, rendered with mPDF. Invoice PDF templates can be supplied by plugins in the `mothership-invoice-pdf` plugin group; the template is selected in the component options and can be set per client.
 
 # Administrator Modules
-Four administrator dashboard modules live in `modules/`. They are packaged as separate zips and installed separately from the component.
+Four administrator dashboard modules live in `modules/`. The Mothership package installs the first three and, on a first install, publishes them on the Mothership dashboard: the dashboard icon beside **Mothership** in the administrator menu, module position `cpanel-mothership`. After that they are yours to move, unpublish or delete; an update does not put them back. Each is also built as a zip of its own.
 
 - **mod_mothership_invoices**: Lists open (unpaid or partially paid) invoices.
 - **mod_mothership_invoiced**: Bar chart of monthly invoiced totals for the current year, with the all-time total.
 - **mod_mothership_payments**: Bar chart of monthly completed-payment totals for the current year, with the all-time total.
-- **mod_mothership_tickets**: Lists the most recently updated support tickets. It belongs to the planned support tickets feature, which is not part of the current release.
+- **mod_mothership_tickets**: Lists the most recently updated support tickets. It belongs to the planned support tickets feature, which is not part of the current release, so the package leaves it out.
 
 # Releases
 Release packages are built by the scripts in `build/`:
 
-- **build/set-version.sh <version>**: Sets the version in `mothership.xml`, `composer.json`, and `updates.xml`. The payment plugin manifests carry the same version and are updated by hand.
-- **build/build.sh**: Builds the installable zips into `dist/` from the committed tree: the component, one zip per payment plugin, and one zip per module.
-- **build/update-server.sh <zip>**: Points `updates.xml` (the Joomla update server) at a built component zip, including its size and checksum.
+- **build/set-version.sh <version>**: Sets the version in `mothership.xml`, `package/pkg_mothership.xml`, and `composer.json`. The payment plugin manifests carry the same version and are updated by hand.
+- **build/build.sh**: Builds the installable zips into `dist/` from the committed tree: the component, one zip per payment plugin, one zip per module, and `pkg_mothership-<version>.zip`, the package that installs them together. The package is what a site should install; `package/pkg_mothership.xml` lists what it contains and `package/script.php` is its install script.
+- **build/update-server.sh <zip>**: Points the Joomla update servers at a built package zip, including its size and checksum. `updates-package.xml` is the package's update server and moves with every release; the first package release creates it. `updates.xml` is the update server of sites that installed the component alone, before the package existed: it is pointed at the first package release and then left there, so those sites are offered one update that installs the package. There are two files because Joomla reads only one extension from an update server of this kind.
 
-Pushing a version tag runs the `Release` workflow, which first runs the full lint and test workflow against the tagged commit, then checks the tag against `mothership.xml`, builds the packages, publishes the GitHub release, and opens a pull request that points `updates.xml` at the new package.
+Pushing a version tag runs the `Release` workflow, which first runs the full lint and test workflow against the tagged commit, then checks the tag against `mothership.xml`, builds the packages, publishes the GitHub release, and opens a pull request that points the update servers at the new package.
 
 ---
 
