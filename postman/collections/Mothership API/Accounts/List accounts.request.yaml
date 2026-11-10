@@ -1,0 +1,31 @@
+$kind: http-request
+description: "Accounts, by name, with the name of the client each belongs to. Lists are paged: page[limit] (20 by default) and page[offset]."
+method: GET
+url: '{{base_url}}/api/index.php/v1/mothership/accounts?filter[search]=Postman Test'
+order: 1000
+queryParams:
+  - key: 'filter[search]'
+    value: 'Postman Test'
+    description: "Only accounts whose name contains this text."
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test('responds 200 with JSON:API', () => {
+        pm.response.to.have.status(200);
+        pm.expect(pm.response.headers.get('Content-Type')).to.include('application/vnd.api+json');
+      });
+
+      const records = pm.response.json().data;
+      const seeded = records.find((record) => record.id === '9001');
+
+      pm.test('includes the seeded record', () => {
+        pm.expect(seeded, 'record 9001').to.be.an('object');
+        pm.expect(seeded.type).to.eql('accounts');
+        pm.expect(seeded.attributes).to.include({"name": "Postman Test Account", "client_id": 9001, "client_name": "Postman Test Client"});
+      });
+
+      pm.test('every record has exactly the list fields', () => {
+        records.forEach((record) => pm.expect(record.attributes).to.have.all.keys(["id", "client_id", "client_name", "name", "rate", "created"]));
+      });
+examples: './.resources/List accounts.resources/examples'

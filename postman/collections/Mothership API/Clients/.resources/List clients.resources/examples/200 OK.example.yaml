@@ -1,0 +1,43 @@
+$kind: http-example
+name: 200 OK
+request:
+  method: GET
+  url: '{{base_url}}/api/index.php/v1/mothership/clients?filter[search]=Postman Test'
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    - key: Content-Type
+      value: application/vnd.api+json; charset=utf-8
+  body:
+    type: json
+    content: |-
+      {
+        "links": {
+          "self": "{{base_url}}/api/index.php/v1/mothership/clients?filter[search]=Postman%20Test"
+        },
+        "data": [
+          {
+            "type": "clients",
+            "id": "9001",
+            "attributes": {
+              "id": 9001,
+              "name": "Postman Test Client",
+              "email": "client@example.com",
+              "phone": "555-0100",
+              "address_1": "1 Test Street",
+              "address_2": null,
+              "city": "Testville",
+              "state": "CA",
+              "zip": "90001",
+              "default_rate": "100.00",
+              "owner_user_id": null,
+              "created": "2026-01-02 03:04:05"
+            }
+          }
+        ],
+        "meta": {
+          "total-pages": 1
+        }
+      }
+order: 1000

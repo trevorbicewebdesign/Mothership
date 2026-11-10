@@ -1,0 +1,16 @@
+$kind: http-request
+description: "An id that does not exist answers 404."
+method: GET
+url: '{{base_url}}/api/index.php/v1/mothership/clients/:id'
+order: 2000
+pathVariables:
+  - key: id
+    value: '424242'
+    description: The record's id.
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test('responds 404', () => pm.response.to.have.status(404));
+      pm.test('returns a JSON:API error', () => pm.expect(pm.response.json().errors[0]).to.include({ title: 'Resource not found', code: 404 }));
+examples: './.resources/Unknown record.resources/examples'

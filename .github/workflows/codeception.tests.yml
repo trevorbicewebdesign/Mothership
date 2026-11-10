@@ -75,6 +75,8 @@ jobs:
           - suite: functional
           - suite: api
           - suite: integration
+          # Not a Codeception suite: the Postman collection run against the web services API.
+          - suite: postman
           - suite: acceptance
             group: backend-client
           - suite: acceptance
@@ -142,7 +144,7 @@ jobs:
         run: |
           docker compose exec -T joomla php /var/www/html/cli/joomla.php extension:discover
           docker compose exec -T joomla php /var/www/html/cli/joomla.php extension:discover:install
-          docker compose exec -T db mysql -uroot -proot -e "UPDATE local.jos_extensions SET enabled = 1 WHERE type = 'plugin' AND folder = 'mothership-payment' AND element IN ('zelle', 'paybycheck');"
+          docker compose exec -T db mysql -uroot -proot -e "UPDATE local.jos_extensions SET enabled = 1 WHERE type = 'plugin' AND ((folder = 'mothership-payment' AND element IN ('zelle', 'paybycheck')) OR (folder = 'webservices' AND element = 'mothership'));"
 
       - name: Add Joomla admin user
         run: docker compose exec -T joomla php /var/www/html/cli/joomla.php user:add --username=admin --name='Site Admin' --password='password123!test' --email='admin@example.com' --usergroup='Super Users' --quiet
@@ -153,6 +155,7 @@ jobs:
         run: docker compose exec -T db mysqldump -uroot -proot --no-tablespaces --skip-comments --extended-insert=false local > tests/_support/Data/db/dump.sql
 
       - name: Run Codeception Tests for ${{ matrix.suite }}
+        if: matrix.suite != 'postman'
         env:
           SUITE: ${{ matrix.suite }}
           GROUP: ${{ matrix.group }}
@@ -162,6 +165,21 @@ jobs:
             GROUP_ARGS=(--group "$GROUP")
           fi
           docker compose exec -T joomla /var/www/html/vendor/bin/codecept run "$SUITE" "${GROUP_ARGS[@]}" --skip-group skipCI
+
+      - name: Install the Postman CLI
+        if: matrix.suite == 'postman'
+        run: curl -fsSL -o- "https://dl-cli.pstmn.io/install/unix.sh" | sh
+
+      - name: Run the Postman collection
+        if: matrix.suite == 'postman'
+        # The collection asserts on the records in tests/postman/seed.sql.
+        run: |
+          docker compose exec -T db mysql -uroot -proot local < tests/postman/seed.sql
+          API_TOKEN=$(docker compose exec -T joomla php tests/postman/token.php admin)
+          echo "::add-mask::$API_TOKEN"
+          postman collection run "postman/collections/Mothership API" \
+            --environment postman/environments/Local.environment.yaml \
+            --env-var "api_token=$API_TOKEN"
 
       - name: Collect service logs
         if: failure()

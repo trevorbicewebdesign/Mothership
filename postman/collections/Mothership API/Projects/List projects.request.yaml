@@ -1,0 +1,35 @@
+$kind: http-request
+description: "Projects, by name. filter[account_id] narrows to one account in the same way. Lists are paged: page[limit] (20 by default) and page[offset]."
+method: GET
+url: '{{base_url}}/api/index.php/v1/mothership/projects?filter[client_id]=9001'
+order: 1000
+queryParams:
+  - key: 'filter[client_id]'
+    value: '9001'
+    description: "Only records that belong to this client."
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test('responds 200 with JSON:API', () => {
+        pm.response.to.have.status(200);
+        pm.expect(pm.response.headers.get('Content-Type')).to.include('application/vnd.api+json');
+      });
+
+      const records = pm.response.json().data;
+      const seeded = records.find((record) => record.id === '9001');
+
+      pm.test('includes the seeded record', () => {
+        pm.expect(seeded, 'record 9001').to.be.an('object');
+        pm.expect(seeded.type).to.eql('projects');
+        pm.expect(seeded.attributes).to.include({"name": "Postman Test Project", "account_name": "Postman Test Account"});
+      });
+
+      pm.test('every record has exactly the list fields', () => {
+        records.forEach((record) => pm.expect(record.attributes).to.have.all.keys(["id", "client_id", "client_name", "account_id", "account_name", "name", "description", "type", "metadata", "created"]));
+      });
+
+      pm.test('the filter is applied to every record', () => {
+        records.forEach((record) => pm.expect(record.attributes).to.include({"client_id": 9001}));
+      });
+examples: './.resources/List projects.resources/examples'

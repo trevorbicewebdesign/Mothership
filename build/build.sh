@@ -7,6 +7,7 @@
 # Produces, using the version in mothership.xml:
 #   dist/Mothership-<v>.zip                      the component; updates.xml points here
 #   dist/plg_mothership-payment_<name>-<v>.zip   one per payment plugin
+#   dist/plg_webservices_mothership-<v>.zip      the web services (API) plugin
 #   dist/mod_mothership_<name>-<v>.zip           one per admin module
 #
 # Every zip is cut from HEAD with `git archive`, so only committed files ship and the
@@ -24,12 +25,12 @@ if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
 fi
 
 # Everything the component manifest declares must exist; a missing folder installs silently
-# incomplete. Folders under admin/ and site/ that the manifest does not declare are reported
+# incomplete. Folders under admin/, site/ and api/ that the manifest does not declare are reported
 # too, since they will not be installed.
 python3 - <<'PY'
 import os, re, sys
 x = open('mothership.xml').read()
-missing, declared = [], {'admin': set(), 'site': set()}
+missing, declared = [], {'admin': set(), 'site': set(), 'api': set()}
 for m in re.finditer(r'<files folder="(\w+)">(.*?)</files>', x, re.S):
     base = m.group(1)
     for tag, name in re.findall(r'<(folder|filename)>([^<]+)</\1>', m.group(2)):
@@ -56,7 +57,7 @@ rm -rf dist
 mkdir -p dist
 
 echo "component  dist/Mothership-$VERSION.zip"
-git archive --format=zip -o "dist/Mothership-$VERSION.zip" HEAD mothership.xml admin site
+git archive --format=zip -o "dist/Mothership-$VERSION.zip" HEAD mothership.xml admin site api
 
 # Plugin and module zips need their manifest at the zip root, so archive each directory's tree.
 for dir in plugins/mothership-payment/*/; do
@@ -64,6 +65,9 @@ for dir in plugins/mothership-payment/*/; do
   echo "plugin     dist/plg_mothership-payment_${name}-$VERSION.zip"
   git archive --format=zip -o "dist/plg_mothership-payment_${name}-$VERSION.zip" "HEAD:${dir%/}"
 done
+
+echo "plugin     dist/plg_webservices_mothership-$VERSION.zip"
+git archive --format=zip -o "dist/plg_webservices_mothership-$VERSION.zip" "HEAD:plugins/webservices/mothership"
 
 for dir in modules/mod_mothership_*/; do
   name=$(basename "$dir")
