@@ -272,4 +272,32 @@ class MothershipPaymentHelperTest extends \Codeception\Test\Unit
         $this->assertNotEmpty($payments);
 
     }
+
+    public function testCompletePaymentLocksPayment()
+    {
+        $paymentData = $this->tester->createMothershipPayment([
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'amount' => 100.00,
+            'payment_date' => date('Y-m-d H:i:s'),
+            'fee_amount' => 0.00,
+            'fee_passed_on' => 0,
+            'payment_method' => 'zelle',
+            'transaction_id' => '',
+            'status' => 1,
+            'locked' => 0,
+        ]);
+        $paymentId = $paymentData['id'];
+
+        $payment = PaymentHelper::completePayment($paymentId, 'ZELLE-123');
+
+        $this->assertEquals(2, (int) $payment->status);
+
+        $this->tester->seeInDatabase('jos_mothership_payments', [
+            'id' => $paymentId,
+            'status' => 2,
+            'locked' => 1,
+            'transaction_id' => 'ZELLE-123',
+        ]);
+    }
 }
