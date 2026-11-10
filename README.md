@@ -1047,6 +1047,7 @@ Back end codeception test classes.
 - **MothershipAdminProjectsCest**:
 - **MothershipAdminDomainsCest**:
 - **MothershipAdminPaymentsCest**:
+- **MothershipAdminEmailsCest**: The Emails list, one entry, resend, delete, and the Email tab on an invoice.
 - **MothershipAdminLogsCest**:
 - **MothershipAdminMenuCest**:
 - **MothershipAdminOptionsCest**:

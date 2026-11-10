@@ -589,6 +589,39 @@ class DbHelper extends Db
         return $data;
     }
 
+    /** One entry in the email log, as EmailService would have written it. */
+    public function createMothershipEmail(array $data)
+    {
+        $data = array_merge([
+            "client_id" => null,
+            "account_id" => null,
+            "object_type" => null,
+            "object_id" => null,
+            "template" => null,
+            "recipient" => 'test.client@mailinator.com',
+            "subject" => 'Test Email',
+            "body_html" => '<p>Test email body</p>',
+            "status" => 'sent',
+            "error" => null,
+            "created" => date('Y-m-d H:i:s'),
+            "sent_at" => null,
+        ], $data);
+
+        codecept_debug("Creating Mothership Email with the following data:");
+        codecept_debug($data);
+
+        $id = $this->Db->haveInDatabase("{$this->prefix}mothership_emails", $data);
+        $data['id'] = $id;
+
+        return $data;
+    }
+
+    public function clearEmailsTable()
+    {
+        codecept_debug("Clearing emails table");
+        $this->Db->_getDriver()->executeQuery("TRUNCATE TABLE {$this->prefix}mothership_emails", []);
+    }
+
     public function setInvoiceStatus($invoiceId, $status)
     {
         // Status levels are 1-5
@@ -694,6 +727,7 @@ class DbHelper extends Db
         $this->clearAccountsTable();
         $this->clearClientsTable();
         $this->clearUsersTable();
+        $this->clearEmailsTable();
 
         // Turn it back on
         $this->Db->_getDriver()->executeQuery("SET FOREIGN_KEY_CHECKS = 1", []);
