@@ -174,6 +174,8 @@ class PaymentHelper
             ->set($db->quoteName('transaction_id') . ' = ' . $db->quote($txnId))
             ->set($db->quoteName('fee_amount') . ' = ' . (string) (float) $feeAmount)
             ->set($db->quoteName('processed_date') . ' = ' . $db->quote(date('Y-m-d H:i:s')))
+            // A completed payment is a record of money that moved: lock it so it is not edited by accident.
+            ->set($db->quoteName('locked') . ' = 1')
             ->where($db->quoteName('id') . ' = ' . (int) $paymentId)
             ->where($db->quoteName('status') . ' <> 2'); // guard against a concurrent complete
         $db->setQuery($query);
