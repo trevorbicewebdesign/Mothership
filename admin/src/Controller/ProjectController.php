@@ -87,6 +87,12 @@ class ProjectController extends FormController
                 $project->metadata['cms_type'] = 'joomla';
             } elseif (ProjectHelper::detectWordPress($scanResults['data']['headers'], $scanResults['data']['html'])) {
                 $project->metadata['cms_type'] = 'wordpress';
+            } elseif (ProjectHelper::detectShopify($scanResults['data']['headers'], $scanResults['data']['html'])) {
+                $project->metadata['cms_type'] = 'shopify';
+            } elseif (ProjectHelper::detectWix($scanResults['data']['headers'], $scanResults['data']['html'])) {
+                $project->metadata['cms_type'] = 'wix';
+            } elseif (ProjectHelper::detectSquarespace($scanResults['data']['headers'], $scanResults['data']['html'])) {
+                $project->metadata['cms_type'] = 'squarespace';
             } else {
                 $project->metadata['cms_type'] = 'None';
             }

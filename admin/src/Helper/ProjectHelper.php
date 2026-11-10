@@ -183,7 +183,72 @@ class ProjectHelper
         if(preg_match('/WordPress/', $generator) || preg_match('/wordpress/', $generator)) {
             return true;
         }
-        
+
+        return false;
+    }
+
+    /**
+     * Reads one response header from a get_headers() array, whatever the case of
+     * its name. After redirects a header holds one value per hop, so the values
+     * are joined into a single string.
+     */
+    protected static function getHeader(array $headers, string $name): string
+    {
+        foreach ($headers as $key => $value) {
+            if (is_string($key) && strcasecmp($key, $name) === 0) {
+                return implode(' ', (array) $value);
+            }
+        }
+
+        return '';
+    }
+
+    public static function detectShopify(array $headers, string $html): bool
+    {
+        if (self::getHeader($headers, 'x-shopid') !== '' || self::getHeader($headers, 'x-shopify-stage') !== '') {
+            return true;
+        }
+
+        if (stripos(self::getHeader($headers, 'powered-by'), 'Shopify') !== false) {
+            return true;
+        }
+
+        // Every storefront theme sets these; a Buy Button embedded in another site does not.
+        if (preg_match('/\bShopify\.(shop|theme)\s*=/', $html)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static function detectWix(array $headers, string $html): bool
+    {
+        if (self::getHeader($headers, 'x-wix-request-id') !== '') {
+            return true;
+        }
+
+        if (stripos((string) self::getGeneratorMeta($html), 'Wix.com') !== false) {
+            return true;
+        }
+
+        // Wix's own script CDN.
+        if (stripos($html, 'static.parastorage.com') !== false) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static function detectSquarespace(array $headers, string $html): bool
+    {
+        if (stripos(self::getHeader($headers, 'server'), 'Squarespace') !== false) {
+            return true;
+        }
+
+        if (strpos($html, 'Static.SQUARESPACE_CONTEXT') !== false || strpos($html, '<!-- This is Squarespace. -->') !== false) {
+            return true;
+        }
+
         return false;
     }
 }

@@ -5,6 +5,7 @@ namespace TrevorBice\Component\Mothership\Site\Model;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
+use TrevorBice\Component\Mothership\Site\Helper\MothershipHelper;
 
 class DomainModel extends BaseDatabaseModel
 {
@@ -31,6 +32,11 @@ class DomainModel extends BaseDatabaseModel
 
         $db->setQuery($query);
         $domain = $db->loadObject();
+
+        // Only the client's own users and component administrators may load it.
+        if ($domain && !MothershipHelper::canAccessClient($domain->client_id)) {
+            return null;
+        }
 
         return $domain;
     }

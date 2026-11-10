@@ -69,13 +69,15 @@ jobs:
         run: |
           BRANCH="update-server/$GITHUB_REF_NAME"
           git switch -C "$BRANCH" origin/main
-          build/update-server.sh "dist/Mothership-$GITHUB_REF_NAME.zip"
+          build/update-server.sh "dist/pkg_mothership-$GITHUB_REF_NAME.zip"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -am "Point update server at $GITHUB_REF_NAME"
+          # updates-package.xml is a new file the first time, which commit -a would miss.
+          git add updates.xml updates-package.xml
+          git commit -m "Point update server at $GITHUB_REF_NAME"
           git push -u origin "$BRANCH"
           PR_URL=$(gh pr create --base main --head "$BRANCH" \
             --title "Point update server at $GITHUB_REF_NAME" \
-            --body "Length and SHA-256 of the published Mothership-$GITHUB_REF_NAME.zip. Opened by the release workflow; merge to make the update visible to sites.")
+            --body "Length and SHA-256 of the published pkg_mothership-$GITHUB_REF_NAME.zip. Opened by the release workflow; merge to make the update visible to sites.")
           echo "Opened $PR_URL"
           gh pr merge "$PR_URL" --auto --merge || echo "Auto-merge not available; merge $PR_URL by hand."

@@ -5,6 +5,7 @@ namespace TrevorBice\Component\Mothership\Site\Model;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
+use TrevorBice\Component\Mothership\Site\Helper\MothershipHelper;
 use Joomla\Database\DatabaseInterface;
 use Joomla\CMS\Language\Text;
 use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper;
@@ -58,6 +59,11 @@ class PaymentModel extends BaseDatabaseModel
 
         $db->setQuery($query);
         $payment = $db->loadObject();
+
+        // Only the client's own users and component administrators may load it.
+        if ($payment && !MothershipHelper::canAccessClient($payment->client_id)) {
+            return null;
+        }
 
         return $payment;
     }

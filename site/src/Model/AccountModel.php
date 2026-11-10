@@ -5,6 +5,7 @@ namespace TrevorBice\Component\Mothership\Site\Model;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
+use TrevorBice\Component\Mothership\Site\Helper\MothershipHelper;
 
 class AccountModel extends BaseDatabaseModel
 {
@@ -26,6 +27,11 @@ class AccountModel extends BaseDatabaseModel
 
         $db->setQuery($query);
         $account = $db->loadObject();
+
+        // Only the client's own users and component administrators may load it.
+        if ($account && !MothershipHelper::canAccessClient($account->client_id)) {
+            return null;
+        }
 
         if (!$account) {
             return null;

@@ -76,7 +76,7 @@ install_mothership() {
   echo "instance: installing Mothership into $PROJECT"
   joomla_cli extension:discover
   joomla_cli extension:discover:install
-  mysql_query "UPDATE local.jos_extensions SET enabled = 1 WHERE type = 'plugin' AND folder = 'mothership-payment' AND element IN ('zelle', 'paybycheck');"
+  mysql_query "UPDATE local.jos_extensions SET enabled = 1 WHERE type = 'plugin' AND ((folder = 'mothership-payment' AND element IN ('zelle', 'paybycheck')) OR (folder = 'webservices' AND element = 'mothership'));"
   joomla_cli user:add --username="$ADMIN_USER" --name='Site Admin' --password="$ADMIN_PASSWORD" --email='admin@example.com' --usergroup='Super Users' --quiet
 
   # The Codeception Db module reloads this before each test.

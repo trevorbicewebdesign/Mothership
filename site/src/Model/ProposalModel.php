@@ -5,6 +5,7 @@ namespace TrevorBice\Component\Mothership\Site\Model;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
+use TrevorBice\Component\Mothership\Site\Helper\MothershipHelper;
 
 class ProposalModel extends BaseDatabaseModel
 {
@@ -25,6 +26,11 @@ class ProposalModel extends BaseDatabaseModel
         ;
         $db->setQuery($query);
         $proposal = $db->loadObject();
+
+        // Only the client's own users and component administrators may load it.
+        if ($proposal && !MothershipHelper::canAccessClient($proposal->client_id)) {
+            return null;
+        }
 
         if ($proposal) {
             // Load related items

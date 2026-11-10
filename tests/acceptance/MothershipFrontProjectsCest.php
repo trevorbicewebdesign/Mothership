@@ -124,34 +124,33 @@ class MothershipFrontProjectsCest
             'status' => 1,
         ]);
 
-        // Verify redirection to account center
+        // Someone else's project never shows up here.
+        $otherClient = $I->createMothershipClient(['name' => 'Another Client']);
+        $I->createMothershipProject([
+            'client_id' => $otherClient['id'],
+            'account_id' => null,
+            'name' => 'Not My Project',
+            'status' => 1,
+        ]);
+
         $I->amOnPage(self::PROJECTS_VIEW_ALL_URL);
         $I->waitForText("Projects", 10, "h1");
+        $I->dontSee("Not My Project");
+
         $I->takeFullPageScreenshot("account-center-view-all-projects");
         $I->dontSee("Warning:");
 
-        // Confirm the correct number of records
+        // One client, so this site's list leaves the Client column out.
         $I->seeNumberOfElements("main table#projectsTable tbody tr", 1);
+        $I->see("Status", "main table#projectsTable thead tr th:nth-child(1)");
+        $I->see("Type", "main table#projectsTable thead tr th:nth-child(2)");
+        $I->see("Name", "main table#projectsTable thead tr th:nth-child(3)");
+        $I->see("Domain", "main table#projectsTable thead tr th:nth-child(4)");
+        $I->see("Created", "main table#projectsTable thead tr th:nth-child(5)");
 
-        // Confirm the table headers
-        $I->see("#", "main table#projectsTable thead tr th:nth-child(1)");
-        $I->see("Name", "main table#projectsTable thead tr th:nth-child(2)");
-        $I->see("Account", "main table#projectsTable thead tr th:nth-child(3)");
-        $I->see("Client", "main table#projectsTable thead tr th:nth-child(4)");
-        $I->see("Type", "main table#projectsTable thead tr th:nth-child(5)");
-        $I->see("Status", "main table#projectsTable thead tr th:nth-child(6)");
-        $I->see("Created", "main table#projectsTable thead tr th:nth-child(7)");
-
-        // Confirm the table data
         $row = 1;
-        $I->see("{$projectData['id']}", "main table#projectsTable tbody tr:nth-child({$row}) td:nth-child(1)");
-        $I->see("{$projectData['name']}", "main table#projectsTable tbody tr:nth-child({$row}) td:nth-child(2)");        
-        $I->see("{$this->accountData['name']}", "main table#projectsTable tbody tr:nth-child({$row}) td:nth-child(3)");
-        $I->see("{$this->clientData['name']}", "main table#projectsTable tbody tr:nth-child({$row}) td:nth-child(4)");
-        $I->see("{$projectData['type']}", "main table#projectsTable tbody tr:nth-child({$row}) td:nth-child(5)");
-        $I->see("active", "main table#projectsTable tbody tr:nth-child({$row}) td:nth-child(6)");
-        $I->see("{$projectData['created']}", "main table#projectsTable tbody tr:nth-child({$row}) td:nth-child(7)");
-
+        $I->see("{$projectData['name']}", "main table#projectsTable tbody tr:nth-child({$row}) td:nth-child(3)");
+        $I->see(date('M j, Y', strtotime($projectData['created'])), "main table#projectsTable tbody tr:nth-child({$row}) td:nth-child(5)");
     }
 
     /**
@@ -167,13 +166,13 @@ class MothershipFrontProjectsCest
             'name' => 'Test Project',
             'status' => 1,
         ]);
+
         $I->amOnPage(sprintf(self::PROJECT_VIEW_URL, $projectData['id']));
         $log_created = date('Y-m-d H:i:s');
-        $I->waitForText("{$projectData['name']}", 10);
-        $I->dontSee("Warning:");
+        $I->waitForText("{$projectData['name']}", 10, "h1");
 
-        // Capture a screenshot of the view
         $I->takeFullPageScreenshot("account-center-view-project");
+        $I->dontSee("Warning:");
 
         $created = $I->grabFromDatabase("jos_mothership_logs", "created", [
             'client_id' => $this->clientData['id'],
@@ -181,11 +180,101 @@ class MothershipFrontProjectsCest
             'user_id' => $this->joomlaUserData['id'],
             'action' => 'viewed',
             'object_type' => 'project',
-            'object_id' => $this->accountData['id'],
+            'object_id' => $projectData['id'],
         ]);
-
         $timeDifference = abs(strtotime($log_created) - strtotime($created));
         $I->assertLessThanOrEqual(2, $timeDifference, "Log created date should not differ by more than 2 seconds.");
     }
 
+    /**
+     * @group frontend
+     * @group project
+     * @group frontend-project
+     */
+    public function WebsiteProjectShowsSiteDetails(AcceptanceTester $I)
+    {
+        $projectData = $I->createMothershipProject([
+            'client_id' => $this->clientData['id'],
+            'account_id' => $this->accountData['id'],
+            'name' => 'Example Website',
+            'type' => 'website',
+            'status' => 1,
+            'metadata' => json_encode([
+                'primary_url' => 'https://www.example.com',
+                'primary_domain' => 'www.example.com',
+                'cms_type' => 'joomla',
+                'cms_version' => '5.3.1',
+                'status' => 'online',
+                'plugins' => ['Akeeba Backup' => '9.8.1'],
+            ]),
+        ]);
+
+        $I->amOnPage(self::PROJECTS_VIEW_ALL_URL);
+        $I->waitForText("Projects", 10, "h1");
+        $I->dontSee("Warning:");
+        $I->see("Online", "main table#projectsTable tbody tr:nth-child(1) td:nth-child(1)");
+        $I->see("Joomla 5.3.1", "main table#projectsTable tbody tr:nth-child(1) td:nth-child(2)");
+        $I->see("www.example.com", "main table#projectsTable tbody tr:nth-child(1) td:nth-child(3)");
+        // The Domain column shows the registrable domain, not the host.
+        $I->see("example.com", "main table#projectsTable tbody tr:nth-child(1) td:nth-child(4)");
+
+        $I->amOnPage(sprintf(self::PROJECT_VIEW_URL, $projectData['id']));
+        $I->waitForText("Example Website", 10, "h1");
+        $I->dontSee("Warning:");
+        $I->see("Online", ".ms-proj-meta");
+        $I->see("Joomla 5.3.1", ".ms-proj-meta");
+        $I->see("Open Joomla Admin");
+        $I->see("Akeeba Backup", "table.ms-plugins");
+        $I->see("9.8.1", "table.ms-plugins");
+    }
+
+    /**
+     * @group frontend
+     * @group project
+     * @group frontend-project
+     */
+    public function MissingProjectRedirectsToTheList(AcceptanceTester $I)
+    {
+        $I->amOnPage(sprintf(self::PROJECT_VIEW_URL, 99999));
+        $I->waitForText("That project isn’t available on your account.", 10);
+        $I->seeInCurrentUrl("view=projects");
+    }
+
+    /**
+     * @group frontend
+     * @group project
+     * @group frontend-project
+     */
+    public function AnotherClientsProjectRedirectsToTheList(AcceptanceTester $I)
+    {
+        $otherClient = $I->createMothershipClient(['name' => 'Another Client']);
+        $otherProject = $I->createMothershipProject([
+            'client_id' => $otherClient['id'],
+            'account_id' => null,
+            'name' => 'Not My Project',
+            'status' => 1,
+        ]);
+
+        // _before signs in a super user, who may open any project. Sign in a
+        // registered user who owns a client of their own instead.
+        $registered = $I->createJoomlaUser(['name' => 'Registered Client']);
+        $I->updateInDatabase('jos_user_usergroup_map', ['group_id' => 2], ['user_id' => $registered['id']]);
+        $I->createMothershipClient([
+            'name' => 'Registered Client',
+            'owner_user_id' => $registered['id'],
+        ]);
+        $I->executeInSelenium(function ($webDriver) {
+            $webDriver->manage()->deleteAllCookies();
+        });
+        $I->amOnPage("/");
+        $I->fillField(".mod-login input[name=username]", strtolower($registered['username']));
+        $I->fillField(".mod-login input[name=password]", '4&GoH#7FvPsY');
+        $I->click(".mod-login button[type=submit]");
+        $I->waitForText("Hi {$registered['name']},", 10);
+
+        $I->amOnPage(sprintf(self::PROJECT_VIEW_URL, $otherProject['id']));
+        $I->waitForText("That project isn’t available on your account.", 10);
+        $I->seeInCurrentUrl("view=projects");
+        $I->dontSee("Not My Project");
+    }
 }
