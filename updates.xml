@@ -4,20 +4,20 @@
         <description>Mothership update server</description>
         <element>com_mothership</element>
         <type>component</type>
-        <version>0.0.26</version>
-        <sha256>da256ee61740ba003947930d957499b8bf97c91252a42f31639dd177f90eca6e</sha256>
+        <version>0.0.28</version>
+        <sha256>54efcd0d2788201c0a336cc38c5d6c93d6b79a4c664276af5eb1da47f9c4d535</sha256>
         <infourl title="Mothership on GitHub">https://github.com/trevorbicewebdesign/Mothership</infourl>
         <downloads>
-            <downloadurl type="full" format="zip">https://github.com/trevorbicewebdesign/Mothership/releases/download/0.0.26/Mothership-0.0.26.zip</downloadurl>
+            <downloadurl type="full" format="zip">https://github.com/trevorbicewebdesign/Mothership/releases/download/0.0.28/pkg_mothership-0.0.28.zip</downloadurl>
         </downloads>
         <tags>
             <tag>stable</tag>
         </tags>
         <enclosure 
-            url="https://github.com/trevorbicewebdesign/Mothership/releases/download/0.0.26/Mothership-0.0.26.zip" 
-            length="47215178" 
+            url="https://github.com/trevorbicewebdesign/Mothership/releases/download/0.0.28/pkg_mothership-0.0.28.zip" 
+            length="47330489" 
             type="application/zip" 
-            hash="DA256EE61740BA003947930D957499B8BF97C91252A42F31639DD177F90ECA6E" />
+            hash="54EFCD0D2788201C0A336CC38C5D6C93D6B79A4C664276AF5EB1DA47F9C4D535" />
         <targetplatform name="joomla" version="(5|6)\.[0-9]+" />
         <php_minimum>8.1</php_minimum>
         <client>administrator</client>
