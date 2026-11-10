@@ -4,10 +4,10 @@
 #
 #   build/set-version.sh 0.0.25
 #
-# Touches mothership.xml and the payment and web services plugin manifests,
-# composer.json, and the version and download URLs in updates.xml. The package length
-# and hash in updates.xml are filled in by build/update-server.sh once the zip exists
-# (the release workflow does this).
+# Touches mothership.xml (attribute and element), the payment and web services plugin
+# manifests, package/pkg_mothership.xml and composer.json. updates.xml is left alone: it
+# is the live update server, and it is pointed at the release by build/update-server.sh
+# once the zip exists (the release workflow does this).
 # Nothing is committed; review the diff, then commit, tag, and push:
 #
 #   git commit -am "Release 0.0.25" && git tag 0.0.25 && git push origin main 0.0.25
@@ -41,11 +41,9 @@ s, n = re.subn(r'("version":\s*")[^"]*(")', r'\g<1>' + v + r'\2', s, count=1)
 assert n == 1, 'composer.json: version not found'
 open(p, 'w').write(s)
 
-p = 'updates.xml'; s = open(p).read()
+p = 'package/pkg_mothership.xml'; s = open(p).read()
 s, n = re.subn(r'<version>[^<]*</version>', f'<version>{v}</version>', s, count=1)
-assert n == 1, 'updates.xml: version not found'
-s, n = re.subn(r'releases/download/[^/]+/Mothership-[^"<]+\.zip', f'releases/download/{v}/Mothership-{v}.zip', s)
-assert n == 2, f'updates.xml: expected 2 download URLs, found {n}'
+assert n == 1, 'package/pkg_mothership.xml: version not found'
 open(p, 'w').write(s)
 print(f'version set to {v}')
 PY

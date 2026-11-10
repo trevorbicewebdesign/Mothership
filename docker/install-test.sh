@@ -14,6 +14,7 @@
 #   3. uninstall: no table, menu item, file or extension row may remain
 #   4. install the build under test from nothing: the schema must equal the updated one
 #   5. install every plugin and module zip
+#   6. install the package over all of that, which is what a site is told to install
 #
 # Runs in its own compose project on random ports and deletes it afterwards. Set KEEP=1
 # to leave the stack up for a look around.
@@ -134,5 +135,12 @@ done
 installed=$(mysql_query "SELECT COUNT(*) FROM local.jos_extensions WHERE (type = 'plugin' AND folder = 'mothership-payment') OR (type = 'plugin' AND folder = 'webservices' AND element = 'mothership') OR (type = 'module' AND element LIKE 'mod\\_mothership\\_%')")
 check "plugin and module zips installed" "$count" "$installed"
 [ "$count" -gt 0 ] || fail "no plugin or module zips in $DIST"
+
+echo "6. install the package"
+[ -f "$DIST/pkg_mothership-$VERSION.zip" ] || fail "$DIST/pkg_mothership-$VERSION.zip does not exist"
+install_zip "$DIST/pkg_mothership-$VERSION.zip"
+check "package version" "$VERSION" "$(mysql_query "SELECT JSON_UNQUOTE(JSON_EXTRACT(manifest_cache, '\$.version')) FROM local.jos_extensions WHERE type = 'package' AND element = 'pkg_mothership'")"
+check "installed version" "$VERSION" "$(installed_version)"
+check "tables" "$EXPECTED_TABLES" "$(tables)"
 
 echo "install-test: passed"
