@@ -945,6 +945,20 @@ Every pull request and push to `main` runs the `Run Mothership Tests` workflow:
 
 Every acceptance test must carry one of the groups in the workflow matrix, otherwise it would never run; `tests/check-groups.php` fails the build when one does not. Tests in the `skipCI` group are skipped in CI.
 
+### Running the stack locally
+`docker-compose.yml` is the same stack CI uses: Joomla with the component mounted from the checkout, MySQL, Mailpit, and Selenium. `docker compose up -d --wait` serves it on the fixed ports 8080, 3306, 8025 and 1025. Selenium is behind a profile because only the acceptance suite needs it: add `--profile selenium` to start it.
+
+Fixed ports mean only one copy can run at a time. To give each checkout (a git worktree per unit of work, for example) its own Joomla and database, use `docker/instance.sh`:
+
+- **docker/instance.sh up**: Starts an instance named after the checkout's folder, installs Mothership and the admin user the way CI does, and prints the URLs. Ports are random free ports on `127.0.0.1`. Add `--selenium` to start the browser too.
+- **docker/instance.sh url**: Prints the URLs again.
+- **docker/instance.sh test <suite> [codecept options]**: Runs a suite inside the instance, for example `docker/instance.sh test acceptance --group backend-client`. Starts Selenium first when the suite is `acceptance`.
+- **docker/instance.sh compose ...**: Any other `docker compose` command against the instance, such as `logs -f joomla`.
+- **docker/instance.sh down**: Stops the instance and deletes its database.
+- **docker/instance.sh list**: Lists every instance on the machine.
+
+Put `-n <name>` before the command to run more than one instance from the same checkout. They share `tests/`, so run their test suites one at a time.
+
 ### WHOIS in tests
 `MothershipDomainHelperTest::testScanDomain` replays a recorded WHOIS response from `tests/_data/whois/google.com.json`, so its exact values do not drift. The live lookup is `testScanDomainLive` in the `network` group, which is not run in CI: `codecept run integration -g network`.
 
