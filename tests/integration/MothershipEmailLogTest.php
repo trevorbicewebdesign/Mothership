@@ -2,6 +2,7 @@
 
 namespace Tests\Integration;
 
+use Joomla\CMS\Factory;
 use \Tests\Support\IntegrationTester;
 use TrevorBice\Component\Mothership\Administrator\Service\EmailLog;
 use TrevorBice\Component\Mothership\Administrator\Service\EmailService;
@@ -27,10 +28,8 @@ class MothershipEmailLogTest extends \Codeception\Test\Unit
 
         $this->token = 'mslog' . bin2hex(random_bytes(4));
 
-        $this->tester->setMothershipConfig([
-            'company_name'  => 'Log Test Co',
-            'company_email' => 'log.test@mailinator.com',
-        ]);
+        // Text::_() only knows the component's strings once its language file is loaded.
+        Factory::getLanguage()->load('com_mothership', JPATH_ADMINISTRATOR . '/components/com_mothership');
 
         $this->clientData = $this->tester->createMothershipClient([
             'name'  => 'Email Log Client',
