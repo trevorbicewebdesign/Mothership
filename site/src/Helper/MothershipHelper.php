@@ -43,7 +43,30 @@ class MothershipHelper
 
         return !empty($results) ? array_map('intval', $results) : null;
     }
-        
+
+    /**
+     * Whether the current user may see records that belong to a client.
+     *
+     * @param  int|null  $clientId  The client the record belongs to.
+     * @return bool  True for the client's own users and for component administrators.
+     */
+    public static function canAccessClient($clientId): bool
+    {
+        $user = Factory::getApplication()->getIdentity();
+
+        if (!$user || $user->guest) {
+            return false;
+        }
+
+        if ($user->authorise('core.admin', 'com_mothership')) {
+            return true;
+        }
+
+        $clientIds = self::getUserClientIds();
+
+        return $clientId && $clientIds && in_array((int) $clientId, $clientIds, true);
+    }
+
     public static function getClient($clientId): ?object
     {
         $db = Factory::getContainer()->get(DatabaseInterface::class);
