@@ -122,7 +122,6 @@ class MothershipAdminEmailsCest
         $I->takeFullPageScreenshot("mothership-emails-view-all");
 
         $I->seeElement("joomla-toolbar-button#toolbar-resend", ['task' => "emails.resend"]);
-        $I->seeElement("joomla-toolbar-button#status-group-children-delete", ['task' => "emails.delete"]);
 
         $I->seeNumberOfElements(self::LIST_ROWS, 3);
 

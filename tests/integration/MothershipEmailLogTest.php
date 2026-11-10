@@ -31,6 +31,19 @@ class MothershipEmailLogTest extends \Codeception\Test\Unit
         // Text::_() only knows the component's strings once its language file is loaded.
         Factory::getLanguage()->load('com_mothership', JPATH_ADMINISTRATOR . '/components/com_mothership');
 
+        // Joomla caches the component's params on first use for the whole run, and rendering an
+        // email reads them. Set what the other integration tests expect to find.
+        $this->tester->setMothershipConfig([
+            'company_name' => 'Your Company Name',
+            'company_address' => '123 Nowhere St, CA, 12345',
+            'company_address_1' => '123 Nowhere St',
+            'company_address_2' => '',
+            'company_city' => 'Nowhere',
+            'company_state' => 'California',
+            'company_zip' => '12345',
+            'company_phone' => '555 555-5555',
+        ]);
+
         $this->clientData = $this->tester->createMothershipClient([
             'name'  => 'Email Log Client',
             'email' => 'email.log@mailinator.com',
