@@ -346,7 +346,8 @@ class ProposalController extends BaseController
                 'client' => $client,
                 'confirm_link' => Uri::root() . "administrator/index.php?option=com_mothership&task=payment.confirm&id={$payment->id}",
                 'view_link' => Uri::root() . "administrator/index.php?option=com_mothership&view=proposal&id={$proposalId}",
-            ]
+            ],
+            EmailService::about('payment', $payment)
         );
 
         // Log that the payment was initiated

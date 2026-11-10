@@ -22,6 +22,7 @@ use Joomla\CMS\Toolbar\Toolbar;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use TrevorBice\Component\Mothership\Administrator\Model\PaymentModel;
 use TrevorBice\Component\Mothership\Administrator\Helper\MothershipHelper;
+use TrevorBice\Component\Mothership\Administrator\Service\EmailLog;
 use TrevorBice\Component\Mothership\Administrator\Helper\LogHelper;
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -68,6 +69,13 @@ class HtmlView extends BaseHtmlView
     protected $canDo;
 
     /**
+     * Every email the site tried to send about this payment
+     *
+     * @var    array
+     */
+    public $emailLog = [];
+
+    /**
      * Display the view
      *
      * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
@@ -92,6 +100,7 @@ class HtmlView extends BaseHtmlView
         $this->form = $model->getForm();
         $this->state = $model->getState();
         $this->helper = new MothershipHelper;
+        $this->emailLog = EmailLog::forObject('payment', (int) ($this->item->id ?? 0));
         $this->canDo = ContentHelper::getActions('com_mothership');
 
         $isLocked = $this->item->locked;

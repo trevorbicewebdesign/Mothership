@@ -2,7 +2,7 @@
 # Mothership
 Mothership is a friendly, open-source Joomla extension built for solo developers and small businesses. It started as a personal project designed to simplify everyday challenges like proposals, invoicing, payments, domain tracking, and logs. Over time, it evolved into a tool that handles these essential functions in one place—making life easier not just for me, but for anyone juggling the many hats of a web development operation. Support tickets, time tracking, expenses, and taxes are planned but are not part of the current release.
 
-At its core, Mothership organizes your business around eight main objects:
+At its core, Mothership organizes your business around nine main objects:
 
 - **Clients**
 - **Accounts**
@@ -11,6 +11,7 @@ At its core, Mothership organizes your business around eight main objects:
 - **Proposals**
 - **Invoices**
 - **Payments**
+- **Emails**
 - **Logs**
 
 The model is flexible enough to accommodate real-world complexities. For example, a single client might manage multiple accounts—whether these represent different parts of the business, subdomains, or entirely separate brands. Each account can then have its own projects. While projects currently focus on websites, the architecture is designed to eventually support other types of work, like graphic design or any other service you might offer.
@@ -550,6 +551,66 @@ CREATE TABLE IF NOT EXISTS `#__mothership_users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ```
 
+## Emails
+The **Emails** object is the email log: one record for every email the component tries to send, whatever became of it. It is new in 0.0.27; see [Email Log](#email-log) for how it is used.
+
+- **ID**: A unique identifier for the log entry.
+- **Client Id**: The ID of the client the email relates to.
+- **Account Id**: The ID of the account the email relates to.
+- **Object Type**: The type of record the email was about (`invoice`, `payment`, or `proposal`).
+- **Object Id**: The ID of that record.
+- **Template**: The email layout that was used (e.g., `invoice.user-opened`).
+- **Recipient**: The address, or addresses, the email was sent to.
+- **CC**: The addresses that were copied.
+- **BCC**: The addresses that were blind copied.
+- **Reply To**: The reply-to address.
+- **Subject**: The subject of the email.
+- **Body HTML**: The rendered body, as it was (or would have been) sent.
+- **Message Id**: The message ID assigned by the mailer.
+- **Status**: The outcome of the send. See the status levels below.
+- **Error**: Why the email failed, or why it was skipped.
+- **Resend Of**: The ID of the log entry this one repeats, when it is a resend.
+- **User Id**: The ID of the user who caused the email; empty when the site sent it on its own.
+- **Created**: The timestamp when the send began.
+- **Sent At**: The timestamp when the mail server accepted the message.
+
+### Emails Table
+```
+CREATE TABLE IF NOT EXISTS `#__mothership_emails` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `client_id` INT(11) NULL DEFAULT NULL,
+  `account_id` INT(11) NULL DEFAULT NULL,
+  `object_type` VARCHAR(50) NULL DEFAULT NULL,
+  `object_id` INT(11) NULL DEFAULT NULL,
+  `template` VARCHAR(100) NULL DEFAULT NULL COMMENT 'email layout, e.g. invoice.user-opened',
+  `recipient` VARCHAR(255) NOT NULL,
+  `cc` VARCHAR(255) NULL DEFAULT NULL,
+  `bcc` VARCHAR(255) NULL DEFAULT NULL,
+  `reply_to` VARCHAR(255) NULL DEFAULT NULL,
+  `subject` VARCHAR(255) NOT NULL,
+  `body_html` MEDIUMTEXT NULL,
+  `message_id` VARCHAR(255) NULL DEFAULT NULL,
+  `status` VARCHAR(10) NOT NULL DEFAULT 'pending',
+  `error` TEXT NULL COMMENT 'why it failed, or why it was skipped',
+  `resend_of` INT(11) NULL DEFAULT NULL COMMENT 'the log entry this one repeats',
+  `user_id` INT(11) NULL DEFAULT NULL COMMENT 'who caused it; null when the site did on its own',
+  `created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `sent_at` DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_email_status` (`status`),
+  KEY `idx_email_object` (`object_type`, `object_id`),
+  KEY `idx_email_client` (`client_id`),
+  KEY `idx_email_recipient` (`recipient`),
+  KEY `idx_email_created` (`created`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
+
+### Email Status Levels
+- **sent**: The mail server accepted the message. This is not the same as delivered.
+- **failed**: The message did not go, and `error` says why.
+- **skipped**: The message was deliberately not sent, for example when a record is saved without emailing the client.
+- **pending**: The send began and the site stopped before recording the result.
+
 ## Logs 
 
 ### Logs Table
@@ -628,7 +689,7 @@ CREATE TABLE IF NOT EXISTS `#__mothership_logs` (
 - **onMothershipProposalPending($proposal)**: Fired after a proposal is set to `Pending`.
 
 ## Payment Plugins
-Two payment plugins ship with Mothership and are installed with the component: **Pay By Check** and **Zelle**. Payment plugins belong to the `mothership-payment` plugin group. A PayPal plugin is not included in this release.
+Two payment plugins ship with Mothership: **Pay By Check** and **Zelle**. They are packaged as separate zips and are not installed with the component; install and enable each one through the Joomla Extension Manager. Until a payment plugin is enabled, the Select Payment Page has no payment methods to offer. Payment plugins belong to the `mothership-payment` plugin group. A PayPal plugin is not included in this release.
 
 ### Creating a Payment Plugin
 To create a Mothership Payment plugin, follow these steps:
@@ -713,7 +774,7 @@ Four administrator dashboard modules live in `modules/`. They are packaged as se
 # Releases
 Release packages are built by the scripts in `build/`:
 
-- **build/set-version.sh <version>**: Sets the version in `mothership.xml`, `composer.json`, and `updates.xml`.
+- **build/set-version.sh <version>**: Sets the version in `mothership.xml`, `composer.json`, and `updates.xml`. The payment plugin manifests carry the same version and are updated by hand.
 - **build/build.sh**: Builds the installable zips into `dist/` from the committed tree: the component, one zip per payment plugin, and one zip per module.
 - **build/update-server.sh <zip>**: Points `updates.xml` (the Joomla update server) at a built component zip, including its size and checksum.
 
@@ -815,8 +876,45 @@ The front end has its own `MothershipHelper`.
 - **getUserClientIds($userId = null): ?array**: Returns the IDs of the clients the user belongs to. Defaults to the current user.
 - **getClient($clientId): ?object**: Retrieves the client record for the given client ID.
 
+## Site Invoice Helper
+The front end has its own `InvoiceHelper`.
+
+- **getStatus($status_id)**: Retrieves the status label for the given invoice status ID.
+
+## Email Service
+`EmailService` (in `admin/src/Service`) sends every email and records each attempt in the email log.
+
+- **sendTemplate(string $template, $to, string $subject, array $data = [], array $options = []): bool**: Renders an email layout and sends it. Returns `false` when the email did not go.
+- **sendEmail($to, string $subject, array $body, array $options = []): bool**: Sends an already rendered body. Options, all optional: `cc`, `bcc`, `reply_to`, `reply_to_name`; for the log `template`, `object_type`, `object_id`, `client_id`, `account_id`, `resend_of`; and `skip`, which records the message as deliberately not sent instead of sending it.
+- **about(string $type, $record, array $more = []): array**: Builds the options that tie an email to the invoice, payment or proposal it is about.
+- **generateBody(string $template, array $data = []): array**: Renders a layout into the HTML and plain text bodies.
+- **lastError(): ?string**: Why the last send did not go, or `null` when it went.
+
+## Email Log Service
+`EmailLog` (in `admin/src/Service`) reads and writes the `#__mothership_emails` table.
+
+- **start(array $fields): int**: Records that a send is about to be attempted and returns the new entry's ID.
+- **sent(int $id, ?string $messageId = null): void**: Marks an entry as accepted by the mail server.
+- **failed(int $id, string $error): void**: Marks an entry as failed, keeping the reason.
+- **skipped(int $id, string $reason): void**: Marks an entry as deliberately not sent, keeping the reason.
+- **find(int $id): ?object**: Retrieves one entry with the client, account and user names the screens show.
+- **forObject(string $type, int $id): array**: Retrieves every email about one invoice, payment or proposal, newest first.
+- **failedCount(): int**: Counts the sends that have failed.
+- **describedQuery(DatabaseInterface $db)**: The base query shared by the list and detail screens.
+- **aboutLabel(object $item): string**: A label for what an entry was about, e.g. `Invoice #1312`.
+- **aboutLink(object $item): string**: The administrator URL of the record an entry was about.
+- **statusLabel(string $status): string**: The translated label for a status.
+- **pill(string $status): string**: The coloured status pill used by the list, the detail screen and the tabs.
+
 # Notification Emails
 Email templates are layouts in `admin/layouts/emails`, sent through `EmailService::sendTemplate()` and wrapped in the `wrapper` layout.
+
+## Email Log
+New in 0.0.27; updating from an earlier version creates the table. Every email `EmailService` tries to send is recorded in `#__mothership_emails` (see [Emails](#emails)): the recipient, the subject, the rendered body, the record it was about, and whether it was `sent`, `failed` (with the reason), `skipped` or left `pending`. A send that fails no longer throws; it returns `false`, is written to the Joomla log and, in the administrator, shows a warning, so the action that caused it still completes.
+
+- **Emails** in the administrator menu lists the log, with filters for status, client, account, record type and template. Opening an entry shows the message as it was sent; **Resend** sends it again as a new entry that points back at the original.
+- Invoices, payments and proposals have an **Email** tab listing the messages sent about that record.
+- Pass `EmailService::about('invoice', $invoice)` (or `payment`, `proposal`) as the options argument to tie a new email to its record.
 
 ## User - Invoice Opened
 The invoice has been set to `Opened`. This will send the email template `invoice.user-opened` to the Client Owner.
@@ -949,6 +1047,7 @@ Back end codeception test classes.
 - **MothershipAdminProjectsCest**:
 - **MothershipAdminDomainsCest**:
 - **MothershipAdminPaymentsCest**:
+- **MothershipAdminEmailsCest**: The Emails list, one entry, resend, delete, and the Email tab on an invoice.
 - **MothershipAdminLogsCest**:
 - **MothershipAdminMenuCest**:
 - **MothershipAdminOptionsCest**:
@@ -970,8 +1069,10 @@ There are no API tests yet.
 - **MothershipProposalHelperTest**:
 - **MothershipInvoiceHelperTest**:
 - **MothershipDomainHelperTest**:
+- **MothershipEmailLogTest**: Every send leaves a log entry: sent, skipped and failed sends, entries per record, resends.
 - **MothershipEmailServiceTest**:
 - **MothershipPaymentHelperTest**:
+- **MothershipPaymentPluginPayByCheckTest**:
 - **MothershipPaymentPluginZelleTest**:
 - **MothershipHelperTest**:
 - **MothershipLogHelperTest**:

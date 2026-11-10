@@ -94,6 +94,8 @@ jobs:
           - suite: acceptance
             group: backend-log
           - suite: acceptance
+            group: backend-email
+          - suite: acceptance
             group: backend-menus
           - suite: acceptance
             group: frontend

@@ -413,7 +413,8 @@ class InvoiceHelper
             'lname' => $lastName,
             'invoice' => $invoice,
             'client' => $client,
-        ]);
+        ],
+        EmailService::about('invoice', $invoice));
 
         // Optional: add history or record in a log table
         LogHelper::logInvoiceStatusOpened(
@@ -459,7 +460,8 @@ class InvoiceHelper
             'invoice' => $invoice,
             'client' => $client,
             'account' => $account,
-        ]);
+        ],
+        EmailService::about('invoice', $invoice));
 
         // Optional: add history or record in a log table
         LogHelper::logInvoiceStatusClosed(

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form addfieldprefix="TrevorBice\Component\Mothership\Administrator\Field">
+	<fields name="filter">
+		<field name="search" type="text" inputmode="search" label="COM_MOTHERSHIP_EMAILS_FILTER_SEARCH_LABEL" description="COM_MOTHERSHIP_EMAILS_FILTER_SEARCH_DESC" hint="JSEARCH_FILTER" />
+
+		<field name="status" type="list" default="" class="js-select-submit-on-change"
+			label="COM_MOTHERSHIP_EMAILS_FILTER_STATUS_LABEL">
+			<option value="">COM_MOTHERSHIP_EMAILS_FILTER_STATUS_SELECT</option>
+			<option value="sent">COM_MOTHERSHIP_EMAIL_STATUS_SENT</option>
+			<option value="failed">COM_MOTHERSHIP_EMAIL_STATUS_FAILED</option>
+			<option value="skipped">COM_MOTHERSHIP_EMAIL_STATUS_SKIPPED</option>
+			<option value="pending">COM_MOTHERSHIP_EMAIL_STATUS_PENDING</option>
+		</field>
+
+		<!-- Client, Account, About and Template list only values that appear in the log. Client and
+		     Account share their selection with the other Mothership lists (HasClientAccountFilter). -->
+		<field name="client_id" type="sql" default="" class="js-select-submit-on-change"
+			label="COM_MOTHERSHIP_FILTER_CLIENT_LABEL" header="COM_MOTHERSHIP_FILTER_SELECT_CLIENT"
+			key_field="value" value_field="text"
+			query="SELECT DISTINCT c.id AS value, c.name AS text FROM #__mothership_emails e INNER JOIN #__mothership_clients c ON c.id = e.client_id ORDER BY c.name" />
+
+		<field name="account_id" type="accountfilter" default="" class="js-select-submit-on-change"
+			label="COM_MOTHERSHIP_FILTER_ACCOUNT_LABEL" />
+
+		<field name="object_type" type="sql" default="" class="js-select-submit-on-change"
+			label="COM_MOTHERSHIP_EMAILS_FILTER_TYPE_LABEL" header="COM_MOTHERSHIP_EMAILS_FILTER_TYPE_SELECT"
+			key_field="value" value_field="text"
+			query="SELECT DISTINCT object_type AS value, CONCAT(UPPER(LEFT(object_type, 1)), SUBSTRING(object_type, 2)) AS text FROM #__mothership_emails WHERE object_type IS NOT NULL AND object_type != '' ORDER BY text" />
+
+		<field name="template" type="sql" default="" class="js-select-submit-on-change"
+			label="COM_MOTHERSHIP_EMAILS_FILTER_TEMPLATE_LABEL" header="COM_MOTHERSHIP_EMAILS_FILTER_TEMPLATE_SELECT"
+			key_field="value" value_field="text"
+			query="SELECT DISTINCT template AS value, template AS text FROM #__mothership_emails WHERE template IS NOT NULL AND template != '' ORDER BY template" />
+	</fields>
+	<fields name="list">
+		<field name="fullordering" type="list" label="JGLOBAL_SORT_BY" class="js-select-submit-on-change" default="e.created DESC" validate="options">
+			<option value="">JGLOBAL_SORT_BY</option>
+			<option value="e.created DESC">COM_MOTHERSHIP_EMAILS_SORT_WHEN_DESC</option>
+			<option value="e.created ASC">COM_MOTHERSHIP_EMAILS_SORT_WHEN_ASC</option>
+			<option value="e.status ASC">COM_MOTHERSHIP_EMAILS_SORT_STATUS_ASC</option>
+			<option value="e.status DESC">COM_MOTHERSHIP_EMAILS_SORT_STATUS_DESC</option>
+			<option value="e.subject ASC">COM_MOTHERSHIP_EMAILS_SORT_SUBJECT_ASC</option>
+			<option value="e.subject DESC">COM_MOTHERSHIP_EMAILS_SORT_SUBJECT_DESC</option>
+			<option value="e.recipient ASC">COM_MOTHERSHIP_EMAILS_SORT_TO_ASC</option>
+			<option value="e.recipient DESC">COM_MOTHERSHIP_EMAILS_SORT_TO_DESC</option>
+			<option value="c.name ASC">COM_MOTHERSHIP_EMAILS_SORT_CLIENT_ASC</option>
+			<option value="c.name DESC">COM_MOTHERSHIP_EMAILS_SORT_CLIENT_DESC</option>
+		</field>
+		<field name="limit" type="limitbox" label="JGLOBAL_LIST_LIMIT" default="25" class="js-select-submit-on-change" />
+	</fields>
+</form>

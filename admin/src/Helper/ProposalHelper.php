@@ -189,7 +189,8 @@ class ProposalHelper
                 'lname' => $lastName,
                 'proposal' => $proposal,
                 'client' => $client,
-            ]
+            ],
+            EmailService::about('proposal', $proposal)
         );
 
         \Joomla\CMS\Factory::getApplication()->triggerEvent('onMothershipProposalPending', [$proposal]);
