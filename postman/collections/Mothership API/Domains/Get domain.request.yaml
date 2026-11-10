@@ -1,0 +1,32 @@
+$kind: http-request
+description: "One domain, with the fields the list leaves out."
+method: GET
+url: '{{base_url}}/api/index.php/v1/mothership/domains/:id'
+order: 2000
+pathVariables:
+  - key: id
+    value: '9001'
+    description: The record's id.
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test('responds 200 with JSON:API', () => {
+        pm.response.to.have.status(200);
+        pm.expect(pm.response.headers.get('Content-Type')).to.include('application/vnd.api+json');
+      });
+
+      const record = pm.response.json().data;
+
+      pm.test('returns the requested record', () => {
+        pm.expect(record.id).to.eql('9001');
+        pm.expect(record.type).to.eql('domains');
+        pm.expect(record.attributes).to.include({"name": "postman-test.example.com", "ns1": "ns1.example.com", "auto_renew": 1});
+      });
+
+      pm.test('has exactly the item fields', () => {
+        pm.expect(record.attributes).to.have.all.keys(["id", "name", "client_id", "account_id", "status", "epp_status", "registrar", "reseller", "dns_provider", "ns1", "ns2", "ns3", "ns4", "purchase_date", "expiration_date", "auto_renew", "notes", "created", "modified"]);
+      });
+
+      pm.test('epp_status is JSON, not a string', () => pm.expect(record.attributes.epp_status).to.eql(['clientTransferProhibited']));
+examples: './.resources/Get domain.resources/examples'

@@ -1,0 +1,43 @@
+$kind: http-example
+name: 200 OK
+request:
+  method: GET
+  url: '{{base_url}}/api/index.php/v1/mothership/projects?filter[client_id]=9001'
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    - key: Content-Type
+      value: application/vnd.api+json; charset=utf-8
+  body:
+    type: json
+    content: |-
+      {
+        "links": {
+          "self": "{{base_url}}/api/index.php/v1/mothership/projects?filter[client_id]=9001"
+        },
+        "data": [
+          {
+            "type": "projects",
+            "id": "9001",
+            "attributes": {
+              "id": 9001,
+              "client_id": 9001,
+              "account_id": 9001,
+              "name": "Postman Test Project",
+              "description": "A project for the API tests",
+              "type": "website",
+              "created": "2026-01-02 03:04:05",
+              "client_name": "Postman Test Client",
+              "account_name": "Postman Test Account",
+              "metadata": {
+                "cms": "joomla"
+              }
+            }
+          }
+        ],
+        "meta": {
+          "total-pages": 1
+        }
+      }
+order: 1000

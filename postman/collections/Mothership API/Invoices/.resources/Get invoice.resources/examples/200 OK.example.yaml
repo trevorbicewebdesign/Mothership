@@ -1,0 +1,57 @@
+$kind: http-example
+name: 200 OK
+request:
+  method: GET
+  url: '{{base_url}}/api/index.php/v1/mothership/invoices/:id'
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    - key: Content-Type
+      value: application/vnd.api+json; charset=utf-8
+  body:
+    type: json
+    content: |-
+      {
+        "links": {
+          "self": "{{base_url}}/api/index.php/v1/mothership/invoices/9001"
+        },
+        "data": {
+          "type": "invoices",
+          "id": "9001",
+          "attributes": {
+            "id": 9001,
+            "number": "9001",
+            "client_id": 9001,
+            "account_id": 9001,
+            "project_id": 9001,
+            "rate": "125.00",
+            "title": "Postman Test Invoice",
+            "status": "Opened",
+            "total": "250.00",
+            "due_date": "2026-02-01",
+            "sent_date": null,
+            "paid_date": null,
+            "locked": 1,
+            "summary": null,
+            "notes": null,
+            "created": "2026-01-02 03:04:05",
+            "created_by": null,
+            "items": [
+              {
+                "id": 1,
+                "invoice_id": 9001,
+                "name": "Build",
+                "description": "Build the thing",
+                "hours": 2,
+                "minutes": 0,
+                "quantity": "2.00",
+                "rate": "125.00",
+                "subtotal": "250.00",
+                "ordering": 1
+              }
+            ]
+          }
+        }
+      }
+order: 1000

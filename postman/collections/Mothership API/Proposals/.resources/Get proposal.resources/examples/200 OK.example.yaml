@@ -1,0 +1,62 @@
+$kind: http-example
+name: 200 OK
+request:
+  method: GET
+  url: '{{base_url}}/api/index.php/v1/mothership/proposals/:id'
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    - key: Content-Type
+      value: application/vnd.api+json; charset=utf-8
+  body:
+    type: json
+    content: |-
+      {
+        "links": {
+          "self": "{{base_url}}/api/index.php/v1/mothership/proposals/9001"
+        },
+        "data": {
+          "type": "proposals",
+          "id": "9001",
+          "attributes": {
+            "id": 9001,
+            "name": "Postman Test Proposal",
+            "client_id": 9001,
+            "account_id": 9001,
+            "project_id": 9001,
+            "type": "hourly",
+            "number": "P-9001",
+            "total_low": "200.00",
+            "total": "250.00",
+            "rate": "125.00",
+            "status": "Pending",
+            "expires": null,
+            "locked": 0,
+            "summary": null,
+            "notes": null,
+            "created": "2026-01-02 03:04:05",
+            "created_by": null,
+            "modified": null,
+            "modified_by": null,
+            "items": [
+              {
+                "id": 1,
+                "proposal_id": 9001,
+                "name": "Build",
+                "description": "Build the thing",
+                "type": "hourly",
+                "time": "",
+                "time_low": "",
+                "quantity": "2.00",
+                "quantity_low": "1.60",
+                "rate": "125.00",
+                "subtotal": "250.00",
+                "subtotal_low": "200.00",
+                "ordering": 1
+              }
+            ]
+          }
+        }
+      }
+order: 1000

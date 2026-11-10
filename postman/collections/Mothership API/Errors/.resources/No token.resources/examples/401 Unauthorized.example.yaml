@@ -1,0 +1,22 @@
+$kind: http-example
+name: 401 Unauthorized
+request:
+  method: GET
+  url: '{{base_url}}/api/index.php/v1/mothership/clients'
+response:
+  statusCode: 401
+  statusText: Unauthorized
+  headers:
+    - key: Content-Type
+      value: application/vnd.api+json; charset=utf-8
+  body:
+    type: json
+    content: |-
+      {
+        "errors": [
+          {
+            "title": "Forbidden"
+          }
+        ]
+      }
+order: 1000
