@@ -123,7 +123,6 @@ class HtmlView extends BaseHtmlView
         $jsVersion = filemtime($jsPath);
         $wa->useScript('jquery');
         $wa->registerAndUseScript('com_mothership.payment-edit', 'administrator/components/com_mothership/assets/js/payment-edit.js', [], ['defer' => true, 'version' => $jsVersion]);
-        $wa->registerAndUseStyle('com_mothership.payment-edit', 'media/com_mothership/css/payment-edit.css');
 
         // Check for errors.
         if (\count($errors = $this->get('Errors'))) {

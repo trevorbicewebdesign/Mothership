@@ -85,11 +85,6 @@ class HtmlView extends BaseHtmlView
         $this->state = $model->getState();
         $this->canDo = ContentHelper::getActions('com_mothership');
 
-        // ✅ Use WebAssetManager to load the script
-        $wa = $this->getDocument()->getWebAssetManager();
-        $wa->registerAndUseScript('com_mothership.log-edit', 'media/com_mothership/js/log-edit.js', [], ['defer' => true]);
-        $wa->registerAndUseStyle('com_mothership.log-edit', 'media/com_mothership/css/log-edit.css');
-
         // Check for errors.
         if (\count($errors = $this->get('Errors'))) {
             throw new GenericDataException(implode("\n", $errors), 500);

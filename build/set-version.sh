@@ -4,9 +4,10 @@
 #
 #   build/set-version.sh 0.0.25
 #
-# Touches mothership.xml (attribute and element), composer.json, and the version and
-# download URLs in updates.xml. The package length and hash in updates.xml are filled
-# in by build/update-server.sh once the zip exists (the release workflow does this).
+# Touches mothership.xml and the payment and web services plugin manifests,
+# composer.json, and the version and download URLs in updates.xml. The package length
+# and hash in updates.xml are filled in by build/update-server.sh once the zip exists
+# (the release workflow does this).
 # Nothing is committed; review the diff, then commit, tag, and push:
 #
 #   git commit -am "Release 0.0.25" && git tag 0.0.25 && git push origin main 0.0.25
@@ -17,7 +18,7 @@ VERSION=${1:-}
 [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "usage: build/set-version.sh <major.minor.patch>" >&2; exit 1; }
 
 python3 - "$VERSION" <<'PY'
-import json, re, sys
+import glob, json, re, sys
 v = sys.argv[1]
 
 p = 'mothership.xml'; s = open(p).read()
@@ -25,6 +26,15 @@ s, n1 = re.subn(r'(<extension\b[^>]*\bversion=")[^"]*(")', r'\g<1>' + v + r'\2',
 s, n2 = re.subn(r'<version>[^<]*</version>', f'<version>{v}</version>', s, count=1)
 assert n1 == 1 and n2 == 1, 'mothership.xml: version markers not found'
 open(p, 'w').write(s)
+
+# The plugins are released with the component and carry its version. Only some of
+# their manifests repeat it as an attribute on <extension>.
+for p in sorted(glob.glob('plugins/mothership-payment/*/*.xml') + glob.glob('plugins/webservices/*/*.xml')):
+    s = open(p).read()
+    s = re.sub(r'(<extension\b[^>]*\bversion=")[^"]*(")', r'\g<1>' + v + r'\2', s, count=1)
+    s, n = re.subn(r'<version>[^<]*</version>', f'<version>{v}</version>', s, count=1)
+    assert n == 1, f'{p}: <version> not found'
+    open(p, 'w').write(s)
 
 p = 'composer.json'; s = open(p).read()
 s, n = re.subn(r'("version":\s*")[^"]*(")', r'\g<1>' + v + r'\2', s, count=1)

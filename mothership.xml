@@ -75,14 +75,4 @@
             <language tag="en-GB">/language/en-GB/com_mothership.sys.ini</language>
         </languages>
     </administration>
-    <install>
-        <plugins>
-            <plugin group="mothership-payment" folder="mothership-payment" element="paybycheck" method="paybycheck">
-                <filename plugin="paybycheck">paybycheck.xml</filename>
-            </plugin>
-            <plugin group="mothership-payment" folder="mothership-payment" element="zelle" method="zelle">
-                <filename plugin="zelle">zelle.xml</filename>
-            </plugin>
-        </plugins>
-    </install>
 </extension>
