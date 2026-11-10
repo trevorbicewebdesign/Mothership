@@ -771,11 +771,33 @@ Four administrator dashboard modules live in `modules/`. The Mothership package 
 - **mod_mothership_payments**: Bar chart of monthly completed-payment totals for the current year, with the all-time total.
 - **mod_mothership_tickets**: Lists the most recently updated support tickets. It belongs to the planned support tickets feature, which is not part of the current release, so the package leaves it out.
 
+# Web Services API
+Mothership has a read-only API on Joomla's web services application, under `/api/index.php/v1/mothership/`. It is served by the **Web Services - Mothership** plugin (`plugins/webservices/mothership`), which the Mothership package installs disabled; enable it to turn the API on.
+
+Each resource has a list route and an item route:
+
+| Route | Filters on the list |
+|---|---|
+| `GET clients`, `GET clients/:id` | `filter[search]` (name) |
+| `GET accounts`, `GET accounts/:id` | `filter[search]` (name) |
+| `GET projects`, `GET projects/:id` | `filter[client_id]`, `filter[account_id]` |
+| `GET domains`, `GET domains/:id` | `filter[search]` (name), `filter[client_id]`, `filter[account_id]` |
+| `GET proposals`, `GET proposals/:id` | none |
+| `GET invoices`, `GET invoices/:id` | `filter[client_id]`, `filter[account_id]` |
+| `GET payments`, `GET payments/:id` | `filter[client_id]`, `filter[account_id]`, `filter[status]`, `filter[payment_method]` |
+
+- **Authentication**: a Joomla API token (User profile > Joomla API Token) sent as `Authorization: Bearer <token>`. The token's user must be allowed to manage Mothership (`core.manage`); otherwise the answer is 403. Without a valid token it is 401.
+- **Responses**: JSON:API documents. Lists are paged with `page[limit]` (20 by default) and `page[offset]`.
+- **Status**: invoices, proposals and payments give `status` as its label (`Opened`, `Pending`, `Completed`) in both the list and the item. `filter[status]` on payments takes the number.
+- **Not exposed**: a client's tax id, and the check-out columns.
+
+The API is described by a Postman collection in `postman/collections/Mothership API`, with a saved example response for every request, and `postman/environments/Local.environment.yaml` for `base_url` and `api_token`. Open the `postman/` folder in Postman, or run it with the Postman CLI (see Testing).
+
 # Releases
 Release packages are built by the scripts in `build/`:
 
-- **build/set-version.sh <version>**: Sets the version in `mothership.xml`, `package/pkg_mothership.xml`, and `composer.json`. The payment plugin manifests carry the same version and are updated by hand.
-- **build/build.sh**: Builds the installable zips into `dist/` from the committed tree: the component, one zip per payment plugin, one zip per module, and `pkg_mothership-<version>.zip`, the package that installs them together. The package is what a site should install; `package/pkg_mothership.xml` lists what it contains and `package/script.php` is its install script.
+- **build/set-version.sh <version>**: Sets the version in `mothership.xml`, `package/pkg_mothership.xml`, and `composer.json`. The payment and web services plugin manifests carry the same version and are updated by hand.
+- **build/build.sh**: Builds the installable zips into `dist/` from the committed tree: the component, one zip per payment plugin, the web services plugin, one zip per module, and `pkg_mothership-<version>.zip`, the package that installs them together. The package is what a site should install; `package/pkg_mothership.xml` lists what it contains and `package/script.php` is its install script.
 - **build/update-server.sh <zip>**: Points the Joomla update servers at a built package zip, including its size and checksum. `updates-package.xml` is the package's update server and moves with every release; the first package release creates it. `updates.xml` is the update server of sites that installed the component alone, before the package existed: it is pointed at the first package release and then left there, so those sites are offered one update that installs the package. There are two files because Joomla reads only one extension from an update server of this kind.
 
 Pushing a version tag runs the `Release` workflow, which first runs the full lint and test workflow against the tagged commit, then checks the tag against `mothership.xml`, builds the packages, publishes the GitHub release, and opens a pull request that points the update servers at the new package.
@@ -941,6 +963,7 @@ Mothership is built with stability and confidence in mind. Our automated testing
 Every pull request and push to `main` runs the `Run Mothership Tests` workflow:
 
 - **Lint**: PHP syntax on the oldest supported PHP version, `shellcheck` on the build scripts, `actionlint` on the workflows, and `php tests/check-groups.php`.
+- **Postman**: the collection in `postman/` run against the web services API (see API below).
 - **Tests**: the functional, api, and integration suites, and the acceptance suite split into one job per `@group` (`backend-client`, `backend-invoice`, `frontend`, and so on).
 
 Every acceptance test must carry one of the groups in the workflow matrix, otherwise it would never run; `tests/check-groups.php` fails the build when one does not. Tests in the `skipCI` group are skipped in CI.
@@ -1073,7 +1096,19 @@ Back end codeception test classes.
 - **homepageIsVisible(FunctionalTester $I)**:
 
 ## API
-There are no API tests yet.
+The web services API is tested by its Postman collection, not by the Codeception `api` suite, which has no tests. Every request asserts its status, the exact set of fields it returns, and the values of the records in `tests/postman/seed.sql`.
+
+To run it against an instance:
+
+```bash
+docker/instance.sh compose exec -T db mysql -uroot -proot local < tests/postman/seed.sql
+postman collection run "postman/collections/Mothership API" \
+  --environment postman/environments/Local.environment.yaml \
+  --env-var base_url=http://127.0.0.1:<port> \
+  --env-var "api_token=$(docker/instance.sh compose exec -T joomla php tests/postman/token.php admin)"
+```
+
+`tests/postman/token.php` gives the test admin a Joomla API token and prints it. After changing a route or a field list, update the request's assertions and its saved example, and check the collection with `postman collection lint "postman/collections/Mothership API"`.
 
 ## Integration
 

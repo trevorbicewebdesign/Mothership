@@ -1,0 +1,30 @@
+$kind: http-request
+description: "One account, with the fields the list leaves out."
+method: GET
+url: '{{base_url}}/api/index.php/v1/mothership/accounts/:id'
+order: 2000
+pathVariables:
+  - key: id
+    value: '9001'
+    description: The record's id.
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test('responds 200 with JSON:API', () => {
+        pm.response.to.have.status(200);
+        pm.expect(pm.response.headers.get('Content-Type')).to.include('application/vnd.api+json');
+      });
+
+      const record = pm.response.json().data;
+
+      pm.test('returns the requested record', () => {
+        pm.expect(record.id).to.eql('9001');
+        pm.expect(record.type).to.eql('accounts');
+        pm.expect(record.attributes).to.include({"name": "Postman Test Account", "client_id": 9001, "rate": "125.00"});
+      });
+
+      pm.test('has exactly the item fields', () => {
+        pm.expect(record.attributes).to.have.all.keys(["id", "client_id", "name", "rate", "created", "created_by"]);
+      });
+examples: './.resources/Get account.resources/examples'

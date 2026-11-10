@@ -1,0 +1,12 @@
+name: Local
+values:
+  - key: base_url
+    value: 'http://localhost:8080'
+    enabled: true
+    type: default
+    description: The site's address, without a trailing slash. docker/instance.sh url prints it for an instance.
+  - key: api_token
+    value: ''
+    enabled: true
+    type: secret
+    description: A Joomla API token. For the test stack, tests/postman/token.php issues one.

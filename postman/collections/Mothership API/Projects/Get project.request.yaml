@@ -1,0 +1,32 @@
+$kind: http-request
+description: "One project, with the fields the list leaves out."
+method: GET
+url: '{{base_url}}/api/index.php/v1/mothership/projects/:id'
+order: 2000
+pathVariables:
+  - key: id
+    value: '9001'
+    description: The record's id.
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test('responds 200 with JSON:API', () => {
+        pm.response.to.have.status(200);
+        pm.expect(pm.response.headers.get('Content-Type')).to.include('application/vnd.api+json');
+      });
+
+      const record = pm.response.json().data;
+
+      pm.test('returns the requested record', () => {
+        pm.expect(record.id).to.eql('9001');
+        pm.expect(record.type).to.eql('projects');
+        pm.expect(record.attributes).to.include({"name": "Postman Test Project", "status": "active", "type": "website"});
+      });
+
+      pm.test('has exactly the item fields', () => {
+        pm.expect(record.attributes).to.have.all.keys(["id", "client_id", "account_id", "name", "description", "type", "status", "metadata", "created", "created_by"]);
+      });
+
+      pm.test('metadata is JSON, not a string', () => pm.expect(record.attributes.metadata).to.eql({ cms: 'joomla' }));
+examples: './.resources/Get project.resources/examples'

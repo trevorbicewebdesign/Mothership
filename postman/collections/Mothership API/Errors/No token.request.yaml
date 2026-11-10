@@ -1,0 +1,14 @@
+$kind: http-request
+description: "Without a valid token every route answers 401."
+method: GET
+url: '{{base_url}}/api/index.php/v1/mothership/clients'
+order: 1000
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test('responds 401', () => pm.response.to.have.status(401));
+      pm.test('returns a JSON:API error', () => pm.expect(pm.response.json().errors[0].title).to.eql('Forbidden'));
+examples: './.resources/No token.resources/examples'

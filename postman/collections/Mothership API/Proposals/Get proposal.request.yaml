@@ -1,0 +1,35 @@
+$kind: http-request
+description: "One proposal, with the fields the list leaves out."
+method: GET
+url: '{{base_url}}/api/index.php/v1/mothership/proposals/:id'
+order: 2000
+pathVariables:
+  - key: id
+    value: '9001'
+    description: The record's id.
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test('responds 200 with JSON:API', () => {
+        pm.response.to.have.status(200);
+        pm.expect(pm.response.headers.get('Content-Type')).to.include('application/vnd.api+json');
+      });
+
+      const record = pm.response.json().data;
+
+      pm.test('returns the requested record', () => {
+        pm.expect(record.id).to.eql('9001');
+        pm.expect(record.type).to.eql('proposals');
+        pm.expect(record.attributes).to.include({"number": "P-9001", "status": "Pending", "total_low": "200.00"});
+      });
+
+      pm.test('has exactly the item fields', () => {
+        pm.expect(record.attributes).to.have.all.keys(["id", "number", "name", "type", "client_id", "account_id", "project_id", "rate", "total_low", "total", "status", "expires", "locked", "summary", "notes", "items", "created", "created_by", "modified", "modified_by"]);
+      });
+
+      pm.test('carries its line items', () => {
+        pm.expect(record.attributes.items).to.have.lengthOf(1);
+        pm.expect(record.attributes.items[0]).to.include({ name: 'Build', subtotal: '250.00' });
+      });
+examples: './.resources/Get proposal.resources/examples'

@@ -40,6 +40,11 @@
     <dashboards>
         <dashboard title="COM_MOTHERSHIP_DASHBOARD_TITLE" icon="icon-chart">mothership</dashboard>
     </dashboards>
+    <api>
+        <files folder="api">
+            <folder>src</folder>
+        </files>
+    </api>
     <administration>
         <!-- No whitespace inside: Joomla uses the element's text as the menu alias. -->
         <menu>com_mothership<params><dashboard>mothership</dashboard></params></menu>

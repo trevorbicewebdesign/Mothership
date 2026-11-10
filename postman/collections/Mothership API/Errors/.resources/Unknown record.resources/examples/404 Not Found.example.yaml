@@ -1,0 +1,23 @@
+$kind: http-example
+name: 404 Not Found
+request:
+  method: GET
+  url: '{{base_url}}/api/index.php/v1/mothership/clients/:id'
+response:
+  statusCode: 404
+  statusText: Not Found
+  headers:
+    - key: Content-Type
+      value: application/vnd.api+json; charset=utf-8
+  body:
+    type: json
+    content: |-
+      {
+        "errors": [
+          {
+            "title": "Resource not found",
+            "code": 404
+          }
+        ]
+      }
+order: 1000
