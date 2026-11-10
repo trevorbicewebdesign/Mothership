@@ -10,6 +10,7 @@ DROP TABLE IF EXISTS `#__mothership_invoices`;
 DROP TABLE IF EXISTS `#__mothership_logs`;
 DROP TABLE IF EXISTS `#__mothership_payments`;
 DROP TABLE IF EXISTS `#__mothership_projects`;
+DROP TABLE IF EXISTS `#__mothership_user_accounts`;
 DROP TABLE IF EXISTS `#__mothership_proposal_items`;
 DROP TABLE IF EXISTS `#__mothership_proposals`;
 DROP TABLE IF EXISTS `#__mothership_users`;

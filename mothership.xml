@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<extension type="component" method="upgrade" version="0.0.27">
+<extension type="component" method="upgrade" version="0.0.28">
     <name>com_mothership</name>
     <author>Trevor Bice</author>
     <creationDate>2023-10-01</creationDate>
@@ -7,7 +7,7 @@
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <authorEmail>trevorbicewebdesign@gmail.com</authorEmail>
     <authorUrl>https://webdesign.trevorbice.com</authorUrl>
-    <version>0.0.27</version>
+    <version>0.0.28</version>
     <description>COM_MOTHERSHIP_XML_DESCRIPTION</description>
     <namespace path="src">TrevorBice\Component\Mothership</namespace>
     <install>
@@ -50,6 +50,7 @@
         <menu>com_mothership<params><dashboard>mothership</dashboard></params></menu>
         <submenu>
             <menu link="option=com_mothership&amp;view=clients" view="clients">com_mothership_clients</menu>
+            <menu link="option=com_mothership&amp;view=portalusers" view="portalusers">com_mothership_portalusers</menu>
 			<menu link="option=com_mothership&amp;view=accounts" view="accounts">com_mothership_accounts</menu>
 			<menu link="option=com_mothership&amp;view=projects" view="projects">com_mothership_projects</menu>
             <menu link="option=com_mothership&amp;view=domains" view="domains">com_mothership_domains</menu>

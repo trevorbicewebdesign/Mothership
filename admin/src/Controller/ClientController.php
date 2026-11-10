@@ -8,6 +8,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use TrevorBice\Component\Mothership\Administrator\Helper\ClientHelper;
 use TrevorBice\Component\Mothership\Administrator\Helper\MothershipHelper;
+use TrevorBice\Component\Mothership\Administrator\Service\ClientAccess;
 
 \defined('_JEXEC') or die;
 
@@ -93,6 +94,103 @@ class ClientController extends FormController
         }
 
         $this->setRedirect(MothershipHelper::getReturnRedirect(Route::_('index.php?option=com_mothership&view=clients', false)));
+    }
+
+    /** Users tab: give someone portal access, creating and emailing a login when needed. */
+    public function inviteUser()
+    {
+        $clientId = $this->accessClientId();
+        $input    = $this->input;
+        $email    = trim($input->getString('email', ''));
+
+        try {
+            // Staff usually invite for the client, so the email can come from the owner.
+            $ownerId    = (int) (ClientHelper::getClient($clientId)->owner_user_id ?? 0);
+            $onBehalfOf = ($input->getInt('on_behalf_of_owner') === 1 && $ownerId) ? $ownerId : null;
+
+            $result = ClientAccess::invite($clientId, $input->getString('name', ''), $email, null, $onBehalfOf);
+            $shown  = htmlspecialchars($email, ENT_QUOTES, 'UTF-8');
+
+            if (!$result['new_login']) {
+                $this->app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_CLIENT_USERS_ADDED_EXISTING', $shown), 'message');
+            } elseif ($result['emailed']) {
+                $this->app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_CLIENT_USERS_INVITED', $shown), 'message');
+            } else {
+                $this->app->enqueueMessage(Text::sprintf('COM_MOTHERSHIP_CLIENT_USERS_INVITED_NO_EMAIL', $shown), 'warning');
+            }
+        } catch (\RuntimeException $e) {
+            $this->app->enqueueMessage($e->getMessage(), 'error');
+        }
+
+        $this->accessRedirect($clientId);
+    }
+
+    /** Users tab: take someone's access to this client away. */
+    public function removeUser()
+    {
+        $clientId = $this->accessClientId();
+
+        try {
+            ClientAccess::remove($this->accessRowId($clientId));
+            $this->app->enqueueMessage(Text::_('COM_MOTHERSHIP_CLIENT_USERS_REMOVED'), 'message');
+        } catch (\RuntimeException $e) {
+            $this->app->enqueueMessage($e->getMessage(), 'error');
+        }
+
+        $this->accessRedirect($clientId);
+    }
+
+    /** Users tab: send a fresh link to someone who hasn't set their password yet. */
+    public function resendInvite()
+    {
+        $clientId = $this->accessClientId();
+
+        try {
+            $sent = ClientAccess::resendInvite($this->accessRowId($clientId));
+            $this->app->enqueueMessage(
+                Text::_($sent['emailed'] ? 'COM_MOTHERSHIP_CLIENT_USERS_RESENT' : 'COM_MOTHERSHIP_CLIENT_USERS_RESEND_FAILED'),
+                $sent['emailed'] ? 'message' : 'warning'
+            );
+        } catch (\RuntimeException $e) {
+            $this->app->enqueueMessage($e->getMessage(), 'error');
+        }
+
+        $this->accessRedirect($clientId);
+    }
+
+    /** Token and edit permission for the Users tab actions; returns the client id. */
+    private function accessClientId(): int
+    {
+        $this->checkToken();
+
+        if (!$this->app->getIdentity()->authorise('core.edit', 'com_mothership')) {
+            throw new \Exception(Text::_('JLIB_APPLICATION_ERROR_EDIT_NOT_PERMITTED'), 403);
+        }
+
+        $clientId = $this->input->getInt('id');
+
+        if (!$clientId) {
+            throw new \Exception(Text::_('COM_MOTHERSHIP_ERROR_CLIENT_NOT_FOUND'), 404);
+        }
+
+        return $clientId;
+    }
+
+    /** The posted access row id, when it belongs to this client. */
+    private function accessRowId(int $clientId): int
+    {
+        $row = ClientAccess::accessRow($this->input->getInt('access_id'));
+
+        if ((int) $row->client_id !== $clientId) {
+            throw new \RuntimeException(Text::_('COM_MOTHERSHIP_CLIENT_USERS_NOT_THIS_CLIENT'));
+        }
+
+        return (int) $row->id;
+    }
+
+    private function accessRedirect(int $clientId): void
+    {
+        $this->setRedirect(Route::_('index.php?option=com_mothership&view=client&layout=edit&id=' . $clientId, false));
     }
 
     public function getDefaultRate()

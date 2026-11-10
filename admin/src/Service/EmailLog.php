@@ -187,7 +187,7 @@ class EmailLog
             ->join('LEFT', $db->quoteName('#__mothership_proposals', 'op') . ' ON e.object_type = ' . $db->quote('proposal') . ' AND op.id = e.object_id');
     }
 
-    /** "Invoice #1312", "Proposal #40", "Payment #88". Empty when it was about nothing. */
+    /** "Invoice #1312", "Proposal #40", "Payment #88", "Portal invite". Empty when it was about nothing. */
     public static function aboutLabel(object $item): string
     {
         $id = (int) ($item->object_id ?? 0);
@@ -199,6 +199,8 @@ class EmailLog
                 return Text::sprintf('COM_MOTHERSHIP_EMAIL_ABOUT_PROPOSAL', $item->proposal_number !== null && $item->proposal_number !== '' ? $item->proposal_number : $id);
             case 'payment':
                 return Text::sprintf('COM_MOTHERSHIP_EMAIL_ABOUT_PAYMENT', $id);
+            case 'user_access':
+                return Text::_('COM_MOTHERSHIP_EMAIL_ABOUT_USER_ACCESS');
         }
 
         return '';
@@ -218,6 +220,9 @@ class EmailLog
             case 'proposal':
             case 'payment':
                 return 'index.php?option=com_mothership&task=' . $item->object_type . '.edit&id=' . $id;
+            case 'user_access':
+                // The access row may be gone by now; the client's Users tab is where it lived.
+                return (int) ($item->client_id ?? 0) > 0 ? 'index.php?option=com_mothership&task=client.edit&id=' . (int) $item->client_id : '';
         }
 
         return '';

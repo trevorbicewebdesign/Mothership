@@ -116,6 +116,8 @@ jobs:
           - suite: acceptance
             group: backend-client
           - suite: acceptance
+            group: backend-portaluser
+          - suite: acceptance
             group: backend-account
           - suite: acceptance
             group: backend-project

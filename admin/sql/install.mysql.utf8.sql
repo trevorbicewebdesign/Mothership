@@ -259,15 +259,37 @@ CREATE TABLE IF NOT EXISTS `#__mothership_projects` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC AUTO_INCREMENT=1;
 
 -- Users Table
+-- Portal access for people other than the client's owner (clients.owner_user_id).
 CREATE TABLE IF NOT EXISTS `#__mothership_users` (
   `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `user_id` INT(11) NOT NULL,
   `client_id` INT(11) NOT NULL,
-  `role` ENUM('owner', 'employee', 'administrator') NOT NULL,
+  `role` ENUM('full_admin', 'account_admin', 'billing_admin') NOT NULL,
+  `all_accounts` TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Account/Billing Administrator on every account, including ones added later',
+  `created` DATETIME NULL DEFAULT NULL,
+  `created_by` INT(11) NULL DEFAULT NULL,
+  `invited_as` INT(11) NULL DEFAULT NULL COMMENT 'Named as the inviter, e.g. the owner when staff invite on their behalf',
+  `invite_token_hash` CHAR(64) NULL DEFAULT NULL,
+  `invite_expires` DATETIME NULL DEFAULT NULL,
+  `accepted` DATETIME NULL DEFAULT NULL,
+  `invite_sent_at` DATETIME NULL DEFAULT NULL COMMENT 'when the invite email last left the site',
+  `invite_error` VARCHAR(255) NULL DEFAULT NULL COMMENT 'why the last invite email failed, if it did',
   PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_user_client` (`user_id`, `client_id`),
   KEY `idx_client_id` (`client_id`),
   KEY `idx_user_id` (`user_id`),
+  KEY `idx_invite_token` (`invite_token_hash`),
   CONSTRAINT `fk_users_client` FOREIGN KEY (`client_id`) REFERENCES `#__mothership_clients` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- The accounts an account_admin or billing_admin grant covers. Reserved: nothing reads it yet.
+CREATE TABLE IF NOT EXISTS `#__mothership_user_accounts` (
+  `user_access_id` INT(11) UNSIGNED NOT NULL,
+  `account_id` INT(10) NOT NULL,
+  PRIMARY KEY (`user_access_id`, `account_id`),
+  KEY `idx_account_id` (`account_id`),
+  CONSTRAINT `fk_user_accounts_access` FOREIGN KEY (`user_access_id`) REFERENCES `#__mothership_users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_user_accounts_account` FOREIGN KEY (`account_id`) REFERENCES `#__mothership_accounts` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Logs Table

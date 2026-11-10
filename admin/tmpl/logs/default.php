@@ -5,6 +5,7 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Factory;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\Layout\LayoutHelper;
 
 /** @var \Joomla\Component\Mothership\Administrator\View\Logs\HtmlView $this */
@@ -93,7 +94,11 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                     <td>
                                         <?php 
                                         $meta = json_decode($item->meta);
-                                        if($item->action == 'status_changed' && $item->object_type == 'payment'){
+                                        $isAccess = $item->object_type == 'user_access' && in_array($item->action, ['invited', 'removed', 'accepted'], true);
+                                        if($isAccess){
+                                            echo Text::_('COM_MOTHERSHIP_LOG_ACCESS_' . strtoupper($item->action));
+                                        }
+                                        else if($item->action == 'status_changed' && $item->object_type == 'payment'){
                                             echo sprintf(Text::_('COM_MOTHERSHIP_LOG_PAYMENT_STATUS_CHANGED'), $meta->old_status, $meta->new_status);                                        
                                         }
                                         else if($item->action == 'viewed' && $item->object_type == 'payment'){
@@ -129,7 +134,13 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                     </td>
                                     <td>
                                     <?php 
-                                        if($item->action == 'status_changed' && $item->object_type == 'payment'){
+                                        if($isAccess){
+                                            // The person whose access it is; $who is whoever acted.
+                                            $accessUser = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById((int) ($meta->user_id ?? 0));
+                                            $person = htmlspecialchars((string) ($accessUser->name ?: '#' . (int) ($meta->user_id ?? 0)), ENT_QUOTES, 'UTF-8');
+                                            echo Text::sprintf('COM_MOTHERSHIP_LOG_ACCESS_' . strtoupper($item->action) . '_DESC', $who, $person, htmlspecialchars((string) $item->client_name, ENT_QUOTES, 'UTF-8'));
+                                        }
+                                        else if($item->action == 'status_changed' && $item->object_type == 'payment'){
                                             
                                             echo sprintf(Text::_('COM_MOTHERSHIP_LOG_PAYMENT_STATUS_CHANGED_DESC'), $item->object_id,$meta->old_status, $meta->new_status, $who);
                                         }

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form>
+	<fields name="filter">
+		<field name="search" type="text" inputmode="search" label="COM_MOTHERSHIP_PORTALUSERS_FILTER_SEARCH_LABEL" hint="JSEARCH_FILTER" />
+
+		<field name="client_id" type="sql" default="" class="js-select-submit-on-change"
+			label="COM_MOTHERSHIP_FILTER_CLIENT_LABEL" header="COM_MOTHERSHIP_FILTER_SELECT_CLIENT"
+			key_field="value" value_field="text"
+			query="SELECT id AS value, name AS text FROM #__mothership_clients ORDER BY name" />
+
+		<field name="role" type="list" default="" class="js-select-submit-on-change" label="COM_MOTHERSHIP_PORTALUSERS_FILTER_ROLE_LABEL">
+			<option value="">COM_MOTHERSHIP_PORTALUSERS_FILTER_ROLE_SELECT</option>
+			<option value="owner">COM_MOTHERSHIP_ACCESS_ROLE_OWNER</option>
+			<option value="full_admin">COM_MOTHERSHIP_ACCESS_ROLE_FULL_ADMIN</option>
+		</field>
+
+		<field name="status" type="list" default="" class="js-select-submit-on-change" label="COM_MOTHERSHIP_PORTALUSERS_FILTER_STATUS_LABEL">
+			<option value="">COM_MOTHERSHIP_PORTALUSERS_FILTER_STATUS_SELECT</option>
+			<option value="active">COM_MOTHERSHIP_CLIENT_USERS_ACTIVE</option>
+			<option value="pending">COM_MOTHERSHIP_CLIENT_USERS_PENDING</option>
+			<option value="expired">COM_MOTHERSHIP_CLIENT_USERS_EXPIRED</option>
+		</field>
+	</fields>
+	<fields name="list">
+		<field name="fullordering" type="list" label="JGLOBAL_SORT_BY" class="js-select-submit-on-change" default="name ASC" validate="options">
+			<option value="">JGLOBAL_SORT_BY</option>
+			<option value="name ASC">COM_MOTHERSHIP_PORTALUSERS_SORT_NAME_ASC</option>
+			<option value="name DESC">COM_MOTHERSHIP_PORTALUSERS_SORT_NAME_DESC</option>
+			<option value="client_count DESC">COM_MOTHERSHIP_PORTALUSERS_SORT_CLIENTS_DESC</option>
+			<option value="client_count ASC">COM_MOTHERSHIP_PORTALUSERS_SORT_CLIENTS_ASC</option>
+			<option value="last_visit DESC">COM_MOTHERSHIP_PORTALUSERS_SORT_VISIT_DESC</option>
+			<option value="last_visit ASC">COM_MOTHERSHIP_PORTALUSERS_SORT_VISIT_ASC</option>
+		</field>
+		<field name="limit" type="limitbox" label="JGLOBAL_LIST_LIMIT" default="25" class="js-select-submit-on-change" />
+	</fields>
+</form>
