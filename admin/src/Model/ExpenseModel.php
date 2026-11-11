@@ -15,6 +15,7 @@ use Joomla\CMS\MVC\Model\AdminModel;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\Versioning\VersionableModelTrait;
 use Joomla\CMS\Log\Log;
+use TrevorBice\Component\Mothership\Administrator\Service\ExpenseReceipt;
 use TrevorBice\Component\Mothership\Administrator\Table\ExpenseTable;
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -80,7 +81,8 @@ class ExpenseModel extends AdminModel
     {
         $data = Factory::getApplication()->getUserState('com_mothership.edit.expense.data', []);
 
-        if (empty($data)) {
+        // What "New from PDF" filled in is for the new expense only, never laid over a saved one.
+        if (empty($data) || (int) $this->getState($this->getName() . '.id') > 0) {
             $data = $this->getItem();
         }
 
@@ -88,6 +90,9 @@ class ExpenseModel extends AdminModel
         // does no timezone conversion: a date has no time of day to convert.
         if (\is_object($data) && empty($data->id) && empty($data->expense_date)) {
             $data->expense_date = ExpenseTable::today();
+        } elseif (\is_array($data) && empty($data['id']) && empty($data['expense_date'])) {
+            // The form an upload opened, when the file was not read.
+            $data['expense_date'] = ExpenseTable::today();
         }
 
         $this->preprocessData('com_mothership.expense', $data);
@@ -147,6 +152,24 @@ class ExpenseModel extends AdminModel
         }
 
         $this->setState($this->getName() . '.id', $table->id);
+
+        return true;
+    }
+
+    /**
+     * Delete expenses, and the receipts kept with them.
+     */
+    public function delete(&$pks)
+    {
+        $ids = array_map('intval', (array) $pks);
+
+        if (!parent::delete($pks)) {
+            return false;
+        }
+
+        foreach ($ids as $id) {
+            ExpenseReceipt::deleteFor($id);
+        }
 
         return true;
     }

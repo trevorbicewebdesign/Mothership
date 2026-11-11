@@ -2,6 +2,7 @@ SET FOREIGN_KEY_CHECKS=0;
 
 DROP TABLE IF EXISTS `#__mothership_accounts`;
 DROP TABLE IF EXISTS `#__mothership_ai_usage`;
+DROP TABLE IF EXISTS `#__mothership_attachments`;
 DROP TABLE IF EXISTS `#__mothership_clients`;
 DROP TABLE IF EXISTS `#__mothership_domains`;
 DROP TABLE IF EXISTS `#__mothership_emails`;

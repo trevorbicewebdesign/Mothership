@@ -519,6 +519,36 @@ An expense can be assigned to a client, to one of that client's accounts and to 
 
 The Expenses list can be searched by item or merchant (or `id:` and a number), filtered by client, account, category and billable, and shows the total of the page.
 
+### New from PDF
+New in 0.0.32. *New from PDF* on the Expenses list takes the invoices or receipts vendors sent (PDFs, or PNG, JPEG or WebP images of receipts, up to 10 MB each and 20 at a time), has the AI provider read them, and opens the new-expense form filled in from each, with the file shown beside the fields. Nothing is saved until a form is saved; its file is then kept as the expense's receipt. It needs the [AI Connector](#ai-connector) switched on to read a file. With AI off the upload still works: the form opens empty and the file is kept as the receipt.
+
+- **Several files at once.** Every file is parked on upload and read only when its turn comes, so the upload itself is quick and each form costs one provider call. *Save & Close* opens the next file's form; *Save* stays on the expense, and closing it opens the next; *Cancel* on an unsaved form leaves that file out and opens the next. The form says "File 2 of 5" and has *Stop here*, which drops the files not yet entered. A file already on an expense, or chosen twice in one upload, is left out with a message.
+- **What is read.** Merchant, item, category (one of the [expense categories](#expense-categories)), the total charged, its currency, the date, and the vendor's invoice number, which goes in *Transaction ID*. Anything the document does not say is left empty. Each read is recorded in [AI Usage](#ai-usage) as *Expense from PDF*.
+- **It will not record another currency as dollars.** Expenses have no currency column. When the total is not in `ExpenseReceipt::HOME_CURRENCY` (USD), the amount is left empty and the original figure goes in the notes ("Invoiced 49.99 EUR."). The amount is what the card was charged.
+- **It will not enter the same file twice.** A receipt is stored under the SHA-1 of its bytes, so a second upload of the same file opens the expense that already has it.
+- **It warns about a likely duplicate.** The same merchant with the same reference, or the same amount within `SIMILAR_DAYS` (5) days, is listed as a warning on the form.
+- **What it carries over.** When the merchant has been paid before, the most recent expense's category, client, account, project, *Billable* and *Paid from* are copied onto the form. With no history the expense is left unassigned.
+- **Storage.** Receipts are rows in `#__mothership_attachments` with context `expense`. The files sit in `mothership/expenses/receipts` in the folder above the web root (parked uploads in `pending/` under it, cleared after two days) and are only served through `expense.receipt`, which needs `core.manage`. The web server must be able to create and write to that folder; when it cannot, the upload says so and names the folder. Deleting an expense deletes its receipt, unless another expense has the same file. Receipts are not shown in the client portal.
+- **Where it lives.** `admin/src/Service/ExpenseReader.php` reads a file into a proposed expense (`read()`, with `sniff()`, `content()`, `system()` and `parse()` public so they can be tested without the network). It knows nothing about uploads, so anything that has a file can call it. `admin/src/Service/ExpenseReceipt.php` is the file side: `stash()` and `pending()` park an upload, `prefill()` turns a draft into form data, `attach()` keeps the file when the expense is saved, `forget()` drops parked files that will not be entered, and `deleteFor()` removes receipts with the expense. The upload page is the `Expenseimport` view; `ExpenseController` has `importReceipt()`, `importStop()` and `receipt()`.
+- **Not built.** Attaching a receipt to an expense that already exists, line items, tax as its own field, currency conversion, and reading invoices out of forwarded email.
+
+### Attachments Table
+```
+CREATE TABLE IF NOT EXISTS `#__mothership_attachments` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `context` VARCHAR(50) NOT NULL COMMENT 'what kind of record the file belongs to, e.g. expense',
+  `resource_id` INT(11) NOT NULL,
+  `filename` VARCHAR(255) NOT NULL COMMENT 'the name it is stored under: the hash of its bytes and its extension',
+  `original_name` VARCHAR(255) NULL DEFAULT NULL,
+  `mime` VARCHAR(100) NULL DEFAULT NULL,
+  `size` INT(11) NULL DEFAULT NULL,
+  `uploaded_by` INT(11) NOT NULL DEFAULT 0,
+  `created` DATETIME NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_ctx` (`context`, `resource_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
+
 ### Expenses Table
 ```
 CREATE TABLE IF NOT EXISTS `#__mothership_expenses` (
@@ -853,7 +883,7 @@ This payment method allows clients to pay invoices by mailing a physical check. 
 ---
 
 ## AI Connector
-New in 0.0.30. Mothership features that use AI go through one service, `AiService`, and the provider behind it is a plugin in the `mothership-ai` group. Nothing in this release calls it yet except the connection test; it is the base for the features that follow.
+New in 0.0.30. Mothership features that use AI go through one service, `AiService`, and the provider behind it is a plugin in the `mothership-ai` group. In 0.0.30 nothing calls it except the connection test; [New from PDF](#new-from-pdf) is the first feature that does.
 
 - **Component options, AI tab**: *Enable AI features* is the master switch (off by default; while it is off no AI call is made anywhere), and *AI provider* selects the connector. *Configure* opens the selected connector plugin, and *Test connection* sends one small live request with the saved settings and reports the model and the time it took. The test works while the master switch is off, so the connection can be checked first.
 - **The Claude connector** (`plugins/mothership-ai/claude`): talks to Anthropic's Messages API. Its options hold the API key, the model, the maximum response tokens, an optional base URL for a proxy or gateway, and *Rates* (prices per million tokens, used to estimate what a call costs). The Mothership package installs it disabled; enter a key and enable it.

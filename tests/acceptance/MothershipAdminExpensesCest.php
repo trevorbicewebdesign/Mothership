@@ -17,6 +17,7 @@ class MothershipAdminExpensesCest
 
     const EXPENSES_VIEW_ALL_URL = "/administrator/index.php?option=com_mothership&view=expenses";
     const ADMIN_TIMEZONE = "America/Los_Angeles";
+    const EXPENSE_IMPORT_URL = "/administrator/index.php?option=com_mothership&view=expenseimport";
     const EXPENSE_EDIT_URL = "/administrator/index.php?option=com_mothership&view=expense&layout=edit&id=%s";
 
     public function _before(AcceptanceTester $I)
@@ -78,6 +79,38 @@ class MothershipAdminExpensesCest
         $I->updateInDatabase('jos_users', ['params' => '{"timezone":"' . self::ADMIN_TIMEZONE . '"}'], ['username' => 'admin']);
 
         $I->loginAsAdmin();
+    }
+
+    /**
+     * Choose files in the upload page's one file input and send the form. The browser runs in
+     * another container, so each file is sent to it first and chosen by the path it has there.
+     */
+    private function upload(AcceptanceTester $I, array $names): void
+    {
+        $I->amOnPage(self::EXPENSE_IMPORT_URL);
+        $I->waitForText("Mothership: New Expense from PDF", 30, "h1.page-title");
+
+        $files = array_map(static fn ($f) => realpath(codecept_data_dir('receipts/' . $f)), $names);
+        $I->executeInSelenium(static function (\Facebook\WebDriver\Remote\RemoteWebDriver $driver) use ($files) {
+            $remote = [];
+
+            foreach ($files as $file) {
+                $zip = tempnam(sys_get_temp_dir(), 'up');
+                $archive = new \ZipArchive();
+                $archive->open($zip, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+                $archive->addFile($file, basename($file));
+                $archive->close();
+                $remote[] = $driver->execute(\Facebook\WebDriver\Remote\DriverCommand::UPLOAD_FILE, ['file' => base64_encode(file_get_contents($zip))]);
+                unlink($zip);
+            }
+
+            $input = $driver->findElement(\Facebook\WebDriver\WebDriverBy::id('expense-import-file'));
+            $input->setFileDetector(new \Facebook\WebDriver\Remote\UselessFileDetector());
+            $input->sendKeys(implode("\n", $remote));
+        });
+        $I->click("#expense-import-submit");
+
+        $I->waitForText("Mothership: New Expense", 30, "h1.page-title");
     }
 
     /**
@@ -501,5 +534,124 @@ class MothershipAdminExpensesCest
         $I->see('Expense not found.', '#system-message-container');
         $I->see('Mothership: Expenses', 'h1.page-title');
         $I->seeInCurrentUrl(self::EXPENSES_VIEW_ALL_URL);
+    }
+
+    /**
+     * One uploaded file: the form opens with the file beside it, and saving keeps it as the
+     * expense's receipt. AI is off, so nothing is read and nothing reaches a provider.
+     *
+     * @group backend
+     * @group expense
+     * @group backend-expense
+     */
+    public function MothershipNewExpenseFromOnePdf(AcceptanceTester $I)
+    {
+        $I->amOnPage(self::EXPENSES_VIEW_ALL_URL);
+        $I->waitForText("Mothership: Expenses", 30, "h1.page-title");
+        $I->click("New from PDF", "#toolbar");
+        $I->waitForText("Mothership: New Expense from PDF", 30, "h1.page-title");
+        $I->see("AI is switched off, so nothing is read", "#expense-import-notice");
+
+        $this->upload($I, ['hosting-invoice.pdf']);
+
+        $I->seeElement(".expense-receipt iframe");
+        $I->see("hosting-invoice.pdf", ".expense-receipt .expense-receipt-open");
+        $I->see("Kept with the expense when you save.", ".expense-receipt");
+        // One file is not a queue.
+        $I->dontSeeElement("#expense-import-queue");
+        // Nothing was read, so the amount waits to be typed in.
+        $I->seeInField("input#jform_amount", "");
+
+        $I->fillField("input#jform_item", "Managed VPS");
+        $I->fillField("input#jform_merchant", "Northbeam Hosting");
+        $I->fillField("input#jform_amount", "44.00");
+
+        $I->click("Save", "#toolbar");
+        $I->waitForText("Expense Managed VPS saved.", 20, ".alert-message");
+        $I->waitForText("Mothership: Edit Expense", 30, "h1.page-title");
+
+        // Saved: the receipt is on the expense, no longer waiting.
+        $I->seeElement(".expense-receipt iframe");
+        $I->see("hosting-invoice.pdf", ".expense-receipt .expense-receipt-open");
+        $I->dontSee("Kept with the expense when you save.");
+
+        $id = $I->grabFromDatabase('jos_mothership_expenses', 'id', ['item' => 'Managed VPS']);
+        $I->seeInDatabase('jos_mothership_attachments', [
+            'context' => 'expense',
+            'resource_id' => $id,
+            'original_name' => 'hosting-invoice.pdf',
+            'mime' => 'application/pdf',
+        ]);
+
+        // Closing a saved expense with no queue goes back to the list.
+        $I->click("Close", "#toolbar");
+        $I->waitForElement("#expenseList", 30);
+        $I->dontSee("An error has occurred");
+
+        // The same file again makes nothing new: it opens the expense that has it.
+        $I->amOnPage(self::EXPENSE_IMPORT_URL);
+        $I->waitForText("Mothership: New Expense from PDF", 30, "h1.page-title");
+        $I->attachFile("#expense-import-file", "receipts/hosting-invoice.pdf");
+        $I->click("#expense-import-submit");
+        $I->waitForText("Mothership: Edit Expense", 30, "h1.page-title");
+        $I->seeInField("input#jform_item", "Managed VPS");
+        $I->seeNumberOfElements('.expense-receipt', 1);
+
+        // Deleting the expense takes its receipt with it.
+        $I->amOnPage(self::EXPENSES_VIEW_ALL_URL . "&filter[search]=Managed");
+        $I->waitForElement("#expenseList", 30);
+        $I->click("input[name=checkall-toggle]");
+        $I->click("Actions");
+        $I->click("Delete", "#toolbar");
+        $I->waitForText("1 expense(s) deleted.", 20, ".alert-message");
+        $I->dontSeeInDatabase('jos_mothership_attachments', ['context' => 'expense', 'resource_id' => $id]);
+    }
+
+    /**
+     * Several files are worked through one form at a time: Save & Close opens the next, and
+     * Cancel leaves a file out.
+     *
+     * @group backend
+     * @group expense
+     * @group backend-expense
+     */
+    public function MothershipNewExpensesFromSeveralPdfs(AcceptanceTester $I)
+    {
+        // The same file twice is one expense, so three choices make a queue of two.
+        $this->upload($I, ['hosting-invoice.pdf', 'licence-invoice.pdf', 'hosting-invoice.pdf']);
+
+        $I->see("File 1 of 2.", "#expense-import-queue");
+        $I->seeElement("#expense-import-stop");
+        $I->see("hosting-invoice.pdf", ".expense-receipt .expense-receipt-open");
+
+        $I->fillField("input#jform_item", "Managed VPS");
+        $I->fillField("input#jform_amount", "44.00");
+        $I->click("Save & Close", "#toolbar");
+
+        // The first is saved with its receipt, and the second file's form is open.
+        $I->waitForText("File 2 of 2.", 30, "#expense-import-queue");
+        $I->see("Mothership: New Expense", "h1.page-title");
+        $I->see("licence-invoice.pdf", ".expense-receipt .expense-receipt-open");
+        $I->seeInField("input#jform_item", "");
+        $I->dontSeeElement("#expense-import-stop");
+
+        $first = $I->grabFromDatabase('jos_mothership_expenses', 'id', ['item' => 'Managed VPS']);
+        $I->seeInDatabase('jos_mothership_attachments', ['context' => 'expense', 'resource_id' => $first, 'original_name' => 'hosting-invoice.pdf']);
+
+        // Cancel leaves the second file out; with nothing left, the list comes back. (On a new
+        // expense the button is Cancel; "Close" would match Save & Close.)
+        $I->see("Cancel leaves this file out", "#expense-import-queue");
+        $I->click("Cancel", "#toolbar");
+        $I->waitForElement("#expenseList", 30);
+        $I->dontSee("An error has occurred");
+
+        $I->seeNumRecords(3, 'jos_mothership_expenses');
+        $I->dontSeeInDatabase('jos_mothership_attachments', ['context' => 'expense', 'original_name' => 'licence-invoice.pdf']);
+
+        // The queue is finished: an ordinary new expense has no file and no queue.
+        $I->amOnPage(sprintf(self::EXPENSE_EDIT_URL, 0));
+        $I->waitForText("Mothership: New Expense", 30, "h1.page-title");
+        $I->dontSeeElement("#expense-import-queue");
+        $I->dontSeeElement(".expense-receipt");
     }
 }

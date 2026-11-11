@@ -85,6 +85,9 @@ class HtmlView extends BaseHtmlView
 
         if ($canDo->get('core.create')) {
             $toolbar->addNew('expense.add');
+            $toolbar->linkButton('import-receipt', 'COM_MOTHERSHIP_EXPENSE_IMPORT_BUTTON')
+                ->url('index.php?option=com_mothership&view=expenseimport')
+                ->icon('icon-file-add');
         }
 
         if (!$this->isEmptyState && ($canDo->get('core.edit.state') || $canDo->get('core.admin'))) {

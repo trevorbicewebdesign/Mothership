@@ -797,6 +797,7 @@ class DbHelper extends Db
         $this->clearInvoicePaymentTable();
         $this->clearExpensesTable();
         $this->Db->_getDriver()->executeQuery("TRUNCATE TABLE {$this->prefix}mothership_ai_usage", []);
+        $this->Db->_getDriver()->executeQuery("TRUNCATE TABLE {$this->prefix}mothership_attachments", []);
         $this->clearAccountsTable();
         $this->clearClientsTable();
         $this->clearUsersTable();
