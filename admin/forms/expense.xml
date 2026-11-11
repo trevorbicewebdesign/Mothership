@@ -32,9 +32,9 @@
 		<field name="amount" type="text" default="0.00" required="true" class="input-xxlarge"
 			label="COM_MOTHERSHIP_FIELD_EXPENSE_AMOUNT_LABEL" description="COM_MOTHERSHIP_FIELD_EXPENSE_AMOUNT_DESC" />
 
-		<field name="expense_date" type="calendar" default="now" class="validate-date"
+		<field name="expense_date" type="calendar" default="" class="validate-date"
 			label="COM_MOTHERSHIP_FIELD_EXPENSE_DATE_LABEL" description="COM_MOTHERSHIP_FIELD_EXPENSE_DATE_DESC"
-			format="%Y-%m-%d" filter="user_utc" />
+			format="%Y-%m-%d" filter="none" />
 
 		<field name="transaction_id" type="text" default="" class="input-xxlarge"
 			label="COM_MOTHERSHIP_FIELD_EXPENSE_TRANSACTION_ID_LABEL" description="COM_MOTHERSHIP_FIELD_EXPENSE_TRANSACTION_ID_DESC" />

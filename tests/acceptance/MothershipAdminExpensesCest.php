@@ -16,6 +16,7 @@ class MothershipAdminExpensesCest
     private $unassignedExpenseData;
 
     const EXPENSES_VIEW_ALL_URL = "/administrator/index.php?option=com_mothership&view=expenses";
+    const ADMIN_TIMEZONE = "America/Los_Angeles";
     const EXPENSE_EDIT_URL = "/administrator/index.php?option=com_mothership&view=expense&layout=edit&id=%s";
 
     public function _before(AcceptanceTester $I)
@@ -72,6 +73,9 @@ class MothershipAdminExpensesCest
             'expense_date' => '2026-03-10',
             'amount' => 1200,
         ]);
+
+        // An administrator west of UTC: a date must show as stored, not as the evening before.
+        $I->updateInDatabase('jos_users', ['params' => '{"timezone":"' . self::ADMIN_TIMEZONE . '"}'], ['username' => 'admin']);
 
         $I->loginAsAdmin();
     }
@@ -281,6 +285,10 @@ class MothershipAdminExpensesCest
         $I->amOnPage(sprintf(self::EXPENSE_EDIT_URL, 0));
         $I->waitForText("Mothership: New Expense", 30, "h1.page-title");
 
+        // A new expense is dated today where the administrator is, which is not always the UTC day.
+        $today = (new \DateTimeImmutable('now', new \DateTimeZone(self::ADMIN_TIMEZONE)))->format('Y-m-d');
+        $I->seeInField("input#jform_expense_date", $today);
+
         $I->fillField("input#jform_item", "Office Rent");
         $I->selectOption("select#jform_category", "RENT");
         $I->fillField("input#jform_amount", "800.00");
@@ -290,6 +298,7 @@ class MothershipAdminExpensesCest
         $I->waitForText("Mothership: Expenses", 30, "h1.page-title");
 
         $id = $I->grabFromDatabase('jos_mothership_expenses', 'id', ['item' => 'Office Rent']);
+        $I->assertSame($today, $I->grabFromDatabase('jos_mothership_expenses', 'expense_date', ['id' => $id]));
         $I->assertNull($I->grabFromDatabase('jos_mothership_expenses', 'client_id', ['id' => $id]));
         $I->assertNull($I->grabFromDatabase('jos_mothership_expenses', 'account_id', ['id' => $id]));
         $I->assertNull($I->grabFromDatabase('jos_mothership_expenses', 'project_id', ['id' => $id]));
@@ -332,8 +341,11 @@ class MothershipAdminExpensesCest
         $I->waitForText("Mothership: Edit Expense", 30, "h1.page-title");
         $I->seeInField("input#jform_amount", "59.50");
 
+        $I->seeInField("input#jform_expense_date", "2026-03-15");
+
         $I->seeInDatabase('jos_mothership_expenses', [
             'id' => $this->expenseData['id'],
+            'expense_date' => '2026-03-15',
             'amount' => '59.50',
             'client_id' => $this->clientData['id'],
             'account_id' => $this->accountData['id'],
