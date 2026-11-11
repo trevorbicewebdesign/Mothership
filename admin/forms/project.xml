@@ -8,6 +8,6 @@
 		<field name="type" type="list" default="Website" required="required" label="COM_MOTHERSHIP_FIELD_PROJECT_TYPE_LABEL" description="COM_MOTHERSHIP_FIELD_PROJECT_TYPE_DESC">
 			<option value="website">Website</option>
 		</field>
-		<field name="created" type="calendar" readonly="false" class="validate-date" label="COM_MOTHERSHIP_FIELD_PROJECT_CREATED_LABEL" description="COM_MOTHERSHIP_FIELD_PROJECT_CREATED_DESC" default="" format="%Y-%m-%d" filter="user_utc" />
+		<field name="created" type="calendar" readonly="false" class="validate-date" label="COM_MOTHERSHIP_FIELD_PROJECT_CREATED_LABEL" description="COM_MOTHERSHIP_FIELD_PROJECT_CREATED_DESC" default="" format="%Y-%m-%d" filter="none" />
 	</fieldset>
 </form>
