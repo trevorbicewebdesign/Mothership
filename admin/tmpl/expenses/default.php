@@ -108,7 +108,7 @@ $pageTotal = 0.0;
                                     <td>
                                         <a href="<?php echo $editLink; ?>">
                                             <?php echo !empty($item->expense_date) && $item->expense_date !== '0000-00-00'
-                                                ? HTMLHelper::_('date', $item->expense_date, Text::_('DATE_FORMAT_LC4'))
+                                                ? HTMLHelper::_('date', $item->expense_date, Text::_('DATE_FORMAT_LC4'), null)
                                                 : Text::_('COM_MOTHERSHIP_EXPENSE_NO_DATE'); ?>
                                         </a>
                                     </td>
