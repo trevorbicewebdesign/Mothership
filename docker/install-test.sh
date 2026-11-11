@@ -60,7 +60,12 @@ cleanup() {
 trap cleanup EXIT
 
 # A release zip is `git archive` of its tag (see build/build.sh), so this is that zip.
-git archive --format=zip -o "$WORK/Mothership-$PREVIOUS.zip" "$PREVIOUS" mothership.xml admin site
+# api/ arrived with 0.0.27; a release that has it declares it in its manifest.
+PREVIOUS_PATHS=(mothership.xml admin site)
+if git cat-file -e "$PREVIOUS:api" 2>/dev/null; then
+  PREVIOUS_PATHS+=(api)
+fi
+git archive --format=zip -o "$WORK/Mothership-$PREVIOUS.zip" "$PREVIOUS" "${PREVIOUS_PATHS[@]}"
 
 # What the build under test promises: its tables, and the newest schema update it carries.
 # shellcheck disable=SC2016  # the backticks are SQL, not a command substitution
