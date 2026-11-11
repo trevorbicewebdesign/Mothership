@@ -46,6 +46,9 @@ services:
 
       - ./plugins/mothership-invoice-pdf:/var/www/html/plugins/mothership-invoice-pdf
 
+      # Mounted for its integration test; the other dashboard modules have none.
+      - ./modules/mod_mothership_expenses:/var/www/html/administrator/modules/mod_mothership_expenses
+
       - ./codeception.yml:/var/www/html/codeception.yml
       - ./tests/configuration.php:/var/www/html/configuration.php
     restart: ${MOTHERSHIP_RESTART:-always}
