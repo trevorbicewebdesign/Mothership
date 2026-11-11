@@ -43,6 +43,8 @@
 			label="COM_MOTHERSHIP_FIELD_EXPENSE_PAYMENT_ACCOUNT_LABEL" description="COM_MOTHERSHIP_FIELD_EXPENSE_PAYMENT_ACCOUNT_DESC"
 			hint="COM_MOTHERSHIP_FIELD_EXPENSE_PAYMENT_ACCOUNT_HINT" />
 
+		<field name="receipt_import" type="hidden" default="" filter="alnum" />
+
 		<field name="description" type="textarea" rows="4" cols="50" default="" class="input-xxlarge"
 			label="COM_MOTHERSHIP_FIELD_EXPENSE_DESCRIPTION_LABEL" description="COM_MOTHERSHIP_FIELD_EXPENSE_DESCRIPTION_DESC" />
 	</fieldset>

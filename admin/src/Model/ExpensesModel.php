@@ -12,6 +12,7 @@ namespace TrevorBice\Component\Mothership\Administrator\Model;
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\Database\ParameterType;
+use TrevorBice\Component\Mothership\Administrator\Service\ExpenseReceipt;
 
 \defined('_JEXEC') or die;
 
@@ -194,6 +195,11 @@ class ExpensesModel extends ListModel
 
         try {
             $db->execute();
+
+            foreach ($ids as $id) {
+                ExpenseReceipt::deleteFor($id);
+            }
+
             return true;
         } catch (\Exception $e) {
             $this->setError($e->getMessage());

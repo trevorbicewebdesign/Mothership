@@ -19,7 +19,9 @@ use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use Joomla\CMS\Toolbar\Toolbar;
 use Joomla\CMS\Toolbar\ToolbarHelper;
+use TrevorBice\Component\Mothership\Administrator\Controller\ExpenseController;
 use TrevorBice\Component\Mothership\Administrator\Model\ExpenseModel;
+use TrevorBice\Component\Mothership\Administrator\Service\ExpenseReceipt;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -40,6 +42,12 @@ class HtmlView extends BaseHtmlView
 
     protected $canDo;
 
+    /** @var array[] The invoice or receipt behind the expense: ['url' => ..., 'name' => ..., 'mime' => ..., 'pending' => bool]. */
+    protected $receipts = [];
+
+    /** @var array|null While working through several uploads: ['current' => int, 'total' => int, 'left' => int]. */
+    protected $importQueue = null;
+
     public function display($tpl = null): void
     {
         /** @var ExpenseModel $model */
@@ -55,6 +63,27 @@ class HtmlView extends BaseHtmlView
         $this->form  = $model->getForm();
         $this->state = $model->getState();
         $this->canDo = ContentHelper::getActions('com_mothership');
+
+        $show = 'index.php?option=com_mothership&task=expense.receipt&';
+
+        if (!empty($this->item->id)) {
+            foreach (ExpenseReceipt::forExpense((int) $this->item->id) as $receipt) {
+                if ($receipt->path) {
+                    $this->receipts[] = ['url' => $show . 'attachment_id=' . (int) $receipt->id, 'name' => (string) $receipt->original_name, 'mime' => (string) $receipt->mime, 'pending' => false];
+                }
+            }
+        } elseif (($token = (string) $this->form->getValue('receipt_import')) !== '' && ($parked = ExpenseReceipt::pending($token))) {
+            $this->receipts[] = ['url' => $show . 'token=' . $token, 'name' => $parked->name, 'mime' => $parked->mime, 'pending' => true];
+
+            $queue = (array) Factory::getApplication()->getUserState(ExpenseController::QUEUE, []);
+
+            if ((int) ($queue['total'] ?? 0) > 1) {
+                $this->importQueue = ['current' => (int) ($queue['current'] ?? 1), 'total' => (int) $queue['total'], 'left' => \count((array) ($queue['tokens'] ?? []))];
+            }
+
+            // An amount that was not read stays empty, to be typed in, instead of showing 0.00.
+            $this->form->setFieldAttribute('amount', 'default', '');
+        }
 
         $wa = $this->getDocument()->getWebAssetManager();
         $jsPath = JPATH_ROOT . '/administrator/components/com_mothership/assets/js/expense-edit.js';
