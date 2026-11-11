@@ -1,8 +1,8 @@
 ![Run Mothership Tests](https://github.com/trevorbicewebdesign/mothership/actions/workflows/codeception.tests.yml/badge.svg)
 # Mothership
-Mothership is a friendly, open-source Joomla extension built for solo developers and small businesses. It started as a personal project designed to simplify everyday challenges like proposals, invoicing, payments, domain tracking, and logs. Over time, it evolved into a tool that handles these essential functions in one place—making life easier not just for me, but for anyone juggling the many hats of a web development operation. Support tickets, time tracking, expenses, and taxes are planned but are not part of the current release.
+Mothership is a friendly, open-source Joomla extension built for solo developers and small businesses. It started as a personal project designed to simplify everyday challenges like proposals, invoicing, payments, expenses, domain tracking, and logs. Over time, it evolved into a tool that handles these essential functions in one place—making life easier not just for me, but for anyone juggling the many hats of a web development operation. Support tickets, time tracking, and taxes are planned but are not part of the current release.
 
-At its core, Mothership organizes your business around nine main objects:
+At its core, Mothership organizes your business around ten main objects:
 
 - **Clients**
 - **Accounts**
@@ -11,6 +11,7 @@ At its core, Mothership organizes your business around nine main objects:
 - **Proposals**
 - **Invoices**
 - **Payments**
+- **Expenses**
 - **Emails**
 - **Logs**
 
@@ -491,6 +492,65 @@ CREATE TABLE IF NOT EXISTS `#__mothership_invoice_payment` (
 ```
 
 > **Note:** If a draft invoice is deleted, any `Invoice Payments` records linked to that invoice will also be deleted automatically. This helps keep your data consistent and prevents orphaned records.
+
+## Expenses
+The **Expenses** object is money the business spent. New in 0.0.29; updating from an earlier version creates the table.
+
+An expense can be assigned to a client, to one of that client's accounts and to one of that account's projects, or left unassigned (general overhead such as software or rent). All three are optional. On the edit screen, choosing a client loads its accounts and choosing an account loads its projects.
+
+- **ID**: A unique identifier for the expense.
+- **Item**: What was purchased.
+- **Merchant**: Who it was purchased from.
+- **Category**: One of the [expense categories](#expense-categories), used for reporting and tax grouping.
+- **Amount**: The amount paid.
+- **Expense Date**: The date the expense was incurred.
+- **Transaction ID**: An optional reference, such as an order or check number.
+- **Payment Account**: Which account or card the expense was paid from (free text).
+- **Description**: Optional notes.
+- **Client ID**, **Account ID**, **Project ID**: What the expense is assigned to. Each may be empty.
+- **Billable**: Whether the expense can be billed back to the client.
+- **Reimbursed**: Whether the expense has been reimbursed or billed back.
+- **Invoiced Invoice ID**: Reserved for the invoice the expense was billed on. Nothing sets it yet.
+- **Created By**: The ID of the user who created the expense.
+- **Created At**: The timestamp when the expense record was created.
+- **Updated At**: The timestamp when the expense record was last updated.
+- **Checked Out Time**: The timestamp when the expense record was last checked out.
+- **Checked Out**: The ID of the user who last checked out the expense record.
+
+The Expenses list can be searched by item or merchant (or `id:` and a number), filtered by client, account, category and billable, and shows the total of the page.
+
+### Expenses Table
+```
+CREATE TABLE IF NOT EXISTS `#__mothership_expenses` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `category` VARCHAR(50) NULL DEFAULT NULL,
+  `item` VARCHAR(255) NULL DEFAULT NULL,
+  `merchant` VARCHAR(255) NULL DEFAULT NULL,
+  `client_id` INT(11) NULL DEFAULT NULL,
+  `account_id` INT(11) NULL DEFAULT NULL,
+  `project_id` INT(11) NULL DEFAULT NULL,
+  `expense_date` DATE NULL DEFAULT NULL,
+  `amount` DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+  `billable` TINYINT(1) NOT NULL DEFAULT 0,
+  `reimbursed` TINYINT(1) NOT NULL DEFAULT 0,
+  `invoiced_invoice_id` INT(11) NULL DEFAULT NULL,
+  `transaction_id` VARCHAR(100) NULL DEFAULT NULL,
+  `payment_account` VARCHAR(100) NULL DEFAULT NULL COMMENT 'Which account or card it was paid from',
+  `description` TEXT NULL DEFAULT NULL,
+  `created_by` INT(11) NULL DEFAULT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `checked_out` INT(11) NULL DEFAULT NULL,
+  `checked_out_time` DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_expense_client` (`client_id`),
+  KEY `idx_expense_date` (`expense_date`),
+  KEY `idx_expense_category` (`category`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
+
+### Expense Categories
+`SOFTWARE`, `EQUIPMENT`, `WEBHOST`, `INTERNET`, `CELL`, `ADVERTISING`, `FEE`, `BANK`, `CONTRACT`, `RENT`, `POWER`, `UTILITIES`, `TRAVEL`, `TAXES`, `OTHER`. The category is stored as this code and shown by its label.
 
 ## Projects
 

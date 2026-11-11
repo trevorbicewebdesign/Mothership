@@ -8,7 +8,7 @@
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <authorEmail>trevorbicewebdesign@gmail.com</authorEmail>
     <authorUrl>https://webdesign.trevorbice.com</authorUrl>
-    <version>0.0.28</version>
+    <version>0.0.29</version>
     <description>Mothership with its payment plugins, web services plugin and administrator dashboard modules.</description>
     <scriptfile>script.php</scriptfile>
     <!-- build/build.sh puts these zips beside this manifest. mod_mothership_tickets is not
