@@ -1,0 +1,50 @@
+<extension type="plugin" group="mothership-ai" version="0.0.31" method="upgrade" element="claude">
+    <name>PLG_MOTHERSHIP_AI_CLAUDE</name>
+    <author>Trevor Bice</author>
+    <creationDate>2026-09</creationDate>
+    <version>0.0.31</version>
+    <copyright>(C) 2026 Trevor Bice</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <description>PLG_MOTHERSHIP_AI_CLAUDE_XML_DESCRIPTION</description>
+    <files>
+        <filename plugin="claude">claude.php</filename>
+    </files>
+    <languages>
+        <language tag="en-GB" path="language">language/en-GB/en-GB.plg_mothership-ai_claude.ini</language>
+        <language tag="en-GB" path="language">language/en-GB/en-GB.plg_mothership-ai_claude.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="api_key" type="password" default="" autocomplete="off"
+                    maxlength="512" size="60"
+                    class="input-xxlarge input-large-text"
+                    label="PLG_MOTHERSHIP_AI_CLAUDE_API_KEY_LABEL"
+                    description="PLG_MOTHERSHIP_AI_CLAUDE_API_KEY_DESC" />
+                <field name="model" type="list" default="claude-opus-5-5"
+                    label="PLG_MOTHERSHIP_AI_CLAUDE_MODEL_LABEL"
+                    description="PLG_MOTHERSHIP_AI_CLAUDE_MODEL_DESC">
+                    <option value="claude-fable-5-1">Claude Fable 5.1 (most capable, most expensive)</option>
+                    <option value="claude-opus-5-5">Claude Opus 5.5</option>
+                    <option value="claude-sonnet-5-5">Claude Sonnet 5.5 (cheaper)</option>
+                    <option value="claude-haiku-5-5">Claude Haiku 5.5 (cheapest)</option>
+                    <option value="claude-opus-5">Claude Opus 5 (previous)</option>
+                    <option value="claude-sonnet-5">Claude Sonnet 5 (previous)</option>
+                    <option value="claude-haiku-4-5">Claude Haiku 4.5 (previous)</option>
+                </field>
+                <field name="max_tokens" type="number" default="2048" min="256" max="16000" step="256"
+                    label="PLG_MOTHERSHIP_AI_CLAUDE_MAX_TOKENS_LABEL"
+                    description="PLG_MOTHERSHIP_AI_CLAUDE_MAX_TOKENS_DESC" />
+                <field name="rates" type="textarea" default="" rows="4"
+                    class="input-xxlarge"
+                    label="PLG_MOTHERSHIP_AI_CLAUDE_RATES_LABEL"
+                    description="PLG_MOTHERSHIP_AI_CLAUDE_RATES_DESC"
+                    hint="claude-opus-5-5 = 4.00, 20.00" />
+                <field name="base_url" type="url" default=""
+                    class="input-xxlarge input-large-text"
+                    label="PLG_MOTHERSHIP_AI_CLAUDE_BASE_URL_LABEL"
+                    description="PLG_MOTHERSHIP_AI_CLAUDE_BASE_URL_DESC" />
+            </fieldset>
+        </fields>
+    </config>
+</extension>

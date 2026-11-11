@@ -852,15 +852,76 @@ This payment method allows clients to pay invoices by mailing a physical check. 
 
 ---
 
+## AI Connector
+New in 0.0.30. Mothership features that use AI go through one service, `AiService`, and the provider behind it is a plugin in the `mothership-ai` group. Nothing in this release calls it yet except the connection test; it is the base for the features that follow.
+
+- **Component options, AI tab**: *Enable AI features* is the master switch (off by default; while it is off no AI call is made anywhere), and *AI provider* selects the connector. *Configure* opens the selected connector plugin, and *Test connection* sends one small live request with the saved settings and reports the model and the time it took. The test works while the master switch is off, so the connection can be checked first.
+- **The Claude connector** (`plugins/mothership-ai/claude`): talks to Anthropic's Messages API. Its options hold the API key, the model, the maximum response tokens, an optional base URL for a proxy or gateway, and *Rates* (prices per million tokens, used to estimate what a call costs). The Mothership package installs it disabled; enter a key and enable it.
+- The key lives only in the plugin's options. The component holds no credentials.
+
+### Using it from code
+```php
+use TrevorBice\Component\Mothership\Administrator\Service\Ai\AiService;
+
+if (AiService::isEnabled()) {
+    $result = AiService::text('Write a one-line summary of: ' . $notes);
+
+    if ($result->ok) {
+        echo $result->text;
+    } else {
+        echo $result->error;
+    }
+}
+```
+`AiService::chat($messages, $options)` takes a whole conversation; `$options` may carry `system`, `model` and `max_tokens`. Both return an `AiResult` (`ok`, `text`, `error`, `model`, `usage`, `stopReason`, `raw`) and never throw: a disabled switch, a missing plugin or a provider error comes back as `ok = false` with the reason in `error`.
+
+### AI Usage
+New in 0.0.31; updating from an earlier version creates the table. Every provider call that reports tokens is written to `#__mothership_ai_usage`: the feature that made it, what it was about, the model, the tokens, and an estimated cost. The cost is the tokens priced at the connector's rate for that model when the call was made, and it is kept on the row, so a later price change does not rewrite history. A model with no rate is recorded without a cost; add one in the connector's *Rates* setting.
+
+The **AI Usage** screen is reached from the *AI Usage* button on the Expenses list. It shows this month so far, last month and all time, and lists the calls newest first, with filters for client, account and feature and a search by model. It is for watching the spend only. It writes no expense: enter the provider's bill as an expense as usual.
+
+`AiService` does the recording. A caller only says what its call is for:
+```php
+AiService::text($prompt, ['usage' => ['feature' => 'expense.read']]);
+```
+`usage` may carry `feature` (one of `AiUsage::FEATURES`, anything else is filed as `other`), `resource_type` and `resource_id` (for an `invoice`, the client, account and project are read from it), or `client_id`, `account_id` and `project_id` directly. The connection test is recorded too, as `connection.test`. Recording never throws: a failed write is logged and the feature carries on.
+
+```
+CREATE TABLE IF NOT EXISTS `#__mothership_ai_usage` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `provider` VARCHAR(50) NOT NULL COMMENT 'the connector, e.g. claude',
+  `model` VARCHAR(100) NULL DEFAULT NULL,
+  `feature` VARCHAR(50) NOT NULL DEFAULT 'other' COMMENT 'expense.read, connection.test, other',
+  `resource_type` VARCHAR(30) NULL DEFAULT NULL COMMENT 'what the call was about, e.g. invoice',
+  `resource_id` INT(11) NULL DEFAULT NULL,
+  `client_id` INT(11) NULL DEFAULT NULL,
+  `account_id` INT(11) NULL DEFAULT NULL,
+  `project_id` INT(11) NULL DEFAULT NULL,
+  `input_tokens` INT(11) NOT NULL DEFAULT 0,
+  `output_tokens` INT(11) NOT NULL DEFAULT 0,
+  `cost` DECIMAL(12,6) NULL DEFAULT NULL COMMENT 'estimated USD; NULL when the model has no rate',
+  `created` DATETIME NOT NULL,
+  `created_by` INT(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `idx_ai_usage_created` (`created`),
+  KEY `idx_ai_usage_client` (`client_id`),
+  KEY `idx_ai_usage_resource` (`resource_type`, `resource_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
+
+### Creating an AI connector plugin
+A connector is a plugin in the `mothership-ai` group whose class is `PlgMothershipAi` followed by the plugin name with its first letter capitalized. It must have `chat(array $messages, array $options = []): array`, returning `ok`, `text`, `stop_reason`, `usage` (`input` and `output` token counts), `model`, `error` and `raw`. It may have `isConfigured(): bool`, which `AiService::isEnabled()` asks, and `rates(): array`. Add its name to the `ai_provider` list in `admin/config.xml`.
+
 # PDFs
 Invoices and proposals can be previewed and downloaded as PDFs, rendered with mPDF. Invoice PDF templates can be supplied by plugins in the `mothership-invoice-pdf` plugin group; the template is selected in the component options and can be set per client.
 
 # Administrator Modules
-Four administrator dashboard modules live in `modules/`. The Mothership package installs the first three and, on a first install, publishes them on the Mothership dashboard: the dashboard icon beside **Mothership** in the administrator menu, module position `cpanel-mothership`. After that they are yours to move, unpublish or delete; an update does not put them back. Each is also built as a zip of its own.
+Five administrator dashboard modules live in `modules/`. The Mothership package installs the first four and, on a first install, publishes them on the Mothership dashboard: the dashboard icon beside **Mothership** in the administrator menu, module position `cpanel-mothership`. After that they are yours to move, unpublish or delete; an update does not put them back. Each is also built as a zip of its own.
 
 - **mod_mothership_invoices**: Lists open (unpaid or partially paid) invoices.
 - **mod_mothership_invoiced**: Bar chart of monthly invoiced totals for the current year, with the all-time total.
 - **mod_mothership_payments**: Bar chart of monthly completed-payment totals for the current year, with the all-time total.
+- **mod_mothership_expenses**: Bar chart of monthly expense totals for the current year, with the all-time total. Every expense counts, assigned or not.
 - **mod_mothership_tickets**: Lists the most recently updated support tickets. It belongs to the planned support tickets feature, which is not part of the current release, so the package leaves it out.
 
 # Web Services API

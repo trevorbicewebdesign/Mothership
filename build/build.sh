@@ -10,6 +10,7 @@
 #                                                points here
 #   dist/Mothership-<v>.zip                      the component
 #   dist/plg_mothership-payment_<name>-<v>.zip   one per payment plugin
+#   dist/plg_mothership-ai_<name>-<v>.zip        one per AI connector plugin
 #   dist/plg_webservices_mothership-<v>.zip      the web services (API) plugin
 #   dist/mod_mothership_<name>-<v>.zip           one per admin module
 #
@@ -67,6 +68,12 @@ for dir in plugins/mothership-payment/*/; do
   name=$(basename "$dir")
   echo "plugin     dist/plg_mothership-payment_${name}-$VERSION.zip"
   git archive --format=zip -o "dist/plg_mothership-payment_${name}-$VERSION.zip" "HEAD:${dir%/}"
+done
+
+for dir in plugins/mothership-ai/*/; do
+  name=$(basename "$dir")
+  echo "plugin     dist/plg_mothership-ai_${name}-$VERSION.zip"
+  git archive --format=zip -o "dist/plg_mothership-ai_${name}-$VERSION.zip" "HEAD:${dir%/}"
 done
 
 echo "plugin     dist/plg_webservices_mothership-$VERSION.zip"

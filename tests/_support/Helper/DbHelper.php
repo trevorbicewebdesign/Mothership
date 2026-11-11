@@ -490,6 +490,27 @@ class DbHelper extends Db
         return $data;
     }
 
+    /**
+     * A recorded AI call, as AiUsage::record() leaves it.
+     */
+    public function createMothershipAiUsage(array $data)
+    {
+        $data = array_merge([
+            "provider" => "claude",
+            "model" => "claude-haiku-4-5",
+            "feature" => "connection.test",
+            "input_tokens" => 1000,
+            "output_tokens" => 200,
+            "cost" => 0.002,
+            "created" => date('Y-m-d H:i:s'),
+            "created_by" => 0,
+        ], $data);
+
+        $data['id'] = $this->Db->haveInDatabase("{$this->prefix}mothership_ai_usage", $data);
+
+        return $data;
+    }
+
     public function createMothershipProjectData(array $data)
     {
         $faker = Faker\Factory::create();
@@ -775,6 +796,7 @@ class DbHelper extends Db
         $this->clearPaymentsTable();
         $this->clearInvoicePaymentTable();
         $this->clearExpensesTable();
+        $this->Db->_getDriver()->executeQuery("TRUNCATE TABLE {$this->prefix}mothership_ai_usage", []);
         $this->clearAccountsTable();
         $this->clearClientsTable();
         $this->clearUsersTable();
@@ -784,6 +806,27 @@ class DbHelper extends Db
         $this->Db->_getDriver()->executeQuery("SET FOREIGN_KEY_CHECKS = 1", []);
     }
 
+
+    /**
+     * Switch the AI features on or off. On means the component setting is on and the Claude
+     * connector is enabled with the given options. No test uses a real key or reaches a provider.
+     */
+    public function haveMothershipAi(bool $on = true, array $plugin = [])
+    {
+        $driver = $this->Db->_getDriver();
+        $table  = "{$this->prefix}extensions";
+
+        $stored = (string) $this->Db->grabFromDatabase($table, 'params', ['type' => 'component', 'element' => 'com_mothership']);
+        $params = json_decode($stored, true) ?: [];
+        $params['ai_enabled']  = $on ? '1' : '0';
+        $params['ai_provider'] = 'claude';
+        $driver->executeQuery("UPDATE {$table} SET params = ? WHERE type = 'component' AND element = 'com_mothership'", [json_encode($params)]);
+
+        $plugin = json_encode(array_merge(['api_key' => '', 'model' => 'claude-haiku-4-5', 'max_tokens' => '2048', 'base_url' => ''], $plugin));
+        $driver->executeQuery("UPDATE {$table} SET enabled = ?, params = ? WHERE type = 'plugin' AND folder = 'mothership-ai' AND element = 'claude'", [$on ? 1 : 0, $plugin]);
+
+        $this->forgetExtensionSettings();
+    }
 
     public function setMothershipConfig(array $settings)
     {
@@ -843,7 +886,31 @@ class DbHelper extends Db
             ["name" => "com_mothership"]
         );
 
+        $this->forgetExtensionSettings();
+
         return $config_params;
+    }
+
+    /**
+     * Make the next ComponentHelper::getParams() and PluginHelper lookup read the database again.
+     *
+     * Joomla loads every component's params, and the list of enabled plugins, once per process
+     * and keeps them. Codeception runs a suite in one process, so whichever test first touched
+     * com_mothership fixed its settings for the whole run, whatever a later test wrote. The
+     * helpers that write settings call this. Where the site runs in another process (the
+     * acceptance suite) Joomla's classes are not loaded here and there is nothing to forget.
+     */
+    public function forgetExtensionSettings(): void
+    {
+        foreach ([\Joomla\CMS\Component\ComponentHelper::class => ['components', []], \Joomla\CMS\Plugin\PluginHelper::class => ['plugins', null]] as $class => [$property, $empty]) {
+            if (!class_exists($class, false)) {
+                continue;
+            }
+
+            $cache = new \ReflectionProperty($class, $property);
+            $cache->setAccessible(true);
+            $cache->setValue(null, $empty);
+        }
     }
 
     public function assertInvoiceHasRows($invoiceId, $expectedRows)

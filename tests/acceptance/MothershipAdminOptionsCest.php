@@ -92,4 +92,58 @@ class MothershipAdminOptionsCest
         $I->waitForText("Configuration saved.", 10);
 
     }
+
+    /**
+     * The AI tab: the connector plugin is installed disabled, and the connection test says why
+     * it cannot connect. Nothing here reaches a provider.
+     *
+     * @group backend
+     * @group options
+     * @group backend-options
+     */
+    public function MothershipAiOptionsWithTheConnectorDisabled(AcceptanceTester $I)
+    {
+        $I->haveMothershipAi(false);
+
+        $I->amOnPage(self::OPTIONS_URL);
+        $I->waitForText("Mothership: Configuration", 10);
+        $I->click("AI", "#configTabs");
+        $I->waitForElementVisible("#jform_ai_enabled", 10);
+
+        $I->see("Enable AI features");
+        $I->seeOptionIsSelected("#jform_ai_provider", "Claude (Anthropic)");
+        $I->see("Configure Claude", ".ms-ai-tools a.btn");
+        $I->see("This connector plugin is currently disabled.", ".ms-ai-tools");
+
+        $I->click("Test connection", ".ms-ai-tools");
+        $I->waitForText("AI connector 'claude' is not installed or not enabled.", 10, ".ms-ai-test-result");
+    }
+
+    /**
+     * Enabled but with no API key, the test stops at the connector: no request is sent.
+     *
+     * @group backend
+     * @group options
+     * @group backend-options
+     */
+    public function MothershipAiOptionsTestWithoutAKey(AcceptanceTester $I)
+    {
+        $I->haveMothershipAi(true);
+
+        $I->amOnPage(self::OPTIONS_URL);
+        $I->waitForText("Mothership: Configuration", 10);
+        $I->click("AI", "#configTabs");
+        $I->waitForElementVisible("#jform_ai_enabled", 10);
+
+        $I->dontSee("This connector plugin is currently disabled.", ".ms-ai-tools");
+
+        $I->click("Test connection", ".ms-ai-tools");
+        $I->waitForText("Missing Anthropic API key.", 10, ".ms-ai-test-result");
+
+        // Configure goes to the connector plugin, where the key and model live.
+        $I->click("Configure Claude", ".ms-ai-tools");
+        $I->waitForText("Plugins: Mothership AI - Claude (Anthropic)", 30, "h1.page-title");
+        $I->seeElement("#jform_params_api_key");
+        $I->seeElement("#jform_params_model");
+    }
 }

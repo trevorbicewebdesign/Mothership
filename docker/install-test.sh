@@ -137,7 +137,7 @@ for zip in "$DIST"/plg_*.zip "$DIST"/mod_*.zip; do
   install_zip "$zip"
   count=$((count + 1))
 done
-installed=$(mysql_query "SELECT COUNT(*) FROM local.jos_extensions WHERE (type = 'plugin' AND folder = 'mothership-payment') OR (type = 'plugin' AND folder = 'webservices' AND element = 'mothership') OR (type = 'module' AND element LIKE 'mod\\_mothership\\_%')")
+installed=$(mysql_query "SELECT COUNT(*) FROM local.jos_extensions WHERE (type = 'plugin' AND folder IN ('mothership-payment', 'mothership-ai')) OR (type = 'plugin' AND folder = 'webservices' AND element = 'mothership') OR (type = 'module' AND element LIKE 'mod\\_mothership\\_%')")
 check "plugin and module zips installed" "$count" "$installed"
 [ "$count" -gt 0 ] || fail "no plugin or module zips in $DIST"
 
