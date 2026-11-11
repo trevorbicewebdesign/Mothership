@@ -130,6 +130,8 @@ jobs:
           - suite: acceptance
             group: backend-payment
           - suite: acceptance
+            group: backend-expense
+          - suite: acceptance
             group: backend-options
           - suite: acceptance
             group: backend-log

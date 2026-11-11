@@ -1,0 +1,113 @@
+<?php
+
+/**
+ * @package     Joomla.Administrator
+ * @subpackage  com_mothership
+ *
+ * @copyright   (C) 2006 Open Source Matters, Inc. <https://www.joomla.org>
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ */
+
+namespace TrevorBice\Component\Mothership\Administrator\Table;
+
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Table\Table;
+use Joomla\CMS\Versioning\VersionableTableInterface;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Event\DispatcherInterface;
+
+// phpcs:disable PSR1.Files.SideEffects
+\defined('_JEXEC') or die;
+// phpcs:enable PSR1.Files.SideEffects
+
+/**
+ * Expense table
+ *
+ * @since  0.0.29
+ */
+class ExpenseTable extends Table implements VersionableTableInterface
+{
+    /**
+     * Indicates that columns fully support the NULL value in the database
+     *
+     * @var    boolean
+     * @since  4.0.0
+     */
+    protected $_supportNullValue = true;
+
+    /**
+     * Constructor
+     *
+     * @param   DatabaseDriver        $db          Database connector object
+     * @param   ?DispatcherInterface  $dispatcher  Event dispatcher for this table
+     */
+    public function __construct(DatabaseDriver $db, ?DispatcherInterface $dispatcher = null)
+    {
+        $this->typeAlias = 'com_mothership.expense';
+
+        parent::__construct('#__mothership_expenses', 'id', $db, $dispatcher);
+    }
+
+    /**
+     * Get the type alias for the history table
+     *
+     * @return  string  The alias as described above
+     */
+    public function getTypeAlias()
+    {
+        return $this->typeAlias;
+    }
+
+    /**
+     * Overloaded check function
+     *
+     * @return  boolean  True if the object is ok
+     *
+     * @see     Table::check()
+     */
+    public function check()
+    {
+        try {
+            parent::check();
+        } catch (\Exception $e) {
+            $this->setError($e->getMessage());
+
+            return false;
+        }
+
+        // A date cleared on the form is not a date the database will take: it is dated today.
+        if (empty($this->expense_date) || $this->expense_date === '0000-00-00') {
+            $this->expense_date = self::today();
+        }
+
+        // An expense may be unassigned; normalise empty relations to NULL so the
+        // "no client / account / project" case is stored consistently.
+        foreach (['client_id', 'account_id', 'project_id', 'invoiced_invoice_id'] as $rel) {
+            if (empty($this->$rel)) {
+                $this->$rel = null;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Today's date where the administrator is: by their own timezone setting, else the site's.
+     * A date typed into an expense is kept as typed, so this is only what an undated one gets.
+     *
+     * @return  string  Y-m-d
+     */
+    public static function today(): string
+    {
+        $app  = Factory::getApplication();
+        $user = $app->getIdentity();
+        $zone = (string) (($user ? $user->getParam('timezone') : '') ?: $app->get('offset', 'UTC'));
+
+        try {
+            return (new \DateTimeImmutable('now', new \DateTimeZone($zone)))->format('Y-m-d');
+        } catch (\Throwable $e) {
+            return gmdate('Y-m-d');
+        }
+    }
+}

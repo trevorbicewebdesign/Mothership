@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form addfieldprefix="TrevorBice\Component\Mothership\Administrator\Field">
+	<fields name="filter">
+		<field name="search" type="text" inputmode="search" label="COM_MOTHERSHIP_EXPENSES_FILTER_SEARCH_LABEL" description="COM_MOTHERSHIP_EXPENSES_FILTER_SEARCH_DESC" hint="JSEARCH_FILTER" />
+
+		<field name="client_id" type="sql" default="" onchange="this.form.submit();"
+			header="COM_MOTHERSHIP_FILTER_SELECT_CLIENT" key_field="value" value_field="text"
+			query="SELECT id AS value, name AS text FROM #__mothership_clients ORDER BY name ASC"
+			label="COM_MOTHERSHIP_FILTER_CLIENT_LABEL" description="" />
+
+		<field name="account_id" type="accountfilter" default="" onchange="this.form.submit();"
+			label="COM_MOTHERSHIP_FILTER_ACCOUNT_LABEL" description="" />
+
+		<field name="category" type="list" default="" onchange="this.form.submit();"
+			label="COM_MOTHERSHIP_EXPENSES_FILTER_CATEGORY_LABEL" description="">
+			<option value="">COM_MOTHERSHIP_EXPENSE_CATEGORY_SELECT_FILTER</option>
+			<option value="SOFTWARE">COM_MOTHERSHIP_EXPENSE_CATEGORY_SOFTWARE</option>
+			<option value="EQUIPMENT">COM_MOTHERSHIP_EXPENSE_CATEGORY_EQUIPMENT</option>
+			<option value="WEBHOST">COM_MOTHERSHIP_EXPENSE_CATEGORY_WEBHOST</option>
+			<option value="INTERNET">COM_MOTHERSHIP_EXPENSE_CATEGORY_INTERNET</option>
+			<option value="CELL">COM_MOTHERSHIP_EXPENSE_CATEGORY_CELL</option>
+			<option value="ADVERTISING">COM_MOTHERSHIP_EXPENSE_CATEGORY_ADVERTISING</option>
+			<option value="FEE">COM_MOTHERSHIP_EXPENSE_CATEGORY_FEE</option>
+			<option value="BANK">COM_MOTHERSHIP_EXPENSE_CATEGORY_BANK</option>
+			<option value="CONTRACT">COM_MOTHERSHIP_EXPENSE_CATEGORY_CONTRACT</option>
+			<option value="RENT">COM_MOTHERSHIP_EXPENSE_CATEGORY_RENT</option>
+			<option value="POWER">COM_MOTHERSHIP_EXPENSE_CATEGORY_POWER</option>
+			<option value="UTILITIES">COM_MOTHERSHIP_EXPENSE_CATEGORY_UTILITIES</option>
+			<option value="TRAVEL">COM_MOTHERSHIP_EXPENSE_CATEGORY_TRAVEL</option>
+			<option value="TAXES">COM_MOTHERSHIP_EXPENSE_CATEGORY_TAXES</option>
+			<option value="OTHER">COM_MOTHERSHIP_EXPENSE_CATEGORY_OTHER</option>
+		</field>
+
+		<field name="billable" type="list" default="" onchange="this.form.submit();"
+			label="COM_MOTHERSHIP_EXPENSES_FILTER_BILLABLE_LABEL" description="">
+			<option value="">COM_MOTHERSHIP_EXPENSES_FILTER_BILLABLE_ANY</option>
+			<option value="1">JYES</option>
+			<option value="0">JNO</option>
+		</field>
+	</fields>
+	<fields name="list">
+		<field name="fullordering" type="list" label="JGLOBAL_SORT_BY" statuses="*,0,1,2,-2" class="js-select-submit-on-change" default="e.expense_date DESC" validate="options">
+			<option value="">JGLOBAL_SORT_BY</option>
+			<option value="e.expense_date DESC">COM_MOTHERSHIP_EXPENSES_SORT_DATE_DESC</option>
+			<option value="e.expense_date ASC">COM_MOTHERSHIP_EXPENSES_SORT_DATE_ASC</option>
+			<option value="e.amount DESC">COM_MOTHERSHIP_EXPENSES_SORT_AMOUNT_DESC</option>
+			<option value="e.amount ASC">COM_MOTHERSHIP_EXPENSES_SORT_AMOUNT_ASC</option>
+			<option value="e.category ASC">COM_MOTHERSHIP_EXPENSES_SORT_CATEGORY_ASC</option>
+			<option value="c.name ASC">COM_MOTHERSHIP_EXPENSES_SORT_CLIENT_ASC</option>
+		</field>
+		<field name="limit" type="limitbox" label="JGLOBAL_LIST_LIMIT" default="25" class="js-select-submit-on-change" />
+	</fields>
+</form>

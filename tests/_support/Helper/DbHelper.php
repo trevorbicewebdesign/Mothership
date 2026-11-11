@@ -452,6 +452,44 @@ class DbHelper extends Db
 
     }
 
+    public function createMothershipExpenseData(array $data)
+    {
+        $now = date('Y-m-d H:i:s');
+        // Default values for the expense. No client, account or project: unassigned.
+        $defaultData = [
+            "category" => "SOFTWARE",
+            "item" => "Test Expense",
+            "merchant" => "Test Merchant",
+            "client_id" => NULL,
+            "account_id" => NULL,
+            "project_id" => NULL,
+            "expense_date" => date('Y-m-d'),
+            "amount" => 0,
+            "billable" => 0,
+            "reimbursed" => 0,
+            "created_at" => $now,
+            "updated_at" => $now,
+        ];
+
+        // Merge provided data with defaults
+        $finalData = array_merge($defaultData, $data);
+        return $finalData;
+    }
+
+    public function createMothershipExpense(array $data)
+    {
+        $data = $this->createMothershipExpenseData($data);
+        // Debugging output for visibility
+        codecept_debug("Creating Mothership Expense with the following data:");
+        // Insert into the database
+        $id = $this->Db->haveInDatabase("{$this->prefix}mothership_expenses", $data);
+        $data['id'] = $id;
+        codecept_debug($data);
+
+        // Return the data of the newly created expense
+        return $data;
+    }
+
     public function createMothershipProjectData(array $data)
     {
         $faker = Faker\Factory::create();
@@ -716,6 +754,12 @@ class DbHelper extends Db
         $this->Db->_getDriver()->executeQuery("TRUNCATE TABLE {$this->prefix}mothership_payments", []);
     }
 
+    public function clearExpensesTable()
+    {
+        codecept_debug("Clearing expenses table");
+        $this->Db->_getDriver()->executeQuery("TRUNCATE TABLE {$this->prefix}mothership_expenses", []);
+    }
+
     public function resetMothershipTables()
     {
         codecept_debug("Resetting Mothership tables");
@@ -730,6 +774,7 @@ class DbHelper extends Db
         $this->clearProposalItemsTable();
         $this->clearPaymentsTable();
         $this->clearInvoicePaymentTable();
+        $this->clearExpensesTable();
         $this->clearAccountsTable();
         $this->clearClientsTable();
         $this->clearUsersTable();

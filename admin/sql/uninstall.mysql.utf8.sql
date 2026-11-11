@@ -4,6 +4,7 @@ DROP TABLE IF EXISTS `#__mothership_accounts`;
 DROP TABLE IF EXISTS `#__mothership_clients`;
 DROP TABLE IF EXISTS `#__mothership_domains`;
 DROP TABLE IF EXISTS `#__mothership_emails`;
+DROP TABLE IF EXISTS `#__mothership_expenses`;
 DROP TABLE IF EXISTS `#__mothership_invoice_items`;
 DROP TABLE IF EXISTS `#__mothership_invoice_payment`;
 DROP TABLE IF EXISTS `#__mothership_invoices`;
