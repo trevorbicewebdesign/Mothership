@@ -4,7 +4,7 @@
 #
 #   build/set-version.sh 0.0.25
 #
-# Touches mothership.xml (attribute and element), the payment and web services plugin
+# Touches mothership.xml (attribute and element), the payment, AI and web services plugin
 # manifests, package/pkg_mothership.xml and composer.json. updates.xml is left alone: it
 # is the live update server, and it is pointed at the release by build/update-server.sh
 # once the zip exists (the release workflow does this).
@@ -29,7 +29,7 @@ open(p, 'w').write(s)
 
 # The plugins are released with the component and carry its version. Only some of
 # their manifests repeat it as an attribute on <extension>.
-for p in sorted(glob.glob('plugins/mothership-payment/*/*.xml') + glob.glob('plugins/webservices/*/*.xml')):
+for p in sorted(glob.glob('plugins/mothership-payment/*/*.xml') + glob.glob('plugins/mothership-ai/*/*.xml') + glob.glob('plugins/webservices/*/*.xml')):
     s = open(p).read()
     s = re.sub(r'(<extension\b[^>]*\bversion=")[^"]*(")', r'\g<1>' + v + r'\2', s, count=1)
     s, n = re.subn(r'<version>[^<]*</version>', f'<version>{v}</version>', s, count=1)

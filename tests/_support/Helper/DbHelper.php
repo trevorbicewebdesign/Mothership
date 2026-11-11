@@ -785,6 +785,25 @@ class DbHelper extends Db
     }
 
 
+    /**
+     * Switch the AI features on or off. On means the component setting is on and the Claude
+     * connector is enabled with the given options. No test uses a real key or reaches a provider.
+     */
+    public function haveMothershipAi(bool $on = true, array $plugin = [])
+    {
+        $driver = $this->Db->_getDriver();
+        $table  = "{$this->prefix}extensions";
+
+        $stored = (string) $this->Db->grabFromDatabase($table, 'params', ['type' => 'component', 'element' => 'com_mothership']);
+        $params = json_decode($stored, true) ?: [];
+        $params['ai_enabled']  = $on ? '1' : '0';
+        $params['ai_provider'] = 'claude';
+        $driver->executeQuery("UPDATE {$table} SET params = ? WHERE type = 'component' AND element = 'com_mothership'", [json_encode($params)]);
+
+        $plugin = json_encode(array_merge(['api_key' => '', 'model' => 'claude-haiku-4-5', 'max_tokens' => '2048', 'base_url' => ''], $plugin));
+        $driver->executeQuery("UPDATE {$table} SET enabled = ?, params = ? WHERE type = 'plugin' AND folder = 'mothership-ai' AND element = 'claude'", [$on ? 1 : 0, $plugin]);
+    }
+
     public function setMothershipConfig(array $settings)
     {
         // Grab the existing JSON-encoded params from the DB and decode into an array

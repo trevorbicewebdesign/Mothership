@@ -852,6 +852,32 @@ This payment method allows clients to pay invoices by mailing a physical check. 
 
 ---
 
+## AI Connector
+New in 0.0.30. Mothership features that use AI go through one service, `AiService`, and the provider behind it is a plugin in the `mothership-ai` group. Nothing in this release calls it yet except the connection test; it is the base for the features that follow.
+
+- **Component options, AI tab**: *Enable AI features* is the master switch (off by default; while it is off no AI call is made anywhere), and *AI provider* selects the connector. *Configure* opens the selected connector plugin, and *Test connection* sends one small live request with the saved settings and reports the model and the time it took. The test works while the master switch is off, so the connection can be checked first.
+- **The Claude connector** (`plugins/mothership-ai/claude`): talks to Anthropic's Messages API. Its options hold the API key, the model, the maximum response tokens, an optional base URL for a proxy or gateway, and *Rates* (prices per million tokens, used to estimate what a call costs). The Mothership package installs it disabled; enter a key and enable it.
+- The key lives only in the plugin's options. The component holds no credentials.
+
+### Using it from code
+```php
+use TrevorBice\Component\Mothership\Administrator\Service\Ai\AiService;
+
+if (AiService::isEnabled()) {
+    $result = AiService::text('Write a one-line summary of: ' . $notes);
+
+    if ($result->ok) {
+        echo $result->text;
+    } else {
+        echo $result->error;
+    }
+}
+```
+`AiService::chat($messages, $options)` takes a whole conversation; `$options` may carry `system`, `model` and `max_tokens`. Both return an `AiResult` (`ok`, `text`, `error`, `model`, `usage`, `stopReason`, `raw`) and never throw: a disabled switch, a missing plugin or a provider error comes back as `ok = false` with the reason in `error`.
+
+### Creating an AI connector plugin
+A connector is a plugin in the `mothership-ai` group whose class is `PlgMothershipAi` followed by the plugin name with its first letter capitalized. It must have `chat(array $messages, array $options = []): array`, returning `ok`, `text`, `stop_reason`, `usage` (`input` and `output` token counts), `model`, `error` and `raw`. It may have `isConfigured(): bool`, which `AiService::isEnabled()` asks, and `rates(): array`. Add its name to the `ai_provider` list in `admin/config.xml`.
+
 # PDFs
 Invoices and proposals can be previewed and downloaded as PDFs, rendered with mPDF. Invoice PDF templates can be supplied by plugins in the `mothership-invoice-pdf` plugin group; the template is selected in the component options and can be set per client.
 

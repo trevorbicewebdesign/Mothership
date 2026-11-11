@@ -37,8 +37,11 @@ services:
       - ./plugins/mothership-payment/paybycheck/language/en-GB/en-GB.plg_mothership-payment_paybycheck.sys.ini:/var/www/html/administrator/language/en-GB/plg_mothership-payment_paybycheck.sys.ini
       - ./plugins/mothership-payment/zelle/language/en-GB/en-GB.plg_mothership-payment_zelle.ini:/var/www/html/administrator/language/en-GB/plg_mothership-payment_zelle.ini
       - ./plugins/mothership-payment/zelle/language/en-GB/en-GB.plg_mothership-payment_zelle.sys.ini:/var/www/html/administrator/language/en-GB/plg_mothership-payment_zelle.sys.ini
+      - ./plugins/mothership-ai/claude/language/en-GB/en-GB.plg_mothership-ai_claude.ini:/var/www/html/administrator/language/en-GB/plg_mothership-ai_claude.ini
+      - ./plugins/mothership-ai/claude/language/en-GB/en-GB.plg_mothership-ai_claude.sys.ini:/var/www/html/administrator/language/en-GB/plg_mothership-ai_claude.sys.ini
 
       - ./plugins/mothership-payment:/var/www/html/plugins/mothership-payment
+      - ./plugins/mothership-ai:/var/www/html/plugins/mothership-ai
       - ./plugins/webservices/mothership:/var/www/html/plugins/webservices/mothership
 
       - ./plugins/mothership-invoice-pdf/zelle/language/en-GB/en-GB.plg_mothership-invoice-pdf_zelle.ini:/var/www/html/administrator/language/en-GB/plg_mothership-invoice-pdf_zelle.ini

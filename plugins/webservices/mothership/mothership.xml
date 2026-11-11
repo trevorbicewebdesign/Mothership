@@ -4,7 +4,7 @@
 	<author>Trevor Bice</author>
 	<creationDate>2026-11</creationDate>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-	<version>0.0.29</version>
+	<version>0.0.30</version>
 	<description>PLG_WEBSERVICES_MOTHERSHIP_XML_DESCRIPTION</description>
 	<namespace path="src">TrevorBice\Plugin\WebServices\Mothership</namespace>
 	<files>
