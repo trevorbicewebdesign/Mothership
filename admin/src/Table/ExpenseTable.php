@@ -10,6 +10,7 @@
 
 namespace TrevorBice\Component\Mothership\Administrator\Table;
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\Versioning\VersionableTableInterface;
@@ -75,6 +76,11 @@ class ExpenseTable extends Table implements VersionableTableInterface
             return false;
         }
 
+        // A date cleared on the form is not a date the database will take: it is dated today.
+        if (empty($this->expense_date) || $this->expense_date === '0000-00-00') {
+            $this->expense_date = self::today();
+        }
+
         // An expense may be unassigned; normalise empty relations to NULL so the
         // "no client / account / project" case is stored consistently.
         foreach (['client_id', 'account_id', 'project_id', 'invoiced_invoice_id'] as $rel) {
@@ -84,5 +90,24 @@ class ExpenseTable extends Table implements VersionableTableInterface
         }
 
         return true;
+    }
+
+    /**
+     * Today's date where the administrator is: by their own timezone setting, else the site's.
+     * A date typed into an expense is kept as typed, so this is only what an undated one gets.
+     *
+     * @return  string  Y-m-d
+     */
+    public static function today(): string
+    {
+        $app  = Factory::getApplication();
+        $user = $app->getIdentity();
+        $zone = (string) (($user ? $user->getParam('timezone') : '') ?: $app->get('offset', 'UTC'));
+
+        try {
+            return (new \DateTimeImmutable('now', new \DateTimeZone($zone)))->format('Y-m-d');
+        } catch (\Throwable $e) {
+            return gmdate('Y-m-d');
+        }
     }
 }

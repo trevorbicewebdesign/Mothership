@@ -372,6 +372,27 @@ class MothershipAdminExpensesCest
     }
 
     /**
+     * A date cleared on the form is dated today instead of failing the save.
+     *
+     * @group backend
+     * @group expense
+     * @group backend-expense
+     */
+    public function MothershipSaveExpenseWithoutDate(AcceptanceTester $I)
+    {
+        $I->amOnPage(sprintf(self::EXPENSE_EDIT_URL, $this->expenseData['id']));
+        $I->waitForText("Mothership: Edit Expense", 30, "h1.page-title");
+
+        $I->fillField("input#jform_expense_date", "");
+        $I->click("Save", "#toolbar");
+        $I->waitForText("Expense Stock Photos saved.", 10, "#system-message-container .alert-message");
+
+        $today = (new \DateTimeImmutable('now', new \DateTimeZone(self::ADMIN_TIMEZONE)))->format('Y-m-d');
+        $I->seeInField("input#jform_expense_date", $today);
+        $I->assertSame($today, $I->grabFromDatabase('jos_mothership_expenses', 'expense_date', ['id' => $this->expenseData['id']]));
+    }
+
+    /**
      * @group backend
      * @group expense
      * @group backend-expense

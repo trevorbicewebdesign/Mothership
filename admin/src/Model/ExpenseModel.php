@@ -15,6 +15,7 @@ use Joomla\CMS\MVC\Model\AdminModel;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\Versioning\VersionableModelTrait;
 use Joomla\CMS\Log\Log;
+use TrevorBice\Component\Mothership\Administrator\Table\ExpenseTable;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -86,31 +87,12 @@ class ExpenseModel extends AdminModel
         // A new one is dated today, as the calendar on the wall has it here. The field itself
         // does no timezone conversion: a date has no time of day to convert.
         if (\is_object($data) && empty($data->id) && empty($data->expense_date)) {
-            $data->expense_date = $this->today();
+            $data->expense_date = ExpenseTable::today();
         }
 
         $this->preprocessData('com_mothership.expense', $data);
 
         return $data;
-    }
-
-    /**
-     * Today's date where the administrator is: by their own timezone setting, else the site's.
-     * A date typed into an expense is kept as typed, so this is only what a new one starts on.
-     *
-     * @return  string  Y-m-d
-     */
-    public function today(): string
-    {
-        $app  = Factory::getApplication();
-        $user = $this->getCurrentUser();
-        $zone = (string) ($user->getParam('timezone') ?: $app->get('offset', 'UTC'));
-
-        try {
-            return (new \DateTimeImmutable('now', new \DateTimeZone($zone)))->format('Y-m-d');
-        } catch (\Throwable $e) {
-            return gmdate('Y-m-d');
-        }
     }
 
     /**
