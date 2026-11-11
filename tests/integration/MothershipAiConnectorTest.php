@@ -21,6 +21,9 @@ class MothershipAiConnectorTest extends \Codeception\Test\Unit
         require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Service/Ai/AiResult.php';
         require_once JPATH_ROOT . '/administrator/components/com_mothership/src/Service/Ai/AiService.php';
         require_once JPATH_ROOT . '/plugins/mothership-ai/claude/claude.php';
+
+        // As installed: the switch off and the connector disabled, whatever ran before.
+        $this->tester->haveMothershipAi(false);
     }
 
     private function claude(array $params = []): \PlgMothershipAiClaude

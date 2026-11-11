@@ -825,6 +825,8 @@ class DbHelper extends Db
 
         $plugin = json_encode(array_merge(['api_key' => '', 'model' => 'claude-haiku-4-5', 'max_tokens' => '2048', 'base_url' => ''], $plugin));
         $driver->executeQuery("UPDATE {$table} SET enabled = ?, params = ? WHERE type = 'plugin' AND folder = 'mothership-ai' AND element = 'claude'", [$on ? 1 : 0, $plugin]);
+
+        $this->forgetExtensionSettings();
     }
 
     public function setMothershipConfig(array $settings)
@@ -885,7 +887,31 @@ class DbHelper extends Db
             ["name" => "com_mothership"]
         );
 
+        $this->forgetExtensionSettings();
+
         return $config_params;
+    }
+
+    /**
+     * Make the next ComponentHelper::getParams() and PluginHelper lookup read the database again.
+     *
+     * Joomla loads every component's params, and the list of enabled plugins, once per process
+     * and keeps them. Codeception runs a suite in one process, so whichever test first touched
+     * com_mothership fixed its settings for the whole run, whatever a later test wrote. The
+     * helpers that write settings call this. Where the site runs in another process (the
+     * acceptance suite) Joomla's classes are not loaded here and there is nothing to forget.
+     */
+    public function forgetExtensionSettings(): void
+    {
+        foreach ([\Joomla\CMS\Component\ComponentHelper::class => ['components', []], \Joomla\CMS\Plugin\PluginHelper::class => ['plugins', null]] as $class => [$property, $empty]) {
+            if (!class_exists($class, false)) {
+                continue;
+            }
+
+            $cache = new \ReflectionProperty($class, $property);
+            $cache->setAccessible(true);
+            $cache->setValue(null, $empty);
+        }
     }
 
     public function assertInvoiceHasRows($invoiceId, $expectedRows)
