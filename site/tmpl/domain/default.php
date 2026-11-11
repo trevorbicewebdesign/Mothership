@@ -8,8 +8,8 @@ use Joomla\CMS\Language\Text;
 $domain = $this->item;
 
 // Format dates
-$purchaseDate = $domain->purchase_date ? HTMLHelper::_('date', $domain->purchase_date, Text::_('DATE_FORMAT_LC4')) : '-';
-$expirationDate = $domain->expiration_date ? HTMLHelper::_('date', $domain->expiration_date, Text::_('DATE_FORMAT_LC4')) : '-';
+$purchaseDate = $domain->purchase_date ? HTMLHelper::_('date', $domain->purchase_date, Text::_('DATE_FORMAT_LC4'), null) : '-';
+$expirationDate = $domain->expiration_date ? HTMLHelper::_('date', $domain->expiration_date, Text::_('DATE_FORMAT_LC4'), null) : '-';
 ?>
 
 <div class="container my-4">
