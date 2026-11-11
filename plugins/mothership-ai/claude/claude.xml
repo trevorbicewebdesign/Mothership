@@ -1,8 +1,8 @@
-<extension type="plugin" group="mothership-ai" version="0.0.30" method="upgrade" element="claude">
+<extension type="plugin" group="mothership-ai" version="0.0.31" method="upgrade" element="claude">
     <name>PLG_MOTHERSHIP_AI_CLAUDE</name>
     <author>Trevor Bice</author>
     <creationDate>2026-09</creationDate>
-    <version>0.0.30</version>
+    <version>0.0.31</version>
     <copyright>(C) 2026 Trevor Bice</copyright>
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <description>PLG_MOTHERSHIP_AI_CLAUDE_XML_DESCRIPTION</description>

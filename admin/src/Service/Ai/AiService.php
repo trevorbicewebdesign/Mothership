@@ -33,6 +33,8 @@ use Joomla\CMS\Plugin\PluginHelper;
  * A connector plugin must expose:
  *   public function chat(array $messages, array $options = []): array
  * returning ['ok'=>bool,'text'=>string,'stop_reason'=>?string,'usage'=>array,'error'=>?string,'raw'=>array].
+ * It may also expose rates(), the price of each model per million tokens; with it, every call's
+ * cost is estimated and kept (see AiUsage).
  */
 class AiService
 {
@@ -90,10 +92,15 @@ class AiService
      * @param array $messages  [['role' => 'user'|'assistant', 'content' => ...], ...]. Content is a string, or an
      *                         array of provider content blocks (text and base64 image blocks) when a
      *                         turn carries images; the connector passes it through as given.
-     * @param array $options   'system' (string), 'model' (string), 'max_tokens' (int).
+     * @param array $options   'system' (string), 'model' (string), 'max_tokens' (int), and 'usage'
+     *                         (array): what the call is for, kept with its cost. See AiUsage::record().
      */
     public static function chat(array $messages, array $options = []): AiResult
     {
+        // What the call is for stays here; the connector only sees provider options.
+        $context = (array) ($options['usage'] ?? []);
+        unset($options['usage']);
+
         $params = ComponentHelper::getParams('com_mothership');
 
         if (!(int) $params->get('ai_enabled', 0)) {
@@ -120,7 +127,11 @@ class AiService
             return AiResult::fail('The AI connector returned an unexpected response.');
         }
 
-        return AiResult::fromArray($raw);
+        $result = AiResult::fromArray($raw);
+
+        AiUsage::record(self::providerName(), $result, $context, self::rates($plugin));
+
+        return $result;
     }
 
     /**
@@ -156,7 +167,25 @@ class AiService
             return AiResult::fail('The AI connector returned an unexpected response.');
         }
 
-        return AiResult::fromArray($raw);
+        $result = AiResult::fromArray($raw);
+
+        // Tiny, but it is still a call the provider bills for.
+        AiUsage::record($provider, $result, ['feature' => 'connection.test'], self::rates($connector));
+
+        return $result;
+    }
+
+    /**
+     * A connector's price list: ['model-id' => ['input' => USD per million tokens, 'output' => ...]].
+     * Empty when the connector has none, in which case its calls are recorded without a cost.
+     */
+    protected static function rates(object $connector): array
+    {
+        try {
+            return method_exists($connector, 'rates') ? (array) $connector->rates() : [];
+        } catch (\Throwable $e) {
+            return [];
+        }
     }
 
     /**

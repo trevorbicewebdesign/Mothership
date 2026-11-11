@@ -15,6 +15,7 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\GenericDataException;
 use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
+use Joomla\CMS\Router\Route;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 use TrevorBice\Component\Mothership\Administrator\Model\ExpensesModel;
 use Joomla\CMS\Factory;
@@ -102,6 +103,11 @@ class HtmlView extends BaseHtmlView
             $childBar->edit('expense.edit')->listCheck(true);
             $childBar->delete('expenses.delete')->listCheck(true);
         }
+
+        // What the AI features cost.
+        $toolbar->linkButton('aiusage', 'COM_MOTHERSHIP_EXPENSES_AIUSAGE_LINK')
+            ->url(Route::_('index.php?option=com_mothership&view=aiusage'))
+            ->icon('icon-list');
 
         if ($canDo->get('core.admin') || $canDo->get('core.options')) {
             $toolbar->preferences('com_mothership');

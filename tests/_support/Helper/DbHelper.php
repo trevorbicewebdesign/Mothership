@@ -490,6 +490,27 @@ class DbHelper extends Db
         return $data;
     }
 
+    /**
+     * A recorded AI call, as AiUsage::record() leaves it.
+     */
+    public function createMothershipAiUsage(array $data)
+    {
+        $data = array_merge([
+            "provider" => "claude",
+            "model" => "claude-haiku-4-5",
+            "feature" => "connection.test",
+            "input_tokens" => 1000,
+            "output_tokens" => 200,
+            "cost" => 0.002,
+            "created" => date('Y-m-d H:i:s'),
+            "created_by" => 0,
+        ], $data);
+
+        $data['id'] = $this->Db->haveInDatabase("{$this->prefix}mothership_ai_usage", $data);
+
+        return $data;
+    }
+
     public function createMothershipProjectData(array $data)
     {
         $faker = Faker\Factory::create();
@@ -775,6 +796,7 @@ class DbHelper extends Db
         $this->clearPaymentsTable();
         $this->clearInvoicePaymentTable();
         $this->clearExpensesTable();
+        $this->Db->_getDriver()->executeQuery("TRUNCATE TABLE {$this->prefix}mothership_ai_usage", []);
         $this->clearAccountsTable();
         $this->clearClientsTable();
         $this->clearUsersTable();

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form addfieldprefix="TrevorBice\Component\Mothership\Administrator\Field">
+	<fields name="filter">
+		<field name="search" type="text" inputmode="search" label="COM_MOTHERSHIP_AIUSAGE_FILTER_SEARCH_LABEL" description="COM_MOTHERSHIP_AIUSAGE_FILTER_SEARCH_DESC" hint="JSEARCH_FILTER" />
+
+		<field name="client_id" type="sql" default="" onchange="this.form.submit();"
+			header="COM_MOTHERSHIP_FILTER_SELECT_CLIENT" key_field="value" value_field="text"
+			query="SELECT id AS value, name AS text FROM #__mothership_clients ORDER BY name ASC"
+			label="COM_MOTHERSHIP_FILTER_CLIENT_LABEL" description="" />
+
+		<field name="account_id" type="accountfilter" default="" onchange="this.form.submit();"
+			label="COM_MOTHERSHIP_FILTER_ACCOUNT_LABEL" description="" />
+
+		<field name="feature" type="list" default="" onchange="this.form.submit();"
+			label="COM_MOTHERSHIP_AIUSAGE_FILTER_FEATURE_LABEL" description="">
+			<option value="">COM_MOTHERSHIP_AIUSAGE_FILTER_FEATURE_ANY</option>
+			<option value="expense.read">COM_MOTHERSHIP_AIUSAGE_FEATURE_EXPENSE_READ</option>
+			<option value="connection.test">COM_MOTHERSHIP_AIUSAGE_FEATURE_CONNECTION_TEST</option>
+			<option value="other">COM_MOTHERSHIP_AIUSAGE_FEATURE_OTHER</option>
+		</field>
+	</fields>
+	<fields name="list">
+		<field name="fullordering" type="list" label="JGLOBAL_SORT_BY" statuses="*,0,1,2,-2" class="js-select-submit-on-change" default="u.created DESC" validate="options">
+			<option value="">JGLOBAL_SORT_BY</option>
+			<option value="u.created DESC">COM_MOTHERSHIP_AIUSAGE_SORT_DATE_DESC</option>
+			<option value="u.created ASC">COM_MOTHERSHIP_AIUSAGE_SORT_DATE_ASC</option>
+			<option value="u.cost DESC">COM_MOTHERSHIP_AIUSAGE_SORT_COST_DESC</option>
+			<option value="u.cost ASC">COM_MOTHERSHIP_AIUSAGE_SORT_COST_ASC</option>
+			<option value="c.name ASC">COM_MOTHERSHIP_AIUSAGE_SORT_CLIENT_ASC</option>
+		</field>
+		<field name="limit" type="limitbox" label="JGLOBAL_LIST_LIMIT" default="25" class="js-select-submit-on-change" />
+	</fields>
+</form>
