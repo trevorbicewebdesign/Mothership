@@ -50,10 +50,10 @@
 		<field name="ns2" type="text" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_DOMAIN_NS2_LABEL" description="COM_MOTHERSHIP_FIELD_DOMAIN_NS2_DESC" />
 		<field name="ns3" type="text" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_DOMAIN_NS3_LABEL" description="COM_MOTHERSHIP_FIELD_DOMAIN_NS3_DESC" />
 		<field name="ns4" type="text" default="" readonly="" class="" label="COM_MOTHERSHIP_FIELD_DOMAIN_NS4_LABEL" description="COM_MOTHERSHIP_FIELD_DOMAIN_NS4_DESC" />
-		<field name="purchase_date" type="calendar" readonly="false" class="validate-date" label="COM_MOTHERSHIP_FIELD_DOMAIN_PURCHASE_DATE_LABEL" description="COM_MOTHERSHIP_FIELD_DOMAIN_PURCHASE_DATE_DESC" default="" format="%Y-%m-%d" filter="user_utc" />
-		<field name="expiration_date" type="calendar" readonly="false" class="validate-date" label="COM_MOTHERSHIP_FIELD_DOMAIN_EXPIRATION_DATE_LABEL" description="COM_MOTHERSHIP_FIELD_DOMAIN_EXPIRATION_DATE_DESC" default="" format="%Y-%m-%d" filter="user_utc" />
+		<field name="purchase_date" type="calendar" readonly="false" class="validate-date" label="COM_MOTHERSHIP_FIELD_DOMAIN_PURCHASE_DATE_LABEL" description="COM_MOTHERSHIP_FIELD_DOMAIN_PURCHASE_DATE_DESC" default="" format="%Y-%m-%d" filter="none" />
+		<field name="expiration_date" type="calendar" readonly="false" class="validate-date" label="COM_MOTHERSHIP_FIELD_DOMAIN_EXPIRATION_DATE_LABEL" description="COM_MOTHERSHIP_FIELD_DOMAIN_EXPIRATION_DATE_DESC" default="" format="%Y-%m-%d" filter="none" />
 		<field name="raw_text" type="textarea" default="" readonly="" class="input-xxlarge input-large-text" label="COM_MOTHERSHIP_FIELD_DOMAIN_RAW_TEXT_LABEL" description="COM_MOTHERSHIP_FIELD_DOMAIN_RAW_TEXT_DESC" />
 		<field name="notes" type="textarea" default="" readonly="" class="input-xxlarge input-large-text" label="COM_MOTHERSHIP_FIELD_DOMAIN_NOTES_LABEL" description="COM_MOTHERSHIP_FIELD_DOMAIN_NOTES_DESC" />
-		<field name="created" type="calendar" readonly="false" class="validate-date" label="COM_MOTHERSHIP_FIELD_DOMAIN_CREATED_LABEL" description="COM_MOTHERSHIP_FIELD_DOMAIN_CREATED_DESC" default="" format="%Y-%m-%d" filter="user_utc" />
+		<field name="created" type="calendar" readonly="false" class="validate-date" label="COM_MOTHERSHIP_FIELD_DOMAIN_CREATED_LABEL" description="COM_MOTHERSHIP_FIELD_DOMAIN_CREATED_DESC" default="" format="%Y-%m-%d" filter="none" />
 	</fieldset>
 </form>
