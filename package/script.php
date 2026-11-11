@@ -34,6 +34,7 @@ class Pkg_MothershipInstallerScript
         'mod_mothership_invoices' => 12,
         'mod_mothership_invoiced' => 6,
         'mod_mothership_payments' => 6,
+        'mod_mothership_expenses' => 6,
     ];
 
     /** @var string[] Dashboard modules that were installed before this run. */

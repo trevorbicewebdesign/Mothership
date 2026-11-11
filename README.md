@@ -916,11 +916,12 @@ A connector is a plugin in the `mothership-ai` group whose class is `PlgMothersh
 Invoices and proposals can be previewed and downloaded as PDFs, rendered with mPDF. Invoice PDF templates can be supplied by plugins in the `mothership-invoice-pdf` plugin group; the template is selected in the component options and can be set per client.
 
 # Administrator Modules
-Four administrator dashboard modules live in `modules/`. The Mothership package installs the first three and, on a first install, publishes them on the Mothership dashboard: the dashboard icon beside **Mothership** in the administrator menu, module position `cpanel-mothership`. After that they are yours to move, unpublish or delete; an update does not put them back. Each is also built as a zip of its own.
+Five administrator dashboard modules live in `modules/`. The Mothership package installs the first four and, on a first install, publishes them on the Mothership dashboard: the dashboard icon beside **Mothership** in the administrator menu, module position `cpanel-mothership`. After that they are yours to move, unpublish or delete; an update does not put them back. Each is also built as a zip of its own.
 
 - **mod_mothership_invoices**: Lists open (unpaid or partially paid) invoices.
 - **mod_mothership_invoiced**: Bar chart of monthly invoiced totals for the current year, with the all-time total.
 - **mod_mothership_payments**: Bar chart of monthly completed-payment totals for the current year, with the all-time total.
+- **mod_mothership_expenses**: Bar chart of monthly expense totals for the current year, with the all-time total. Every expense counts, assigned or not.
 - **mod_mothership_tickets**: Lists the most recently updated support tickets. It belongs to the planned support tickets feature, which is not part of the current release, so the package leaves it out.
 
 # Web Services API
